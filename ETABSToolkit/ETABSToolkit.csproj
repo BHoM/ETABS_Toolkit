@@ -22,7 +22,7 @@
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\ETABSToolkit.XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -37,9 +37,21 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BHoM">
+      <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
+    </Reference>
     <Reference Include="ETABS2013, Version=13.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\..\..\..\..\Program Files\Computers and Structures\ETABS 2013\ETABS2013.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="ETABS2015">
+      <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\ETABS 2013\ETABS2015.dll</HintPath>
+    </Reference>
+    <Reference Include="ProtoGeometry">
+      <HintPath>..\..\..\..\..\..\Program Files\Dynamo 0.9\ProtoGeometry.dll</HintPath>
+    </Reference>
+    <Reference Include="ProtoInterface">
+      <HintPath>..\..\..\..\..\..\Program Files\Dynamo 0.9\ProtoInterface.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -50,8 +62,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplySectiontoFrame.cs" />
+    <Compile Include="ExtractETABSFrames.cs" />
+    <Compile Include="ExtractETABSNodes.cs" />
     <Compile Include="OpenETABS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CreateFrames.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

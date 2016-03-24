@@ -11,40 +11,41 @@ namespace ETABSToolkit
 {
    public  class OpenETABS
     {
-        /// <summary>
-        /// Opens an instance of ETABS  engine
-        /// </summary>
-        /// <param name="FilePath"></param>
-        /// <param name="Activate"></param>
-        public static void Open(string FilePath = "", Boolean Activate = false)
+        public static object Open(string FilePath = "", Boolean Activate = false)
         {
-            string pathtoetabs = @"C:\Program Files\Computers and Structures\ETABS 2013\ETABS.exe";
-            System.Reflection.Assembly ETABSAssembly = System.Reflection.Assembly.LoadFrom(pathtoetabs);
-            object newInstance = ETABSAssembly.CreateInstance("CSI.ETABS.API.ETABSObject");
-             ETABS2013.cOAPI ETABSObject = null;
+          string pathtoetabs = @"C:\Program Files\Computers and Structures\ETABS 2013\ETABS.exe";
+          System.Reflection.Assembly ETABSAssembly = System.Reflection.Assembly.LoadFrom(pathtoetabs);
+          object newInstance = ETABSAssembly.CreateInstance("CSI.ETABS.API.ETABSObject");
+          ETABS2015.cOAPI ETABSObject = null;
             
-                int attempt = 0;
+          int attempt = 0;
           int ret;
-                while (attempt++ <= 10)
+          if (Activate)
+          {
+              while (attempt++ <= 10)
+              {
+                  try
+                  {
+                      ETABSObject = (ETABS2015.cOAPI)newInstance;
+                      break;
+                  }
+                  catch (Exception ex)
+                  {
+                      if (attempt == 10)
+                      {
+                          return ETABSObject;
+                      }
+                  }
+              }
+          }
+                if (ETABSObject != null)
                 {
-                    try
-                    {
-                        ETABSObject = (ETABS2013.cOAPI)newInstance;
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (attempt == 10)
-                        {
-                            throw ex;
-                        }
-                    }
-                    if (ETABSObject != null)
-                    {
-                        ret = ETABSObject.ApplicationStart();
-                    }
+                   ret = ETABSObject.ApplicationStart();
+               //     ETABSObject.SapModel.InitializeNewModel();
+             //  ETABSObject.SapModel.File.NewBlank(); NOTE THIS GIVES AN ERROR SO USING DUMMY FILE INSTEAD
+                   ETABSObject.SapModel.File.OpenFile("C:\\Users\\epiermar\\Desktop\\test.EDB");
                 }
-
+                return ETABSObject;
         }
     }
 }
