@@ -40,6 +40,15 @@
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
     </Reference>
+    <Reference Include="DynamoCore">
+      <HintPath>..\..\Basilisk\packages\DynamoVisualProgramming.Core.0.9.1\lib\net45\DynamoCore.dll</HintPath>
+    </Reference>
+    <Reference Include="DynamoShapeManager">
+      <HintPath>..\..\Basilisk\packages\DynamoVisualProgramming.Core.0.9.1\lib\net45\DynamoShapeManager.dll</HintPath>
+    </Reference>
+    <Reference Include="DynamoUtilities">
+      <HintPath>..\..\Basilisk\packages\DynamoVisualProgramming.Core.0.9.1\lib\net45\DynamoUtilities.dll</HintPath>
+    </Reference>
     <Reference Include="ETABS2013, Version=13.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\..\..\..\..\Program Files\Computers and Structures\ETABS 2013\ETABS2013.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -63,8 +72,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplySectiontoFrame.cs" />
+    <Compile Include="CreateShell.cs" />
     <Compile Include="ExtractETABSFrames.cs" />
     <Compile Include="ExtractETABSNodes.cs" />
+    <Compile Include="ExtractFrameReactions.cs" />
     <Compile Include="OpenETABS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CreateFrames.cs" />

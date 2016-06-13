@@ -43,7 +43,8 @@ namespace ETABSToolkit
                    ret = ETABSObject.ApplicationStart();
                //     ETABSObject.SapModel.InitializeNewModel();
              //  ETABSObject.SapModel.File.NewBlank(); NOTE THIS GIVES AN ERROR SO USING DUMMY FILE INSTEAD
-                   ETABSObject.SapModel.File.OpenFile("C:\\Users\\epiermar\\Desktop\\test.EDB");
+                   ETABSObject.SapModel.File.OpenFile("C:\\Users\\epiermar\\Desktop\\etabs test\\test.EDB");
+                   ETABSObject.SapModel.SetPresentUnits(ETABS2015.eUnits.kgf_m_C);
                 }
                 return ETABSObject;
         }
