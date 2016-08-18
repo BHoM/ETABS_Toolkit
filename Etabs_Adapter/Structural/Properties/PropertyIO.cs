@@ -123,6 +123,12 @@ namespace Etabs_Adapter.Structural.Properties
             {
                 SapModel.PropArea.SetWall(p.Name, eWallPropType.Specified, eShellType.ShellThin, material.Name, p.Thickness);
             }
+
+            if (p.Modifiers != null)
+            {
+                double[] modifiers = p.Modifiers;
+                SapModel.PropArea.SetModifiers(p.Name, ref modifiers);
+            }
         }
 
         public static void CreateBarProperty(cSapModel SapModel, SectionProperty b, Material material)

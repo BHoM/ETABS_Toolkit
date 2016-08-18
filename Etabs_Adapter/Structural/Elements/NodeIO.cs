@@ -21,7 +21,7 @@ namespace Etabs_Adapter.Structural.Elements
             ObjectManager<string, Node> nodeManager = new ObjectManager<string, Node>(EtabsUtils.NUM_KEY, FilterOption.UserData);
             ObjectManager<NodeConstraint> constraintManager = new ObjectManager<NodeConstraint>();
 
-            List<string> outIds = null; ;// = new List<string>();
+            List<string> outIds = new List<string>();
             int numberFrames = 0;
             string[] names = null;
             double[] pX = null;
@@ -43,15 +43,15 @@ namespace Etabs_Adapter.Structural.Elements
                         if (!selected) continue;
                     }
 
-                }
-                outIds = names.ToList();               
+                    nodeManager.Add(names[i], new Node(pX[i], pY[i], pZ[i]));
+                    outIds.Add(names[i]);
+                }             
             }
             else
             {
                 double X = 0;
                 double Y = 0;
                 double Z = 0;
-                outIds = new List<string>();
 
                 for (int i = 0; ids != null && i < ids.Count; i++)
                 {
@@ -65,20 +65,39 @@ namespace Etabs_Adapter.Structural.Elements
 
             for (int i = 0; i < outIds.Count; i++)
             {
-                SapModel.PointObj.GetRestraint(outIds[i], ref restraint);
-                SapModel.PointObj.GetSpring(outIds[i], ref springValues);
+                if (SapModel.PointObj.GetRestraint(outIds[i], ref restraint) != 0) restraint = null;
+                if (SapModel.PointObj.GetSpring(outIds[i], ref springValues) != 0) springValues = null;
 
-                if (restraint != null || springValues != null)
+                if (!IsFree(restraint) || ContainsSpring(springValues))
                 {
                     NodeConstraint c = PropertyIO.GetNodeConstraint(restraint, springValues);
                     constraintManager.Add(c.Name, c);
-                    nodeManager.Add(names[i], new Node(pX[i], pY[i], pZ[i]));
-                    nodeManager[names[i]].Constraint = constraintManager[c.Name];
+                    nodeManager[outIds[i]].Constraint = constraintManager[c.Name];
                 }
             }
 
             nodes = nodeManager.GetRange(outIds);
             return outIds;
+        }
+
+        public static bool IsFree(bool[] restraint)
+        {
+            if (restraint == null) return true;
+            for (int i = 0; i < restraint.Length; i++)
+            {
+                if (restraint[i] == true) return false;
+            }
+            return true;
+        }
+
+        public static bool ContainsSpring(double[] value)
+        {
+            if (value == null) return false;
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] != 0) return true;
+            }
+            return false;
         }
 
         public static bool CreateNodes(cOAPI Etabs, List<Node> nodes, out List<string> ids)

@@ -16,15 +16,16 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\Build\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\Build\Etabs_Adapter.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Build\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -55,11 +56,13 @@
     <Compile Include="Structural\Interface\ElementAdapter.cs" />
     <Compile Include="Structural\Interface\ResultAdapter.cs" />
     <Compile Include="Structural\Properties\PropertyIO.cs" />
+    <Compile Include="Structural\Results\BarResults.cs" />
+    <Compile Include="Structural\Results\NodeResults.cs" />
+    <Compile Include="Structural\Results\PanelResults.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Geometry\" />
     <Folder Include="Structural\Loads\" />
-    <Folder Include="Structural\Results\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,9 @@
 ﻿using BHoM.Base;
 using BHoM.Geometry;
+using BHoM.Materials;
 using BHoM.Structural.Elements;
+using BHoM.Structural.Interface;
+using BHoM.Structural.Properties;
 using Etabs_Adapter.Base;
 using Etabs_Adapter.Structural.Properties;
 using ETABS2015;
@@ -69,6 +72,112 @@ namespace Etabs_Adapter.Structural.Elements
                 }
             }
             return true;
+        }
+
+        public static BarRelease GetBarRelease(cOAPI Etabs, string barId)
+        {
+            cSapModel SapModel = Etabs.SapModel;
+            bool[] ii = null;
+            bool[] jj = null;
+            double[] s = null;
+            double[] e = null;
+
+            if (SapModel.FrameObj.GetReleases(barId, ref ii, ref jj, ref s, ref e) == 0)
+            {
+                return new BarRelease(new NodeConstraint("", ii, s), new NodeConstraint("", jj, e));
+            }
+            return null;
+        }
+
+        public static List<string> GetBars(cOAPI Etabs, out List<Bar> bars, ObjectSelection selection, List<string> ids = null)
+        {
+            cSapModel SapModel = Etabs.SapModel;
+            ObjectManager<string, Bar> barManager = new ObjectManager<string, Bar>(EtabsUtils.NUM_KEY, FilterOption.UserData);
+            ObjectManager<string, Node> nodeManager = new ObjectManager<string, Node>(EtabsUtils.NUM_KEY, FilterOption.UserData);
+            ObjectManager<BarRelease> addedReleases = new ObjectManager<BarRelease>();
+            Dictionary<string, SectionProperty> loadedProperties = new Dictionary<string, SectionProperty>();
+            Dictionary<string, Material> addedMaterials = new Dictionary<string, Material>();
+            List<string> outIds = new List<string>();
+
+            int numberFrames = 0;
+            bool selected = false;
+            string[] names = null;
+            string[] property = null;
+            string[] story = null;
+            string[] p1 = null;
+            string[] p2 = null;
+            double[] pX1 = null;
+            double[] pX2 = null;
+            double[] pY1 = null;
+            double[] pY2 = null;
+            double[] pZ1 = null;
+            double[] pZ2 = null;
+            double[] angle = null;
+            double[] oX1 = null;
+            double[] oX2 = null;
+            double[] oY1 = null;
+            double[] oY2 = null;
+            double[] oZ1 = null;
+            double[] oZ2 = null;
+            int[] cardinalPoint = null;
+            string nameExists = "";
+
+            SapModel.FrameObj.GetAllFrames(ref numberFrames, ref names, ref property, ref story, ref p1, ref p2, ref pX1, ref pY1, ref pZ1, ref pX2,
+                    ref pY2, ref pZ2, ref angle, ref oX1, ref oX2, ref oY1, ref oY2, ref oZ1, ref oZ2, ref cardinalPoint);
+
+            Dictionary<string, string> barSelection = new Dictionary<string, string>();
+
+            if (selection == ObjectSelection.FromInput)
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    barSelection.Add(ids[i], ids[i]);
+                }
+            }
+
+            for (int i = 0; i < numberFrames; i++)
+            {
+                if (selection == ObjectSelection.Selected)
+                {
+                    SapModel.FrameObj.GetSelected(names[i], ref selected);
+                    if (!selected) continue;
+                }
+
+                if (selection == ObjectSelection.FromInput && !barSelection.TryGetValue(names[i], out nameExists)) continue;
+
+                outIds.Add(names[i]);
+                nodeManager.Add(p1[i], new Node(pX1[i], pY1[i], pZ1[i]));
+                nodeManager.Add(p2[i], new Node(pX2[i], pY2[i], pZ2[i]));
+
+                Bar bar = barManager.Add(names[i], new Bar(nodeManager[p1[i]], nodeManager[p2[i]]));
+
+                SectionProperty barProp = null;
+                string material = "";
+                if (!loadedProperties.TryGetValue(property[i], out barProp))
+                {
+                    barProp = PropertyIO.GetBarProperty(SapModel, property[i], bar.Line.Direction.IsParallel(Vector.ZAxis(), Math.PI/12), out material);
+                    loadedProperties.Add(property[i], barProp);
+                    addedMaterials.Add(property[i], EtabsUtils.GetMaterial(SapModel, material));
+                }
+
+                Material matProp = null;
+                addedMaterials.TryGetValue(property[i], out matProp);
+
+                BarRelease release = GetBarRelease(Etabs, names[i]);
+                if (release != null)
+                {
+                    bar.Release = addedReleases.Add(release.Name, release);
+                }
+               
+                bar.SectionProperty = barProp;
+                bar.Material = matProp;
+                bar.OrientationAngle = angle[i];
+                
+
+                barManager.Add(EtabsUtils.NUM_KEY, bar);
+            }
+            bars = barManager.GetRange(outIds);
+            return outIds;
         }
     }
 }

@@ -61,14 +61,22 @@ namespace Etabs_Adapter.Structural.Interface
                     if (System.IO.File.Exists(filename))
                     {
                         SapModel.File.OpenFile(filename);
+                        Filename = filename;
                     }
                     else
                     {
                         SapModel.File.NewBlank();
-                        if (!string.IsNullOrEmpty(filename)) SapModel.File.Save(filename);
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(filename)) SapModel.File.Save(filename);
+                            Filename = filename;
+                        }
+                        catch
+                        {
+                            Filename = "Unknown";
+                        }
                     }
                 }
-                Filename = filename;
             }
         }
 
@@ -76,7 +84,7 @@ namespace Etabs_Adapter.Structural.Interface
 
         public List<string> GetBars(out List<Bar> bars, List<string> ids = null)
         {
-            throw new NotImplementedException();
+            return BarIO.GetBars(Etabs, out bars, Selection, ids);
         }
 
         public List<string> GetGrids(out List<Grid> grids, List<string> ids = null)
@@ -111,7 +119,7 @@ namespace Etabs_Adapter.Structural.Interface
 
         public List<string> GetPanels(out List<Panel> panels, List<string> ids = null)
         {
-            throw new NotImplementedException();
+            return PanelIO.GetPanels(Etabs, out panels, Selection, ids);
         }
 
         public bool SetBars(List<Bar> bars, out List<string> ids)
