@@ -129,7 +129,8 @@ namespace Etabs_Adapter.Structural.Interface
 
         public bool SetGrids(List<Grid> grid, out List<string> ids)
         {
-            throw new NotImplementedException();
+            ids = new List<string>();
+            return true;
         }
 
         public bool SetLevels(List<Storey> stories, out List<string> ids)
@@ -154,7 +155,8 @@ namespace Etabs_Adapter.Structural.Interface
 
         public bool SetOpenings(List<Opening> opening, out List<string> ids)
         {
-            throw new NotImplementedException();
+            ids = new List<string>();
+            return true;
         }
 
         public bool SetPanels(List<Panel> panels, out List<string> ids)

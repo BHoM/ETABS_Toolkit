@@ -52,8 +52,10 @@ namespace Etabs_Adapter.Structural.Elements
                 EtabsUtils.SetDefaultKeyData(bars[i].CustomData, name);
 
                 ids.Add(name);
+                
+                double angleMutliplier = n1.Z < n2.Z ? 1 : n1.Z == n2.Z && n1.X < n2.X ? 1 : n1.Z == n2.Z && n1.X == n2.X && n1.Y < n2.Y ? 1 : -1;
 
-                SapModel.FrameObj.SetLocalAxes(name, bars[i].OrientationAngle);
+                SapModel.FrameObj.SetLocalAxes(name, angleMutliplier * bars[i].OrientationAngle * 180 / Math.PI);
 
                 if (bar.SectionProperty != null && !addedSections.TryGetValue(bar.SectionProperty.Name, out currentSection))
                 {
@@ -157,11 +159,8 @@ namespace Etabs_Adapter.Structural.Elements
                 {
                     barProp = PropertyIO.GetBarProperty(SapModel, property[i], bar.Line.Direction.IsParallel(Vector.ZAxis(), Math.PI/12), out material);
                     loadedProperties.Add(property[i], barProp);
-                    addedMaterials.Add(property[i], EtabsUtils.GetMaterial(SapModel, material));
+                    barProp.Material = EtabsUtils.GetMaterial(SapModel, material);
                 }
-
-                Material matProp = null;
-                addedMaterials.TryGetValue(property[i], out matProp);
 
                 BarRelease release = GetBarRelease(Etabs, names[i]);
                 if (release != null)
@@ -170,10 +169,8 @@ namespace Etabs_Adapter.Structural.Elements
                 }
                
                 bar.SectionProperty = barProp;
-                bar.Material = matProp;
-                bar.OrientationAngle = angle[i];
+                bar.OrientationAngle = -angle[i] * Math.PI / 180;
                 
-
                 barManager.Add(EtabsUtils.NUM_KEY, bar);
             }
             bars = barManager.GetRange(outIds);

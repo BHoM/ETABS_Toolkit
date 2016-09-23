@@ -29,7 +29,7 @@ namespace Etabs_Adapter.Structural.Elements
                 Panel panel = panels[i];
 
                 int edgeCount = panel.External_Contours.Count;
-                Group<Curve> c = panel.External_Contours;
+                BHoM.Geometry.Group<Curve> c = panel.External_Contours;
                 string currentThickness = "";
                 try
                 {
@@ -61,7 +61,7 @@ namespace Etabs_Adapter.Structural.Elements
                             }
 
                             SapModel.AreaObj.AddByCoord(segments.Count, ref x, ref y, ref z, ref name, currentThickness);
-                            if (j > edgeCount)
+                            if (j >= edgeCount)
                             {
                                 SapModel.AreaObj.SetOpening(name, true);
                             }
@@ -147,7 +147,7 @@ namespace Etabs_Adapter.Structural.Elements
                 }
                 addedMaterials.TryGetValue(propertyName, out materialProp);
 
-                Panel p = new Panel(new Group<Curve>() { pl });
+                Panel p = new Panel(new BHoM.Geometry.Group<Curve>() { pl });
                 p.PanelProperty = panelProp;
                 p.Material = materialProp;
                 panelManager.Add(names[i], p);
