@@ -8,6 +8,7 @@ using BHoM.Structural.Interface;
 using BHoM.Structural.Loads;
 using ETABS2015;
 using Etabs_Adapter.Structural.Elements;
+using BHoM.Base;
 
 namespace Etabs_Adapter.Structural.Interface
 {
@@ -162,6 +163,35 @@ namespace Etabs_Adapter.Structural.Interface
         public bool SetPanels(List<Panel> panels, out List<string> ids)
         {
             return PanelIO.SetPanels(Etabs, panels, out ids);
+        }
+        public List<string> GetRigidLinks(out List<RigidLink> links, List<string> ids = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetGroups(out List<IGroup> groups, List<string> ids = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetRigidLinks(List<RigidLink> rigidLinks, out List<string> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetGroups(List<IGroup> groups, out List<string> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetFEMeshes(out List<FEMesh> meshes, List<string> ids = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetFEMeshes(List<FEMesh> meshes, out List<string> ids)
+        {
+            throw new NotImplementedException();
         }
     }
 }

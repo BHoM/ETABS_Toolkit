@@ -37,7 +37,7 @@ namespace Etabs_Adapter.Structural.Elements
                     {
                         if (panel.PanelProperty != null && !addedThicknesses.TryGetValue(panel.PanelProperty.Name, out currentThickness))
                         {
-                            PropertyIO.CreatePanelProperty(SapModel, EtabsUtils.IsVertical(panel.External_Contours[0]), panel.PanelProperty, panel.Material);
+                            PropertyIO.CreatePanelProperty(SapModel, panel.PanelProperty, panel.Material);
                             currentThickness = panel.PanelProperty.Name;
                             addedThicknesses.Add(currentThickness, currentThickness);
                         }
@@ -59,7 +59,7 @@ namespace Etabs_Adapter.Structural.Elements
                                 y[k] = segments[k].Y;
                                 z[k] = segments[k].Z;
                             }
-
+                            
                             SapModel.AreaObj.AddByCoord(segments.Count, ref x, ref y, ref z, ref name, currentThickness);
                             if (j >= edgeCount)
                             {
@@ -149,7 +149,7 @@ namespace Etabs_Adapter.Structural.Elements
 
                 Panel p = new Panel(new BHoM.Geometry.Group<Curve>() { pl });
                 p.PanelProperty = panelProp;
-                p.Material = materialProp;
+                if (p.PanelProperty != null ) p.PanelProperty.Material = materialProp;
                 panelManager.Add(names[i], p);
             }
 

@@ -61,7 +61,7 @@ namespace Etabs_Adapter.Structural.Properties
 
             SapModel.PropMaterial.GetMaterial(material, ref matType, ref colour, ref notes, ref guid);
            
-            return new SectionProperty(outType, t3, t2, tf, tw, 0, 0, 0, t2, tb2, tfb);
+            return new SteelSection(outType, t3, t2, tf, tw, 0, 0, 0, t2, tb2, tfb);
         }
 
         public static PanelProperty GetPanelProperty(cSapModel SapModel, string name, out string materialName)
@@ -94,7 +94,7 @@ namespace Etabs_Adapter.Structural.Properties
             }
         }
 
-        public static void CreatePanelProperty(cSapModel SapModel, bool wall, PanelProperty p, Material material)
+        public static void CreatePanelProperty(cSapModel SapModel, PanelProperty p, Material material)
         {
             if (material == null)
             {
@@ -103,7 +103,7 @@ namespace Etabs_Adapter.Structural.Properties
 
             EtabsUtils.CreateMaterial(SapModel, material);
 
-            if (!wall)
+            if (p.Type != PanelType.Wall)
             {
                 if (p is Ribbed)
                 {
