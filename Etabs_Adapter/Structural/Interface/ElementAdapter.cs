@@ -9,6 +9,7 @@ using BHoM.Structural.Loads;
 using ETABS2015;
 using Etabs_Adapter.Structural.Elements;
 using BHoM.Base;
+using Etabs_Adapter.Structural.Loads;
 
 namespace Etabs_Adapter.Structural.Interface
 {
@@ -95,12 +96,12 @@ namespace Etabs_Adapter.Structural.Interface
 
         public List<string> GetLevels(out List<Storey> levels, List<string> ids = null)
         {
-            throw new NotImplementedException();
+            return LevelIO.GetLevels(Etabs, out levels, ids);
         }
 
         public List<string> GetLoadcases(out List<ICase> cases)
         {
-            throw new NotImplementedException();
+            return LoadIO.GetLoadcases(Etabs, out cases);
         }
 
         public bool GetLoads(out List<ILoad> loads, List<string> ids = null)

@@ -72,7 +72,7 @@ namespace Etabs_Adapter.Base
                 SapModel.PropMaterial.AddMaterial(ref name, GetMaterialType(mat), "", "", "");
                 SapModel.PropMaterial.ChangeName(name, mat.Name);
                 SapModel.PropMaterial.SetMPIsotropic(mat.Name, mat.YoungsModulus, mat.PoissonsRatio, mat.CoeffThermalExpansion);
-                SapModel.PropMaterial.SetWeightAndMass(mat.Name, 1, mat.Density);
+                SapModel.PropMaterial.SetWeightAndMass(mat.Name, 0, mat.Density);
             }
         }
 
@@ -83,7 +83,7 @@ namespace Etabs_Adapter.Base
             string guid = "";
             string notes = "";
             //string name = "";
-            if (SapModel.PropMaterial.GetMaterial(name, ref matType, ref colour, ref notes, ref guid) != 0)
+            if (SapModel.PropMaterial.GetMaterial(name, ref matType, ref colour, ref notes, ref guid) == 0)
             {
                 double e = 0;
                 double v = 0;
@@ -93,8 +93,30 @@ namespace Etabs_Adapter.Base
                 double weight = 0;
                 SapModel.PropMaterial.GetMPIsotropic(name, ref e, ref v, ref thermCo, ref g);
                 SapModel.PropMaterial.GetWeightAndMass(name, ref weight, ref mass);
+                double compStr = 0;
+                double tensStr = 0;
+                double v1 = 0;
+                double v2 = 0;
+                double v3 = 0;
+                double v4 = 0;
+                double v5 = 0;
+                int i1 = 0;
+                int i2 = 0;
+                bool b1 = false;
 
-                return new Material(name, GetMaterialType(matType), e, v, thermCo, g, weight);
+                Material m = new Material(name, GetMaterialType(matType), e, v, thermCo, g, mass);
+                if (SapModel.PropMaterial.GetOSteel(name, ref compStr, ref tensStr, ref v1, ref v2, ref i1, ref i2, ref v3, ref v4, ref v5) == 0)
+                {
+                    m.CompressiveYieldStrength = compStr;
+                    m.TensileYieldStrength = compStr;
+                }
+                else if (SapModel.PropMaterial.GetOConcrete(name, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref v1, ref v2, ref v3, ref v4) == 0)
+                {
+                    m.CompressiveYieldStrength = compStr;
+                    m.TensileYieldStrength = compStr * tensStr;
+                }
+
+                return m;
             }
             return null;
         }

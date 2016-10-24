@@ -15,7 +15,11 @@ namespace Etabs_Adapter.Structural.Interface
     {
         public bool GetBarForces(List<string> bars, List<string> cases, int divisions, ResultOrder orderBy, out Dictionary<string, IResultSet> results)
         {
-            throw new NotImplementedException();
+            ResultServer<BarForce<string, string, string>> resultServer = new ResultServer<BarForce<string, string, string>>();
+            resultServer.OrderBy = orderBy;
+            BarResults.GetBarForces(Etabs, resultServer, bars, cases, divisions);
+            results = resultServer.LoadData();
+            return true;
         }
 
         public bool GetBarStresses()

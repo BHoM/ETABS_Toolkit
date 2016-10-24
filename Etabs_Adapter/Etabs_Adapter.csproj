@@ -55,6 +55,7 @@
     <Compile Include="Structural\Elements\PanelIO.cs" />
     <Compile Include="Structural\Interface\ElementAdapter.cs" />
     <Compile Include="Structural\Interface\ResultAdapter.cs" />
+    <Compile Include="Structural\Loads\LoadIO.cs" />
     <Compile Include="Structural\Properties\PropertyIO.cs" />
     <Compile Include="Structural\Results\BarResults.cs" />
     <Compile Include="Structural\Results\NodeResults.cs" />
@@ -62,7 +63,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Geometry\" />
-    <Folder Include="Structural\Loads\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

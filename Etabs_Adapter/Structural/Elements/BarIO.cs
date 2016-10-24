@@ -151,7 +151,10 @@ namespace Etabs_Adapter.Structural.Elements
                 nodeManager.Add(p1[i], new Node(pX1[i], pY1[i], pZ1[i]));
                 nodeManager.Add(p2[i], new Node(pX2[i], pY2[i], pZ2[i]));
 
-                Bar bar = barManager.Add(names[i], new Bar(nodeManager[p1[i]], nodeManager[p2[i]]));
+                Bar bar = barManager.Add(names[i], new Bar());
+
+                bar.StartNode = nodeManager[p1[i]];
+                bar.EndNode = nodeManager[p2[i]];
 
                 SectionProperty barProp = null;
                 string material = "";
@@ -171,7 +174,6 @@ namespace Etabs_Adapter.Structural.Elements
                 bar.SectionProperty = barProp;
                 bar.OrientationAngle = -angle[i] * Math.PI / 180;
                 
-                barManager.Add(EtabsUtils.NUM_KEY, bar);
             }
             bars = barManager.GetRange(outIds);
             return outIds;

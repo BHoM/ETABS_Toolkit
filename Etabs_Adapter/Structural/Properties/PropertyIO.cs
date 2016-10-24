@@ -58,10 +58,8 @@ namespace Etabs_Adapter.Structural.Properties
                     outType = ShapeType.Angle;
                     break;
             }
-
-            SapModel.PropMaterial.GetMaterial(material, ref matType, ref colour, ref notes, ref guid);
-           
-            return new SteelSection(outType, t3, t2, tf, tw, 0, 0, 0, t2, tb2, tfb);
+                       
+            return new SteelSection(outType, t3, t2, tw, tf, 0, 0, 0, t2, tb2, tfb);
         }
 
         public static PanelProperty GetPanelProperty(cSapModel SapModel, string name, out string materialName)

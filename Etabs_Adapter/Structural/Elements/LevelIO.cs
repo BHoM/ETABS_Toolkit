@@ -43,5 +43,32 @@ namespace Etabs_Adapter.Structural.Elements
             }
             return true;
         }
+
+        internal static List<string> GetLevels(cOAPI Etabs, out List<Storey> levels, List<string> ids)
+        {
+            cSapModel SapModel = Etabs.SapModel;
+            List<string> outIds = new List<string>();
+            levels = new List<Storey>();
+            int numStories = 0;
+            string[] names = null;
+            double[] storyElevations = null;
+            double[] storyHeights = null;
+            bool[] masterStory = null;
+            string[] similiar = null;
+            bool[] spliceAbove = null;
+            double[] spliceHeight = null;
+
+            SapModel.Story.GetStories(ref numStories, ref names, ref storyElevations, ref storyHeights, ref masterStory, ref similiar, ref spliceAbove, ref spliceHeight);
+              
+            for (int i = 0; i < numStories; i++)
+            {
+                if (ids != null && ids.Count > 0 && !ids.Contains(names[i])) continue;
+                            
+                levels.Add(new Storey(names[i], storyElevations[i], storyHeights[i]));
+                outIds.Add(names[i]);                          
+            }
+
+            return outIds;           
+        }
     }
 }
