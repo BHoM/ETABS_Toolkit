@@ -137,12 +137,14 @@ namespace Etabs_Adapter.Structural.Interface
 
         public bool SetLoadcases(List<ICase> cases)
         {
-            throw new NotImplementedException();
+            LoadIO.SetLoadcases(Etabs, cases);
+            return true;
         }
 
         public bool SetLoads(List<ILoad> loads)
         {
-            throw new NotImplementedException();
+            LoadIO.SetLoads(Etabs, loads);
+            return true;
         }
 
         public bool SetNodes(List<Node> nodes, out List<string> ids)
