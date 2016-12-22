@@ -29,7 +29,7 @@ namespace Etabs_Adapter.Structural.Elements
                 Panel panel = panels[i];
 
                 int edgeCount = panel.External_Contours.Count;
-                BHoM.Geometry.Group<Curve> c = panel.External_Contours;
+                List<Curve> c = Curve.Join(panel.External_Contours);
                 string currentThickness = "";
                 try
                 {
@@ -79,6 +79,67 @@ namespace Etabs_Adapter.Structural.Elements
             return true;
         }
 
+        public static bool SetOpenings(cOAPI Etabs, List<Opening> panels, out List<string> ids, string option = "")
+        {
+            cSapModel SapModel = Etabs.SapModel;
+            ids = new List<string>();
+            string name = "";
+            Dictionary<string, string> addedThicknesses = new Dictionary<string, string>();
+
+            for (int i = 0; i < panels.Count; i++)
+            {
+                Opening panel = panels[i];
+                List<Curve> edges = Curve.Join(panel.Edges);
+                
+                for (int j = 0; j < edges.Count; j++)
+                {
+                    List<Point> segments = edges[j].ControlPoints;
+
+                    segments = Point.RemoveDuplicates(segments, 3);
+
+                    double[] x = new double[segments.Count];
+                    double[] y = new double[segments.Count];
+                    double[] z = new double[segments.Count];
+
+                    for (int k = 0; k < segments.Count; k++)
+                    {
+                        x[k] = segments[k].X;
+                        y[k] = segments[k].Y;
+                        z[k] = segments[k].Z;
+                    }
+
+                    SapModel.AreaObj.AddByCoord(segments.Count, ref x, ref y, ref z, ref name, "");
+                    SapModel.AreaObj.SetOpening(name, true);
+                    ids.Add(name);
+                }
+            }
+
+            return true;
+        }
+
+        public static Curve GetPerimeter(cOAPI Etabs, string areaName)
+        {
+            string[] pName = null;
+            int pointCount = 0;
+            double pX1 = 0;
+            double pY1 = 0;
+            double pZ1 = 0;
+
+            Etabs.SapModel.AreaObj.GetPoints(areaName, ref pointCount, ref pName);
+
+            List<Point> pts = new List<Point>();
+            for (int j = 0; j < pointCount; j++)
+            {
+                Etabs.SapModel.PointObj.GetCoordCartesian(pName[j], ref pX1, ref pY1, ref pZ1);
+                pts.Add(new Point(pX1, pY1, pZ1));
+            }
+
+            pts.Add(pts[0]);
+
+            Polyline pl = new Polyline(pts);
+            return pl;
+        }
+
         public static List<string> GetPanels(cOAPI Etabs, out List<Panel> panels, ObjectSelection selection, List<string> ids = null)
         {
             cSapModel SapModel = Etabs.SapModel;
@@ -92,10 +153,6 @@ namespace Etabs_Adapter.Structural.Elements
             bool selected = false;
             string[] names = null;
 
-            string[] pName = null;
-            double pX1 = 0;
-            double pY1 = 0;
-            double pZ1 = 0;
 
             if (selection == ObjectSelection.FromInput)
             {
@@ -115,22 +172,7 @@ namespace Etabs_Adapter.Structural.Elements
                     if (!selected) continue;
                 }
 
-                outIds.Add(names[i]);
-
-                int pointCount = 0;
-
-                SapModel.AreaObj.GetPoints(names[i], ref pointCount, ref pName);
-
-                List<Point> pts = new List<Point>();
-                for (int j = 0; j < pointCount; j++)
-                {
-                    SapModel.PointObj.GetCoordCartesian(pName[j], ref pX1, ref pY1, ref pZ1);
-                    pts.Add(new Point(pX1, pY1, pZ1));
-                }
-
-                pts.Add(pts[0]);
-
-                Polyline pl = new Polyline(pts);
+                outIds.Add(names[i]);              
                 
                 PanelProperty panelProp = null;
                 Material materialProp = null;
@@ -147,14 +189,56 @@ namespace Etabs_Adapter.Structural.Elements
                 }
                 addedMaterials.TryGetValue(propertyName, out materialProp);
 
-                Panel p = new Panel(new BHoM.Geometry.Group<Curve>() { pl });
+                Panel p = panelManager.Add(names[i], new Panel());
+
                 p.PanelProperty = panelProp;
                 if (p.PanelProperty != null ) p.PanelProperty.Material = materialProp;
-                panelManager.Add(names[i], p);
+                p.External_Contours = new BHoM.Geometry.Group<Curve>() { GetPerimeter(Etabs, names[i]) };
             }
 
             panels = panelManager.GetRange(outIds);
             return outIds;
-        }     
+        }
+
+        public static List<string> GetOpenings(cOAPI Etabs, out List<Opening> panels, ObjectSelection selection, List<string> ids = null)
+        {
+            cSapModel SapModel = Etabs.SapModel;
+            List<string> outIds = new List<string>();
+            ObjectManager<string, Opening> openingManager = new ObjectManager<string, Opening>(EtabsUtils.NUM_KEY, FilterOption.UserData);
+
+            int numberArea = 0;
+            bool selected = false;
+            string[] names = null;
+            bool isOpening = false;
+
+            if (selection == ObjectSelection.FromInput)
+            {
+                numberArea = ids.Count;
+                names = ids.ToArray();
+            }
+            else
+            {
+                SapModel.AreaObj.GetNameList(ref numberArea, ref names);
+            }
+
+            for (int i = 0; i < numberArea; i++)
+            {
+                if (selection == ObjectSelection.Selected)
+                {
+                    SapModel.AreaObj.GetSelected(names[i], ref selected);
+                    if (!selected) continue;
+                }
+                SapModel.AreaObj.GetOpening(names[i], ref isOpening);
+                if (isOpening)
+                {
+                    outIds.Add(names[i]);
+                    Opening p = openingManager.Add(names[i], new Opening());   
+                    p.Edges = new BHoM.Geometry.Group<Curve>() { GetPerimeter(Etabs, names[i]) };
+                }
+            }
+
+            panels = openingManager.GetRange(outIds);
+            return outIds;
+        }
     }
 }

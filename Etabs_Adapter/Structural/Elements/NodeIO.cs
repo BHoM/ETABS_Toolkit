@@ -43,7 +43,8 @@ namespace Etabs_Adapter.Structural.Elements
                         if (!selected) continue;
                     }
 
-                    nodeManager.Add(names[i], new Node(pX[i], pY[i], pZ[i]));
+                    Node node = nodeManager.Add(names[i], new Node());
+                    node.Point = new BHoM.Geometry.Point(pX[i], pY[i], pZ[i]);
                     outIds.Add(names[i]);
                 }             
             }

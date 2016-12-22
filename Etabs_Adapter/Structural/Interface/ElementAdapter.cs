@@ -10,6 +10,7 @@ using ETABS2015;
 using Etabs_Adapter.Structural.Elements;
 using BHoM.Base;
 using Etabs_Adapter.Structural.Loads;
+using Etabs_Adapter.Base;
 
 namespace Etabs_Adapter.Structural.Interface
 {
@@ -111,7 +112,7 @@ namespace Etabs_Adapter.Structural.Interface
 
         public List<string> GetOpenings(out List<Opening> opening, List<string> ids = null)
         {
-            throw new NotImplementedException();
+            return PanelIO.GetOpenings(Etabs, out opening, Selection);
         }
 
         public List<string> GetPanels(out List<Panel> panels, List<string> ids = null)
@@ -154,8 +155,7 @@ namespace Etabs_Adapter.Structural.Interface
 
         public bool SetOpenings(List<Opening> opening, out List<string> ids)
         {
-            ids = new List<string>();
-            return true;
+            return PanelIO.SetOpenings(Etabs, opening, out ids);
         }
 
         public bool SetPanels(List<Panel> panels, out List<string> ids)
@@ -169,7 +169,77 @@ namespace Etabs_Adapter.Structural.Interface
 
         public List<string> GetGroups(out List<IGroup> groups, List<string> ids = null)
         {
-            throw new NotImplementedException();
+            ObjectManager<string, Bar> bars = new ObjectManager<string, Bar>(EtabsUtils.NUM_KEY, FilterOption.UserData);
+            ObjectManager<string, Node> nodes = new ObjectManager<string, Node>(EtabsUtils.NUM_KEY, FilterOption.UserData);
+            ObjectManager<string, IAreaElement> panels = new ObjectManager<string, IAreaElement>(EtabsUtils.NUM_KEY, FilterOption.UserData);
+            List<string> groupsOut = new List<string>();
+
+            int groupCount = 0;
+            int numItems = 0;
+            string[] groupNames = null;
+            string[] objectNames = null;
+            int[] objectType = null;
+            groups = new List<IGroup>();
+            Etabs.SapModel.GroupDef.GetNameList(ref groupCount, ref groupNames);
+            List<IBase> groupObjs = new List<IBase>();
+            int[] typeCount = new int[3];
+
+            for (int i = 0; i < groupCount; i++)
+            {
+                Etabs.SapModel.GroupDef.GetAssignments(groupNames[i], ref numItems, ref objectType, ref objectNames);
+                for (int j = 0; j < numItems; j++)
+                {
+                    switch (objectType[j])
+                    {
+                        case 1:
+                            typeCount[0]++;
+                            groupObjs.Add(nodes[objectNames[j]]);
+                            break;
+                        case 2:
+                            typeCount[1]++;
+                            groupObjs.Add(bars[objectNames[j]]);
+                            break;
+                        case 3:
+                            typeCount[2]++;
+                            groupObjs.Add(panels[objectNames[j]]);
+                            break;
+                    }
+                }
+                int type = 0;
+                for (int typeIdx = 0; typeIdx < typeCount.Length; typeIdx++)
+                {
+                    if (typeCount[typeIdx] > 0)
+                    {
+                        if (type > 0)
+                        {
+                            type = 0; //More than one object type assigned to group
+                            break;
+                        }
+                        else
+                        {
+                            type = typeIdx + 1;
+                        }
+                    }
+                }
+
+                switch (type)
+                {
+                    case 1:
+                        groups.Add(new Group<Node>(groupNames[i], groupObjs.Cast<Node>().ToList()));
+                        break;
+                    case 2:
+                        groups.Add(new Group<Bar>(groupNames[i], groupObjs.Cast<Bar>().ToList()));
+                        break;
+                    case 3:
+                        groups.Add(new Group<IAreaElement>(groupNames[i], groupObjs.Cast<IAreaElement>().ToList()));
+                        break;
+                    default:
+                        groups.Add(new Group<BHoMObject>(groupNames[i], groupObjs.Cast<BHoMObject>().ToList()));
+                        break;
+                }
+                groupsOut.Add(groupNames[i]);
+            }
+            return groupsOut;
         }
 
         public bool SetRigidLinks(List<RigidLink> rigidLinks, out List<string> ids)
@@ -179,12 +249,38 @@ namespace Etabs_Adapter.Structural.Interface
 
         public bool SetGroups(List<IGroup> groups, out List<string> ids)
         {
-            throw new NotImplementedException();
+            ids = new List<string>();
+            foreach (IGroup group in groups)
+            {
+                Etabs.SapModel.GroupDef.SetGroup(group.Name);
+                ids.Add(group.Name);
+                foreach (BHoMObject obj in group.Objects)
+                {
+                    object name = obj[Etabs_Adapter.Base.EtabsUtils.NUM_KEY];
+                    if (name != null)
+                    {
+                        if (obj is Bar)
+                        {
+                            Etabs.SapModel.FrameObj.SetGroupAssign(name.ToString(), group.Name);
+                        }
+                        else if (typeof(IAreaElement).IsAssignableFrom(obj.GetType()))
+                        {
+                            Etabs.SapModel.AreaObj.SetGroupAssign(name.ToString(), group.Name);
+                        }
+                        else if (obj is Node)
+                        {
+                            Etabs.SapModel.PointObj.SetGroupAssign(name.ToString(), group.Name);
+                        }
+                    }
+
+                }
+            }
+            return true;
         }
 
         public List<string> GetFEMeshes(out List<FEMesh> meshes, List<string> ids = null)
         {
-            throw new NotImplementedException();
+            return MeshIO.SetMesh(Etabs, meshes, out ids);
         }
 
         public bool SetFEMeshes(List<FEMesh> meshes, out List<string> ids)
