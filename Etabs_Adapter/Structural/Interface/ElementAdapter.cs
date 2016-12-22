@@ -280,12 +280,12 @@ namespace Etabs_Adapter.Structural.Interface
 
         public List<string> GetFEMeshes(out List<FEMesh> meshes, List<string> ids = null)
         {
-            return MeshIO.SetMesh(Etabs, meshes, out ids);
+            throw new NotImplementedException();
         }
 
         public bool SetFEMeshes(List<FEMesh> meshes, out List<string> ids)
         {
-            throw new NotImplementedException();
+            return MeshIO.SetMesh(Etabs, meshes, out ids);
         }
 
         public bool GetLoads(out List<ILoad> loads, List<Loadcase> ids = null)
