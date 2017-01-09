@@ -27,22 +27,12 @@ namespace Etabs_Adapter.Structural.Interface
             throw new NotImplementedException();
         }
 
-        public bool GetBarUtilisation(List<string> bars, List<string> cases, ResultOrder orderBy, out Dictionary<string, IResultSet> results)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool GetModalResults()
         {
             throw new NotImplementedException();
         }
 
         public bool GetNodeAccelerations(List<string> nodes, List<string> cases, ResultOrder orderBy, out Dictionary<string, IResultSet> results)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool GetNodeCoordinates(List<string> nodes, out Dictionary<string, IResultSet> results)
         {
             throw new NotImplementedException();
         }
@@ -76,11 +66,6 @@ namespace Etabs_Adapter.Structural.Interface
         }
 
         public bool GetPanelStress(List<string> panels, List<string> cases, ResultOrder orderBy, out Dictionary<string, IResultSet> results)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool GetSlabReinforcement(List<string> panels, List<string> cases, ResultOrder orderBy, out Dictionary<string, IResultSet> results)
         {
             throw new NotImplementedException();
         }

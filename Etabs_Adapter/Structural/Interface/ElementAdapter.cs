@@ -105,6 +105,11 @@ namespace Etabs_Adapter.Structural.Interface
             return LoadIO.GetLoadcases(Etabs, out cases);
         }
 
+        public bool GetLoads(out List<ILoad> loads, List<string> ids = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<string> GetNodes(out List<Node> nodes, List<string> ids = null)
         {
             return NodeIO.GetNodes(Etabs, out nodes, Selection, ids);
@@ -286,16 +291,6 @@ namespace Etabs_Adapter.Structural.Interface
         public bool SetFEMeshes(List<FEMesh> meshes, out List<string> ids)
         {
             return MeshIO.SetMesh(Etabs, meshes, out ids);
-        }
-
-        public bool GetLoads(out List<ILoad> loads, List<Loadcase> ids = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Run()
-        {
-            throw new NotImplementedException();
         }
     }
 }
