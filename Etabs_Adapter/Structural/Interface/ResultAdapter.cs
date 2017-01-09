@@ -13,11 +13,6 @@ namespace Etabs_Adapter.Structural.Interface
 {
     public partial class EtabsAdapter : IResultAdapter
     {
-        public bool GetBarCoordinates(List<string> bars, out Dictionary<string, IResultSet> results)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool GetBarForces(List<string> bars, List<string> cases, int divisions, ResultOrder orderBy, out Dictionary<string, IResultSet> results)
         {
             ResultServer<BarForce<string, string, string>> resultServer = new ResultServer<BarForce<string, string, string>>();
