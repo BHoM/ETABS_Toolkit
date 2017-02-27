@@ -30,51 +30,37 @@ namespace Etabs_Adapter.Structural.Properties
             string guid = "";
             material = "";
             ShapeType outType = ShapeType.Angle;
-            Material m = null;
-            SectionProperty result = null;
+            eMatType matType = eMatType.Steel;
             switch (type)
             {
                 case eFramePropType.I:
                     SapModel.PropFrame.GetISection(name, ref fileName, ref material, ref t3, ref t2, ref tf, ref tw, ref tb2, ref tfb, ref colour, ref notes, ref guid);
                     outType = ShapeType.ISection;
-                    m = EtabsUtils.GetMaterial(SapModel, material);
-                    result = SectionProperty.CreateISection(m.Type, t2, tfb, t3, tf, tfb, tw, 0, 0);
                     break;
                 case eFramePropType.Box:
                     SapModel.PropFrame.GetTube(name, ref fileName, ref material, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    m = EtabsUtils.GetMaterial(SapModel, material);
-                    result = SectionProperty.CreateBoxSection(m.Type, t3, t2, tf, tw, 0, 0);
+                    outType = ShapeType.Box;
                     break;
                 case eFramePropType.Circle:
                     SapModel.PropFrame.GetCircle(name, ref fileName, ref material, ref t3, ref colour, ref notes, ref guid);
-                    m = EtabsUtils.GetMaterial(SapModel, material);
-                    result = SectionProperty.CreateCircularSection(m.Type, t3);
+                    outType = ShapeType.Circle;
                     break;
                 case eFramePropType.Pipe:
                     SapModel.PropFrame.GetPipe(name, ref fileName, ref material, ref t3, ref tf, ref colour, ref notes, ref guid);
-                    m = EtabsUtils.GetMaterial(SapModel, material);
-                    result = SectionProperty.CreateTubeSection(m.Type, t3, tf);
+                    outType = ShapeType.Tube;
                     break;
                 case eFramePropType.Rectangular:
                     SapModel.PropFrame.GetRectangle(name, ref fileName, ref material, ref t3, ref t2, ref colour, ref notes, ref guid);
-                    m = EtabsUtils.GetMaterial(SapModel, material);
-                    result = SectionProperty.CreateRectangularSection(m.Type, t3, t2);
+                    outType = ShapeType.Rectangle;
                     break;
                 case eFramePropType.Angle:
                     SapModel.PropFrame.GetAngle(name, ref fileName, ref material, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    m = EtabsUtils.GetMaterial(SapModel, material);
-                    result = SectionProperty.CreateAngleSection(m.Type, t3, t2, tf, tw, 0, 0);
+                    outType = ShapeType.Angle;
                     break;
             }
-           
-            if (result != null)
-            {
-                result.Name = name;
-                result.Material = m;
-            }
-            return result;
+                       
+            return new SteelSection(outType, t3, t2, tw, tf, 0, 0, 0, t2, tb2, tfb);
         }
-
 
         public static PanelProperty GetPanelProperty(cSapModel SapModel, string name, out string materialName)
         {

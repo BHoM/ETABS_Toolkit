@@ -17,7 +17,6 @@ namespace Etabs_Adapter.Structural.Loads
             List<string> outIds = new List<string>();
             int number = 0;
             string[] names = null;
-
             eLoadPatternType type = eLoadPatternType.ActiveEarthPressure;
             Etabs.SapModel.LoadPatterns.GetNameList(ref number, ref names);
             cases = new List<ICase>();
@@ -28,7 +27,6 @@ namespace Etabs_Adapter.Structural.Loads
                 cases.Add(new Loadcase(names[i], GetPatternType(type)));
                 outIds.Add(names[i]);
             }
-
 
             Etabs.SapModel.LoadCases.GetNameList(ref number, ref names);
 
@@ -58,7 +56,8 @@ namespace Etabs_Adapter.Structural.Loads
             }
             return outIds;
         }
-
+    
+        
         public static void SetLoadcases(cOAPI Etabs, List<ICase> cases)
         {
             cases.Sort(delegate (ICase c1, ICase c2)
@@ -228,7 +227,7 @@ namespace Etabs_Adapter.Structural.Loads
             }
         }
 
-
+        
         internal static eLoadPatternType GetPatternType(LoadNature type)
         {
             switch (type)

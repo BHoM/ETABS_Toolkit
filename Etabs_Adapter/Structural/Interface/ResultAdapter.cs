@@ -28,11 +28,6 @@ namespace Etabs_Adapter.Structural.Interface
             return true;
         }
 
-        public bool GetBarStresses()
-        {
-            throw new NotImplementedException();
-        }
-
         public bool GetBarStresses(List<string> bars, List<string> cases, int divisions, ResultOrder orderBy, out Dictionary<string, IResultSet> results)
         {
             throw new NotImplementedException();
@@ -42,7 +37,7 @@ namespace Etabs_Adapter.Structural.Interface
         {
             throw new NotImplementedException();
         }
-
+        
         public bool GetModalResults()
         {
             throw new NotImplementedException();
@@ -90,7 +85,7 @@ namespace Etabs_Adapter.Structural.Interface
         {
             throw new NotImplementedException();
         }
-
+        
         public bool GetSlabReinforcement(List<string> panels, List<string> cases, ResultOrder orderBy, out Dictionary<string, IResultSet> results)
         {
             throw new NotImplementedException();
@@ -100,7 +95,7 @@ namespace Etabs_Adapter.Structural.Interface
         {
             throw new NotImplementedException();
         }
-
+        
         public bool StoreResults(string filename, List<ResultType> resultTypes, List<string> loadcases, bool append = false)
         {
             foreach (ResultType t in resultTypes)
