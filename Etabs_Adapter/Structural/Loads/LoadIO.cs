@@ -126,14 +126,30 @@ namespace Etabs_Adapter.Structural.Loads
             {
                 for (int i = 0; i < nameCount; i++)
                 {
-                    //loads.Add(new PointLoad(names[i], loadcase[i], fx[i], fy[i], fz[i], mx[i], my[i], mz[i]));
+                    if (loadCase.Name == loadcase[i])
+                    {
+                        loads.Add(new PointForce(loadCase, fx[i], fy[i], fz[i], mx[i], my[i], mz[i]));
+                    }
                 }
             }
             if (SapModel.FrameObj.GetLoadDistributed("All", ref nameCount, ref names, ref loadcase, ref step, ref Csys, ref dir, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, eItemType.Group) == 0)
             {
                 for (int i = 0; i < nameCount; i++)
                 {
-                    // loads.Add(new UniformLine(
+                    if (loadCase.Name == loadcase[i])
+                    {
+                        loads.Add(new BarUniformlyDistributedLoad(loadCase, fx[i], fy[i], fz[i]));
+                    }
+                }
+            }
+            if (SapModel.AreaObj.GetLoadUniform("All", ref nameCount, ref names, ref loadcase, ref Csys, ref dir, ref fz) == 0)
+            {
+                for (int i = 0; i < nameCount; i++)
+                {
+                    if (loadCase.Name == loadcase[i])
+                    {
+                        loads.Add(new AreaUniformalyDistributedLoad(loadCase, 0, 0, fz[i]));
+                    }
                 }
             }
         }

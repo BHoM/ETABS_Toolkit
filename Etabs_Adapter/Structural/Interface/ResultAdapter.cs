@@ -8,6 +8,7 @@ using BHoM.Base.Results;
 using BHoM.Structural.Results;
 using ETABS2015;
 using Etabs_Adapter.Structural.Results;
+using BHoM.Databases;
 
 namespace Etabs_Adapter.Structural.Interface
 {
@@ -28,6 +29,11 @@ namespace Etabs_Adapter.Structural.Interface
         }
 
         public bool GetBarStresses()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool GetBarStresses(List<string> bars, List<string> cases, int divisions, ResultOrder orderBy, out Dictionary<string, IResultSet> results)
         {
             throw new NotImplementedException();
         }
@@ -86,6 +92,11 @@ namespace Etabs_Adapter.Structural.Interface
         }
 
         public bool GetSlabReinforcement(List<string> panels, List<string> cases, ResultOrder orderBy, out Dictionary<string, IResultSet> results)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool PushToDataBase(IDatabaseAdapter dbAdapter, List<ResultType> resultTypes, List<string> loadcases, string key, bool append = false)
         {
             throw new NotImplementedException();
         }

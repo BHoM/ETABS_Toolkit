@@ -27,7 +27,6 @@ namespace Etabs_Adapter.Structural.Elements
             for (int i = 0; i < panels.Count; i++)
             {
                 Panel panel = panels[i];
-
                 int edgeCount = panel.External_Contours.Count;
                 List<Curve> c = Curve.Join(panel.External_Contours);
                 string currentThickness = "";
