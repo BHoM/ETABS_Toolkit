@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using BHoM.Structural.Elements;
 using BHoM.Structural.Interface;
 using BHoM.Structural.Loads;
-using ETABS2015;
+using ETABS2016;
 using Etabs_Adapter.Structural.Elements;
 using BHoM.Base;
 using Etabs_Adapter.Structural.Loads;
@@ -25,10 +25,15 @@ namespace Etabs_Adapter.Structural.Interface
 
         public EtabsAdapter(string filename = "")
         {
-            string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2015", "ETABS.exe");
-            System.Reflection.Assembly ETABSAssembly = System.Reflection.Assembly.LoadFrom(pathToETABS);
+            string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016","ETABS.exe");
+            //pathToETABS = "C:\\Users\\mhenriks\\AppData\\Roaming\\Grasshopper\\Libraries\\ETABS2016.dll";
+            //System.Reflection.Assembly ETABSAssembly = System.Reflection.Assembly.LoadFrom(pathToETABS);
 
-            object newInstance = ETABSAssembly.CreateInstance("CSI.ETABS.API.ETABSObject");
+            //System.Reflection.Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
+
+            object newInstance = null;// = ETABSAssembly.CreateInstance("CSI.ETABS.API.ETABSObject");
+            newInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
+            int ret;
 
             if (newInstance != null)
             {
@@ -49,9 +54,10 @@ namespace Etabs_Adapter.Structural.Interface
                         }
                     }
                 }
+
                 if (Etabs != null)
                 {
-                    Etabs.ApplicationStart();
+                    //ret = Etabs.ApplicationStart();
 
                     //if (hide)
                     //{
@@ -59,7 +65,7 @@ namespace Etabs_Adapter.Structural.Interface
                     //}
 
                     cSapModel SapModel = Etabs.SapModel;
-                    SapModel.InitializeNewModel(eUnits.N_m_C);
+                    SapModel.InitializeNewModel(eUnits.kN_m_C);
 
                     if (System.IO.File.Exists(filename))
                     {
