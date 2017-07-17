@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using BHoM.Structural.Elements;
 using BHoM.Structural.Interface;
 using BHoM.Structural.Loads;
-using ETABS2015;
+using ETABS2016;
 using Etabs_Adapter.Structural.Elements;
 using BHoM.Base;
 using Etabs_Adapter.Structural.Loads;
 using Etabs_Adapter.Base;
+using System.IO;
 
 namespace Etabs_Adapter.Structural.Interface
 {
@@ -25,58 +26,64 @@ namespace Etabs_Adapter.Structural.Interface
 
         public EtabsAdapter(string filename = "")
         {
-            string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2015", "ETABS.exe");
-            System.Reflection.Assembly ETABSAssembly = System.Reflection.Assembly.LoadFrom(pathToETABS);
+            string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
 
-            object newInstance = ETABSAssembly.CreateInstance("CSI.ETABS.API.ETABSObject");
+            ETABS2016.cHelper helper = new ETABS2016.Helper();
 
-            if (newInstance != null)
+            Etabs = helper.GetObject(pathToETABS);
+
+            if (Etabs == null)
             {
-                Etabs = null;
-                int attempt = 0;
-                while (attempt++ <= 3)
+                object newInstance = helper.CreateObject(pathToETABS);
+
+                if (newInstance != null)
                 {
-                    try
+                    Etabs = null;
+                    int attempt = 0;
+                    while (attempt++ <= 3)
                     {
-                        Etabs = (cOAPI)newInstance;
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (attempt == 3)
-                        {
-                            throw ex;
-                        }
-                    }
-                }
-                if (Etabs != null)
-                {
-                    Etabs.ApplicationStart();
-
-                    //if (hide)
-                    //{
-                    //    Etabs.Hide();
-                    //}
-
-                    cSapModel SapModel = Etabs.SapModel;
-                    SapModel.InitializeNewModel(eUnits.N_m_C);
-
-                    if (System.IO.File.Exists(filename))
-                    {
-                        SapModel.File.OpenFile(filename);
-                        Filename = filename;
-                    }
-                    else
-                    {
-                        SapModel.File.NewBlank();
                         try
                         {
-                            if (!string.IsNullOrEmpty(filename)) SapModel.File.Save(filename);
+                            Etabs = (cOAPI)newInstance;
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            if (attempt == 3)
+                            {
+                                throw ex;
+                            }
+                        }
+                    }
+                    if (Etabs != null)
+                    {
+                        Etabs.ApplicationStart();
+
+                        //if (hide)
+                        //{
+                        //    Etabs.Hide();
+                        //}
+
+                        cSapModel SapModel = Etabs.SapModel;
+                        SapModel.InitializeNewModel(eUnits.N_m_C);
+
+                        if (System.IO.File.Exists(filename))
+                        {
+                            SapModel.File.OpenFile(filename);
                             Filename = filename;
                         }
-                        catch
+                        else
                         {
-                            Filename = "Unknown";
+                            SapModel.File.NewBlank();
+                            try
+                            {
+                                if (!string.IsNullOrEmpty(filename)) SapModel.File.Save(filename);
+                                Filename = filename;
+                            }
+                            catch
+                            {
+                                Filename = "Unknown";
+                            }
                         }
                     }
                 }

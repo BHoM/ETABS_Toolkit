@@ -6,7 +6,7 @@ using BHoM.Structural.Interface;
 using BHoM.Structural.Properties;
 using Etabs_Adapter.Base;
 using Etabs_Adapter.Structural.Properties;
-using ETABS2015;
+using ETABS2016;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -158,8 +158,8 @@ namespace Etabs_Adapter.Structural.Elements
 
                 SectionProperty barProp = null;
                 string material = "";
-                if (!loadedProperties.TryGetValue(property[i], out barProp))
-                {
+                if (!loadedProperties.TryGetValue(property[i], out barProp) && !string.IsNullOrEmpty(property[i]))
+                {               
                     barProp = PropertyIO.GetBarProperty(SapModel, property[i], bar.Line.Direction.IsParallel(Vector.ZAxis(), Math.PI/12), out material);
                     loadedProperties.Add(property[i], barProp);
                     barProp.Material = EtabsUtils.GetMaterial(SapModel, material);

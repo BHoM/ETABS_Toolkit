@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BHoM.Base.Results;
 using BHoM.Structural.Results;
-using ETABS2015;
+using ETABS2016;
 using Etabs_Adapter.Structural.Results;
 using BHoM.Databases;
 
