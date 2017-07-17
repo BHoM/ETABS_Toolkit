@@ -1,7 +1,7 @@
 ﻿using BHoM.Materials;
 using BHoM.Structural.Databases;
 using BHoM.Structural.Properties;
-using ETABS2015;
+using ETABS2016;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,35 +31,61 @@ namespace Etabs_Adapter.Structural.Properties
             material = "";
             ShapeType outType = ShapeType.Angle;
             eMatType matType = eMatType.Steel;
+            SectionProperty property = null;
+            Material bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
+
             switch (type)
             {
                 case eFramePropType.I:
                     SapModel.PropFrame.GetISection(name, ref fileName, ref material, ref t3, ref t2, ref tf, ref tw, ref tb2, ref tfb, ref colour, ref notes, ref guid);
-                    outType = ShapeType.ISection;
+                    bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
+                    if (bhMaterial != null) property = SectionProperty.CreateISection(bhMaterial.Type, t2, tb2, t3, tf, tfb, tw, 0, 0);
                     break;
                 case eFramePropType.Box:
                     SapModel.PropFrame.GetTube(name, ref fileName, ref material, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    outType = ShapeType.Box;
+                    bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
+                    if (bhMaterial != null) property = SectionProperty.CreateBoxSection(bhMaterial.Type, t3, t2, tf, tw, 0, 0);
                     break;
                 case eFramePropType.Circle:
                     SapModel.PropFrame.GetCircle(name, ref fileName, ref material, ref t3, ref colour, ref notes, ref guid);
-                    outType = ShapeType.Circle;
+                    bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
+                    if (bhMaterial != null) property = SectionProperty.CreateCircularSection(bhMaterial.Type, t3);
                     break;
                 case eFramePropType.Pipe:
                     SapModel.PropFrame.GetPipe(name, ref fileName, ref material, ref t3, ref tf, ref colour, ref notes, ref guid);
-                    outType = ShapeType.Tube;
+                    bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
+                    if (bhMaterial != null) property = SectionProperty.CreateTubeSection(bhMaterial.Type, t3, tf);
                     break;
                 case eFramePropType.Rectangular:
                     SapModel.PropFrame.GetRectangle(name, ref fileName, ref material, ref t3, ref t2, ref colour, ref notes, ref guid);
-                    outType = ShapeType.Rectangle;
+                    bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
+                    if (bhMaterial != null) property = SectionProperty.CreateRectangularSection(bhMaterial.Type, t3, t2);
                     break;
                 case eFramePropType.Angle:
                     SapModel.PropFrame.GetAngle(name, ref fileName, ref material, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    outType = ShapeType.Angle;
+                    bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
+                    if (bhMaterial != null) property = SectionProperty.CreateAngleSection(bhMaterial.Type, t3, t2, tf, tw, 0, 0);
                     break;
+                case eFramePropType.Channel:
+                    SapModel.PropFrame.GetChannel(name, ref fileName, ref material, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
+                    bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
+                    if (bhMaterial != null) property = SectionProperty.CreateChannelSection(bhMaterial.Type, t3, t2, tf, tw, 0);
+                    break;
+                default:
+                    SapModel.PropFrame.GetRectangle(name, ref fileName, ref material, ref t3, ref t2, ref colour, ref notes, ref guid);
+                    bhMaterial = Material.Default(MaterialType.Steel);
+                    if (bhMaterial != null) property = SectionProperty.CreateRectangularSection(bhMaterial.Type, Math.Max(t3,0.1), Math.Max(t2, 0.1));
+                    break;
+
             }
-                       
-            return new SteelSection(outType, t3, t2, tw, tf, 0, 0, 0, t2, tb2, tfb);
+            if (property != null)
+            {
+                property.Name = name;
+                property.Material = bhMaterial;
+                if (isColumn) property.Orientation = Math.PI / 2;
+
+            }
+            return property;
         }
 
         public static PanelProperty GetPanelProperty(cSapModel SapModel, string name, out string materialName)
@@ -78,14 +104,20 @@ namespace Etabs_Adapter.Structural.Properties
             switch (type)
             {
                 case 0:
+                case 1:
                     SapModel.PropArea.GetSlab(name, ref sType, ref shType, ref material, ref t2, ref colour, ref notes, ref guid);
                     materialName = material;
-                    return new ConstantThickness(name, t2, PanelType.Slab);
-                case 1:
-                    eWallPropType wType = eWallPropType.AutoSelectList;
-                    SapModel.PropArea.GetWall(name, ref wType, ref shType, ref material, ref t2, ref colour, ref notes, ref guid);
-                    materialName = material;
-                    return new ConstantThickness(name, t2, PanelType.Wall);
+                    if (t2 != 0)
+                    {
+                        return new ConstantThickness(name, t2, PanelType.Slab);
+                    }
+                    else
+                    {
+                        eWallPropType wType = eWallPropType.AutoSelectList;
+                        SapModel.PropArea.GetWall(name, ref wType, ref shType, ref material, ref t2, ref colour, ref notes, ref guid);
+                        materialName = material;
+                        return new ConstantThickness(name, t2, PanelType.Wall);
+                    }
                 default:
                     materialName = "";
                     return null;

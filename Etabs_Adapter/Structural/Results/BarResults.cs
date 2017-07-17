@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BHoM.Base.Results;
 using BHoM.Structural.Results;
-using ETABS2015;
+using ETABS2016;
 
 namespace Etabs_Adapter.Structural.Results
 {

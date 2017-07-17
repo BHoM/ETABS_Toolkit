@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BHoM.Structural.Loads;
-using ETABS2015;
+using ETABS2016;
 using BHoM.Base;
 
 namespace Etabs_Adapter.Structural.Loads

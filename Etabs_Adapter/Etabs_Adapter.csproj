@@ -34,8 +34,9 @@
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\build\BHoM.dll</HintPath>
     </Reference>
-    <Reference Include="ETABS2015">
-      <HintPath>..\..\..\My Received Files\ETABS2015.dll</HintPath>
+    <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\ETABS 2016\ETABS2016.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
