@@ -56,6 +56,7 @@ namespace Etabs_Adapter.Structural.Elements
                 double angleMutliplier = n1.Z < n2.Z ? 1 : n1.Z == n2.Z && n1.X < n2.X ? 1 : n1.Z == n2.Z && n1.X == n2.X && n1.Y < n2.Y ? 1 : -1;
                 double verticalAdjustment = 0;
 
+
                 if (Utils.NearEqual(n1.X, n2.X, 0.0001) && Utils.NearEqual(n1.Y, n2.Y, 0.0001)) // Vertical rotate by 90
                 {
                     verticalAdjustment = 90;
