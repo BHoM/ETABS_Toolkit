@@ -54,8 +54,14 @@ namespace Etabs_Adapter.Structural.Elements
                 ids.Add(name);
                 
                 double angleMutliplier = n1.Z < n2.Z ? 1 : n1.Z == n2.Z && n1.X < n2.X ? 1 : n1.Z == n2.Z && n1.X == n2.X && n1.Y < n2.Y ? 1 : -1;
+                double verticalAdjustment = 0;
 
-                SapModel.FrameObj.SetLocalAxes(name, angleMutliplier * bars[i].OrientationAngle * 180 / Math.PI);
+                if (Utils.NearEqual(n1.X, n2.X, 0.0001) && Utils.NearEqual(n1.Y, n2.Y, 0.0001)) // Vertical rotate by 90
+                {
+                    verticalAdjustment = 90;
+                }
+
+                SapModel.FrameObj.SetLocalAxes(name, angleMutliplier * bars[i].OrientationAngle * 180 / Math.PI + verticalAdjustment);
 
                 if (bar.SectionProperty != null && !addedSections.TryGetValue(bar.SectionProperty.Name, out currentSection))
                 {
