@@ -31,7 +31,7 @@ namespace Etabs_Adapter.Structural.Interface
 
             //System.Reflection.Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
 
-            object newInstance = null;// = ETABSAssembly.CreateInstance("CSI.ETABS.API.ETABSObject");
+            object newInstance = null;//ETABSAssembly.CreateInstance("CSI.ETABS.API.ETABSObject");
             newInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
             int ret;
 
@@ -296,7 +296,7 @@ namespace Etabs_Adapter.Structural.Interface
 
         public bool GetLoads(out List<ILoad> loads, List<Loadcase> ids = null)
         {
-            throw new NotImplementedException();
+            return LoadIO.GetLoads(Etabs, ids, out loads);
         }
 
         public bool Run()
