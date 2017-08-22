@@ -250,7 +250,8 @@ namespace Etabs_Adapter.Structural.Interface
 
         public bool SetRigidLinks(List<RigidLink> rigidLinks, out List<string> ids)
         {
-            throw new NotImplementedException();
+
+            return RigidLinkIO.SetRidgidLinks(Etabs, rigidLinks, out ids);
         }
 
         public bool SetGroups(List<IGroup> groups, out List<string> ids)
@@ -276,6 +277,10 @@ namespace Etabs_Adapter.Structural.Interface
                         else if (obj is Node)
                         {
                             Etabs.SapModel.PointObj.SetGroupAssign(name.ToString(), group.Name);
+                        }
+                        else if(obj is Panel)
+                        {
+                            Etabs.SapModel.AreaObj.SetGroupAssign(name.ToString(), group.Name);
                         }
                     }
 

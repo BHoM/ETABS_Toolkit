@@ -73,6 +73,7 @@
     <Compile Include="Structural\Elements\MeshIO.cs" />
     <Compile Include="Structural\Elements\NodeIO.cs" />
     <Compile Include="Structural\Elements\PanelIO.cs" />
+    <Compile Include="Structural\Elements\RigidLinkIO.cs" />
     <Compile Include="Structural\Interface\ElementAdapter.cs" />
     <Compile Include="Structural\Interface\ResultAdapter.cs" />
     <Compile Include="Structural\Loads\LoadIO.cs" />
