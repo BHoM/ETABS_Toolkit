@@ -103,7 +103,7 @@ namespace Etabs_Adapter.Structural.Loads
             }
         }
 
-        public static void GetLoads(cOAPI Etabs, Loadcase loadCase, out List<ILoad> loads)
+        public static bool GetLoads(cOAPI Etabs, List<Loadcase> bhomLC, out List<ILoad> loads)
         {
             cSapModel SapModel = Etabs.SapModel;
             loads = new List<ILoad>();
@@ -120,37 +120,55 @@ namespace Etabs_Adapter.Structural.Loads
             double[] mx = null;
             double[] my = null;
             double[] mz = null;
+            double[] f = null;
 
-            if (SapModel.PointObj.GetLoadForce("All", ref nameCount, ref names, ref loadcase, ref step, ref Csys, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, eItemType.Group) == 0)
+
+            bool success = false;
+
+            foreach (Loadcase lc in bhomLC)
             {
-                for (int i = 0; i < nameCount; i++)
+                if (SapModel.PointObj.GetLoadForce("All", ref nameCount, ref names, ref loadcase, ref step, ref Csys, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, eItemType.Group) == 0)
                 {
-                    if (loadCase.Name == loadcase[i])
+                    for (int i = 0; i < nameCount; i++)
                     {
-                        loads.Add(new PointForce(loadCase, fx[i], fy[i], fz[i], mx[i], my[i], mz[i]));
+                        if (lc.Name == loadcase[i])
+                        {
+                            loads.Add(new PointForce(lc, fx[i], fy[i], fz[i], mx[i], my[i], mz[i]));
+                        }
                     }
+                    success = true;
+                }
+                if (SapModel.FrameObj.GetLoadDistributed("All", ref nameCount, ref names, ref loadcase, ref step, ref Csys, ref dir, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, eItemType.Group) == 0)
+                {
+                    for (int i = 0; i < nameCount; i++)
+                    {
+                        if (lc.Name == loadcase[i])
+                        {
+                            loads.Add(new BarUniformlyDistributedLoad(lc, fx[i], fy[i], fz[i]));
+                        }
+                    }
+                    success = true;
+                }
+                if (SapModel.AreaObj.GetLoadUniform("All", ref nameCount, ref names, ref loadcase, ref Csys, ref dir, ref f, eItemType.Group) == 0)
+                {
+                    for (int i = 0; i < nameCount; i++)
+                    {
+                        if (lc.Name == loadcase[i])
+                        {
+                            //only sypporting global directions (x=4,y=5,z=6)
+                            //would be preferential to add one load of x,y,z instead of 1 load for each direction as Etabs does
+                                if (dir[i] == 4)
+                                    loads.Add(new AreaUniformalyDistributedLoad(lc,f[i],0,0));
+                                if (dir[i]==5)
+                                    loads.Add(new AreaUniformalyDistributedLoad(lc, 0,f[i], 0));
+                                if (dir[i] == 6)
+                                    loads.Add(new AreaUniformalyDistributedLoad(lc, 0, 0,f[i]));
+                        }
+                    }
+                    success = true;
                 }
             }
-            if (SapModel.FrameObj.GetLoadDistributed("All", ref nameCount, ref names, ref loadcase, ref step, ref Csys, ref dir, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, eItemType.Group) == 0)
-            {
-                for (int i = 0; i < nameCount; i++)
-                {
-                    if (loadCase.Name == loadcase[i])
-                    {
-                        loads.Add(new BarUniformlyDistributedLoad(loadCase, fx[i], fy[i], fz[i]));
-                    }
-                }
-            }
-            if (SapModel.AreaObj.GetLoadUniform("All", ref nameCount, ref names, ref loadcase, ref Csys, ref dir, ref fz) == 0)
-            {
-                for (int i = 0; i < nameCount; i++)
-                {
-                    if (loadCase.Name == loadcase[i])
-                    {
-                        loads.Add(new AreaUniformalyDistributedLoad(loadCase, 0, 0, fz[i]));
-                    }
-                }
-            }
+            return success;
         }
 
 
@@ -202,7 +220,8 @@ namespace Etabs_Adapter.Structural.Loads
                                 double val = direction == 1 ? uA.Pressure.X : direction == 2 ? uA.Pressure.Y : uA.Pressure.Z;
                                 if (val != 0)
                                 {
-                                    ret = SapModel.AreaObj.SetLoadUniform(uA.Objects[j].Name, loads[i].Name, val, direction + 3);
+                                    //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
+                                    ret = SapModel.AreaObj.SetLoadUniform(uA.Objects[j].Name, loads[i].Name, val, direction+3, false);
                                 }
                             }
                         }

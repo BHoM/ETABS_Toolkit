@@ -55,6 +55,7 @@ namespace Etabs_Adapter.Structural.Properties
                     SapModel.PropFrame.GetPipe(name, ref fileName, ref material, ref t3, ref tf, ref colour, ref notes, ref guid);
                     bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
                     if (bhMaterial != null) property = SectionProperty.CreateTubeSection(bhMaterial.Type, t3, tf);
+
                     break;
                 case eFramePropType.Rectangular:
                     SapModel.PropFrame.GetRectangle(name, ref fileName, ref material, ref t3, ref t2, ref colour, ref notes, ref guid);

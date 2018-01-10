@@ -26,9 +26,15 @@ namespace Etabs_Adapter.Structural.Interface
 
         public EtabsAdapter(string filename = "")
         {
-            string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
+            string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016","ETABS.exe");
+            //pathToETABS = "C:\\Users\\mhenriks\\AppData\\Roaming\\Grasshopper\\Libraries\\ETABS2016.dll";
+            //System.Reflection.Assembly ETABSAssembly = System.Reflection.Assembly.LoadFrom(pathToETABS);
 
-            ETABS2016.cHelper helper = new ETABS2016.Helper();
+            //System.Reflection.Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
+
+            object newInstance = null;//ETABSAssembly.CreateInstance("CSI.ETABS.API.ETABSObject");
+            newInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
+            int ret;
 
             Etabs = helper.GetObject(pathToETABS);
 
@@ -55,17 +61,19 @@ namespace Etabs_Adapter.Structural.Interface
                             }
                         }
                     }
-                    if (Etabs != null)
-                    {
-                        Etabs.ApplicationStart();
+                }
+
+                if (Etabs != null)
+                {
+                    //ret = Etabs.ApplicationStart();
 
                         //if (hide)
                         //{
                         //    Etabs.Hide();
                         //}
 
-                        cSapModel SapModel = Etabs.SapModel;
-                        SapModel.InitializeNewModel(eUnits.N_m_C);
+                    cSapModel SapModel = Etabs.SapModel;
+                    SapModel.InitializeNewModel(eUnits.kN_m_C);
 
                         if (System.IO.File.Exists(filename))
                         {
@@ -251,7 +259,8 @@ namespace Etabs_Adapter.Structural.Interface
 
         public bool SetRigidLinks(List<RigidLink> rigidLinks, out List<string> ids)
         {
-            throw new NotImplementedException();
+
+            return RigidLinkIO.SetRidgidLinks(Etabs, rigidLinks, out ids);
         }
 
         public bool SetGroups(List<IGroup> groups, out List<string> ids)
@@ -278,6 +287,14 @@ namespace Etabs_Adapter.Structural.Interface
                         {
                             Etabs.SapModel.PointObj.SetGroupAssign(name.ToString(), group.Name);
                         }
+                        else if(obj is Panel)
+                        {
+                            Etabs.SapModel.AreaObj.SetGroupAssign(name.ToString(), group.Name);
+                        }
+                        else if(obj is RigidLink)
+                        {
+                            Etabs.SapModel.LinkObj.SetGroupAssign(name.ToString(), group.Name);
+                        }
                     }
 
                 }
@@ -297,7 +314,7 @@ namespace Etabs_Adapter.Structural.Interface
 
         public bool GetLoads(out List<ILoad> loads, List<Loadcase> ids = null)
         {
-            throw new NotImplementedException();
+            return LoadIO.GetLoads(Etabs, ids, out loads);
         }
 
         public bool Run()
