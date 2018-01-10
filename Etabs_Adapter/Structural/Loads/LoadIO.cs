@@ -120,6 +120,8 @@ namespace Etabs_Adapter.Structural.Loads
             double[] mx = null;
             double[] my = null;
             double[] mz = null;
+            double[] f = null;
+
 
             bool success = false;
 
@@ -147,13 +149,20 @@ namespace Etabs_Adapter.Structural.Loads
                     }
                     success = true;
                 }
-                if (SapModel.AreaObj.GetLoadUniform("All", ref nameCount, ref names, ref loadcase, ref Csys, ref dir, ref fz) == 0)
+                if (SapModel.AreaObj.GetLoadUniform("All", ref nameCount, ref names, ref loadcase, ref Csys, ref dir, ref f, eItemType.Group) == 0)
                 {
                     for (int i = 0; i < nameCount; i++)
                     {
                         if (lc.Name == loadcase[i])
                         {
-                            loads.Add(new AreaUniformalyDistributedLoad(lc, 0, 0, fz[i]));
+                            //only sypporting global directions (x=4,y=5,z=6)
+                            //would be preferential to add one load of x,y,z instead of 1 load for each direction as Etabs does
+                                if (dir[i] == 4)
+                                    loads.Add(new AreaUniformalyDistributedLoad(lc,f[i],0,0));
+                                if (dir[i]==5)
+                                    loads.Add(new AreaUniformalyDistributedLoad(lc, 0,f[i], 0));
+                                if (dir[i] == 6)
+                                    loads.Add(new AreaUniformalyDistributedLoad(lc, 0, 0,f[i]));
                         }
                     }
                     success = true;

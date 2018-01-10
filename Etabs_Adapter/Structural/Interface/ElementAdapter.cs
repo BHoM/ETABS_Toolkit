@@ -282,6 +282,10 @@ namespace Etabs_Adapter.Structural.Interface
                         {
                             Etabs.SapModel.AreaObj.SetGroupAssign(name.ToString(), group.Name);
                         }
+                        else if(obj is RigidLink)
+                        {
+                            Etabs.SapModel.LinkObj.SetGroupAssign(name.ToString(), group.Name);
+                        }
                     }
 
                 }

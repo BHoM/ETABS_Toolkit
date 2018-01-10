@@ -46,7 +46,7 @@ namespace Etabs_Adapter.Structural.Properties
                     outType = ShapeType.Circle;
                     break;
                 case eFramePropType.Pipe:
-                    SapModel.PropFrame.GetPipe(name, ref fileName, ref material, ref t3, ref tf, ref colour, ref notes, ref guid);
+                    SapModel.PropFrame.GetPipe(name, ref fileName, ref material, ref t2, ref tw, ref colour, ref notes, ref guid);
                     outType = ShapeType.Tube;
                     break;
                 case eFramePropType.Rectangular:
