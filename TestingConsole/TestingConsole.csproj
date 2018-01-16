@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BHoM">
-      <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
+      <HintPath>..\External dlls\BHoM.dll</HintPath>
     </Reference>
     <Reference Include="ETABS2016">
       <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\ETABS 2016\ETABS2016.dll</HintPath>

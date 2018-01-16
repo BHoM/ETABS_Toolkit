@@ -21,12 +21,12 @@ namespace Etabs_Adapter.Structural.Interface
 
         public string Filename
         {
-            get; 
+            get;
         }
 
         public EtabsAdapter(string filename = "")
         {
-            string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016","ETABS.exe");
+            string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
             //pathToETABS = "C:\\Users\\mhenriks\\AppData\\Roaming\\Grasshopper\\Libraries\\ETABS2016.dll";
             //System.Reflection.Assembly ETABSAssembly = System.Reflection.Assembly.LoadFrom(pathToETABS);
 
@@ -36,11 +36,12 @@ namespace Etabs_Adapter.Structural.Interface
             newInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
             int ret;
 
+            cHelper helper = new Helper();
             Etabs = helper.GetObject(pathToETABS);
 
             if (Etabs == null)
             {
-                object newInstance = helper.CreateObject(pathToETABS);
+                //object newInstance = helper.CreateObject(pathToETABS);
 
                 if (newInstance != null)
                 {
@@ -67,36 +68,36 @@ namespace Etabs_Adapter.Structural.Interface
                 {
                     //ret = Etabs.ApplicationStart();
 
-                        //if (hide)
-                        //{
-                        //    Etabs.Hide();
-                        //}
+                    //if (hide)
+                    //{
+                    //    Etabs.Hide();
+                    //}
 
                     cSapModel SapModel = Etabs.SapModel;
                     SapModel.InitializeNewModel(eUnits.kN_m_C);
 
-                        if (System.IO.File.Exists(filename))
+                    if (System.IO.File.Exists(filename))
+                    {
+                        SapModel.File.OpenFile(filename);
+                        Filename = filename;
+                    }
+                    else
+                    {
+                        SapModel.File.NewBlank();
+                        try
                         {
-                            SapModel.File.OpenFile(filename);
+                            if (!string.IsNullOrEmpty(filename)) SapModel.File.Save(filename);
                             Filename = filename;
                         }
-                        else
+                        catch
                         {
-                            SapModel.File.NewBlank();
-                            try
-                            {
-                                if (!string.IsNullOrEmpty(filename)) SapModel.File.Save(filename);
-                                Filename = filename;
-                            }
-                            catch
-                            {
-                                Filename = "Unknown";
-                            }
+                            Filename = "Unknown";
                         }
                     }
                 }
             }
         }
+        //}
 
         public ObjectSelection Selection { get; set; }
 
@@ -137,7 +138,7 @@ namespace Etabs_Adapter.Structural.Interface
 
         public bool SetBars(List<Bar> bars, out List<string> ids)
         {
-           return BarIO.SetBars(Etabs, bars, out ids);
+            return BarIO.SetBars(Etabs, bars, out ids);
         }
 
         public bool SetGrids(List<Grid> grid, out List<string> ids)
@@ -287,11 +288,11 @@ namespace Etabs_Adapter.Structural.Interface
                         {
                             Etabs.SapModel.PointObj.SetGroupAssign(name.ToString(), group.Name);
                         }
-                        else if(obj is Panel)
+                        else if (obj is Panel)
                         {
                             Etabs.SapModel.AreaObj.SetGroupAssign(name.ToString(), group.Name);
                         }
-                        else if(obj is RigidLink)
+                        else if (obj is RigidLink)
                         {
                             Etabs.SapModel.LinkObj.SetGroupAssign(name.ToString(), group.Name);
                         }

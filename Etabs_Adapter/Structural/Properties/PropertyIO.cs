@@ -67,11 +67,11 @@ namespace Etabs_Adapter.Structural.Properties
                     bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
                     if (bhMaterial != null) property = SectionProperty.CreateAngleSection(bhMaterial.Type, t3, t2, tf, tw, 0, 0);
                     break;
-                case eFramePropType.Channel:
-                    SapModel.PropFrame.GetChannel(name, ref fileName, ref material, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
-                    if (bhMaterial != null) property = SectionProperty.CreateChannelSection(bhMaterial.Type, t3, t2, tf, tw, 0);
-                    break;
+                //case eFramePropType.Channel:
+                //    SapModel.PropFrame.GetChannel(name, ref fileName, ref material, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
+                //    bhMaterial = EtabsUtils.GetMaterial(SapModel, material);
+                //    if (bhMaterial != null) property = SectionProperty.CreateChannelSection(bhMaterial.Type, t3, t2, tf, tw, 0);
+                //    break;
                 default:
                     SapModel.PropFrame.GetRectangle(name, ref fileName, ref material, ref t3, ref t2, ref colour, ref notes, ref guid);
                     bhMaterial = Material.Default(MaterialType.Steel);
