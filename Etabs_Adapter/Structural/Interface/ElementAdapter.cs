@@ -74,13 +74,13 @@ namespace Etabs_Adapter.Structural.Interface
                     //}
 
                     cSapModel SapModel = Etabs.SapModel;
-                    SapModel.InitializeNewModel(eUnits.kN_m_C);
+                    SapModel.InitializeNewModel(eUnits.N_m_C);
 
                     if (System.IO.File.Exists(filename))
                     {
                         SapModel.File.OpenFile(filename);
                         Filename = filename;
-                        SapModel.SetPresentUnits(eUnits.kN_m_C);
+                        SapModel.SetPresentUnits(eUnits.N_m_C);
                     }
                     else
                     {
