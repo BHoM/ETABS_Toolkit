@@ -80,6 +80,7 @@ namespace Etabs_Adapter.Structural.Interface
                     {
                         SapModel.File.OpenFile(filename);
                         Filename = filename;
+                        SapModel.SetPresentUnits(eUnits.kN_m_C);
                     }
                     else
                     {
