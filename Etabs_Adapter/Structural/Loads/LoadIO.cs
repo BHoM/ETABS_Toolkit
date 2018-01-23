@@ -221,7 +221,7 @@ namespace Etabs_Adapter.Structural.Loads
                                 if (val != 0)
                                 {
                                     //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
-                                    ret = SapModel.AreaObj.SetLoadUniform(uA.Objects[j].Name, loads[i].Name, val, direction+3, true);
+                                    ret = SapModel.AreaObj.SetLoadUniform(uA.Objects[j].Name, loads[i].Name, val, direction+3, false);
                                 }
                             }
                         }
