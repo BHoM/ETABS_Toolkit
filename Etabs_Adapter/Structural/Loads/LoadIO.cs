@@ -215,15 +215,23 @@ namespace Etabs_Adapter.Structural.Loads
                         AreaUniformalyDistributedLoad uA = loads[i] as AreaUniformalyDistributedLoad;
                         for (int j = 0; j < uA.Objects.Count; j++)
                         {
-                            for (int direction = 1; direction <= 3; direction++)
+                            if (uA.Pressure.Length == uA.Pressure.Z)
                             {
-                                double val = direction == 1 ? uA.Pressure.X : direction == 2 ? uA.Pressure.Y : uA.Pressure.Z;
-                                if (val != 0)
-                                {
-                                    //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
-                                    ret = SapModel.AreaObj.SetLoadUniform(uA.Objects[j].Name, loads[i].Name, val, direction+3, false);
-                                }
+                                double val = -uA.Pressure.Z;
+                                ret = SapModel.AreaObj.SetLoadUniform(uA.Objects[j].Name, loads[i].Name, val, 6, false);
                             }
+                            else
+                            {
+                                for (int direction = 1; direction <= 3; direction++)
+                                {
+                                    double val = direction == 1 ? uA.Pressure.X : direction == 2 ? uA.Pressure.Y : uA.Pressure.Z;
+                                    if (val != 0)
+                                    {
+                                        //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
+                                        ret = SapModel.AreaObj.SetLoadUniform(uA.Objects[j].Name, loads[i].Name, val, direction + 3, false);
+                                    }
+                                }
+                            }                            
                         }
                         break;
                     case LoadType.BarTemperature:
