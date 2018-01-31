@@ -10,7 +10,19 @@ namespace BH.Adapter.ETABS
     {
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
-            throw new NotImplementedException();
+            bool success = true;
+
+            if (typeof(BH.oM.Base.IObject).IsAssignableFrom(typeof(T)))
+            {
+                foreach (T obj in objects)
+                {
+                    // convert and create object
+
+                }
+            }
+            
+            return success;
+
         }
 
     }
