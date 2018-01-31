@@ -59,8 +59,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Convert\FromETABS.cs" />
-    <Compile Include="Convert\ToETABS.cs" />
     <Compile Include="CRUD\Create.cs" />
     <Compile Include="CRUD\Delete.cs" />
     <Compile Include="CRUD\Execute.cs" />
@@ -71,7 +69,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Queries\" />
+    <ProjectReference Include="..\ETABS_Engine\ETABS_Engine.csproj">
+      <Project>{9552d636-d903-4492-944e-0cd392d7bfe3}</Project>
+      <Name>ETABS_Engine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
