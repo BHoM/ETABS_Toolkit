@@ -16,13 +16,15 @@ namespace BH.Adapter.ETABS
             {
                 foreach (T obj in objects)
                 {
-                    // convert and create object
-
+                    obj.ToETABS(model);
                 }
+            }
+            else
+            {
+                success = false;
             }
             
             return success;
-
         }
 
     }
