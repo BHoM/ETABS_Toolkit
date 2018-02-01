@@ -19,7 +19,7 @@ namespace BH.Engine.ETABS
             Convert.ToETABS(obj as dynamic, model);
         }
 
-        public static void ToETABS(this Node bhNode, cSapModel model)
+        public static string ToETABS(this Node bhNode, cSapModel model)
         {
             // Note: 'name' is the only editable text field and might need to be reserved for the Tags
             // 'name' is displayed in the UI as 'unique name' and is editable, 'lable' is also visible but not editable
@@ -56,14 +56,56 @@ namespace BH.Engine.ETABS
             ////it is likely that the tags used needs to be unique to work in etabs - add object id or guid to the tag hashset?
             //model.PointObj.SetGUID(name, bhNode.TaggedName());
 
+            return name;
         }
 
         public static void ToETABS(this Bar bhBar, cSapModel model)
         {
-            // remember to ensure the nodes for the bar are created first!
-            bhBar.StartNode.CustomData[]
+            //get all node ids to chack if bar is using a node that has already been pushed... if this is not handled elsewhere in the BHoMAdapter already
+            int ptCount = 0;
+            string[] ids = null;
+            double[] nX = null;
+            double[] nY = null;
+            double[] nZ = null;
 
-            model.FrameObj.
+            model.PointObj.GetAllPoints(ref ptCount, ref ids, ref nX, ref nY, ref nZ);
+            //the above should be stored in a 'modelInfo' field like in the RFEM adapter
+
+            string ptA;
+            string ptB;
+            string name = bhBar.CustomData[AdapterId].ToString();
+
+            bool startExists = ids.Contains(bhBar.StartNode.CustomData[AdapterId].ToString());
+            bool endExists = ids.Contains(bhBar.EndNode.CustomData[AdapterId].ToString());
+            bool bothExists = endExists == true && startExists == true;
+
+            if(bothExists)
+            {
+                ptA = bhBar.StartNode.CustomData[AdapterId].ToString();
+                ptB = bhBar.EndNode.CustomData[AdapterId].ToString();
+            }
+            else if (startExists)
+            {
+                ptA = bhBar.StartNode.CustomData[AdapterId].ToString();
+                ptB = bhBar.EndNode.ToETABS(model);
+            }
+            else if (endExists)
+            {
+                ptA = bhBar.StartNode.ToETABS(model);
+                ptB = bhBar.EndNode.CustomData[AdapterId].ToString();
+            }
+            else
+            {
+                ptA = bhBar.StartNode.ToETABS(model);
+                ptB = bhBar.EndNode.ToETABS(model);
+
+            }
+
+            model.FrameObj.AddByPoint(ptA, ptB, ref name);
+            //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
+            //model.FrameObj.SetSection();
+            //model.FrameObj.SetReleases();
+            //model.FrameObj.SetGroupAssign();
         }
     }
 }
