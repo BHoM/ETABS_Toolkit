@@ -206,7 +206,7 @@ namespace Etabs_Adapter.Structural.Loads
                                 double val = direction == 1 ? uL.ForceVector.X : direction == 2 ? uL.ForceVector.Y : uL.ForceVector.Z;
                                 if (val != 0)
                                 {
-                                    ret = SapModel.FrameObj.SetLoadDistributed(uL.Objects[j].Name, loads[i].Name, 1, direction + 3, 0, 1, val, val);
+                                    ret = SapModel.FrameObj.SetLoadDistributed(uL.Objects[j].Name, loads[i].Name, 1, direction + 3, 0, 1, val, val, "Global", true, false);
                                 }
                             }
                         }
