@@ -21,7 +21,7 @@ namespace Etabs_Adapter.Structural.Elements
         {
             cSapModel SapModel = Etabs.SapModel;
             ids = new List<string>();
-            string currentSection = "";
+            string currentSection = null;
             Dictionary<string, string> addedSections = new Dictionary<string, string>();
             Dictionary<string, string> addedSprings = new Dictionary<string, string>();
             Dictionary<Guid, Node> addedNodes = new Dictionary<Guid, Node>();
