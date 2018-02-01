@@ -20,6 +20,7 @@ namespace BH.Adapter.ETABS
 
         public ETABSAdapter(string filePath = "")
         {
+            AdapterId = ID;
 
             string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
 
