@@ -18,7 +18,6 @@ namespace BH.Adapter.ETABS
                 foreach (T obj in objects)
                 {
                     obj.ToETABS(model);
-                   //Convert.ToETABS(model);
                 }
             }
             else

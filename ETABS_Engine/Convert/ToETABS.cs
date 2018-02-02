@@ -73,12 +73,8 @@ namespace BH.Engine.ETABS
         public static void ToETABS(this Bar bhBar, cSapModel model)
         {
             string name = bhBar.CustomData[AdapterId].ToString();
-            //Note: there are 2 ways of adding Bars 
-            //(A) add using existing points - this will fail if the endnodes have not been pushed and assigned valid AdapterId as CustomData
-            //(B) add using coordinates - could this potentially add duplicate nodes? it is unclear how ETABS handles duplicate/coincident nodes internally
-
-            #region bar using method (A)
             //get all node ids to chack if bar is using a node that has already been pushed... if this is not handled elsewhere in the BHoMAdapter already
+
             int ptCount = 0;
             string[] ids = null;
             double[] nX = null;
@@ -120,13 +116,6 @@ namespace BH.Engine.ETABS
             }
 
             model.FrameObj.AddByPoint(ptA, ptB, ref name);
-            #endregion
-
-            #region Bar using method (B)
-
-
-            //model.FrameObj.AddByCoord()
-            #endregion
 
             //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
             //model.FrameObj.SetSection();
