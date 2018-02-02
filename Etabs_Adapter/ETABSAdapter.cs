@@ -31,7 +31,7 @@ namespace BH.Adapter.ETABS
             cHelper helper = new Helper();
 
             app = helper.GetObject(pathToETABS);//<--get running instance (standard for adapters) else use ' helper.CreateObject(pathToETABS)' to start a new instance
-
+            model = app.SapModel;
             
         }
 
