@@ -45,7 +45,6 @@ namespace BH.Adapter.ETABS
                 else
                     model.File.NewBlank();
             }
-
         }
 
     }
