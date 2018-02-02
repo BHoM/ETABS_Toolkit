@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.Engine.ETABS;
 
 namespace BH.Adapter.ETABS
 {
@@ -17,6 +18,7 @@ namespace BH.Adapter.ETABS
                 foreach (T obj in objects)
                 {
                     obj.ToETABS(model);
+                   //Convert.ToETABS(model);
                 }
             }
             else
