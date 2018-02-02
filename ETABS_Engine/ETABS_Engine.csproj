@@ -7,7 +7,7 @@
     <ProjectGuid>{9552D636-D903-4492-944E-0CD392D7BFE3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ETABS_Engine</RootNamespace>
+    <RootNamespace>BH.Engine.ETABS</RootNamespace>
     <AssemblyName>ETABS_Engine</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

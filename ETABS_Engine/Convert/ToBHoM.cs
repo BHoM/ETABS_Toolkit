@@ -9,17 +9,18 @@ using BH.oM.Structural;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
 
-namespace BH.Adapter.ETABS
+namespace BH.Engine.ETABS
 {
     public static partial class Convert
     {
         public static Node ToBHoM(this cPointObj point)
         {
+            
             string name = "noPoint"; //wtf? there looks to be no way fo getting the coordinates withouot the name/id of the node!!!
             double x = 0;
             double y = 0;
             double z = 0;
-            point.GetCoordCartesian(name, ref x, ref, y, ref z);
+            point.GetCoordCartesian(name, ref x, ref y, ref z);
 
             Node bhNode = new Node();
             bhNode.Name = name;
@@ -31,10 +32,10 @@ namespace BH.Adapter.ETABS
         }
          
 
-        public static Bar ToBHoM(this cFrameObj bar)
-        {
+        //public static Bar ToBHoM(this cFrameObj bar)
+        //{
 
 
-        }
+        //}
     }
 }

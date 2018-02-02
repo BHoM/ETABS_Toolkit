@@ -24,6 +24,8 @@ namespace ETABS_Test
 
         private static void TestPushBars(ETABSAdapter app)
         {
+            Console.WriteLine("Testing Push Bars ...");
+
             Point p1 = new Point { X = 0, Y = 0, Z = 0 };
             Point p2 = new Point { X = 1, Y = 0, Z = 0 };
             Point p3 = new Point { X = 1, Y = 1, Z = 0 };
@@ -159,6 +161,8 @@ namespace ETABS_Test
             app.Push(bars2a, "Bars2");
             app.Push(bars2b, "Bars2");
 
+            Console.WriteLine("All Bars Pushed !");
+            Console.ReadLine();
         }
 
         private static void TestPullBars(ETABSAdapter app)
