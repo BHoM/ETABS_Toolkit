@@ -23,22 +23,29 @@ namespace BH.Adapter.ETABS
             AdapterId = ID;
 
             string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
-
-            object newInstance = null;
-            newInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
-            int ret;
-
             cHelper helper = new Helper();
 
-            app = helper.GetObject(pathToETABS);//<--get running instance (standard for adapters) else use ' helper.CreateObject(pathToETABS)' to start a new instance
-            if (app == null)
+            object runningInstance = null;
+            runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
+            if (runningInstance != null)
             {
-                app = (cOAPI)newInstance;
+                app = (cOAPI)runningInstance;
+                model = app.SapModel;
+                if (System.IO.File.Exists(filePath))
+                    model.File.OpenFile(filePath);
+            }
+            else
+            {
+                //open ETABS if not running - NOTE: this behaviour is different from other adapters
+                app = helper.CreateObject(pathToETABS);
+                model = app.SapModel;
+                model.InitializeNewModel(eUnits.kN_m_C);
+                if (System.IO.File.Exists(filePath))
+                    model.File.OpenFile(filePath);
+                else
+                    model.File.NewBlank();
             }
 
-            model = app.SapModel;
-            //model.InitializeNewModel(eUnits.kN_m_C);
-            
         }
 
     }
