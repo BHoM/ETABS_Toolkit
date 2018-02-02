@@ -25,7 +25,8 @@ namespace BH.Adapter.ETABS
             {
                 success = false;
             }
-            
+
+            model.View.RefreshView();
             return success;
         }
 

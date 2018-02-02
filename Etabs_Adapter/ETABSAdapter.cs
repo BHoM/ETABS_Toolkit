@@ -31,7 +31,13 @@ namespace BH.Adapter.ETABS
             cHelper helper = new Helper();
 
             app = helper.GetObject(pathToETABS);//<--get running instance (standard for adapters) else use ' helper.CreateObject(pathToETABS)' to start a new instance
+            if (app == null)
+            {
+                app = (cOAPI)newInstance;
+            }
+
             model = app.SapModel;
+            //model.InitializeNewModel(eUnits.kN_m_C);
             
         }
 
