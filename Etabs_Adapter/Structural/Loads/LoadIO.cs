@@ -201,12 +201,12 @@ namespace Etabs_Adapter.Structural.Loads
                         BarUniformlyDistributedLoad uL = loads[i] as BarUniformlyDistributedLoad;
                         for (int j = 0; j < uL.Objects.Count; j++)
                         {
-                            for (int direction = 1; direction <= 3; direction++)
+                            for (int direction = 4; direction <= 6; direction++)
                             {
-                                double val = direction == 1 ? uL.ForceVector.X : direction == 2 ? uL.ForceVector.Y : uL.ForceVector.Z;
+                                double val = direction == 4 ? uL.ForceVector.X : direction == 5 ? uL.ForceVector.Y : -uL.ForceVector.Z; //global Z axis not available, uses gravity (-Z) instead.
                                 if (val != 0)
                                 {
-                                    ret = SapModel.FrameObj.SetLoadDistributed(uL.Objects[j].Name, loads[i].Name, 1, direction + 3, 0, 1, val, val, "Global", true, false);
+                                    ret = SapModel.FrameObj.SetLoadDistributed(uL.Objects[j].Name, loads[i].Name, 1, direction, 0, 1, val, val, "Global", true, false);
                                 }
                             }
                         }
