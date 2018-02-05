@@ -77,7 +77,27 @@ namespace Etabs_Adapter.Structural.Elements
                     bool[] jj = bar.Release.EndConstraint.Freedom();
                     double[] startVals = bar.Release.StartConstraint.ElasticValues();
                     double[] endVals = bar.Release.EndConstraint.ElasticValues();
+
+                    startVals[0] = (bar.Release.StartConstraint.UX == DOFType.Fixed) ? 1 : (bar.Release.StartConstraint.UX == DOFType.Free) ? 0 : startVals[0];
+                    startVals[1] = (bar.Release.StartConstraint.UY == DOFType.Fixed) ? 1 : (bar.Release.StartConstraint.UY == DOFType.Free) ? 0 : startVals[1];
+                    startVals[2] = (bar.Release.StartConstraint.UZ == DOFType.Fixed) ? 1 : (bar.Release.StartConstraint.UZ == DOFType.Free) ? 0 : startVals[2];
+                    startVals[3] = (bar.Release.StartConstraint.RX == DOFType.Fixed) ? 1 : (bar.Release.StartConstraint.RX == DOFType.Free) ? 0 : startVals[3];
+                    startVals[4] = (bar.Release.StartConstraint.RY == DOFType.Fixed) ? 1 : (bar.Release.StartConstraint.RY == DOFType.Free) ? 0 : startVals[4];
+                    startVals[5] = (bar.Release.StartConstraint.RZ == DOFType.Fixed) ? 1 : (bar.Release.StartConstraint.RZ == DOFType.Free) ? 0 : startVals[5];
+
+                    endVals[0] = (bar.Release.EndConstraint.UX == DOFType.Fixed) ? 1 : (bar.Release.EndConstraint.UX == DOFType.Free) ? 0 : endVals[0];
+                    endVals[1] = (bar.Release.EndConstraint.UY == DOFType.Fixed) ? 1 : (bar.Release.EndConstraint.UY == DOFType.Free) ? 0 : endVals[1];
+                    endVals[2] = (bar.Release.EndConstraint.UZ == DOFType.Fixed) ? 1 : (bar.Release.EndConstraint.UZ == DOFType.Free) ? 0 : endVals[2];
+                    endVals[3] = (bar.Release.EndConstraint.RX == DOFType.Fixed) ? 1 : (bar.Release.EndConstraint.RX == DOFType.Free) ? 0 : endVals[3];
+                    endVals[4] = (bar.Release.EndConstraint.RY == DOFType.Fixed) ? 1 : (bar.Release.EndConstraint.RY == DOFType.Free) ? 0 : endVals[4];
+                    endVals[5] = (bar.Release.EndConstraint.RZ == DOFType.Fixed) ? 1 : (bar.Release.EndConstraint.RZ == DOFType.Free) ? 0 : endVals[5];
+                    
                     SapModel.FrameObj.SetReleases(name, ref ii, ref jj, ref startVals, ref endVals);
+                }
+
+                if (bar.Offset != null)
+                {
+                    //get something going in here.
                 }
             }
             return true;
