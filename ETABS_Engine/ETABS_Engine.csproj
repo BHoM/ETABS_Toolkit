@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{72B625AE-519D-4E71-8E91-74146518C5C2}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{9552D636-D903-4492-944E-0CD392D7BFE3}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ETABS_Test</RootNamespace>
-    <AssemblyName>ETABS_Test</AssemblyName>
+    <RootNamespace>BH.Engine.ETABS</RootNamespace>
+    <AssemblyName>ETABS_Engine</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -36,17 +33,11 @@
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
     </Reference>
-    <Reference Include="BHoM_Adapter">
-      <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>
+    <Reference Include="ETABS2016">
+      <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\ETABS 2016\ETABS2016.dll</HintPath>
     </Reference>
-    <Reference Include="BHoM_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\BHoM_Engine.dll</HintPath>
-    </Reference>
-    <Reference Include="Common_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Common_Engine.dll</HintPath>
-    </Reference>
-    <Reference Include="Structure_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Structure_Engine.dll</HintPath>
+    <Reference Include="Serialiser_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Serialiser_Engine.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,17 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="AdapterId.cs" />
+    <Compile Include="Convert\ToBHoM.cs" />
+    <Compile Include="Convert\ToETABS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Etabs_Adapter\Etabs_Adapter.csproj">
-      <Project>{895e2ab0-e349-4c1a-9098-51a46cd3a955}</Project>
-      <Name>Etabs_Adapter</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
