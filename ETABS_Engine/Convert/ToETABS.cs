@@ -80,7 +80,7 @@ namespace BH.Engine.ETABS
             double[] nX = null;
             double[] nY = null;
             double[] nZ = null;
-
+            
             model.PointObj.GetAllPoints(ref ptCount, ref ids, ref nX, ref nY, ref nZ);
             //the above should be stored in a 'modelInfo' field like in the RFEM adapter
 
