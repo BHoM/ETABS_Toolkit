@@ -31,24 +31,31 @@ namespace BH.Adapter.ETABS
         {
             int lastId;
             string typeString = objectType.ToString();
+            int nameCount =0;
+            string[] names = { };
 
             switch (typeString)
             {
                 case "Node":
-                    lastId = model.PointObj.Count();// this is not sufficient !!!!
+                    model.PointObj.GetNameList(ref nameCount, ref names);
+                    lastId = Array.ConvertAll(names, int.Parse).Max();
                     break;
                 case "Bar":
-                    lastId = model.FrameObj.Count();
+                    model.FrameObj.GetNameList(ref nameCount, ref names);
+                    lastId = Array.ConvertAll(names, int.Parse).Max();
                     break;
                 case "Material":
-                    lastId = 0;
+                    model.PropMaterial.GetNameList(ref nameCount, ref names);
+                    lastId = Array.ConvertAll(names, int.Parse).Max();
                     break;
                 case "SectionProperty":
-                    lastId = 0;
+                    model.PropFrame.GetNameList(ref nameCount, ref names);
+                    lastId = Array.ConvertAll(names, int.Parse).Max();
                     break;
 
                 default:
-                    lastId = 0;//<---- log error
+                    lastId = 0;
+                    ErrorLog.Add("Could not get count of type: " + typeString);
                     break;
             }
 
