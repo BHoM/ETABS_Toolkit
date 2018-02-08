@@ -67,6 +67,23 @@ namespace BH.Engine.ETABS
 
         }
 
+        private static void SetMaterial(cSapModel model, Material material)
+        {
+            eMatType matType = eMatType.NoDesign;
+            int colour = 0;
+            string guid = "";
+            string notes = "";
+            string name = "";
+            if (model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
+            {
+                model.PropMaterial.AddMaterial(ref name, GetMaterialType(material.Type), "", "", "");
+                model.PropMaterial.ChangeName(name, material.Name);
+                model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulus, material.PoissonsRatio, material.CoeffThermalExpansion);
+                model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
+            }
+
+        }
+
         private static MaterialType GetMaterialType(eMatType materialType)
         {
             switch (materialType)
