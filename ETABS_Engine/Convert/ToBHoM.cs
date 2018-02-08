@@ -49,30 +49,41 @@ namespace BH.Engine.ETABS
             bhNode.Position = new oM.Geometry.Point() { X = x, Y = y, Z = z };
             bhNode.CustomData.Add(AdapterId, id);
 
-            restraint[0] = bhNode.Constraint.TranslationX == DOFType.Fixed;
-            restraint[1] = bhNode.Constraint.TranslationY == DOFType.Fixed;
-            restraint[2] = bhNode.Constraint.TranslationZ == DOFType.Fixed;
-            restraint[3] = bhNode.Constraint.RotationX == DOFType.Fixed;
-            restraint[4] = bhNode.Constraint.RotationY == DOFType.Fixed;
-            restraint[5] = bhNode.Constraint.RotationZ == DOFType.Fixed;
             pointObj.GetRestraint(id, ref restraint);
-
-            spring[0] = bhNode.Constraint.TranslationalStiffnessX;
-            spring[1] = bhNode.Constraint.TranslationalStiffnessY;
-            spring[2] = bhNode.Constraint.TranslationalStiffnessZ;
-            spring[3] = bhNode.Constraint.RotationalStiffnessX;
-            spring[4] = bhNode.Constraint.RotationalStiffnessY;
-            spring[5] = bhNode.Constraint.RotationalStiffnessZ;
             pointObj.SetSpring(id, ref spring);
+            bhNode.Constraint = GetConstraint6DOF(restraint, spring);
 
             return bhNode;
         }
 
 
-        //public static Bar ToBHoM(this cFrameObj bar)
-        //{
+        public static Bar ToBHoM(this cFrameObj barObj, string id, cSapModel model)
+        {
+            Bar bhBar = new Bar();
+            bhBar.CustomData.Add(AdapterId, id);
+            string startId="";
+            string endId="";
+            barObj.GetPoints(id, ref startId, ref endId);
 
+            //this method can only be called as 'model.frameObj.ToBHoM' 
+            //still 'model' needs to be passed as argument as well in order to get the nodes at bar ends
+            //this seems a bit convoluted way to keep to the convention of .ToBHoM extension methods !!!
 
-        //}
+            bhBar.StartNode = model.PointObj.ToBHoM(startId);
+            bhBar.EndNode = model.PointObj.ToBHoM(endId);
+
+            bool[] restraintStart = new bool[6];
+            double[] springStart = new double[6];
+            bool[] restraintEnd = new bool[6];
+            double[] springEnd = new double[6];
+
+            barObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
+            bhBar.Release.StartRelease = GetConstraint6DOF(restraintStart, springStart);
+            bhBar.Release.EndRelease = GetConstraint6DOF(restraintEnd, springEnd);
+
+            //something something section property !!
+
+            return bhBar;
+        }
     }
 }
