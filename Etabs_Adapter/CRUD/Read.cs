@@ -18,7 +18,7 @@ namespace BH.Adapter.ETABS
             if (type == typeof(Node))
                 return ReadNodes(ids as dynamic);
             else if (type == typeof(Bar))
-                return new List<Bar>(ids as dynamic);
+                return ReadBars(ids as dynamic);
 
             return null;//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
@@ -30,6 +30,25 @@ namespace BH.Adapter.ETABS
             nodeList = model.PointObj.ToBHoM(ids);
 
             return nodeList;
+        }
+
+        private List<Bar> ReadBars(List<string> ids = null)
+        {
+            List<Bar> barList = new List<Bar>();
+            int nameCount = 0;
+            string[] names = { };
+
+            if (ids == null)
+            {
+                model.FrameObj.GetNameList(ref nameCount, ref names);
+                ids = names.ToList();
+            }
+
+            foreach (string id in ids)
+            {
+                barList.Add(model.FrameObj.ToBHoM(id, model));
+            }
+            return barList;
         }
 
     }
