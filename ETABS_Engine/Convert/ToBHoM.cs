@@ -78,10 +78,14 @@ namespace BH.Engine.ETABS
             double[] springEnd = new double[6];
 
             barObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
+            bhBar.Release = new BarRelease();
             bhBar.Release.StartRelease = GetConstraint6DOF(restraintStart, springStart);
             bhBar.Release.EndRelease = GetConstraint6DOF(restraintEnd, springEnd);
 
             //something something section property !!
+            string propName = "";
+            string sAuto = "";
+            barObj.GetSection(id, ref propName, ref sAuto);
 
             return bhBar;
         }

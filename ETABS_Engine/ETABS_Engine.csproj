@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="AdapterId.cs" />
     <Compile Include="Convert\PrivateHelpers\Constraint.cs" />
+    <Compile Include="Convert\PrivateHelpers\Material.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToETABS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
