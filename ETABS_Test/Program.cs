@@ -9,7 +9,7 @@ using BH.oM.Structural.Properties;
 using BH.oM.Structural.Elements;
 using BH.oM.Geometry;
 using BH.Engine.Structure;
-
+using BH.oM.Queries;
 
 namespace ETABS_Test
 {
@@ -20,6 +20,8 @@ namespace ETABS_Test
             ETABSAdapter app = new ETABSAdapter();
 
             TestPushBars(app);
+            TestPullBars(app);
+
         }
 
         private static void TestPushBars(ETABSAdapter app)
@@ -167,6 +169,30 @@ namespace ETABS_Test
 
         private static void TestPullBars(ETABSAdapter app)
         {
+            Console.WriteLine("Test Pull Bars");
+            FilterQuery nodeQuery = new FilterQuery(typeof(Node));
+            FilterQuery barQuery = new FilterQuery(typeof(Bar));
+
+            IEnumerable<object> barObjects = app.Pull(barQuery);
+
+            int count = 0;
+            foreach (object bObject in barObjects)
+            {
+                Bar bar = bObject as Bar;
+                string barId = bar.CustomData[ETABSAdapter.ID].ToString();
+                string startNodeId = bar.StartNode.CustomData[ETABSAdapter.ID].ToString();
+                string endNodeId = bar.EndNode.CustomData[ETABSAdapter.ID].ToString();
+                string startPoint = bar.StartNode.Position.X.ToString() + "," + bar.StartNode.Position.Y.ToString() + "," + bar.StartNode.Position.Z.ToString();
+                string endPoint = bar.EndNode.Position.X.ToString() + "," + bar.EndNode.Position.Y.ToString() + "," + bar.EndNode.Position.Z.ToString();
+
+                string barInfo = "Bar with ID: " + barId + " -Connecting Nodes " + startNodeId + " at " + startPoint + " and " + endNodeId + " at " + endPoint + "/n";
+                string barTags = string.Join("_/_", bar.Tags.ToArray());
+                Console.WriteLine(barInfo + barTags);
+            }
+
+            Console.WriteLine("Pulled all bars");
+            Console.WriteLine("... press enter to exit");
+            Console.ReadLine();
 
         }
     }
