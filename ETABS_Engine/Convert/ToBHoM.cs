@@ -30,6 +30,9 @@ namespace BH.Engine.ETABS
 
             double x, y, z;
             x = y = z = 0;
+            bool[] restraint = new bool[6];
+            double[] spring = new double[6];
+
 
             foreach (string id in ids)
             {
@@ -38,7 +41,23 @@ namespace BH.Engine.ETABS
                 bhNode.Position = new oM.Geometry.Point() { X = x, Y = y, Z = z };
                 bhNode.CustomData.Add(AdapterId, id);
 
-                //add constraints etsc. ...
+                restraint[0] = bhNode.Constraint.TranslationX == DOFType.Fixed;
+                restraint[1] = bhNode.Constraint.TranslationY == DOFType.Fixed;
+                restraint[2] = bhNode.Constraint.TranslationZ == DOFType.Fixed;
+                restraint[3] = bhNode.Constraint.RotationX == DOFType.Fixed;
+                restraint[4] = bhNode.Constraint.RotationY == DOFType.Fixed;
+                restraint[5] = bhNode.Constraint.RotationZ == DOFType.Fixed;
+                pointObj.GetRestraint(id, ref restraint);
+
+
+                spring[0] = bhNode.Constraint.TranslationalStiffnessX;
+                spring[1] = bhNode.Constraint.TranslationalStiffnessY;
+                spring[2] = bhNode.Constraint.TranslationalStiffnessZ;
+                spring[3] = bhNode.Constraint.RotationalStiffnessX;
+                spring[4] = bhNode.Constraint.RotationalStiffnessY;
+                spring[5] = bhNode.Constraint.RotationalStiffnessZ;
+                pointObj.SetSpring(id, ref spring);
+
 
 
                 bhNodes.Add(bhNode);
