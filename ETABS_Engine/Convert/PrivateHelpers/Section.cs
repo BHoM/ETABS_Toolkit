@@ -18,9 +18,6 @@ namespace BH.Engine.ETABS
             switch (propertyType)
             {
                 case eFramePropType.I:
-                    
-                    BH.oM.Structural.Properties.ShapeType.ISection
-
                 case eFramePropType.Channel:
                     break;
                 case eFramePropType.T:
@@ -104,6 +101,8 @@ namespace BH.Engine.ETABS
             }
 
             sectionProperty.Material = GetMaterial(model, materialName);
+
+            return sectionProperty;
         }
 
     }
