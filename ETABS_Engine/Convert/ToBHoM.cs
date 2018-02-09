@@ -82,12 +82,17 @@ namespace BH.Engine.ETABS
             bhBar.Release.StartRelease = GetConstraint6DOF(restraintStart, springStart);
             bhBar.Release.EndRelease = GetConstraint6DOF(restraintEnd, springEnd);
 
-            //something something section property !!
-            string propName = "";
-            string sAuto = "";
-            barObj.GetSection(id, ref propName, ref sAuto);
+            
+            ////something something section property !!
+            //eFramePropType propertyType = eFramePropType.General;
+            //string propertyName = "";
+            //string sAuto = "";
+            //barObj.GetSection(id, ref propertyName, ref sAuto);
+            //model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
+            //bhBar.SectionProperty = GetSectionProperty(model, propertyName, propertyType);
 
             return bhBar;
         }
+
     }
 }
