@@ -143,5 +143,92 @@ namespace BH.Engine.ETABS
             return bhSectionProperty;
         }
 
+        private static void SetSectionProperty(cSapModel model, ISectionProperty bhSection)
+        {
+
+            string materialName = "";
+
+            if(bhSection.Material == null)
+            {
+                //assign some default and/or throw error
+            }
+            else
+            {
+                SetMaterial(model, bhSection.Material);
+            }
+
+            SetSpecificSection(bhSection as dynamic, model);
+
+            switch (sectionDimensions.Shape)
+            {
+                case ShapeType.Rectangle:
+                    break;
+                case ShapeType.Box:
+                    break;
+                case ShapeType.Angle:
+                    break;
+                case ShapeType.ISection:
+                    break;
+                case ShapeType.Tee:
+                    break;
+                case ShapeType.Channel:
+                    break;
+                case ShapeType.Tube:
+                    break;
+                case ShapeType.Circle:
+                    break;
+                case ShapeType.Zed:
+                    break;
+                case ShapeType.Polygon:
+                    break;
+                case ShapeType.DoubleAngle:
+                    break;
+                case ShapeType.DoubleISection:
+                    break;
+                case ShapeType.DoubleChannel:
+                    break;
+                case ShapeType.Cable:
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+        private static void SetSpecificSection(SteelSection section, cSapModel model)
+        {
+            //needs ISectionDimentions
+            SetSectionDimensions(section.SectionDimensions, model);
+        }
+
+        private static void SetSpecificSection(CableSection section, cSapModel model)
+        {
+            //no ISectionDimentions
+            throw new NotImplementedException();
+        }
+
+        private static void SetSpecificSection(CompositeSection section, cSapModel model)
+        {
+            //contains SteelSection and ConcreteScetion
+            throw new NotImplementedException();
+        }
+
+        private static void SetSpecificSection(ConcreteSection section, cSapModel model)
+        {
+            //needs ISectionDimentions
+
+            throw new NotImplementedException();
+        }
+
+        private static void SetSpecificSection(ExplicitSection section, cSapModel model)
+        {
+            //no ISectionDimentions
+
+            throw new NotImplementedException();
+        }
+
+
+
+
     }
 }
