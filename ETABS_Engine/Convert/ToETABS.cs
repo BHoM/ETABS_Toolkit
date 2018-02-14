@@ -82,7 +82,7 @@ namespace BH.Engine.ETABS
             double[] nZ = null;
             
             model.PointObj.GetAllPoints(ref ptCount, ref ids, ref nX, ref nY, ref nZ);
-            //the above should be stored in a 'modelInfo' field like in the RFEM adapter
+            //should the above be stored in a 'modelInfo' field like in the RFEM adapter ?
 
             string ptA;
             string ptB;
@@ -114,7 +114,7 @@ namespace BH.Engine.ETABS
                 ptA = bhBar.StartNode.ToETABS(model);
                 ptB = bhBar.EndNode.ToETABS(model);
             }
-
+            
             model.FrameObj.AddByPoint(ptA, ptB, ref name);
 
             //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
