@@ -29,11 +29,14 @@ namespace BH.Engine.ETABS
             string guid = "";
 
 
+            // -- - -  - - at some point do bhSectionProperty = new SteelSection(); or what ever it is ...
+
+
             switch (propertyType)
             {
                 case eFramePropType.I:
                     model.PropFrame.GetISection(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref t2b, ref tfb, ref colour, ref notes, ref guid);
-                    if (false)//TODO: check if standard or fabricated
+                    if (t2==t2b)//TODO: check if standard or fabricated
                         dimensions = new StandardISectionDimensions(t3, t2, tw, tf, 0, 0);
                     else
                         dimensions = new FabricatedISectionDimensions(t3, t2, t2b, tw, tf, tfb, 0);
@@ -139,6 +142,7 @@ namespace BH.Engine.ETABS
 
 
             bhSectionProperty.Material = GetMaterial(model, materialName);
+            bhSectionProperty.Name = propertyName;
 
             return bhSectionProperty;
         }
@@ -159,46 +163,13 @@ namespace BH.Engine.ETABS
 
             SetSpecificSection(bhSection as dynamic, model);
 
-            switch (sectionDimensions.Shape)
-            {
-                case ShapeType.Rectangle:
-                    break;
-                case ShapeType.Box:
-                    break;
-                case ShapeType.Angle:
-                    break;
-                case ShapeType.ISection:
-                    break;
-                case ShapeType.Tee:
-                    break;
-                case ShapeType.Channel:
-                    break;
-                case ShapeType.Tube:
-                    break;
-                case ShapeType.Circle:
-                    break;
-                case ShapeType.Zed:
-                    break;
-                case ShapeType.Polygon:
-                    break;
-                case ShapeType.DoubleAngle:
-                    break;
-                case ShapeType.DoubleISection:
-                    break;
-                case ShapeType.DoubleChannel:
-                    break;
-                case ShapeType.Cable:
-                    break;
-                default:
-                    break;
-            }
 
         }
 
         private static void SetSpecificSection(SteelSection section, cSapModel model)
         {
             //needs ISectionDimentions
-            SetSectionDimensions(section.SectionDimensions, model);
+            SetSectionDimensions(section.SectionDimensions, section.Name, section.Material.Name, model);
         }
 
         private static void SetSpecificSection(CableSection section, cSapModel model)
@@ -227,8 +198,56 @@ namespace BH.Engine.ETABS
             throw new NotImplementedException();
         }
 
+        #region section dimensions
 
+        private static void SetSectionDimensions(ISectionDimensions sectionDimensions, string sectionName, string materialName, cSapModel model)
+        {
+            SetSpecificDimensions(sectionDimensions as dynamic, sectionName, materialName, model);
+        }
 
+        private static void SetSpecificDimensions(StandardBoxDimensions dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            model.PropFrame.SetTube(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.Thickness, dimensions.Thickness);
+        }
+
+        private static void SetSpecificDimensions(FabricatedBoxDimensions dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            if (dimensions.TopFlangeThickness != dimensions.BotFlangeThickness)
+                throw new NotImplementedException("different thickness of top and bottom flange is not supported in ETABS");
+            model.PropFrame.SetTube(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.TopFlangeThickness, dimensions.WebThickness);
+        }
+
+        private static void SetSpecificDimensions(StandardISectionDimensions dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            model.PropFrame.SetISection(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.Width, dimensions.FlangeThickness);
+        }
+
+        private static void SetSpecificDimensions(FabricatedISectionDimensions dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            model.PropFrame.SetISection(sectionName, materialName, dimensions.Height, dimensions.TopFlangeWidth, dimensions.TopFlangeThickness, dimensions.WebThickness, dimensions.BotFlangeWidth, dimensions.BotFlangeThickness);
+        }
+
+        private static void SetSpecificDimensions(StandardChannelSectionDimensions dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            model.PropFrame.SetChannel(sectionName, materialName, dimensions.Height, dimensions.FlangeWidth, dimensions.FlangeThickness, dimensions.WebThickness);
+        }
+
+        private static void SetSpecificDimensions(StandardAngleSectionDimensions dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            model.PropFrame.SetAngle(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness);
+        }
+
+        private static void SetSpecificDimensions(StandardTeeSectionDimensions dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            model.PropFrame.SetTee(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness);
+        }
+
+        private static void SetSpecificDimensions(StandardZedSectionDimensions dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            throw new NotImplementedException("Zed-Section? Never heard of it!")
+        }
+
+        #endregion
 
     }
 }
