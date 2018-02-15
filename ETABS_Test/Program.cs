@@ -135,15 +135,15 @@ namespace ETABS_Test
             bars2b.Add(bar12b);
 
             ISectionProperty sec1 = Create.StandardSteelISection(110, 10, 80, 20);
-            
+            sec1.Material = BH.Engine.Common.Create.Material("blue steel");
             sec1.Name = "Section 1";
 
             ISectionProperty sec2a = Create.ConcreteRectangleSection(200, 120);
-            //sec2a.Material = BH.Engine.Common.Create.Material("Material2a", MaterialType.Concrete, 10, 10, 10, 10, 10);
+            sec2a.Material = BH.Engine.Common.Create.Material("myConcrete", MaterialType.Concrete, 10, 10, 10, 10, 10);
             sec2a.Name = "Section 2a";
 
             ISectionProperty sec2b = new ExplicitSection();
-            sec2b.Material = BH.Engine.Common.Create.Material("Material2b", MaterialType.Concrete, 10, 10, 10, 10, 10);
+            sec2b.Material = BH.Engine.Common.Create.Material("otherSteel", MaterialType.Steel, 210000, 0.3, 0.00012, 81000, 78500);
             sec2b.Name = "Section 2b";
 
 

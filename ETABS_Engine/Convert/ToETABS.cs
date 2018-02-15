@@ -117,6 +117,7 @@ namespace BH.Engine.ETABS
             
             model.FrameObj.AddByPoint(ptA, ptB, ref name);
 
+            SetSectionProperty(model, bhBar.SectionProperty);
             //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
             //model.FrameObj.SetSection();
             //model.FrameObj.SetReleases();
