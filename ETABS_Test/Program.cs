@@ -130,31 +130,38 @@ namespace ETABS_Test
             bars2b.Add(bar7b);
             bars2b.Add(bar8b);
             bars2b.Add(bar9b);
-
             bars2b.Add(bar10b);
             bars2b.Add(bar11b);
             bars2b.Add(bar12b);
 
-            ISectionProperty sec1a = new ExplicitSection();
-            sec1a.Material = BH.Engine.Common.Create.Material("Material1", MaterialType.Concrete, 10, 10, 10, 10, 10);
-            sec1a.Name = "Section 1";
+            ISectionProperty sec1 = Create.StandardSteelISection(110, 10, 80, 20);
+            
+            sec1.Name = "Section 1";
 
-            ISectionProperty sec1b = new ExplicitSection();
-            sec1b.Material = BH.Engine.Common.Create.Material("Material1", MaterialType.Concrete, 10, 10, 10, 10, 10);
-            sec1b.Name = "Section 1";
+            ISectionProperty sec2a = Create.ConcreteRectangleSection(200, 120);
+            //sec2a.Material = BH.Engine.Common.Create.Material("Material2a", MaterialType.Concrete, 10, 10, 10, 10, 10);
+            sec2a.Name = "Section 2a";
 
-            ISectionProperty sec2 = new ExplicitSection();
-            sec2.Material = BH.Engine.Common.Create.Material("Material2", MaterialType.Concrete, 10, 10, 10, 10, 10);
-            sec2.Name = "Section 2";
+            ISectionProperty sec2b = new ExplicitSection();
+            sec2b.Material = BH.Engine.Common.Create.Material("Material2b", MaterialType.Concrete, 10, 10, 10, 10, 10);
+            sec2b.Name = "Section 2b";
 
-            ISectionProperty sec3 = new ExplicitSection();
-            sec3.Material = BH.Engine.Common.Create.Material("Material2", MaterialType.Concrete, 10, 10, 10, 10, 10);
-            sec3.Name = "Section 3";
 
-            foreach (Bar b in bars1.Concat(bars2a).Concat(bars2b))
+            foreach (Bar b in bars1)
             {
-                b.SectionProperty = sec1a;
+                b.SectionProperty = sec1;
             }
+
+            foreach (Bar b in bars2a)
+            {
+                b.SectionProperty = sec2a;
+            }
+
+            foreach (Bar b in bars2b)
+            {
+                b.SectionProperty = sec2b;
+            }
+
 
 
             app.Push(nodesA, "Nodes");
@@ -184,8 +191,10 @@ namespace ETABS_Test
                 string endNodeId = bar.EndNode.CustomData[ETABSAdapter.ID].ToString();
                 string startPoint = bar.StartNode.Position.X.ToString() + "," + bar.StartNode.Position.Y.ToString() + "," + bar.StartNode.Position.Z.ToString();
                 string endPoint = bar.EndNode.Position.X.ToString() + "," + bar.EndNode.Position.Y.ToString() + "," + bar.EndNode.Position.Z.ToString();
+                string section = bar.SectionProperty.Name;
+                string material = bar.SectionProperty.Material.Name;
 
-                string barInfo = "Bar with ID: " + barId + " -Connecting Nodes " + startNodeId + " at " + startPoint + " and " + endNodeId + " at " + endPoint + "/n";
+                string barInfo = "Bar with ID: " + barId + " -Connecting Nodes " + startNodeId + " at " + startPoint + " and " + endNodeId + " at " + endPoint + " Section: " + section + " Material: " + material + "/n";
                 string barTags = string.Join("_/_", bar.Tags.ToArray());
                 Console.WriteLine(barInfo + barTags);
             }
