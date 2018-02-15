@@ -31,8 +31,6 @@ namespace BH.Engine.ETABS
             double Area, As2, As3, Torsion, I22, I33, S22, S33, Z22, Z33, R22, R33;
             Area = As2 = As3 = Torsion = I22 = I33 = S22 = S33 = Z22 = Z33 = R22 = R33 = 0;
 
-            //check if 'propertyName' exists if not then create it .... well, in what situation would it not exist ? 
-
             string constructSelector = "fromDimensions";
 
 
@@ -41,7 +39,7 @@ namespace BH.Engine.ETABS
             {
                 case eFramePropType.I:
                     model.PropFrame.GetISection(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref t2b, ref tfb, ref colour, ref notes, ref guid);
-                    if (t2==t2b)//TODO: check if standard or fabricated
+                    if (t2==t2b)
                         dimensions = new StandardISectionDimensions(t3, t2, tw, tf, 0, 0);
                     else
                         dimensions = new FabricatedISectionDimensions(t3, t2, t2b, tw, tf, tfb, 0);
@@ -201,6 +199,7 @@ namespace BH.Engine.ETABS
 
             bhSectionProperty.Material = material;
             bhSectionProperty.Name = propertyName;
+            bhSectionProperty.CustomData.Add(AdapterId, propertyName);
 
 
             return bhSectionProperty;
