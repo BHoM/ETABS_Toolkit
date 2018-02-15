@@ -297,7 +297,7 @@ namespace BH.Engine.ETABS
 
         private static void SetSpecificDimensions(StandardZedSectionDimensions dimensions, string sectionName, string materialName, cSapModel model)
         {
-            throw new NotImplementedException("Zed-Section? Never heard of it!")
+            throw new NotImplementedException("Zed-Section? Never heard of it!");
         }
 
         #endregion
