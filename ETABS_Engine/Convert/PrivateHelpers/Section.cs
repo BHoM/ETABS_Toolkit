@@ -1,4 +1,5 @@
 ﻿using BH.oM.Structural.Properties;
+using BH.Engine.Structure;
 using ETABS2016;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace BH.Engine.ETABS
             ISectionProperty bhSectionProperty = null;
             ISectionDimensions dimensions = null;
             string materialName = "";
-
+            
             string fileName = "";
             double t3 = 0;
             double t2 = 0;
@@ -23,15 +24,18 @@ namespace BH.Engine.ETABS
             double tw = 0;
             double tfb = 0;
             double t2b = 0;
-
             int colour = 0;
             string notes = "";
             string guid = "";
 
+            double T2, Area, As2, As3, Torsion, I22, I33, S22, S33, Z22, Z33, R22, R33;
+            T2 = Area = As2 = As3 = Torsion = I22 = I33 = S22 = S33 = Z22 = Z33 = R22 = R33 = 0;
 
-            // -- - -  - - at some point do bhSectionProperty = new SteelSection(); or what ever it is ...
+
+            string constructSelector = "fromDimensions";
 
 
+            #region long switch on section property type
             switch (propertyType)
             {
                 case eFramePropType.I:
@@ -73,6 +77,9 @@ namespace BH.Engine.ETABS
                     dimensions = new CircleDimensions(t3);
                     break;
                 case eFramePropType.General:
+                    //this looks to return enough infor for explicitSection() !
+                    constructSelector = "explicit";
+                    model.PropFrame.GetGeneral(propertyName, ref fileName, ref materialName, )
                     break;
                 case eFramePropType.DbChannel:
                     break;
@@ -139,10 +146,42 @@ namespace BH.Engine.ETABS
             }
             if(dimensions==null)
                 throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + "is not implmented in ETABS adapter");
+            #endregion
 
 
-            bhSectionProperty.Material = GetMaterial(model, materialName);
+            oM.Common.Materials.Material material = GetMaterial(model, materialName);
+
+            switch (constructSelector)
+            {
+                case "fromDimensions":
+                    switch (material.Type)
+                    {
+                        case oM.Common.Materials.MaterialType.Steel:
+                            bhSectionProperty = Create.SteelSectionFromDimensions(dimensions);
+                            break;
+                        case oM.Common.Materials.MaterialType.Concrete:
+                            bhSectionProperty = Create.ConcreteSectionFromDimensions(dimensions);
+                            break;
+                        case oM.Common.Materials.MaterialType.Aluminium:
+                        case oM.Common.Materials.MaterialType.Timber:
+                        case oM.Common.Materials.MaterialType.Rebar:
+                        case oM.Common.Materials.MaterialType.Tendon:
+                        case oM.Common.Materials.MaterialType.Glass:
+                        case oM.Common.Materials.MaterialType.Cable:
+                        default:
+                            throw new NotImplementedException("no material type for selected section implemented");
+                    }
+                    break;
+                case "explicit":
+                    bhSectionProperty = new ExplicitSection();
+
+                default:
+                    break;
+            }
+
+            bhSectionProperty.Material = material;
             bhSectionProperty.Name = propertyName;
+
 
             return bhSectionProperty;
         }
@@ -168,8 +207,12 @@ namespace BH.Engine.ETABS
 
         private static void SetSpecificSection(SteelSection section, cSapModel model)
         {
-            //needs ISectionDimentions
             SetSectionDimensions(section.SectionDimensions, section.Name, section.Material.Name, model);
+        }
+
+        private static void SetSpecificSection(ConcreteSection section, cSapModel model)
+        {
+            SetSectionDimensions(section.SectionDimension, section.Name, section.Material.Name, model);
         }
 
         private static void SetSpecificSection(CableSection section, cSapModel model)
@@ -184,17 +227,10 @@ namespace BH.Engine.ETABS
             throw new NotImplementedException();
         }
 
-        private static void SetSpecificSection(ConcreteSection section, cSapModel model)
-        {
-            //needs ISectionDimentions
-
-            throw new NotImplementedException();
-        }
-
         private static void SetSpecificSection(ExplicitSection section, cSapModel model)
         {
-            //no ISectionDimentions
-
+            //no ISectionDimentions - set explicitly
+           // model.PropFrame.SetGeneral(section.Name, section.Material.Name, ...)
             throw new NotImplementedException();
         }
 

@@ -92,8 +92,8 @@ namespace BH.Engine.ETABS
                     return MaterialType.Steel;
                 case eMatType.Concrete:
                     return MaterialType.Concrete;
-                case eMatType.NoDesign:
-                    return MaterialType.Steel;//No material of this type in BHoM !!!
+                case eMatType.NoDesign://No material of this type in BHoM !!!
+                    return MaterialType.Steel;
                 case eMatType.Aluminum:
                     return MaterialType.Aluminium;
                 case eMatType.ColdFormed:
@@ -102,8 +102,8 @@ namespace BH.Engine.ETABS
                     return MaterialType.Rebar;
                 case eMatType.Tendon:
                     return MaterialType.Tendon;
-                case eMatType.Masonry:
-                    return MaterialType.Concrete;//No material of this type in BHoM !!!
+                case eMatType.Masonry://No material of this type in BHoM !!!
+                    return MaterialType.Concrete;
                 default:
                     return MaterialType.Steel;
             }
@@ -119,16 +119,16 @@ namespace BH.Engine.ETABS
                     return eMatType.Steel;
                 case MaterialType.Concrete:
                     return eMatType.Concrete;
-                case MaterialType.Timber:
-                    return eMatType.Steel;//no material of this type in ETABS !!! which cannot be true !!!
+                case MaterialType.Timber://no material of this type in ETABS !!! which cannot be true !!!
+                    return eMatType.Steel;
                 case MaterialType.Rebar:
                     return eMatType.Rebar;
                 case MaterialType.Tendon:
                     return eMatType.Tendon;
-                case MaterialType.Glass:
-                    return eMatType.Steel;//no material of this type in ETABS !!!
-                case MaterialType.Cable:
-                    return eMatType.Steel;//no material of this type in ETABS !!!
+                case MaterialType.Glass://no material of this type in ETABS !!!
+                    return eMatType.Steel;
+                case MaterialType.Cable://no material of this type in ETABS !!!
+                    return eMatType.Steel;
                 default:
                     return eMatType.Steel;
             }
