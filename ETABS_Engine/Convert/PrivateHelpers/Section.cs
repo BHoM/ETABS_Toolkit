@@ -28,9 +28,10 @@ namespace BH.Engine.ETABS
             string notes = "";
             string guid = "";
 
-            double T2, Area, As2, As3, Torsion, I22, I33, S22, S33, Z22, Z33, R22, R33;
-            T2 = Area = As2 = As3 = Torsion = I22 = I33 = S22 = S33 = Z22 = Z33 = R22 = R33 = 0;
+            double Area, As2, As3, Torsion, I22, I33, S22, S33, Z22, Z33, R22, R33;
+            Area = As2 = As3 = Torsion = I22 = I33 = S22 = S33 = Z22 = Z33 = R22 = R33 = 0;
 
+            //check if 'propertyName' exists if not then create it .... well, in what situation would it not exist ? 
 
             string constructSelector = "fromDimensions";
 
@@ -79,7 +80,7 @@ namespace BH.Engine.ETABS
                 case eFramePropType.General:
                     //this looks to return enough infor for explicitSection() !
                     constructSelector = "explicit";
-                    model.PropFrame.GetGeneral(propertyName, ref fileName, ref materialName, )
+                    model.PropFrame.GetGeneral(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref Area, ref As2, ref As3, ref Torsion, ref I22, ref I33, ref S22, ref S33, ref Z22, ref Z33, ref R22, ref R33, ref colour, ref notes, ref guid);
                     break;
                 case eFramePropType.DbChannel:
                     break;
@@ -173,8 +174,27 @@ namespace BH.Engine.ETABS
                     }
                     break;
                 case "explicit":
-                    bhSectionProperty = new ExplicitSection();
-
+                    ExplicitSection eSection = new ExplicitSection();
+                    eSection.Area = Area;
+                    eSection.Asy = As2;
+                    eSection.Asz = As3;
+                    //eSection.CentreY = ;
+                    //eSection.CentreZ = ;
+                    eSection.Iw = 0;//warping
+                    eSection.Iy = I22;
+                    eSection.Iz = I33;
+                    eSection.J = Torsion;
+                    eSection.Rgy = R22;
+                    eSection.Rgz = R33;
+                    eSection.Sy = S22;//capacity -plastic (wply)
+                    eSection.Sz = S33;
+                    //eSection.Vpy = 0;
+                    //eSection.Vpz = 0;
+                    //eSection.Vy = 0;
+                    //eSection.Vz = 0;
+                    eSection.Zy = Z22;//capacity elastic
+                    eSection.Zz = Z33;
+                    break;
                 default:
                     break;
             }
