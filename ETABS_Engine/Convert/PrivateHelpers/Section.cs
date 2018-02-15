@@ -180,7 +180,7 @@ namespace BH.Engine.ETABS
                     eSection.Asz = As3;
                     //eSection.CentreY = ;
                     //eSection.CentreZ = ;
-                    eSection.Iw = 0;//warping
+                    //eSection.Iw = 0;//warping
                     eSection.Iy = I22;
                     eSection.Iz = I33;
                     eSection.J = Torsion;
@@ -249,9 +249,7 @@ namespace BH.Engine.ETABS
 
         private static void SetSpecificSection(ExplicitSection section, cSapModel model)
         {
-            //no ISectionDimentions - set explicitly
-           // model.PropFrame.SetGeneral(section.Name, section.Material.Name, ...)
-            throw new NotImplementedException();
+            model.PropFrame.SetGeneral(section.Name, section.Material.Name, section.CentreZ * 2, section.CentreY * 2, section.Area, section.Asy, section.Asz, section.J, section.Iy, section.Iz, section.Sy, section.Sz, section.Zy, section.Sz, section.Rgy, section.Rgz);
         }
 
         #region section dimensions
