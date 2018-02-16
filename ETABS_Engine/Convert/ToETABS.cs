@@ -117,9 +117,11 @@ namespace BH.Engine.ETABS
             
             model.FrameObj.AddByPoint(ptA, ptB, ref name);
 
+            // consider adding a sectionProperty lookup to save a COM-call for any existing sectionProperties
+
             SetSectionProperty(model, bhBar.SectionProperty);
             //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
-            //model.FrameObj.SetSection();
+            model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
             //model.FrameObj.SetReleases();
             //model.FrameObj.SetGroupAssign();
         }

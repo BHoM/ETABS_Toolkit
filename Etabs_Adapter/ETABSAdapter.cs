@@ -17,7 +17,7 @@ namespace BH.Adapter.ETABS
         public const string ID = "ETABS_id";
         private cOAPI app;
         private cSapModel model;
-
+        
         public ETABSAdapter(string filePath = "")
         {
             AdapterId = ID;
@@ -33,6 +33,7 @@ namespace BH.Adapter.ETABS
                 model = app.SapModel;
                 if (System.IO.File.Exists(filePath))
                     model.File.OpenFile(filePath);
+                model.SetPresentUnits(eUnits.kN_m_C);//this is a test !!! TODO: remove this line or leave it in if it works as intended (distance in m vs length in mm)
             }
             else
             {

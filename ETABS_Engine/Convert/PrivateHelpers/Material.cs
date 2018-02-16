@@ -119,7 +119,7 @@ namespace BH.Engine.ETABS
                     return eMatType.Steel;
                 case MaterialType.Concrete:
                     return eMatType.Concrete;
-                case MaterialType.Timber://no material of this type in ETABS !!! which cannot be true !!!
+                case MaterialType.Timber://no material of this type in ETABS !!! 
                     return eMatType.Steel;
                 case MaterialType.Rebar:
                     return eMatType.Rebar;
