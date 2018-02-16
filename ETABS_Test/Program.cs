@@ -156,7 +156,7 @@ namespace ETABS_Test
 
             foreach (Bar b in bars2a)
             {
-                b.SectionProperty = sec1;// sec2a;
+                b.SectionProperty = sec2a;
             }
 
             foreach (Bar b in bars2b)
