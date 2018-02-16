@@ -201,7 +201,6 @@ namespace BH.Engine.ETABS
             bhSectionProperty.Name = propertyName;
             bhSectionProperty.CustomData.Add(AdapterId, propertyName);
 
-
             return bhSectionProperty;
         }
 
@@ -212,7 +211,7 @@ namespace BH.Engine.ETABS
 
             if(bhSection.Material == null)
             {
-                //assign some default and/or throw error
+                //assign some default and/or throw error? TODO
             }
             else
             {
@@ -298,6 +297,11 @@ namespace BH.Engine.ETABS
         private static void SetSpecificDimensions(StandardZedSectionDimensions dimensions, string sectionName, string materialName, cSapModel model)
         {
             throw new NotImplementedException("Zed-Section? Never heard of it!");
+        }
+
+        private static void SetSpecificDimensions(RectangleSectionDimensions dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            model.PropFrame.SetRectangle(sectionName, materialName, dimensions.Height, dimensions.Width);
         }
 
         #endregion
