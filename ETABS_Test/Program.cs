@@ -20,7 +20,7 @@ namespace ETABS_Test
             ETABSAdapter app = new ETABSAdapter();
 
             TestPushBars(app);
-            TestPullBars(app);
+            //TestPullBars(app);
 
         }
 
@@ -135,7 +135,7 @@ namespace ETABS_Test
             bars2b.Add(bar12b);
 
             ISectionProperty sec1 = Create.StandardSteelISection(110, 10, 80, 20);
-            sec1.Material = BH.Engine.Common.Create.Material("blue steel");
+            sec1.Material = BH.Engine.Common.Create.Material("otherSteel", MaterialType.Steel, 210000, 0.3, 0.00012, 81000, 78500); //BH.Engine.Common.Create.Material("blue steel");//<-- this creates material of type aluminium
             sec1.Name = "Section 1";
 
             ISectionProperty sec2a = Create.ConcreteRectangleSection(200, 120);
@@ -146,6 +146,8 @@ namespace ETABS_Test
             sec2b.Material = BH.Engine.Common.Create.Material("otherSteel", MaterialType.Steel, 210000, 0.3, 0.00012, 81000, 78500);
             sec2b.Name = "Section 2b";
 
+            // ****** seems some sections are not being set and this throws an error: set section but also add error handling !!!!
+
 
             foreach (Bar b in bars1)
             {
@@ -154,12 +156,12 @@ namespace ETABS_Test
 
             foreach (Bar b in bars2a)
             {
-                b.SectionProperty = sec2a;
+                b.SectionProperty = sec1;// sec2a;
             }
 
             foreach (Bar b in bars2b)
             {
-                b.SectionProperty = sec2b;
+                b.SectionProperty = sec1;// sec2b;
             }
 
 
