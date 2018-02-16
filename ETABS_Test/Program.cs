@@ -146,24 +146,15 @@ namespace ETABS_Test
             sec2b.Material = BH.Engine.Common.Create.Material("otherSteel", MaterialType.Steel, 210000, 0.3, 0.00012, 81000, 78500);
             sec2b.Name = "Section 2b";
 
-            // ****** seems some sections are not being set and this throws an error: set section but also add error handling !!!!
-
 
             foreach (Bar b in bars1)
-            {
                 b.SectionProperty = sec1;
-            }
 
             foreach (Bar b in bars2a)
-            {
                 b.SectionProperty = sec2a;
-            }
 
             foreach (Bar b in bars2b)
-            {
-                b.SectionProperty = sec1;// sec2b;
-            }
-
+                b.SectionProperty = sec2b;
 
 
             app.Push(nodesA, "Nodes");
