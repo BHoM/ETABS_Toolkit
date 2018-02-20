@@ -27,7 +27,7 @@ namespace BH.Adapter.ETABS
         {
             List<Node> nodeList = new List<Node>();
 
-            nodeList = model.PointObj.ToBHoM(ids);
+            nodeList = modelData.model.PointObj.ToBHoM(ids);
 
             return nodeList;
         }
@@ -40,13 +40,13 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                model.FrameObj.GetNameList(ref nameCount, ref names);
+                modelData.model.FrameObj.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
             foreach (string id in ids)
             {
-                barList.Add(model.FrameObj.ToBHoM(id, model));
+                barList.Add(modelData.model.FrameObj.ToBHoM(id, model));
             }
             return barList;
         }

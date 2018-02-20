@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structural.Elements;
-
+using BH.Engine.ETABS;
 using ETABS2016;
 
 namespace BH.Adapter.ETABS
@@ -16,7 +16,8 @@ namespace BH.Adapter.ETABS
 
         public const string ID = "ETABS_id";
         private cOAPI app;
-        private cSapModel model;
+        private cSapModel model;//deprecated !!!
+        private ModelData modelData;
         
         public ETABSAdapter(string filePath = "")
         {
@@ -46,6 +47,8 @@ namespace BH.Adapter.ETABS
                 else
                     model.File.NewBlank();
             }
+
+            modelData = new ModelData(model);
         }
 
     }
