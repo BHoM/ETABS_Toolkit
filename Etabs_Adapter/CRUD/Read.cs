@@ -46,7 +46,7 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                barList.Add(modelData.model.FrameObj.ToBHoM(id, model));
+                barList.Add(modelData.model.FrameObj.ToBHoM(id, modelData));
             }
             return barList;
         }

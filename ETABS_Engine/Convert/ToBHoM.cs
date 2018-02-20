@@ -57,7 +57,7 @@ namespace BH.Engine.ETABS
         }
 
 
-        public static Bar ToBHoM(this cFrameObj barObj, string id, cSapModel model)
+        public static Bar ToBHoM(this cFrameObj barObj, string id, ModelData modelData)
         {
             Bar bhBar = new Bar();
             bhBar.CustomData.Add(AdapterId, id);
@@ -69,8 +69,8 @@ namespace BH.Engine.ETABS
             //still 'model' needs to be passed as argument as well in order to get the nodes at bar ends
             //this seems a bit convoluted way to keep to the convention of .ToBHoM extension methods !!!
 
-            bhBar.StartNode = model.PointObj.ToBHoM(startId);
-            bhBar.EndNode = model.PointObj.ToBHoM(endId);
+            bhBar.StartNode = modelData.model.PointObj.ToBHoM(startId);
+            bhBar.EndNode = modelData.model.PointObj.ToBHoM(endId);
 
             bool[] restraintStart = new bool[6];
             double[] springStart = new double[6];
@@ -86,8 +86,8 @@ namespace BH.Engine.ETABS
             string propertyName = "";
             string sAuto = "";
             barObj.GetSection(id, ref propertyName, ref sAuto);
-            model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
-            bhBar.SectionProperty = GetSectionProperty(model, propertyName, propertyType);
+            modelData.model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
+            bhBar.SectionProperty = GetSectionProperty(modelData, propertyName, propertyType);
 
             return bhBar;
         }
