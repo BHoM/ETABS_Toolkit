@@ -37,19 +37,19 @@ namespace BH.Adapter.ETABS
             switch (typeString)
             {
                 case "Node":
-                    model.PointObj.GetNameList(ref nameCount, ref names);
+                    modelData.model.PointObj.GetNameList(ref nameCount, ref names);
                     lastId = Array.ConvertAll(names, int.Parse).Max();
                     break;
                 case "Bar":
-                    model.FrameObj.GetNameList(ref nameCount, ref names);
+                    modelData.model.FrameObj.GetNameList(ref nameCount, ref names);
                     lastId = Array.ConvertAll(names, int.Parse).Max();
                     break;
                 case "Material":
-                    model.PropMaterial.GetNameList(ref nameCount, ref names);
+                    modelData.model.PropMaterial.GetNameList(ref nameCount, ref names);
                     lastId = Array.ConvertAll(names, int.Parse).Max();
                     break;
                 case "SectionProperty":
-                    model.PropFrame.GetNameList(ref nameCount, ref names);
+                    modelData.model.PropFrame.GetNameList(ref nameCount, ref names);
                     lastId = Array.ConvertAll(names, int.Parse).Max();
                     break;
 
