@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="BHoM_Adapter">
       <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>

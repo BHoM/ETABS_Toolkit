@@ -14,12 +14,12 @@ namespace BH.Engine.ETABS
 {
     public static partial class Convert
     {
-        public static void ToETABS(this BH.oM.Base.IObject obj, cSapModel model)
+        public static void ToETABS(this BH.oM.Base.IObject obj, ModelData modelData)
         {
-            Convert.ToETABS(obj as dynamic, model);
+            Convert.ToETABS(obj as dynamic, modelData);
         }
 
-        public static string ToETABS(this Node bhNode, cSapModel model)
+        public static string ToETABS(this Node bhNode, ModelData modelData)
         {
             // Note: 'name' is the only editable text field and might need to be reserved for the Tags
             // 'name' is displayed in the UI as 'unique name' and is editable, 'lable' is also visible but not editable
@@ -34,7 +34,7 @@ namespace BH.Engine.ETABS
             else
                 name = bhNode.CustomData[AdapterId].ToString();
             
-            model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
+            modelData.model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
 
             //TODO: update the BHOM Node with the id acctually assigned in ETABS, or don't - not sure which would best align with behaviour of other adapters
             //bhNode.CustomData[AdapterId] = name;
@@ -60,8 +60,8 @@ namespace BH.Engine.ETABS
                 spring[4] = bhNode.Constraint.RotationalStiffnessY;
                 spring[5] = bhNode.Constraint.RotationalStiffnessZ;
 
-                model.PointObj.SetRestraint(name, ref restraint);
-                model.PointObj.SetSpring(name, ref spring);
+                modelData.model.PointObj.SetRestraint(name, ref restraint);
+                modelData.model.PointObj.SetSpring(name, ref spring);
             }
 
             ////it is likely that the tags used needs to be unique to work in etabs - add object id or guid to the tag hashset?
@@ -87,8 +87,8 @@ namespace BH.Engine.ETABS
             string ptA;
             string ptB;
 
-            bhBar.StartNode.ToETABS(modelData.model);
-            bhBar.EndNode.ToETABS(modelData.model);
+            bhBar.StartNode.ToETABS(modelData);
+            bhBar.EndNode.ToETABS(modelData);
 
             bool startExists = ids.Contains(bhBar.StartNode.CustomData[AdapterId].ToString());
             bool endExists = ids.Contains(bhBar.EndNode.CustomData[AdapterId].ToString());
@@ -102,17 +102,17 @@ namespace BH.Engine.ETABS
             else if (startExists)
             {
                 ptA = bhBar.StartNode.CustomData[AdapterId].ToString();
-                ptB = bhBar.EndNode.ToETABS(modelData.model);
+                ptB = bhBar.EndNode.ToETABS(modelData);
             }
             else if (endExists)
             {
-                ptA = bhBar.StartNode.ToETABS(modelData.model);
+                ptA = bhBar.StartNode.ToETABS(modelData);
                 ptB = bhBar.EndNode.CustomData[AdapterId].ToString();
             }
             else
             {
-                ptA = bhBar.StartNode.ToETABS(modelData.model);
-                ptB = bhBar.EndNode.ToETABS(modelData.model);
+                ptA = bhBar.StartNode.ToETABS(modelData);
+                ptB = bhBar.EndNode.ToETABS(modelData);
             }
             
             modelData.model.FrameObj.AddByPoint(ptA, ptB, ref name);

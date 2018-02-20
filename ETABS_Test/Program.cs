@@ -20,7 +20,7 @@ namespace ETABS_Test
             ETABSAdapter app = new ETABSAdapter();
 
             TestPushBars(app);
-            //TestPullBars(app);
+            TestPullBars(app);
 
         }
 
