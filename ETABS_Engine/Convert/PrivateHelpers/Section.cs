@@ -204,22 +204,29 @@ namespace BH.Engine.ETABS
             return bhSectionProperty;
         }
 
-        private static void SetSectionProperty(cSapModel model, ISectionProperty bhSection)
+        private static void SetSectionProperty(ModelData modelData, ISectionProperty bhSection)
         {
 
             string materialName = "";
 
-            if(bhSection.Material == null)
+            if (modelData.sectionDict.ContainsKey(bhSection.Name))
             {
-                //assign some default and/or throw error? TODO
+                // nothing ?
             }
             else
             {
-                SetMaterial(model, bhSection.Material);
+                if (bhSection.Material == null)
+                {
+                    //assign some default and/or throw error? TODO
+                }
+                else
+                {
+                    SetMaterial(modelData, bhSection.Material);
+                }
+
+                SetSpecificSection(bhSection as dynamic, modelData.model);
+                modelData.sectionDict.Add(bhSection.Name, bhSection);
             }
-
-            SetSpecificSection(bhSection as dynamic, model);
-
 
         }
 

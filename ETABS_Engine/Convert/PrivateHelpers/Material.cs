@@ -13,13 +13,17 @@ namespace BH.Engine.ETABS
         /// <summary>
         /// NOTE: the materialName is NOT convertable to integer as the values stored in the 'name' field on most other ETABS elements
         /// </summary>
-        private static Material GetMaterial(cSapModel model, string materialName)
+        private static Material GetMaterial(ModelData modelData, string materialName)
         {
+            if (modelData.materialDict.ContainsKey(materialName))
+                return modelData.materialDict[materialName];
+
+
             eMatType matType = eMatType.NoDesign;
             int colour = 0;
             string guid = "";
             string notes = "";
-            if (model.PropMaterial.GetMaterial(materialName, ref matType, ref colour, ref notes, ref guid) == 0)
+            if (modelData.model.PropMaterial.GetMaterial(materialName, ref matType, ref colour, ref notes, ref guid) == 0)
             {
                 double e = 0;
                 double v = 0;
@@ -27,8 +31,8 @@ namespace BH.Engine.ETABS
                 double g = 0;
                 double mass = 0;
                 double weight = 0;
-                model.PropMaterial.GetMPIsotropic(materialName, ref e, ref v, ref thermCo, ref g);
-                model.PropMaterial.GetWeightAndMass(materialName, ref weight, ref mass);
+                modelData.model.PropMaterial.GetMPIsotropic(materialName, ref e, ref v, ref thermCo, ref g);
+                modelData.model.PropMaterial.GetWeightAndMass(materialName, ref weight, ref mass);
                 double compStr = 0;
                 double tensStr = 0;
                 double v1 = 0;//expected yield stress
@@ -50,12 +54,12 @@ namespace BH.Engine.ETABS
                 m.CoeffThermalExpansion = thermCo;
                 m.Density = mass;
                 //new Material(name, GetMaterialType(matType), e, v, thermCo, g, mass);
-                if (model.PropMaterial.GetOSteel(materialName, ref compStr, ref tensStr, ref v1, ref v2, ref i1, ref i2, ref v3, ref v4, ref v5) == 0)
+                if (modelData.model.PropMaterial.GetOSteel(materialName, ref compStr, ref tensStr, ref v1, ref v2, ref i1, ref i2, ref v3, ref v4, ref v5) == 0)
                 {
                     m.CompressiveYieldStrength = compStr;
                     m.TensileYieldStrength = compStr;
                 }
-                else if (model.PropMaterial.GetOConcrete(materialName, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref v1, ref v2, ref v3, ref v4) == 0)
+                else if (modelData.model.PropMaterial.GetOConcrete(materialName, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref v1, ref v2, ref v3, ref v4) == 0)
                 {
                     m.CompressiveYieldStrength = compStr;
                     m.TensileYieldStrength = compStr * tensStr;
@@ -67,19 +71,20 @@ namespace BH.Engine.ETABS
 
         }
 
-        private static void SetMaterial(cSapModel model, Material material)
+        private static void SetMaterial(ModelData modelData, Material material)
         {
             eMatType matType = eMatType.NoDesign;
             int colour = 0;
             string guid = "";
             string notes = "";
             string name = "";
-            if (model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
+            if (modelData.model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
             {
-                model.PropMaterial.AddMaterial(ref name, GetMaterialType(material.Type), "", "", "");
-                model.PropMaterial.ChangeName(name, material.Name);
-                model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulus, material.PoissonsRatio, material.CoeffThermalExpansion);
-                model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
+                modelData.model.PropMaterial.AddMaterial(ref name, GetMaterialType(material.Type), "", "", "");
+                modelData.model.PropMaterial.ChangeName(name, material.Name);
+                modelData.model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulus, material.PoissonsRatio, material.CoeffThermalExpansion);
+                modelData.model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
+                modelData.materialDict.Add(material.Name, material);
             }
 
         }
