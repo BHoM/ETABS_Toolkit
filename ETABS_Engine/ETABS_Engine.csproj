@@ -58,6 +58,7 @@
     <Compile Include="Convert\PrivateHelpers\Section.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToETABS.cs" />
+    <Compile Include="ModelData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

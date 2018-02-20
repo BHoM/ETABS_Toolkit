@@ -184,7 +184,7 @@ namespace BH.Engine.ETABS
                     eSection.J = Torsion;
                     eSection.Rgy = R22;
                     eSection.Rgz = R33;
-                    eSection.Sy = S22;//capacity -plastic (wply)
+                    eSection.Sy = S22;//capacity - plastic (wply)
                     eSection.Sz = S33;
                     //eSection.Vpy = 0;
                     //eSection.Vpz = 0;
