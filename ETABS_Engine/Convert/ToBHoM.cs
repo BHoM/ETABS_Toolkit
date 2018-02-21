@@ -88,7 +88,6 @@ namespace BH.Engine.ETABS
             barObj.GetSection(id, ref propertyName, ref sAuto);
             modelData.model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
             bhBar.SectionProperty = GetSectionProperty(modelData, propertyName, propertyType);
-
             return bhBar;
         }
 
