@@ -32,15 +32,19 @@
   <ItemGroup>
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ETABS2016">
       <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\ETABS 2016\ETABS2016.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Serialiser_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Serialiser_Engine.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Structure_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Structure_Engine.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
