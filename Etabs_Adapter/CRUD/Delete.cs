@@ -10,6 +10,7 @@ namespace BH.Adapter.ETABS
     {
         protected override int Delete(Type type, IEnumerable<object> ids)
         {
+            return 0;
             throw new NotImplementedException();
         }
     }
