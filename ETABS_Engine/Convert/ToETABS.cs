@@ -33,7 +33,7 @@ namespace BH.Engine.ETABS
                 bhNode.CustomData.Add(AdapterId, "thisWillBeChanged");
             else
                 name = bhNode.CustomData[AdapterId].ToString();
-            
+
             modelData.model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
 
             //TODO: update the BHOM Node with the id acctually assigned in ETABS, or don't - not sure which would best align with behaviour of other adapters
@@ -42,7 +42,7 @@ namespace BH.Engine.ETABS
             //if (bhNode.CustomData.ContainsKey(AdapterId))
             //    bhNode.CustomData.Add(AdapterId, name);
 
-            if(bhNode.Constraint != null)
+            if (bhNode.Constraint != null)
             {
                 bool[] restraint = new bool[6];
                 restraint[0] = bhNode.Constraint.TranslationX == DOFType.Fixed;
@@ -75,55 +75,62 @@ namespace BH.Engine.ETABS
             string name = bhBar.CustomData[AdapterId].ToString();
             //get all node ids to chack if bar is using a node that has already been pushed... if this is not handled elsewhere in the BHoMAdapter already
 
-            int ptCount = 0;
-            string[] ids = null;
-            double[] nX = null;
-            double[] nY = null;
-            double[] nZ = null;
-            
-            modelData.model.PointObj.GetAllPoints(ref ptCount, ref ids, ref nX, ref nY, ref nZ);
-            //should the above be stored in a 'modelInfo' field like in the RFEM adapter ?
+            //int ptCount = 0;
+            //string[] ids = null;
+            //double[] nX = null;
+            //double[] nY = null;
+            //double[] nZ = null;
 
-            string ptA;
-            string ptB;
+            //modelData.model.PointObj.GetAllPoints(ref ptCount, ref ids, ref nX, ref nY, ref nZ);
+            ////should the above be stored in a 'modelInfo' field like in the RFEM adapter ?
 
-            bhBar.StartNode.ToETABS(modelData);
-            bhBar.EndNode.ToETABS(modelData);
+            //string ptA;
+            //string ptB;
 
-            bool startExists = ids.Contains(bhBar.StartNode.CustomData[AdapterId].ToString());
-            bool endExists = ids.Contains(bhBar.EndNode.CustomData[AdapterId].ToString());
-            bool bothExists = endExists == true && startExists == true;
+            //bhBar.StartNode.ToETABS(modelData);
+            //bhBar.EndNode.ToETABS(modelData);
 
-            if (bothExists)
-            {
-                ptA = bhBar.StartNode.CustomData[AdapterId].ToString();
-                ptB = bhBar.EndNode.CustomData[AdapterId].ToString();
-            }
-            else if (startExists)
-            {
-                ptA = bhBar.StartNode.CustomData[AdapterId].ToString();
-                ptB = bhBar.EndNode.ToETABS(modelData);
-            }
-            else if (endExists)
-            {
-                ptA = bhBar.StartNode.ToETABS(modelData);
-                ptB = bhBar.EndNode.CustomData[AdapterId].ToString();
-            }
-            else
-            {
-                ptA = bhBar.StartNode.ToETABS(modelData);
-                ptB = bhBar.EndNode.ToETABS(modelData);
-            }
-            
-            modelData.model.FrameObj.AddByPoint(ptA, ptB, ref name);
+            //bool startExists = ids.Contains(bhBar.StartNode.CustomData[AdapterId].ToString());
+            //bool endExists = ids.Contains(bhBar.EndNode.CustomData[AdapterId].ToString());
+            //bool bothExists = endExists == true && startExists == true;
+
+            //if (bothExists)
+            //{
+            //    ptA = bhBar.StartNode.CustomData[AdapterId].ToString();
+            //    ptB = bhBar.EndNode.CustomData[AdapterId].ToString();
+            //}
+            //else if (startExists)
+            //{
+            //    ptA = bhBar.StartNode.CustomData[AdapterId].ToString();
+            //    ptB = bhBar.EndNode.ToETABS(modelData);
+            //}
+            //else if (endExists)
+            //{
+            //    ptA = bhBar.StartNode.ToETABS(modelData);
+            //    ptB = bhBar.EndNode.CustomData[AdapterId].ToString();
+            //}
+            //else
+            //{
+            //    ptA = bhBar.StartNode.ToETABS(modelData);
+            //    ptB = bhBar.EndNode.ToETABS(modelData);
+            //}
+
+            //modelData.model.FrameObj.AddByPoint(ptA, ptB, ref name);
+
+            modelData.model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
 
             // consider adding a sectionProperty lookup to save a COM-call for any existing sectionProperties
 
-            SetSectionProperty(modelData, bhBar.SectionProperty);
+            //SetSectionProperty(modelData, bhBar.SectionProperty);
             //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
             modelData.model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
             //model.FrameObj.SetReleases();
             //model.FrameObj.SetGroupAssign();
+        }
+
+        public static void ToETABS(this ISectionProperty secProp, ModelData modelData)
+        {
+            SetSectionProperty(modelData, secProp);
         }
     }
 }

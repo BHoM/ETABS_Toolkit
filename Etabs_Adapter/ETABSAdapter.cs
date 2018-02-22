@@ -23,6 +23,11 @@ namespace BH.Adapter.ETABS
         {
             AdapterId = ID;
 
+            Config.SeparateProperties = true;
+            Config.MergeWithComparer = true;
+            Config.ProcessInMemory = false;
+            Config.CloneBeforePush = true;
+
             string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
             cHelper helper = new Helper();
 
