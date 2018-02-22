@@ -72,6 +72,8 @@
     <Compile Include="ETABSAdapter.cs" />
     <Compile Include="ETABSEnums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\Comparer.cs" />
+    <Compile Include="Types\DependencyTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ETABS_Engine\ETABS_Engine.csproj">

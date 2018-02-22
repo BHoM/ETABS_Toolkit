@@ -11,7 +11,7 @@ namespace BH.Engine.ETABS
 {
     public static partial class Convert
     {
-        private static ISectionProperty GetSectionProperty(ModelData modelData, string propertyName, eFramePropType propertyType)
+        public static ISectionProperty GetSectionProperty(ModelData modelData, string propertyName, eFramePropType propertyType)
         {
             if (modelData.sectionDict.ContainsKey(propertyName))
                 return modelData.sectionDict[propertyName];
