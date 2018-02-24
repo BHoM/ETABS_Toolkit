@@ -14,7 +14,7 @@ namespace BH.Engine.ETABS
 {
     public static partial class Convert
     {
-        public static void ToETABS(this BH.oM.Base.IObject obj, ModelData modelData)
+        public static void ToETABS(this BH.oM.Base.IBHoMObject obj, ModelData modelData)
         {
             Convert.ToETABS(obj as dynamic, modelData);
         }

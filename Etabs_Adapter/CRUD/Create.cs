@@ -13,7 +13,7 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
 
-            if (typeof(BH.oM.Base.IObject).IsAssignableFrom(typeof(T)))
+            if (typeof(BH.oM.Base.IBHoMObject).IsAssignableFrom(typeof(T)))
             {
                 foreach (T obj in objects)
                 {

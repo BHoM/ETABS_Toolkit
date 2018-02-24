@@ -14,7 +14,7 @@ namespace BH.Adapter.ETABS
 {
     public partial class ETABSAdapter
     {
-        protected override IEnumerable<IObject> Read(Type type, IList ids)
+        protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
             if (type == typeof(Node))
                 return ReadNodes(ids as dynamic);
