@@ -9,7 +9,7 @@ using BH.oM.Structural.Properties;
 using BH.oM.Structural.Elements;
 using BH.oM.Geometry;
 using BH.Engine.Structure;
-using BH.oM.Queries;
+using BH.oM.DataManipulation.Queries;
 
 namespace ETABS_Test
 {
@@ -170,8 +170,8 @@ namespace ETABS_Test
         private static void TestPullBars(ETABSAdapter app)
         {
             Console.WriteLine("Test Pull Bars");
-            FilterQuery nodeQuery = new FilterQuery(typeof(Node));
-            FilterQuery barQuery = new FilterQuery(typeof(Bar));
+            FilterQuery nodeQuery = new FilterQuery { Type = typeof(Node) };
+            FilterQuery barQuery = new FilterQuery { Type = typeof(Bar) };
 
             IEnumerable<object> barObjects = app.Pull(barQuery);
 
