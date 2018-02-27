@@ -8,6 +8,7 @@ using BH.oM;
 using BH.oM.Structural;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
+using BH.Engine.Geometry;
 
 namespace BH.Adapter.ETABS
 {
@@ -113,16 +114,72 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
-        //private bool CreateObject(PanelPlanar bhPanel, ModelData modelData)
-        //{
-        //    bool success = true;
+        private bool CreateObject(Property2D property2d, ModelData modelData)
+        {
+            bool success = true;
 
-        //    bhPanel.ExternalEdges = null;
-        //    int segmentCount
+            //ensure dependence type is added
 
-        //    modelData.model.AreaObj.AddByCoord()
+            return success;
+        }
 
-        //    return success;
-        //}
+        private bool CreateObject(PanelPlanar bhPanel, ModelData modelData)
+        {
+            bool success = true;
+            int retA = 0;
+
+            bhPanel.ExternalEdges = null;
+            string name = bhPanel.CustomData[AdapterId].ToString();
+            string propertyName = bhPanel.Property.Name;
+            List<BH.oM.Geometry.Point> boundaryPoints = new List<oM.Geometry.Point>();
+
+            foreach(Edge edge in bhPanel.ExternalEdges)
+                boundaryPoints.AddRange(edge.Curve.IControlPoints());
+            boundaryPoints = boundaryPoints.Distinct().ToList();
+
+            int segmentCount = boundaryPoints.Count();
+            double[] x = new double[segmentCount];
+            double[] y = new double[segmentCount];
+            double[] z = new double[segmentCount];
+            for(int i=0; i < segmentCount;i++)
+            {
+                x[i] = boundaryPoints[i].X;
+                y[i] = boundaryPoints[i].Y;
+                z[i] = boundaryPoints[i].Z;
+            }
+
+            retA = modelData.model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
+            if (retA != 0)
+                return false;
+
+            if (bhPanel.Openings != null)
+            {
+                for(int i=0;i < bhPanel.Openings.Count;i++)
+                {
+                    boundaryPoints = new List<oM.Geometry.Point>();
+                    foreach(Edge edge in bhPanel.Openings[i].Edges)
+                        boundaryPoints.AddRange(edge.Curve.IControlPoints());
+                    boundaryPoints = boundaryPoints.Distinct().ToList();
+
+                    segmentCount = boundaryPoints.Count();
+                    x = new double[segmentCount];
+                    y = new double[segmentCount];
+                    z = new double[segmentCount];
+
+                    for (int j = 0; j < segmentCount; j++)
+                    {
+                        x[j] = boundaryPoints[j].X;
+                        y[j] = boundaryPoints[j].Y;
+                        z[j] = boundaryPoints[j].Z;
+                    }
+
+                    string openingName = name + "_Opening_" + i;
+                    modelData.model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName,"");//<-- setting panel property to empty string, verify that this is correct
+                    modelData.model.AreaObj.SetOpening(openingName, true);
+                }
+            }
+
+            return success;
+        }
     }
 }
