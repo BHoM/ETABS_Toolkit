@@ -206,7 +206,7 @@ namespace Etabs_Adapter.Structural.Loads
                                 double val = direction == 4 ? uL.ForceVector.X : direction == 5 ? uL.ForceVector.Y : -uL.ForceVector.Z; //global Z axis not available, uses gravity (-Z) instead.
                                 if (val != 0)
                                 {
-                                    ret = SapModel.FrameObj.SetLoadDistributed(uL.Objects[j].Name, loads[i].Name, 1, direction, 0, 1, val, val, "Global", true, false);
+                                    ret = SapModel.FrameObj.SetLoadDistributed(uL.Objects[j].Name, loads[i].Loadcase.Name, 1, direction, 0, 1, val, val, "Global", true, false);
                                 }
                             }
                         }
