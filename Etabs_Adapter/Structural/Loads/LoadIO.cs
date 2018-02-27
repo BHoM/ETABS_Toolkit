@@ -194,7 +194,7 @@ namespace Etabs_Adapter.Structural.Loads
                         for (int j = 0; j < pL.Objects.Count; j++)
                         {
                             double[] vals = new double[] { pL.Force.X, pL.Force.Y, pL.Force.Z, pL.Moment.X, pL.Moment.Y, pL.Moment.Z };
-                            ret = SapModel.PointObj.SetLoadForce(pL.Objects[j].Name, loads[i].Name, ref vals);
+                            ret = SapModel.PointObj.SetLoadForce(pL.Objects[j].Name, loads[i].Loadcase.Name, ref vals);
                         }
                         break;
                     case LoadType.BarUniformLoad:
@@ -221,7 +221,7 @@ namespace Etabs_Adapter.Structural.Loads
                                 if (val != 0)
                                 {
                                     //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
-                                    ret = SapModel.AreaObj.SetLoadUniform(uA.Objects[j].Name, loads[i].Name, val, direction+3, false);
+                                    ret = SapModel.AreaObj.SetLoadUniform(uA.Objects[j].Name, loads[i].Loadcase.Name, val, direction+3, false);
                                 }
                             }
                         }
@@ -230,7 +230,7 @@ namespace Etabs_Adapter.Structural.Loads
                         BarTemperatureLoad tLine = loads[i] as BarTemperatureLoad;
                         for (int j = 0; j < tLine.Objects.Count; j++)
                         {
-                            ret = SapModel.FrameObj.SetLoadTemperature(tLine.Objects[j].Name, loads[i].Name, 1, tLine.TemperatureChange.X);
+                            ret = SapModel.FrameObj.SetLoadTemperature(tLine.Objects[j].Name, loads[i].Loadcase.Name, 1, tLine.TemperatureChange.X);
                         }
 
                         break;
@@ -238,7 +238,7 @@ namespace Etabs_Adapter.Structural.Loads
                         AreaTemperatureLoad tArea = loads[i] as AreaTemperatureLoad;
                         for (int j = 0; j < tArea.Objects.Count; j++)
                         {
-                            ret = SapModel.FrameObj.SetLoadTemperature(tArea.Objects[j].Name, loads[i].Name, 1, tArea.TemperatureChange);
+                            ret = SapModel.FrameObj.SetLoadTemperature(tArea.Objects[j].Name, loads[i].Loadcase.Name, 1, tArea.TemperatureChange);
                         }
 
                         break;
