@@ -9,6 +9,7 @@ using BH.oM.Structural;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
 using BH.Engine.Serialiser;
+using BH.oM.Common.Materials;
 
 namespace BH.Engine.ETABS
 {
@@ -132,5 +133,11 @@ namespace BH.Engine.ETABS
         {
             SetSectionProperty(modelData, secProp);
         }
+
+        public static void ToETABS(this Material material, ModelData modelData)
+        {
+            SetMaterial(modelData, material);
+        }
+
     }
 }
