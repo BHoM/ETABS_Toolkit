@@ -208,7 +208,7 @@ namespace BH.Engine.ETABS
             return bhSectionProperty;
         }
 
-        private static void SetSectionProperty(ModelData modelData, ISectionProperty bhSection)
+        public static void SetSectionProperty(ModelData modelData, ISectionProperty bhSection)
         {
 
             string materialName = "";
