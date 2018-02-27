@@ -9,6 +9,7 @@ using BH.oM.Structural;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
 using BH.Engine.Geometry;
+using BH.oM.Common.Materials;
 
 namespace BH.Adapter.ETABS
 {
@@ -114,12 +115,19 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
+        private bool CreateObject(Material material, ModelData modelData)
+        {
+            bool success = true;
+
+            BH.Engine.ETABS.Convert.SetMaterial(modelData, material); //TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
+
+            return success;
+        }
+
         private bool CreateObject(Property2D property2d, ModelData modelData)
         {
             bool success = true;
             int retA = 0;
-
-            //ensure dependence type is added
 
             PanelType panelType = property2d.Type;
             string propertyName = property2d.CustomData[AdapterId].ToString();

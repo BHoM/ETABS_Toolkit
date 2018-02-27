@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
+using BH.oM.Common.Materials;
 using ETABS2016;
 using BH.Engine.ETABS;
 
@@ -21,8 +22,9 @@ namespace BH.Adapter.ETABS
             else if (type == typeof(Bar))
                 return ReadBars(ids as dynamic);
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
-                return RedSectionProperties(ids as dynamic);
-
+                return ReadSectionProperties(ids as dynamic);
+            else if (type == typeof(Material))
+                return ReadMaterials(ids as dynamic);
             return null;//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
 
@@ -54,7 +56,7 @@ namespace BH.Adapter.ETABS
             return barList;
         }
 
-        private List<ISectionProperty> RedSectionProperties(List<string> ids = null)
+        private List<ISectionProperty> ReadSectionProperties(List<string> ids = null)
         {
             List<ISectionProperty> propList = new List<ISectionProperty>();
             int nameCount = 0;
@@ -76,5 +78,24 @@ namespace BH.Adapter.ETABS
             return propList;
         }
 
+        private List<Material> ReadMaterials(List<string> ids = null)
+        {
+            int nameCount = 0;
+            string[] names = { };
+            List<Material> materialList = new List<Material>();
+
+            if (ids == null)
+            {
+                modelData.model.PropMaterial.GetNameList(ref nameCount, ref names);
+                ids = names.ToList();
+            }
+
+            foreach (string id in ids)
+            {
+                materialList.Add(BH.Engine.ETABS.Convert.GetMaterial(modelData, id));
+            }
+
+            return materialList;
+        }
     }
 }

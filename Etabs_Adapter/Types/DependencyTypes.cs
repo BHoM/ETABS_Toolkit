@@ -43,7 +43,9 @@ namespace BH.Adapter.ETABS
         private static Dictionary<Type, List<Type>> m_DependencyTypes = new Dictionary<Type, List<Type>>
         {
             {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
-            {typeof(ISectionProperty), new List<Type>() /*{ typeof(Material) }*/ },
+            {typeof(ISectionProperty), new List<Type> { typeof(Material) } },
+            {typeof(PanelPlanar), new List<Type> { typeof(Property2D), typeof(Material) } },
+
         };
 
 

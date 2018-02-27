@@ -13,7 +13,7 @@ namespace BH.Engine.ETABS
         /// <summary>
         /// NOTE: the materialName is NOT convertable to integer as the values stored in the 'name' field on most other ETABS elements
         /// </summary>
-        private static Material GetMaterial(ModelData modelData, string materialName)
+        public static Material GetMaterial(ModelData modelData, string materialName)
         {
             if (modelData.materialDict.ContainsKey(materialName))
                 return modelData.materialDict[materialName];
@@ -71,7 +71,7 @@ namespace BH.Engine.ETABS
 
         }
 
-        private static void SetMaterial(ModelData modelData, Material material)
+        public static void SetMaterial(ModelData modelData, Material material)
         {
             eMatType matType = eMatType.NoDesign;
             int colour = 0;
