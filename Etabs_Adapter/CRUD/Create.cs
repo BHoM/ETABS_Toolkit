@@ -117,8 +117,37 @@ namespace BH.Adapter.ETABS
         private bool CreateObject(Property2D property2d, ModelData modelData)
         {
             bool success = true;
+            int retA = 0;
 
             //ensure dependence type is added
+
+            PanelType panelType = property2d.Type;
+            string propertyName = property2d.CustomData[AdapterId].ToString();
+
+            switch (panelType)
+            {
+                case PanelType.Slab:
+                    retA = modelData.model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
+                    break;
+                case PanelType.Wall:
+                    retA = modelData.model.PropArea.SetWall(propertyName, ETABS2016.eWallPropType.Specified, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
+                    break;
+                case PanelType.PileCap:
+                case PanelType.DropPanel:
+                case PanelType.Undefined:
+                default:
+                    retA = modelData.model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
+                    break;
+            }
+
+            if (property2d.Modifiers != null)
+            {
+                double[] modifier = property2d.Modifiers;
+                modelData.model.PropArea.SetModifiers(propertyName, ref modifier);
+            }
+
+            if (retA != 0)
+                success = false;
 
             return success;
         }
@@ -127,7 +156,7 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
             int retA = 0;
-
+            
             bhPanel.ExternalEdges = null;
             string name = bhPanel.CustomData[AdapterId].ToString();
             string propertyName = bhPanel.Property.Name;
