@@ -167,9 +167,94 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                Property2D bhProperty = new Property2D();
-            }
+                Property2D bhProperty = null;
+                eSlabType slabType = eSlabType.Slab;
+                eShellType shellType = eShellType.ShellThin;
+                string material = "";
+                double thickness = 0;
+                int colour = 0;
+                string notes = "";
+                string guid = "";
+                double depth = 0;
+                double stemWidthTop = 0;
+                double stemWidthBottom = 0;//not used
+                double ribSpacing = 0;
+                double ribSpacing2nd = 0;
+                int direction = 0;
+                double[] modifiers = new double[] { };
 
+                model.PropArea.GetSlab(id, ref slabType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
+                model.PropArea.GetModifiers(id, ref modifiers);
+
+                if (thickness==0)
+                {
+                    eWallPropType wallProperty = eWallPropType.AutoSelectList;
+                    model.PropArea.GetWall(id, ref wallProperty, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
+                    ConstantThickness panelConstant = new ConstantThickness();
+                    panelConstant.CustomData[AdapterId] = id;
+                    panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
+                    panelConstant.Thickness = thickness;
+                    panelConstant.Type = PanelType.Wall;
+                    panelConstant.Modifiers = modifiers;
+
+                    propertyList.Add(panelConstant);
+                }
+                else
+                {
+                    switch (slabType)
+                    {
+                        case eSlabType.Ribbed:
+                            Ribbed panelRibbed = new Ribbed();
+
+                            model.PropArea.GetSlabRibbed(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref direction);
+
+                            panelRibbed.CustomData[AdapterId] = id;
+                            panelRibbed.Material = ReadMaterials(new List<string>() { material })[0];
+                            panelRibbed.Thickness = thickness;
+                            panelRibbed.Type = PanelType.Slab;
+                            panelRibbed.Direction = (PanelDirection)direction;
+                            panelRibbed.Spacing = ribSpacing;
+                            panelRibbed.StemWidth = stemWidthTop;
+                            panelRibbed.TotalDepth = depth;
+                            panelRibbed.Modifiers = modifiers;
+
+                            propertyList.Add(panelRibbed);
+                            break;
+                        case eSlabType.Waffle:
+                            Waffle panelWaffle = new Waffle();
+
+                            model.PropArea.GetSlabWaffle(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref ribSpacing2nd);
+
+                            panelWaffle.CustomData[AdapterId] = id;
+                            panelWaffle.Material = ReadMaterials(new List<string>() { material })[0];
+                            panelWaffle.SpacingX = ribSpacing;
+                            panelWaffle.SpacingY = ribSpacing2nd;
+                            panelWaffle.StemWidthX = stemWidthTop;
+                            panelWaffle.StemWidthY = stemWidthTop; //ETABS does not appear to support direction dependent stem width
+                            panelWaffle.Thickness = thickness;
+                            panelWaffle.TotalDepthX = depth;
+                            panelWaffle.TotalDepthY = depth; // ETABS does not appear to to support direction dependent depth
+                            panelWaffle.Type = PanelType.Slab;
+                            panelWaffle.Modifiers = modifiers;
+
+                            propertyList.Add(panelWaffle);
+                            break;
+                        case eSlabType.Slab:
+                        case eSlabType.Drop:
+                        case eSlabType.Stiff_DO_NOT_USE:
+                        default:
+                            ConstantThickness panelConstant = new ConstantThickness();
+                            panelConstant.CustomData[AdapterId] = id;
+                            panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
+                            panelConstant.Thickness = thickness;
+                            panelConstant.Type = PanelType.Slab;
+                            panelConstant.Modifiers = modifiers;
+
+                            propertyList.Add(panelConstant);
+                            break;
+                    }
+                }
+            }
 
             return propertyList;
         }
