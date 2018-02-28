@@ -51,7 +51,7 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                barList.Add(modelData.model.FrameObj.ToBHoM(id, modelData));
+                barList.Add(model.FrameObj.ToBHoM(id, modelData));
             }
             return barList;
         }
@@ -64,7 +64,7 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                modelData.model.PropFrame.GetNameList(ref nameCount, ref names);
+                model.PropFrame.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
@@ -72,8 +72,8 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                modelData.model.PropFrame.GetTypeOAPI(id, ref propertyType);
-                propList.Add(BH.Engine.ETABS.Convert.GetSectionProperty(modelData, id, propertyType));
+                model.PropFrame.GetTypeOAPI(id, ref propertyType);
+                propList.Add(Helper.GetSectionProperty(model, id, propertyType));
             }
             return propList;
         }
@@ -86,13 +86,13 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                modelData.model.PropMaterial.GetNameList(ref nameCount, ref names);
+                model.PropMaterial.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
             foreach (string id in ids)
             {
-                materialList.Add(BH.Engine.ETABS.Convert.GetMaterial(modelData, id));
+                materialList.Add(Helper.GetMaterial(model, id));
             }
 
             return materialList;
