@@ -11,6 +11,8 @@ namespace BH.Adapter.ETABS
 {
     public static partial class Helper
     {
+        public const string AdapterId = "ETABS_id";
+
         public static ISectionProperty GetSectionProperty(cSapModel model, string propertyName, eFramePropType propertyType)
         {
             //if (modelData.sectionDict.ContainsKey(propertyName))
@@ -41,14 +43,14 @@ namespace BH.Adapter.ETABS
             switch (propertyType)
             {
                 case eFramePropType.I:
-                    modelData.model.PropFrame.GetISection(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref t2b, ref tfb, ref colour, ref notes, ref guid);
+                    model.PropFrame.GetISection(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref t2b, ref tfb, ref colour, ref notes, ref guid);
                     if (t2==t2b)
                         dimensions = new StandardISectionDimensions(t3, t2, tw, tf, 0, 0);
                     else
                         dimensions = new FabricatedISectionDimensions(t3, t2, t2b, tw, tf, tfb, 0);
                     break;
                 case eFramePropType.Channel:
-                    modelData.model.PropFrame.GetChannel(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
+                    model.PropFrame.GetChannel(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
                     dimensions = new StandardChannelSectionDimensions(t3, t2, tw, tf, 0, 0);
                     break;
                 case eFramePropType.T:
@@ -56,32 +58,32 @@ namespace BH.Adapter.ETABS
                 case eFramePropType.Angle:
                     break;
                 case eFramePropType.DblAngle:
-                    modelData.model.PropFrame.GetAngle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
+                    model.PropFrame.GetAngle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
                     dimensions = new StandardAngleSectionDimensions(t3, t2, tw, tf, 0, 0);
                     break;
                 case eFramePropType.Box:
-                    modelData.model.PropFrame.GetTube(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
+                    model.PropFrame.GetTube(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
                     if (tf == tw)
                         dimensions = new StandardBoxDimensions(t3, t2, tf, 0, 0);
                     else
                         dimensions = new FabricatedBoxDimensions(t3, t2, tw, tf, tf, 0);
                     break;
                 case eFramePropType.Pipe:
-                    modelData.model.PropFrame.GetPipe(propertyName, ref fileName, ref materialName, ref t3, ref tw, ref colour, ref notes, ref guid);
+                    model.PropFrame.GetPipe(propertyName, ref fileName, ref materialName, ref t3, ref tw, ref colour, ref notes, ref guid);
                     dimensions = new TubeDimensions(t3, tw);
                     break;
                 case eFramePropType.Rectangular:
-                    modelData.model.PropFrame.GetRectangle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref colour, ref notes, ref guid);
+                    model.PropFrame.GetRectangle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref colour, ref notes, ref guid);
                     dimensions = new RectangleSectionDimensions(t3, t2, 0);
                     break;
                 case eFramePropType.Circle:
-                    modelData.model.PropFrame.GetCircle(propertyName, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
+                    model.PropFrame.GetCircle(propertyName, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
                     dimensions = new CircleDimensions(t3);
                     break;
                 case eFramePropType.General:
                     //this looks to return enough infor for explicitSection() !
                     constructSelector = "explicit";
-                    modelData.model.PropFrame.GetGeneral(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref Area, ref As2, ref As3, ref Torsion, ref I22, ref I33, ref S22, ref S33, ref Z22, ref Z33, ref R22, ref R33, ref colour, ref notes, ref guid);
+                    model.PropFrame.GetGeneral(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref Area, ref As2, ref As3, ref Torsion, ref I22, ref I33, ref S22, ref S33, ref Z22, ref Z33, ref R22, ref R33, ref colour, ref notes, ref guid);
                     break;
                 case eFramePropType.DbChannel:
                     break;

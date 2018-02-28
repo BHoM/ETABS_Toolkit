@@ -23,7 +23,7 @@ namespace BH.Adapter.ETABS
             {
                 foreach (T obj in objects)
                 {
-                    success = CreateObject(obj as dynamic, modelData);
+                    success = CreateObject(obj as dynamic);
                     //if (!success)
                     //    break;
                     //((BH.oM.Base.IBHoMObject)obj).ToETABS(modelData);
@@ -34,11 +34,11 @@ namespace BH.Adapter.ETABS
                 success = false;
             }
 
-            modelData.model.View.RefreshView();
+            model.View.RefreshView();
             return success;
         }
 
-        private bool CreateObject(Node bhNode, ModelData modelData)
+        private bool CreateObject(Node bhNode)
         {
             bool success = true;
             int retA = 0;
@@ -49,7 +49,7 @@ namespace BH.Adapter.ETABS
             string bhId = bhNode.CustomData[AdapterId].ToString();
             name = bhId;
 
-            retA = modelData.model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
+            retA = model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
             if (name != bhId)
                 success = false; //this is not necessary if you can guarantee that it is impossible that this bhId does not match any existing name in ETABS !!!
 
@@ -71,8 +71,8 @@ namespace BH.Adapter.ETABS
                 spring[4] = bhNode.Constraint.RotationalStiffnessY;
                 spring[5] = bhNode.Constraint.RotationalStiffnessZ;
 
-                retB = modelData.model.PointObj.SetRestraint(name, ref restraint);
-                retC = modelData.model.PointObj.SetSpring(name, ref spring);
+                retB = model.PointObj.SetRestraint(name, ref restraint);
+                retC = model.PointObj.SetSpring(name, ref spring);
             }
 
             if (retA != 0 || retB != 0 || retC != 0)
@@ -81,7 +81,7 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
-        private bool CreateObject(Bar bhBar, ModelData modelData)
+        private bool CreateObject(Bar bhBar)
         {
             bool success = true;
             int retA = 0;
@@ -92,12 +92,12 @@ namespace BH.Adapter.ETABS
             string bhId = bhBar.CustomData[AdapterId].ToString();
             name = bhId;
 
-            retA = modelData.model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
+            retA = model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
             if (bhId != name)
                 success = false;
 
             //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
-            retB = modelData.model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
+            retB = model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
             //model.FrameObj.SetReleases();
             //model.FrameObj.SetGroupAssign();
             if (retA != 0 || retB != 0 || retC != 0)
@@ -106,25 +106,25 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
-        private bool CreateObject(ISectionProperty bhSection, ModelData modelData)
+        private bool CreateObject(ISectionProperty bhSection)
         {
             bool success = true;
 
-            BH.Engine.ETABS.Convert.SetSectionProperty(modelData, bhSection);//TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
+            Helper.SetSectionProperty(model, bhSection);//TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
 
             return success;
         }
 
-        private bool CreateObject(Material material, ModelData modelData)
+        private bool CreateObject(Material material)
         {
             bool success = true;
 
-            BH.Engine.ETABS.Convert.SetMaterial(modelData, material); //TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
+            Helper.SetMaterial(model, material); //TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
 
             return success;
         }
 
-        private bool CreateObject(Property2D property2d, ModelData modelData)
+        private bool CreateObject(Property2D property2d)
         {
             bool success = true;
             int retA = 0;
@@ -135,23 +135,23 @@ namespace BH.Adapter.ETABS
             switch (panelType)
             {
                 case PanelType.Slab:
-                    retA = modelData.model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
+                    retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
                     break;
                 case PanelType.Wall:
-                    retA = modelData.model.PropArea.SetWall(propertyName, ETABS2016.eWallPropType.Specified, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
+                    retA = model.PropArea.SetWall(propertyName, ETABS2016.eWallPropType.Specified, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
                     break;
                 case PanelType.PileCap:
                 case PanelType.DropPanel:
                 case PanelType.Undefined:
                 default:
-                    retA = modelData.model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
+                    retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
                     break;
             }
 
             if (property2d.Modifiers != null)
             {
                 double[] modifier = property2d.Modifiers;
-                modelData.model.PropArea.SetModifiers(propertyName, ref modifier);
+                model.PropArea.SetModifiers(propertyName, ref modifier);
             }
 
             if (retA != 0)
@@ -160,7 +160,7 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
-        private bool CreateObject(PanelPlanar bhPanel, ModelData modelData)
+        private bool CreateObject(PanelPlanar bhPanel)
         {
             bool success = true;
             int retA = 0;
@@ -185,7 +185,7 @@ namespace BH.Adapter.ETABS
                 z[i] = boundaryPoints[i].Z;
             }
 
-            retA = modelData.model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
+            retA = model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
             if (retA != 0)
                 return false;
 
@@ -211,8 +211,8 @@ namespace BH.Adapter.ETABS
                     }
 
                     string openingName = name + "_Opening_" + i;
-                    modelData.model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName,"");//<-- setting panel property to empty string, verify that this is correct
-                    modelData.model.AreaObj.SetOpening(openingName, true);
+                    model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName,"");//<-- setting panel property to empty string, verify that this is correct
+                    model.AreaObj.SetOpening(openingName, true);
                 }
             }
 
