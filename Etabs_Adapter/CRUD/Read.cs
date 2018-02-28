@@ -32,6 +32,37 @@ namespace BH.Adapter.ETABS
         {
             List<Node> nodeList = new List<Node>();
 
+            int nameCount = 0;
+            string[] nameArr = { };
+
+            if (ids == null)
+            {
+                model.PointObj.GetNameList(ref nameCount, ref nameArr);
+                ids = nameArr.ToList();
+            }
+
+            foreach (string id in ids)
+            {
+                Node bhNode = new Node();
+                double x, y, z;
+                x = y = z = 0;
+                bool[] restraint = new bool[6];
+                double[] spring = new double[6];
+
+                model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
+                bhNode.Position = new oM.Geometry.Point() { X = x, Y = y, Z = z };
+                bhNode.CustomData.Add(AdapterId, id);
+
+                model.PointObj.GetRestraint(id, ref restraint);
+                model.PointObj.SetSpring(id, ref spring);
+                bhNode.Constraint = Helper.GetConstraint6DOF(restraint, spring);
+
+
+                nodeList.Add(bhNode);
+            }
+
+
+
             nodeList = modelData.model.PointObj.ToBHoM(ids);
 
             return nodeList;
@@ -45,13 +76,40 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                modelData.model.FrameObj.GetNameList(ref nameCount, ref names);
+                model.FrameObj.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
             foreach (string id in ids)
             {
-                barList.Add(model.FrameObj.ToBHoM(id, modelData));
+                Bar bhBar = new Bar();
+                bhBar.CustomData.Add(AdapterId, id);
+                string startId = "";
+                string endId = "";
+                model.FrameObj.GetPoints(id, ref startId, ref endId);
+
+                List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
+                bhBar.StartNode = endNodes[0];
+                bhBar.EndNode = endNodes[1];
+
+                bool[] restraintStart = new bool[6];
+                double[] springStart = new double[6];
+                bool[] restraintEnd = new bool[6];
+                double[] springEnd = new double[6];
+
+                model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
+                bhBar.Release = new BarRelease();
+                bhBar.Release.StartRelease = Helper.GetConstraint6DOF(restraintStart, springStart);
+                bhBar.Release.EndRelease = Helper.GetConstraint6DOF(restraintEnd, springEnd);
+
+                eFramePropType propertyType = eFramePropType.General;
+                string propertyName = "";
+                string sAuto = "";
+                model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
+                model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
+                bhBar.SectionProperty = Helper.GetSectionProperty(model, propertyName, propertyType);
+
+                barList.Add(bhBar);
             }
             return barList;
         }
