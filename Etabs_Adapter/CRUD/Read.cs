@@ -10,6 +10,7 @@ using BH.oM.Structural.Properties;
 using BH.oM.Common.Materials;
 using ETABS2016;
 using BH.Engine.ETABS;
+using BH.oM.Geometry;
 
 namespace BH.Adapter.ETABS
 {
@@ -271,7 +272,46 @@ namespace BH.Adapter.ETABS
                 ids = nameArr.ToList();
             }
 
+            foreach (string id in ids)
+            {
+                string propertyName = "";
 
+                model.AreaObj.GetProperty(id, ref propertyName);
+                Property2D panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
+
+                PanelPlanar panel = new PanelPlanar();
+                panel.CustomData[AdapterId] = id;
+
+                #region get perimiter - candidate fo a helper method
+
+                string[] pName = null;
+                int pointCount = 0;
+                double pX1 = 0;
+                double pY1 = 0;
+                double pZ1 = 0;
+                model.AreaObj.GetPoints(id, ref pointCount, ref pName);
+                List<Point> pts = new List<Point>();
+                for (int j = 0; j < pointCount; j++)
+                {
+                    model.PointObj.GetCoordCartesian(pName[j], ref pX1, ref pY1, ref pZ1);
+                    pts.Add(new Point() { X=pX1, Y=pY1, Z=pZ1 });
+                }
+                pts.Add(pts[0]);
+
+                Polyline pl = new Polyline() { ControlPoints = pts };
+
+                #endregion
+
+                Edge edge = new Edge();
+                edge.Curve = pl;// <---- this is not enough properties set
+
+                panel.ExternalEdges = new List<Edge>() { edge };
+                //panel.Openings =
+                panel.Property = panelProperty;
+                
+
+                panelList.Add(panel);
+            }
 
             return panelList;
         }
