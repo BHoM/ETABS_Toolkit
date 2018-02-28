@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structural.Elements;
-using BH.Engine.ETABS;
 using ETABS2016;
 
 namespace BH.Adapter.ETABS

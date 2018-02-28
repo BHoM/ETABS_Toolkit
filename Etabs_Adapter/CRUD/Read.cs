@@ -152,5 +152,45 @@ namespace BH.Adapter.ETABS
 
             return materialList;
         }
+
+        private List<Property2D> ReadProperty2d(List<string> ids = null)
+        {
+            List<Property2D> propertyList = new List<Property2D>();
+            int nameCount = 0;
+            string[] nameArr = { };
+
+            if (ids == null)
+            {
+                model.PropArea.GetNameList(ref nameCount, ref nameArr);
+                ids = nameArr.ToList();
+            }
+
+            foreach (string id in ids)
+            {
+                Property2D bhProperty = new Property2D();
+            }
+
+
+            return propertyList;
+        }
+
+        private List<PanelPlanar> ReadPanel(List<string> ids = null)
+        {
+            List<PanelPlanar> panelList = new List<PanelPlanar>();
+            int nameCount = 0;
+            string[] nameArr = { };
+
+            if (ids == null)
+            {
+                model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+                ids = nameArr.ToList();
+            }
+
+
+
+            return panelList;
+        }
+
+
     }
 }

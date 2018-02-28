@@ -132,20 +132,34 @@ namespace BH.Adapter.ETABS
             PanelType panelType = property2d.Type;
             string propertyName = property2d.CustomData[AdapterId].ToString();
 
-            switch (panelType)
+            if (panelType == PanelType.Wall)
             {
-                case PanelType.Slab:
+                retA = model.PropArea.SetWall(propertyName, ETABS2016.eWallPropType.Specified, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
+            }
+            else
+            {
+                if (property2d.GetType() == typeof(Waffle))
+                {
+                    Waffle waffleProperty = (Waffle)property2d;
+                    retA = model.PropArea.SetSlabWaffle(propertyName, waffleProperty.TotalDepthX, waffleProperty.Thickness, waffleProperty.StemWidthX, waffleProperty.StemWidthX, waffleProperty.SpacingX, waffleProperty.SpacingY);
+                }
+
+                if (property2d.GetType() == typeof(Ribbed))
+                {
+                    Ribbed ribbedProperty = (Ribbed)property2d;
+                    retA = model.PropArea.SetSlabRibbed(propertyName, ribbedProperty.TotalDepth, ribbedProperty.Thickness, ribbedProperty.StemWidth, ribbedProperty.StemWidth, ribbedProperty.Spacing, (int)ribbedProperty.Direction);
+                }
+
+                if (property2d.GetType() == typeof(LoadingPanelProperty))
+                {
+                    //not really used ATM
                     retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
-                    break;
-                case PanelType.Wall:
-                    retA = model.PropArea.SetWall(propertyName, ETABS2016.eWallPropType.Specified, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
-                    break;
-                case PanelType.PileCap:
-                case PanelType.DropPanel:
-                case PanelType.Undefined:
-                default:
+                }
+
+                if (property2d.GetType() == typeof(ConstantThickness))
+                {
                     retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
-                    break;
+                }
             }
 
             if (property2d.Modifiers != null)
