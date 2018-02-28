@@ -17,7 +17,7 @@ namespace BH.Adapter.ETABS
         public const string ID = "ETABS_id";
         private cOAPI app;
         private cSapModel model;//deprecated !!!
-        private ModelData modelData;
+        //private ModelData modelData;
         
         public ETABSAdapter(string filePath = "")
         {
@@ -29,7 +29,7 @@ namespace BH.Adapter.ETABS
             Config.CloneBeforePush = true;
 
             string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
-            cHelper helper = new Helper();
+            cHelper helper = new ETABS2016.Helper();
 
             object runningInstance = null;
             runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");

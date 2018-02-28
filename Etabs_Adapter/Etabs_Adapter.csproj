@@ -75,6 +75,9 @@
     <Compile Include="CRUD\Read.cs" />
     <Compile Include="ETABSAdapter.cs" />
     <Compile Include="ETABSEnums.cs" />
+    <Compile Include="Helpers\Constraint.cs" />
+    <Compile Include="Helpers\Material.cs" />
+    <Compile Include="Helpers\Section.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Comparer.cs" />
     <Compile Include="Types\DependencyTypes.cs" />
