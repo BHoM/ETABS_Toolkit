@@ -62,9 +62,6 @@ namespace BH.Adapter.ETABS
             }
 
 
-
-            nodeList = modelData.model.PointObj.ToBHoM(ids);
-
             return nodeList;
         }
 

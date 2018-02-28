@@ -53,7 +53,7 @@ namespace BH.Adapter.ETABS
                     model.File.NewBlank();
             }
 
-            modelData = new ModelData(model);
+            //modelData = new ModelData(model);
         }
 
     }
