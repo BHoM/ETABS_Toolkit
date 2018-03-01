@@ -304,6 +304,7 @@ namespace BH.Adapter.ETABS
 
                 Edge edge = new Edge();
                 edge.Curve = pl;// <---- this is not enough properties set
+                
 
                 panel.ExternalEdges = new List<Edge>() { edge };
                 //panel.Openings =
