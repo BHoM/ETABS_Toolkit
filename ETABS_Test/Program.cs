@@ -19,12 +19,12 @@ namespace ETABS_Test
         {
             ETABSAdapter app = new ETABSAdapter();
 
-            TestPushBars(app);
+            TestPushElements(app);
             TestPullBars(app);
 
         }
 
-        private static void TestPushBars(ETABSAdapter app)
+        private static void TestPushElements(ETABSAdapter app)
         {
             Console.WriteLine("Testing Push Bars ...");
 
@@ -157,13 +157,26 @@ namespace ETABS_Test
                 b.SectionProperty = sec2b;
 
 
+            List<PanelPlanar> panels = new List<PanelPlanar>();
+            Polyline outline = new Polyline();
+            outline.ControlPoints = new List<Point>() { p1, p2, p3 };
+            List<ICurve> nothing = null;
+            PanelPlanar panelA = Create.PanelPlanar(outline, nothing);
+            panels.Add(panelA);
+            outline.ControlPoints = new List<Point>() { p3, p4, p5 };
+            PanelPlanar panelB = Create.PanelPlanar(outline, nothing);
+            panels.Add(panelB);
+
+            
             app.Push(nodesA, "Nodes");
             app.Push(nodesB, "Nodes");
             app.Push(bars1, "Bars1");
             app.Push(bars2a, "Bars2");
             app.Push(bars2b, "Bars2");
 
-            Console.WriteLine("All Bars Pushed !");
+            //app.Push(panels, "panels");
+
+            Console.WriteLine("All elements Pushed !");
             Console.ReadLine();
         }
 
