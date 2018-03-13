@@ -26,6 +26,10 @@ namespace BH.Adapter.ETABS
                 return ReadSectionProperties(ids as dynamic);
             else if (type == typeof(Material))
                 return ReadMaterials(ids as dynamic);
+            else if (type == typeof(PanelPlanar))
+                return ReadPanel(ids as dynamic);
+            else if (type == typeof(Property2D))
+                return ReadProperty2d(ids as dynamic);
             return null;//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
 

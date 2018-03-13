@@ -9,6 +9,7 @@ using BH.oM.Structural.Properties;
 using BH.oM.Structural.Elements;
 using BH.oM.Geometry;
 using BH.Engine.Structure;
+using BH.Engine.Geometry;
 using BH.oM.DataManipulation.Queries;
 
 namespace ETABS_Test
@@ -42,9 +43,9 @@ namespace ETABS_Test
             Point p7b = new Point { X = 1, Y = 1, Z = 2 };
             Point p8b = new Point { X = 0, Y = 1, Z = 2 };
 
-            Constraint6DOF pin = Create.PinConstraint6DOF();
-            Constraint6DOF fix = Create.FixConstraint6DOF();
-            Constraint6DOF full = Create.FullReleaseConstraint6DOF();
+            Constraint6DOF pin = BH.Engine.Structure.Create.PinConstraint6DOF();
+            Constraint6DOF fix = BH.Engine.Structure.Create.FixConstraint6DOF();
+            Constraint6DOF full = BH.Engine.Structure.Create.FullReleaseConstraint6DOF();
 
             List<Node> nodesA = new List<Node>();
 
@@ -82,30 +83,30 @@ namespace ETABS_Test
             nodesB.Add(n3b);
             nodesB.Add(n4b);
 
-            Bar bar1 = Create.Bar(new Node { Position = p1 }, new Node { Position = p2 });
-            Bar bar2 = Create.Bar(new Node { Position = p2 }, new Node { Position = p3 });
-            Bar bar3 = Create.Bar(new Node { Position = p3 }, new Node { Position = p4 });
-            Bar bar4 = Create.Bar(new Node { Position = p4 }, new Node { Position = p1 });
+            Bar bar1 = BH.Engine.Structure.Create.Bar(new Node { Position = p1 }, new Node { Position = p2 });
+            Bar bar2 = BH.Engine.Structure.Create.Bar(new Node { Position = p2 }, new Node { Position = p3 });
+            Bar bar3 = BH.Engine.Structure.Create.Bar(new Node { Position = p3 }, new Node { Position = p4 });
+            Bar bar4 = BH.Engine.Structure.Create.Bar(new Node { Position = p4 }, new Node { Position = p1 });
 
-            Bar bar5 = Create.Bar(new Node { Position = p5 }, new Node { Position = p6 });
-            Bar bar6 = Create.Bar(new Node { Position = p6 }, new Node { Position = p7 });
-            Bar bar7 = Create.Bar(new Node { Position = p7 }, new Node { Position = p8 });
-            Bar bar8 = Create.Bar(new Node { Position = p8 }, new Node { Position = p5 });
+            Bar bar5 = BH.Engine.Structure.Create.Bar(new Node { Position = p5 }, new Node { Position = p6 });
+            Bar bar6 = BH.Engine.Structure.Create.Bar(new Node { Position = p6 }, new Node { Position = p7 });
+            Bar bar7 = BH.Engine.Structure.Create.Bar(new Node { Position = p7 }, new Node { Position = p8 });
+            Bar bar8 = BH.Engine.Structure.Create.Bar(new Node { Position = p8 }, new Node { Position = p5 });
 
-            Bar bar9 = Create.Bar(new Node { Position = p1 }, new Node { Position = p5 });
-            Bar bar10 = Create.Bar(new Node { Position = p2 }, new Node { Position = p6 });
-            Bar bar11 = Create.Bar(new Node { Position = p3 }, new Node { Position = p7 });
-            Bar bar12 = Create.Bar(new Node { Position = p4 }, new Node { Position = p8 });
+            Bar bar9 = BH.Engine.Structure.Create.Bar(new Node { Position = p1 }, new Node { Position = p5 });
+            Bar bar10 = BH.Engine.Structure.Create.Bar(new Node { Position = p2 }, new Node { Position = p6 });
+            Bar bar11 = BH.Engine.Structure.Create.Bar(new Node { Position = p3 }, new Node { Position = p7 });
+            Bar bar12 = BH.Engine.Structure.Create.Bar(new Node { Position = p4 }, new Node { Position = p8 });
 
-            Bar bar5b = Create.Bar(new Node { Position = p5b }, new Node { Position = p6b });
-            Bar bar6b = Create.Bar(new Node { Position = p6b }, new Node { Position = p7b });
-            Bar bar7b = Create.Bar(new Node { Position = p7b }, new Node { Position = p8b });
-            Bar bar8b = Create.Bar(new Node { Position = p8b }, new Node { Position = p5b });
+            Bar bar5b = BH.Engine.Structure.Create.Bar(new Node { Position = p5b }, new Node { Position = p6b });
+            Bar bar6b = BH.Engine.Structure.Create.Bar(new Node { Position = p6b }, new Node { Position = p7b });
+            Bar bar7b = BH.Engine.Structure.Create.Bar(new Node { Position = p7b }, new Node { Position = p8b });
+            Bar bar8b = BH.Engine.Structure.Create.Bar(new Node { Position = p8b }, new Node { Position = p5b });
 
-            Bar bar9b = Create.Bar(new Node { Position = p1 }, new Node { Position = p5b });
-            Bar bar10b = Create.Bar(new Node { Position = p2 }, new Node { Position = p6b });
-            Bar bar11b = Create.Bar(new Node { Position = p3 }, new Node { Position = p7b });
-            Bar bar12b = Create.Bar(new Node { Position = p4 }, new Node { Position = p8b });
+            Bar bar9b = BH.Engine.Structure.Create.Bar(new Node { Position = p1 }, new Node { Position = p5b });
+            Bar bar10b = BH.Engine.Structure.Create.Bar(new Node { Position = p2 }, new Node { Position = p6b });
+            Bar bar11b = BH.Engine.Structure.Create.Bar(new Node { Position = p3 }, new Node { Position = p7b });
+            Bar bar12b = BH.Engine.Structure.Create.Bar(new Node { Position = p4 }, new Node { Position = p8b });
 
             List<Bar> bars1 = new List<Bar>();
             List<Bar> bars2a = new List<Bar>();
@@ -134,11 +135,11 @@ namespace ETABS_Test
             bars2b.Add(bar11b);
             bars2b.Add(bar12b);
 
-            ISectionProperty sec1 = Create.StandardSteelISection(110, 10, 80, 20);
-            sec1.Material = BH.Engine.Common.Create.Material("otherSteel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500); //BH.Engine.Common.Create.Material("blue steel");//<-- this creates material of type aluminium
+            ISectionProperty sec1 = BH.Engine.Structure.Create.StandardSteelISection(110, 10, 80, 20);
+            sec1.Material = BH.Engine.Common.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500); //BH.Engine.Common.Create.Material("blue steel");//<-- this creates material of type aluminium
             sec1.Name = "Section 1";
 
-            ISectionProperty sec2a = Create.ConcreteRectangleSection(200, 120);
+            ISectionProperty sec2a = BH.Engine.Structure.Create.ConcreteRectangleSection(200, 120);
             sec2a.Material = BH.Engine.Common.Create.Material("myConcrete", MaterialType.Concrete, 10, 10, 10, 10);
             sec2a.Name = "Section 2a";
 
@@ -159,12 +160,18 @@ namespace ETABS_Test
 
             List<PanelPlanar> panels = new List<PanelPlanar>();
             Polyline outline = new Polyline();
-            outline.ControlPoints = new List<Point>() { p1, p2, p3 };
+            outline.ControlPoints = new List<Point>() { p1, p2, p3, p4, p1 };
+            Material steel = sec1.Material;// BH.Engine.Common.Create.Material("panelSteel");
+            Property2D panelProp = BH.Engine.Structure.Create.ConstantThickness(100, steel);
+            panelProp.Name = "panelProperty";
             List<ICurve> nothing = null;
-            PanelPlanar panelA = Create.PanelPlanar(outline, nothing);
+            PanelPlanar panelA = BH.Engine.Structure.Create.PanelPlanar(outline, nothing);
+            panelA.Property = panelProp;
             panels.Add(panelA);
-            outline.ControlPoints = new List<Point>() { p3, p4, p5 };
-            PanelPlanar panelB = Create.PanelPlanar(outline, nothing);
+
+            outline.ControlPoints = new List<Point>() { p5, p6, p7, p8, p5 };
+            PanelPlanar panelB = BH.Engine.Structure.Create.PanelPlanar(outline, nothing);
+            panelB.Property = panelProp;
             panels.Add(panelB);
 
             
@@ -174,7 +181,7 @@ namespace ETABS_Test
             app.Push(bars2a, "Bars2");
             app.Push(bars2b, "Bars2");
 
-            //app.Push(panels, "panels");
+            app.Push(panels, "panels");
 
             Console.WriteLine("All elements Pushed !");
             Console.ReadLine();
