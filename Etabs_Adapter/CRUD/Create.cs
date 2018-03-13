@@ -130,7 +130,7 @@ namespace BH.Adapter.ETABS
             int retA = 0;
 
             PanelType panelType = property2d.Type;
-            string propertyName = property2d.CustomData[AdapterId].ToString();
+            string propertyName = property2d.Name;// property2d.CustomData[AdapterId].ToString();
 
             if (panelType == PanelType.Wall)
             {
@@ -179,7 +179,6 @@ namespace BH.Adapter.ETABS
             bool success = true;
             int retA = 0;
             
-            bhPanel.ExternalEdges = null;
             string name = bhPanel.CustomData[AdapterId].ToString();
             string propertyName = bhPanel.Property.Name;
             List<BH.oM.Geometry.Point> boundaryPoints = new List<oM.Geometry.Point>();

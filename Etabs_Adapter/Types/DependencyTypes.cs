@@ -45,6 +45,7 @@ namespace BH.Adapter.ETABS
             {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
             {typeof(ISectionProperty), new List<Type> { typeof(Material) } },
             {typeof(PanelPlanar), new List<Type> { typeof(Property2D), typeof(Material) } },
+            {typeof(Property2D), new List<Type> { typeof(Material) } },
 
         };
 
