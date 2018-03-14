@@ -318,7 +318,6 @@ namespace BH.Adapter.ETABS
                         opening.Edges = new List<Edge>() { new Edge() { Curve = kvp.Value } };
                         panel.Openings.Add(opening);
                     }
-
                 }
 
                 panel.Property = panelProperty;

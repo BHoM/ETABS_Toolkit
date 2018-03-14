@@ -15,8 +15,7 @@ namespace BH.Adapter.ETABS
 
         public const string ID = "ETABS_id";
         private cOAPI app;
-        private cSapModel model;//deprecated !!!
-        //private ModelData modelData;
+        private cSapModel model;
         
         public ETABSAdapter(string filePath = "")
         {
@@ -52,7 +51,6 @@ namespace BH.Adapter.ETABS
                     model.File.NewBlank();
             }
 
-            //modelData = new ModelData(model);
         }
 
     }

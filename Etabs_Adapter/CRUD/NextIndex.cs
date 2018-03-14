@@ -52,6 +52,14 @@ namespace BH.Adapter.ETABS
                     model.PropFrame.GetNameList(ref nameCount, ref names);
                     lastId = Array.ConvertAll(names, int.Parse).Max();
                     break;
+                case "Property2D":
+                    model.PropArea.GetNameList(ref nameCount, ref names);
+                    lastId = nameCount;//'name' is not a int-convertible string
+                    break;
+                case "PanelPlanar":
+                    model.AreaObj.GetNameList(ref nameCount, ref names);
+                    lastId = nameCount;//'name' is not a int-convertible string
+                    break;
 
                 default:
                     lastId = 0;
