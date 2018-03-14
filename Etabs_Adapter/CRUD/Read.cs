@@ -276,8 +276,25 @@ namespace BH.Adapter.ETABS
                 ids = nameArr.ToList();
             }
 
+            //get openings, if any
+            model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+            bool isOpening = false;
+            Dictionary<string, Polyline> openingDict = new Dictionary<string, Polyline>();
+            foreach (string name in nameArr)
+            {
+                model.AreaObj.GetOpening(name, ref isOpening);
+                if (isOpening)
+                {
+                    openingDict.Add(name, Helper.GetPanelPerimeter(model,name));
+
+                }
+            }
+
             foreach (string id in ids)
             {
+                if (openingDict.ContainsKey(id))
+                    continue;
+
                 string propertyName = "";
 
                 model.AreaObj.GetProperty(id, ref propertyName);
@@ -286,28 +303,11 @@ namespace BH.Adapter.ETABS
                 PanelPlanar panel = new PanelPlanar();
                 panel.CustomData[AdapterId] = id;
 
-                #region get perimiter - candidate fo a helper method
-
-                string[] pName = null;
-                int pointCount = 0;
-                double pX1 = 0;
-                double pY1 = 0;
-                double pZ1 = 0;
-                model.AreaObj.GetPoints(id, ref pointCount, ref pName);
-                List<Point> pts = new List<Point>();
-                for (int j = 0; j < pointCount; j++)
-                {
-                    model.PointObj.GetCoordCartesian(pName[j], ref pX1, ref pY1, ref pZ1);
-                    pts.Add(new Point() { X=pX1, Y=pY1, Z=pZ1 });
-                }
-                pts.Add(pts[0]);
-
-                Polyline pl = new Polyline() { ControlPoints = pts };
-
-                #endregion
+                Polyline pl = Helper.GetPanelPerimeter(model, id);
 
                 Edge edge = new Edge();
                 edge.Curve = pl;// <---- this is not enough properties set
+                //edge.Constraint = new Constraint4DOF();// <---- cannot see anyway to set this via API!! TODO
                 
 
                 panel.ExternalEdges = new List<Edge>() { edge };
