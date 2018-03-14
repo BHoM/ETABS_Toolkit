@@ -49,7 +49,7 @@ namespace BH.Engine.ETABS
                 m.Type = GetMaterialType(matType);
                 
                 m.PoissonsRatio = v;
-                m.ShearModulus = g;
+                //m.ShearModulus = g;
                 m.YoungsModulus = e;
                 m.CoeffThermalExpansion = thermCo;
                 m.Density = mass;

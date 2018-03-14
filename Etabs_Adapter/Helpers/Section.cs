@@ -245,7 +245,7 @@ namespace BH.Adapter.ETABS
 
         private static void SetSpecificSection(ConcreteSection section, cSapModel model)
         {
-            SetSectionDimensions(section.SectionDimension, section.Name, section.Material.Name, model);
+            SetSectionDimensions(section.SectionDimensions, section.Name, section.Material.Name, model);
         }
 
         private static void SetSpecificSection(CableSection section, cSapModel model)

@@ -11,6 +11,7 @@ using BH.oM.Common.Materials;
 using ETABS2016;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
+using BH.Engine.Geometry;
 
 namespace BH.Adapter.ETABS
 {
@@ -286,7 +287,6 @@ namespace BH.Adapter.ETABS
                 if (isOpening)
                 {
                     openingDict.Add(name, Helper.GetPanelPerimeter(model,name));
-
                 }
             }
 
@@ -306,11 +306,21 @@ namespace BH.Adapter.ETABS
                 Polyline pl = Helper.GetPanelPerimeter(model, id);
 
                 Edge edge = new Edge();
-                edge.Curve = pl;// <---- this is not enough properties set
-                //edge.Constraint = new Constraint4DOF();// <---- cannot see anyway to set this via API!! TODO
-                
+                edge.Curve = pl;
+                //edge.Constraint = new Constraint4DOF();// <---- cannot see anyway to set this via API and for some reason constraints are not being set in old version of etabs toolkit TODO
 
                 panel.ExternalEdges = new List<Edge>() { edge };
+                foreach(KeyValuePair<string, Polyline> kvp in openingDict)
+                {
+                    if (pl.IsContaining(kvp.Value.ControlPoints))
+                    {
+                        Opening opening = new Opening();
+                        opening.Edges = new List<Edge>() { new Edge() { Curve = kvp.Value } };
+                        panel.Openings.Add(opening);
+                    }
+
+                }
+
                 //panel.Openings =
                 panel.Property = panelProperty;
                 
