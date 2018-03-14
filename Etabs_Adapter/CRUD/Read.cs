@@ -321,9 +321,7 @@ namespace BH.Adapter.ETABS
 
                 }
 
-                //panel.Openings =
                 panel.Property = panelProperty;
-                
 
                 panelList.Add(panel);
             }
