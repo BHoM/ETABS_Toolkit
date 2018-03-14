@@ -170,7 +170,13 @@ namespace ETABS_Test
             panels.Add(panelA);
 
             outline.ControlPoints = new List<Point>() { p5, p6, p7, p8, p5 };
-            PanelPlanar panelB = BH.Engine.Structure.Create.PanelPlanar(outline, nothing);
+            Point op5 = new Point { X = 0.2, Y = 0.2, Z = 1 };
+            Point op6 = new Point { X = 0.8, Y = 0.2, Z = 1 };
+            Point op7 = new Point { X = 0.8, Y = 0.8, Z = 1 };
+            Point op8 = new Point { X = 0.2, Y = 0.8, Z = 1 };
+            Polyline hole = new Polyline() { ControlPoints = new List<Point>() { op5, op6, op7, op8 } };
+            Opening opening = new Opening() { Edges = new List<Edge>() { new Edge() { Curve = hole } } };
+            PanelPlanar panelB = BH.Engine.Structure.Create.PanelPlanar(outline, new List<Opening>() { opening });
             panelB.Property = panelProp;
             panels.Add(panelB);
 
