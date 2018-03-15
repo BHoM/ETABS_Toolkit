@@ -272,6 +272,11 @@ namespace BH.Adapter.ETABS
             SetSpecificDimensions(sectionDimensions as dynamic, sectionName, materialName, model);
         }
 
+        private static void SetSpecificDimensions(TubeDimensions dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            model.PropFrame.SetPipe(sectionName, materialName, dimensions.Diameter, dimensions.Thickness);
+        }
+
         private static void SetSpecificDimensions(StandardBoxDimensions dimensions, string sectionName, string materialName, cSapModel model)
         {
             model.PropFrame.SetTube(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.Thickness, dimensions.Thickness);
