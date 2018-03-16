@@ -50,8 +50,8 @@ namespace BH.Adapter.ETABS
             name = bhId;
 
             retA = model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
-            if (name != bhId)
-                success = false; //this is not necessary if you can guarantee that it is impossible that this bhId does not match any existing name in ETABS !!!
+            //if (name != bhId)
+            //    success = false; //this is not necessary if you can guarantee that it is impossible that this bhId does not match any existing name in ETABS !!!
 
             if (bhNode.Constraint != null)
             {
@@ -93,8 +93,8 @@ namespace BH.Adapter.ETABS
             name = bhId;
 
             retA = model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
-            if (bhId != name)
-                success = false;
+            //if (bhId != name)
+            //    success = false;
 
             //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
             retB = model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
