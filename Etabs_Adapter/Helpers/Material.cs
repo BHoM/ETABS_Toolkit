@@ -64,6 +64,8 @@ namespace BH.Adapter.ETABS
                     m.CompressiveYieldStrength = compStr;
                     m.TensileYieldStrength = compStr * tensStr;
                 }
+
+                m.CustomData.Add(AdapterId,materialName);
                 //TODO: add get methods for Tendon and Rebar
                 return m;
             }
@@ -77,7 +79,8 @@ namespace BH.Adapter.ETABS
             int colour = 0;
             string guid = "";
             string notes = "";
-            string name = "";
+            string name = material.CustomData[AdapterId].ToString();
+
             if (model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
             {
                 model.PropMaterial.AddMaterial(ref name, GetMaterialType(material.Type), "", "", "");
