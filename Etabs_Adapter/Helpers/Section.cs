@@ -1,11 +1,13 @@
 ﻿using BH.oM.Structural.Properties;
 using BH.Engine.Structure;
+using CE = BH.Engine.Common;
 using ETABS2016;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Common.Materials;
 
 namespace BH.Adapter.ETABS
 {
@@ -76,18 +78,18 @@ namespace BH.Adapter.ETABS
                     model.PropFrame.GetRectangle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref colour, ref notes, ref guid);
                     dimensions = new RectangleSectionDimensions(t3, t2, 0);
                     break;
+                case eFramePropType.Auto://not member will have this assigned but it still exists in the propertyType list
+                    dimensions = new CircleDimensions(20);
+                    break;
                 case eFramePropType.Circle:
                     model.PropFrame.GetCircle(propertyName, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
                     dimensions = new CircleDimensions(t3);
                     break;
                 case eFramePropType.General:
-                    //this looks to return enough infor for explicitSection() !
                     constructSelector = "explicit";
                     model.PropFrame.GetGeneral(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref Area, ref As2, ref As3, ref Torsion, ref I22, ref I33, ref S22, ref S33, ref Z22, ref Z33, ref R22, ref R33, ref colour, ref notes, ref guid);
                     break;
                 case eFramePropType.DbChannel:
-                    break;
-                case eFramePropType.Auto:
                     break;
                 case eFramePropType.SD:
                     break;
@@ -153,7 +155,12 @@ namespace BH.Adapter.ETABS
             #endregion
 
 
-            oM.Common.Materials.Material material = GetMaterial(model, materialName);
+            oM.Common.Materials.Material material;
+            if (materialName == "")
+                material = CE.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
+            else
+                material = GetMaterial(model, materialName);
+
 
             switch (constructSelector)
             {
