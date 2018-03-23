@@ -30,7 +30,7 @@ namespace BH.Adapter.ETABS
         private int GetLastIdOfType(Type objectType)
         {
             int lastId;
-            string typeString = objectType.ToString();
+            string typeString = objectType.Name;
             int nameCount =0;
             string[] names = { };
 
@@ -38,19 +38,19 @@ namespace BH.Adapter.ETABS
             {
                 case "Node":
                     model.PointObj.GetNameList(ref nameCount, ref names);
-                    lastId = Array.ConvertAll(names, int.Parse).Max();
+                    lastId = nameCount == 0 ? 0 : Array.ConvertAll(names, int.Parse).Max();
                     break;
                 case "Bar":
                     model.FrameObj.GetNameList(ref nameCount, ref names);
-                    lastId = Array.ConvertAll(names, int.Parse).Max();
+                    lastId = nameCount == 0 ? 0 : Array.ConvertAll(names, int.Parse).Max();
                     break;
                 case "Material":
                     model.PropMaterial.GetNameList(ref nameCount, ref names);
-                    lastId = Array.ConvertAll(names, int.Parse).Max();
+                    lastId = nameCount;//'name' is not a int-convertible string
                     break;
                 case "SectionProperty":
                     model.PropFrame.GetNameList(ref nameCount, ref names);
-                    lastId = Array.ConvertAll(names, int.Parse).Max();
+                    lastId = nameCount == 0 ? 0 : Array.ConvertAll(names, int.Parse).Max();
                     break;
                 case "Property2D":
                     model.PropArea.GetNameList(ref nameCount, ref names);

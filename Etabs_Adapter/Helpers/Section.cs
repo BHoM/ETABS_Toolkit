@@ -79,7 +79,7 @@ namespace BH.Adapter.ETABS
                     dimensions = new RectangleSectionDimensions(t3, t2, 0);
                     break;
                 case eFramePropType.Auto://not member will have this assigned but it still exists in the propertyType list
-                    dimensions = new CircleDimensions(20);
+                    dimensions = new CircleDimensions(0.2);
                     break;
                 case eFramePropType.Circle:
                     model.PropFrame.GetCircle(propertyName, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
