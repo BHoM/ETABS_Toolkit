@@ -8,6 +8,7 @@ using BH.oM;
 using BH.oM.Structural;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
+using BH.oM.Structural.Loads;
 using BH.Engine.Geometry;
 using BH.oM.Common.Materials;
 
@@ -232,7 +233,15 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
+        private bool CreateObject(ILoad bhLoad)
+        {
+            bool success = true;
 
+            Helper.SetLoad(model, bhLoad as dynamic);
+
+
+            return success;
+        }
 
     }
 }
