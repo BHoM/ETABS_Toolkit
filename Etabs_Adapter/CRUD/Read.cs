@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
+using BH.oM.Structural.Loads;
 using BH.oM.Common.Materials;
 using ETABS2016;
 using BH.Engine.ETABS;
@@ -326,6 +327,36 @@ namespace BH.Adapter.ETABS
             }
 
             return panelList;
+        }
+
+        private List<LoadCombination> ReadLoadCombination(List<string> ids = null)
+        {
+            List<LoadCombination> combinations = new List<LoadCombination>();
+
+            //get all load cases before combinations
+            int number = 0;
+            string[] names = null;
+            model.LoadPatterns.GetNameList(ref number, ref names);
+            Dictionary<string, ICase> caseDict = new Dictionary<string, ICase>();
+
+            foreach (string name in names)
+                caseDict.Add(name, Helper.GetLoadcase(model, name));
+
+            int nameCount = 0;
+            string[] nameArr = { };
+
+            if (ids == null)
+            {
+                model.RespCombo.GetNameList(ref nameCount, ref nameArr);
+                ids = nameArr.ToList();
+            }
+
+            foreach (string id in ids)
+            {
+                combinations.Add(Helper.GetLoadCombination(model, caseDict, id));
+            }
+
+            return combinations;
         }
 
 

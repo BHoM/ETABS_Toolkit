@@ -19,10 +19,38 @@ namespace BH.Adapter.ETABS
             //string name = loadcase.CustomData[AdapterId].ToString();
             string name = loadcase.Number.ToString();
             eLoadPatternType patternType = GetLoadPatternType(loadcase.Nature);
-
+            
             model.LoadPatterns.Add(name, patternType);
         }
 
+
+        public static LoadNature GetLoadNature(eLoadPatternType loadPatternType)
+        {
+            switch (loadPatternType)
+            {
+                case eLoadPatternType.Dead:
+                    return LoadNature.Dead;
+                case eLoadPatternType.SuperDead:
+                    return LoadNature.SuperDead;
+                case eLoadPatternType.Live:
+                    return LoadNature.Live;
+                case eLoadPatternType.Temperature:
+                    return LoadNature.Temperature;
+                case eLoadPatternType.Braking:
+                    return LoadNature.Accidental;
+                case eLoadPatternType.Prestress:
+                    return LoadNature.Prestress;
+                case eLoadPatternType.Wind:
+                    return LoadNature.Wind;
+                case eLoadPatternType.Quake:
+                    return LoadNature.Seismic;
+                case eLoadPatternType.Snow:
+                    return LoadNature.Snow;
+                default:
+                    return LoadNature.Other;
+
+            }
+        }
         public static eLoadPatternType GetLoadPatternType(LoadNature loadNature)
         {
             eLoadPatternType loadType;
@@ -86,9 +114,47 @@ namespace BH.Adapter.ETABS
                     cTypeName = eCNameType.LoadCombo;
 
                 model.RespCombo.SetCaseList(combinationName, ref cTypeName, lcName, factor);
-                
+
             }
             loadCombination.LoadCases
+        }
+
+        public static Loadcase GetLoadcase(cSapModel model, string id)
+        {
+            Loadcase bhLoadcase = new Loadcase();
+            int number;
+            int.TryParse(id, out number);
+            bhLoadcase.Number = number;
+
+            eLoadPatternType type = eLoadPatternType.Other;
+
+            model.LoadPatterns.GetLoadType(id, ref type);
+            bhLoadcase.Nature = GetLoadNature(type);
+
+            return bhLoadcase;
+        }
+
+        public static LoadCombination GetLoadCombination(cSapModel model, Dictionary<string, ICase> caseDict, string id)
+        {
+            LoadCombination combination = new LoadCombination();
+            int number;
+            int.TryParse(id, out number);
+            combination.Number = number;
+
+            string[] caseNames = null;
+            double[] factors = null;
+            int caseNum = 0;
+            eCNameType[] nameTypes = null;//<--TODO: maybe need to check if 1? (1=loadcombo)
+
+            model.RespCombo.GetCaseList(id, ref caseNum, ref nameTypes, ref caseNames, ref factors);
+            ICase currentCase;
+            for (int i = 0; i < caseNames.Count(); i++)
+            {
+                if (caseDict.TryGetValue(caseNames[i], out currentCase))
+                    combination.LoadCases.Add(new Tuple<double, ICase>(factors[i], currentCase));
+            }
+
+            return combination;
         }
 
         public static void SetLoad(cSapModel model, PointForce pointForce)
@@ -145,7 +211,10 @@ namespace BH.Adapter.ETABS
 
         }
 
-        public static List<ILoad> GetLoad(cSapModel model, List<Loadcase> loadcases)
+        /// <summary>
+        /// TODO: this uses way to many com calls and should be optimised - also argiment should be list of ids !
+        /// </summary>
+        public static List<ILoad> GetLoads(cSapModel model, List<Loadcase> loadcases)
         {
             List<ILoad> bhLoads = new List<ILoad>();
             string[] names = null;
@@ -153,7 +222,6 @@ namespace BH.Adapter.ETABS
             string[] Csys = null;
             int[] step = null;
             int[] dir = null;
-            double[] result = null;
             int nameCount = 0;
             double[] fx = null;
             double[] fy = null;
@@ -213,11 +281,14 @@ namespace BH.Adapter.ETABS
                     }
 
                     foreach (var kvp in areaUniformDict)
+                    {
                         bhLoads.Add(new AreaUniformalyDistributedLoad() { Loadcase = bhLoadcase, Pressure = kvp.Value });
+                    }
                 }
 
-        }
+            }
             return bhLoads;
 
         }
     }
+}
