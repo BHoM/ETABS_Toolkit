@@ -8,6 +8,7 @@ using BH.oM.Structural.Loads;
 using BH.oM.Structural;
 using BH.oM.Base;
 using BH.oM.Structural.Elements;
+using BH.oM.Geometry;
 
 namespace BH.Adapter.ETABS
 {
@@ -93,8 +94,7 @@ namespace BH.Adapter.ETABS
         public static void SetLoad(cSapModel model, PointForce pointForce)
         {
             double[] pfValues = new double[] { pointForce.Force.X, pointForce.Force.Y, pointForce.Force.Z, pointForce.Moment.X, pointForce.Moment.Y, pointForce.Moment.Z };
-            bool replace = true;
-            BHoMGroup<Node> nodes = pointForce.Objects;
+            bool replace = false;
             foreach (Node node in pointForce.Objects.Elements)
             {
                 model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), pointForce.Loadcase.Number.ToString(), ref pfValues, replace);
@@ -128,10 +128,96 @@ namespace BH.Adapter.ETABS
             }
         }
 
-        public static void SetLoad(cSapModel model, AreaUniformalyDistributedLoad bhLoad)
+        public static void SetLoad(cSapModel model, AreaUniformalyDistributedLoad areaUniformLoad)
         {
+            foreach (IAreaElement area in areaUniformLoad.Objects.Elements)
+            {
+                for (int direction = 1; direction <= 3; direction++)
+                {
+                    double val = direction == 1 ? areaUniformLoad.Pressure.X : direction == 2 ? areaUniformLoad.Pressure.Y : areaUniformLoad.Pressure.Z;
+                    if (val != 0)
+                    {
+                        //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
+                        model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), areaUniformLoad.Loadcase.Number.ToString(), val, direction + 3, false);
+                    }
+                }
+            }
 
         }
 
+        public static List<ILoad> GetLoad(cSapModel model, List<Loadcase> loadcases)
+        {
+            List<ILoad> bhLoads = new List<ILoad>();
+            string[] names = null;
+            string[] loadcase = null;
+            string[] Csys = null;
+            int[] step = null;
+            int[] dir = null;
+            double[] result = null;
+            int nameCount = 0;
+            double[] fx = null;
+            double[] fy = null;
+            double[] fz = null;
+            double[] mx = null;
+            double[] my = null;
+            double[] mz = null;
+            double[] f = null;
+
+            foreach (Loadcase bhLoadcase in loadcases)
+            {
+                if (model.PointObj.GetLoadForce("All", ref nameCount, ref names, ref loadcase, ref step, ref Csys, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, eItemType.Group) == 0)
+                {
+                    for (int i = 0; i < nameCount; i++)
+                    {
+                        if (bhLoadcase.Number.ToString() == loadcase[i])
+                        {
+                            Vector force = new Vector() { X = fx[i], Y = fy[i], Z = fz[i] };
+                            Vector moment = new Vector() { X = mx[i], Y = my[i], Z = mz[i] };
+                            bhLoads.Add(new PointForce() { Force = force, Moment = moment, Loadcase = bhLoadcase });
+                        }
+                    }
+                }
+
+                if (model.FrameObj.GetLoadDistributed("All", ref nameCount, ref names, ref loadcase, ref step, ref Csys, ref dir, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, eItemType.Group) == 0)
+                {
+                    for (int i = 0; i < nameCount; i++)
+                    {
+                        if (bhLoadcase.Number.ToString() == loadcase[i])
+                        {
+                            Vector force = new Vector() { X = fx[i], Y = fy[i], Z = fz[i] };
+                            Vector moment = new Vector() { X = mx[i], Y = my[i], Z = mz[i] };
+                            bhLoads.Add(new BarUniformlyDistributedLoad() { Force = force, Moment = moment, Loadcase = bhLoadcase });
+                        }
+                    }
+                }
+
+                if (model.AreaObj.GetLoadUniform("All", ref nameCount, ref names, ref loadcase, ref Csys, ref dir, ref f, eItemType.Group) == 0)
+                {
+                    Dictionary<string, Vector> areaUniformDict = new Dictionary<string, Vector>();
+
+                    for (int i = 0; i < nameCount; i++)
+                    {
+                        if (bhLoadcase.Number.ToString() == loadcase[i])
+                        {
+                            if (!areaUniformDict.ContainsKey(loadcase[i]))
+                                areaUniformDict.Add(loadcase[i], new Vector());
+                            //only sypporting global directions (x=4,y=5,z=6)
+                            //would be preferential to add one load of x,y,z instead of 1 load for each direction as Etabs does
+                            if (dir[i] == 4)
+                                areaUniformDict[loadcase[i]].X = f[i];
+                            if (dir[i] == 5)
+                                areaUniformDict[loadcase[i]].Y = f[i];
+                            if (dir[i] == 6)
+                                areaUniformDict[loadcase[i]].Z = f[i];
+                        }
+                    }
+
+                    foreach (var kvp in areaUniformDict)
+                        bhLoads.Add(new AreaUniformalyDistributedLoad() { Loadcase = bhLoadcase, Pressure = kvp.Value });
+                }
+
+        }
+            return bhLoads;
+
+        }
     }
-}
