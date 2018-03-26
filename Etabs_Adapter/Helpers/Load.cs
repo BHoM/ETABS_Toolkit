@@ -23,7 +23,6 @@ namespace BH.Adapter.ETABS
             model.LoadPatterns.Add(name, patternType);
         }
 
-
         public static LoadNature GetLoadNature(eLoadPatternType loadPatternType)
         {
             switch (loadPatternType)

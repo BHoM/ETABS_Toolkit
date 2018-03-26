@@ -233,6 +233,25 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
+        private bool CreateObject(Loadcase loadcase)
+        {
+            bool success = true;
+
+            Helper.SetLoadcase(model, loadcase);
+
+            return success;
+        }
+
+        private bool CreateObject(LoadCombination loadcombination)
+        {
+            bool success = true;
+
+            Helper.SetLoadCombination(model, loadcombination);
+
+            return success;
+        }
+
+
         private bool CreateObject(ILoad bhLoad)
         {
             bool success = true;
