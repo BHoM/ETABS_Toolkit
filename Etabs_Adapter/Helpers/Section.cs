@@ -167,20 +167,20 @@ namespace BH.Adapter.ETABS
                 case "fromDimensions":
                     switch (material.Type)
                     {
+                        case oM.Common.Materials.MaterialType.Aluminium://temp solution because steel is now created with aluminium type! TODO
                         case oM.Common.Materials.MaterialType.Steel:
                             bhSectionProperty = Create.SteelSectionFromDimensions(dimensions);
                             break;
                         case oM.Common.Materials.MaterialType.Concrete:
                             bhSectionProperty = Create.ConcreteSectionFromDimensions(dimensions);
                             break;
-                        case oM.Common.Materials.MaterialType.Aluminium:
                         case oM.Common.Materials.MaterialType.Timber:
                         case oM.Common.Materials.MaterialType.Rebar:
                         case oM.Common.Materials.MaterialType.Tendon:
                         case oM.Common.Materials.MaterialType.Glass:
                         case oM.Common.Materials.MaterialType.Cable:
                         default:
-                            throw new NotImplementedException("no material type for selected section implemented");
+                            throw new NotImplementedException("no material type for " + material.Type.ToString() + " implemented");
                     }
                     break;
                 case "explicit":

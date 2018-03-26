@@ -36,7 +36,7 @@ namespace BH.Adapter.ETABS
                 return ReadLoadCombination(ids as dynamic);
             else if (type == typeof(Loadcase))
                 return ReadLoadcase(ids as dynamic);
-            else if (type == typeof(ILoad))
+            else if (type == typeof(ILoad) || type.GetInterfaces().Contains(typeof(ILoad)))
                 return ReadLoad(ids as dynamic);
 
 
