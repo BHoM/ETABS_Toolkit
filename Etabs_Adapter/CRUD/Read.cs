@@ -32,6 +32,14 @@ namespace BH.Adapter.ETABS
                 return ReadPanel(ids as dynamic);
             else if (type == typeof(Property2D))
                 return ReadProperty2d(ids as dynamic);
+            else if (type == typeof(LoadCombination))
+                return ReadLoadCombination(ids as dynamic);
+            else if (type == typeof(Loadcase))
+                return ReadLoadcase(ids as dynamic);
+            else if (type == typeof(ILoad))
+                return ReadLoad(ids as dynamic);
+
+
             return null;//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
 
@@ -359,6 +367,37 @@ namespace BH.Adapter.ETABS
             return combinations;
         }
 
+        private List<Loadcase> ReadLoadcase(List<string> ids = null)
+        {
+            int nameCount = 0;
+            string[] nameArr = { };
 
+            List<Loadcase> loadcaseList = new List<Loadcase>();
+
+            if (ids == null)
+            {
+                model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
+                ids = nameArr.ToList();
+            }
+
+            foreach (string id in ids)
+            {
+                loadcaseList.Add(Helper.GetLoadcase(model, id));
+            }
+
+            return loadcaseList;
+        }
+
+        private List<ILoad> ReadLoad(List<string> ids = null)
+        {
+            List<ILoad> loadList = new List<ILoad>();
+
+            //get load cases first
+            List<Loadcase> loadcaseList = ReadLoadcase();
+
+            loadList = Helper.GetLoads(model, loadcaseList);
+
+            return loadList;
+        }
     }
 }
