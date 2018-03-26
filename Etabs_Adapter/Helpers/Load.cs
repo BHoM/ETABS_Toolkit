@@ -115,7 +115,6 @@ namespace BH.Adapter.ETABS
                 model.RespCombo.SetCaseList(combinationName, ref cTypeName, lcName, factor);
 
             }
-            loadCombination.LoadCases
         }
 
         public static Loadcase GetLoadcase(cSapModel model, string id)
@@ -160,14 +159,16 @@ namespace BH.Adapter.ETABS
         {
             double[] pfValues = new double[] { pointForce.Force.X, pointForce.Force.Y, pointForce.Force.Z, pointForce.Moment.X, pointForce.Moment.Y, pointForce.Moment.Z };
             bool replace = false;
+            int ret = 0;
             foreach (Node node in pointForce.Objects.Elements)
             {
-                model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), pointForce.Loadcase.Number.ToString(), ref pfValues, replace);
+                ret = model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), pointForce.Loadcase.Number.ToString(), ref pfValues, replace);
             }
         }
 
         public static void SetLoad(cSapModel model, BarUniformlyDistributedLoad barUniformLoad)
         {
+            int ret = 0;
 
             foreach (Bar bar in barUniformLoad.Objects.Elements)
             {
@@ -177,7 +178,7 @@ namespace BH.Adapter.ETABS
                     double val = direction == 1 ? barUniformLoad.Force.X : direction == 2 ? barUniformLoad.Force.Y : barUniformLoad.Force.Z;
                     if (val != 0)
                     {
-                        model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), barUniformLoad.Loadcase.Number.ToString(), 1, direction + 3, 0, 1, val, val);
+                        ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), barUniformLoad.Loadcase.Number.ToString(), 1, direction + 3, 0, 1, val, val);
                     }
                 }
                 //moment - TODO: check direction is right because I am guessing here .. API is unclear
@@ -186,7 +187,7 @@ namespace BH.Adapter.ETABS
                     double val = direction == 1 ? barUniformLoad.Moment.X : direction == 2 ? barUniformLoad.Moment.Y : barUniformLoad.Moment.Z;
                     if (val != 0)
                     {
-                        model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), barUniformLoad.Loadcase.Number.ToString(), 2, direction, 0, 1, val, val);
+                        ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), barUniformLoad.Loadcase.Number.ToString(), 2, direction, 0, 1, val, val);
                     }
                 }
 
@@ -195,6 +196,7 @@ namespace BH.Adapter.ETABS
 
         public static void SetLoad(cSapModel model, AreaUniformalyDistributedLoad areaUniformLoad)
         {
+            int ret = 0;
             foreach (IAreaElement area in areaUniformLoad.Objects.Elements)
             {
                 for (int direction = 1; direction <= 3; direction++)
@@ -203,7 +205,7 @@ namespace BH.Adapter.ETABS
                     if (val != 0)
                     {
                         //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
-                        model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), areaUniformLoad.Loadcase.Number.ToString(), val, direction + 3, false);
+                        ret = model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), areaUniformLoad.Loadcase.Number.ToString(), val, direction + 3, false);
                     }
                 }
             }
