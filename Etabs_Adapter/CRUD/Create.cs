@@ -9,6 +9,7 @@ using BH.oM.Structural;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
 using BH.oM.Structural.Loads;
+using BH.Engine.Structure;
 using BH.Engine.Geometry;
 using BH.oM.Common.Materials;
 
@@ -160,9 +161,9 @@ namespace BH.Adapter.ETABS
             }
 
 
-            if (property2d.CustomData.ContainsKey("Modifiers"))
+            if (property2d.HasModifiers())
             {
-                double[] modifier = (double[])property2d.CustomData["Modifiers"];
+                double[] modifier = property2d.Modifiers();//(double[])property2d.CustomData["Modifiers"];
                 model.PropArea.SetModifiers(propertyName, ref modifier);
             }
 
