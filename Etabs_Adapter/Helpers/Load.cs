@@ -175,22 +175,13 @@ namespace BH.Adapter.ETABS
                 //force
                 for (int direction = 1; direction <= 3; direction++)
                 {
-                    double val = direction == 1 ? barUniformLoad.Force.X : direction == 2 ? barUniformLoad.Force.Y : barUniformLoad.Force.Z;
+                    double val = direction == 1 ? barUniformLoad.Force.X : direction == 2 ? barUniformLoad.Force.Y : barUniformLoad.Force.Z * (-1); //note: etabs acts different then stated in API documentstion
                     if (val != 0)
                     {
                         ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), barUniformLoad.Loadcase.Number.ToString(), 1, direction + 3, 0, 1, val, val);
                     }
                 }
-                //moment - TODO: check direction is right because I am guessing here .. API is unclear
-                for (int direction = 1; direction <= 3; direction++)
-                {
-                    double val = direction == 1 ? barUniformLoad.Moment.X : direction == 2 ? barUniformLoad.Moment.Y : barUniformLoad.Moment.Z;
-                    if (val != 0)
-                    {
-                        ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), barUniformLoad.Loadcase.Number.ToString(), 2, direction, 0, 1, val, val);
-                    }
-                }
-
+                //moments ? does not exist in old toolkit either! 
             }
         }
 
@@ -201,7 +192,7 @@ namespace BH.Adapter.ETABS
             {
                 for (int direction = 1; direction <= 3; direction++)
                 {
-                    double val = direction == 1 ? areaUniformLoad.Pressure.X : direction == 2 ? areaUniformLoad.Pressure.Y : areaUniformLoad.Pressure.Z;
+                    double val = direction == 1 ? areaUniformLoad.Pressure.X : direction == 2 ? areaUniformLoad.Pressure.Y : areaUniformLoad.Pressure.Z * (-1);
                     if (val != 0)
                     {
                         //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
