@@ -26,13 +26,16 @@ namespace BH.Adapter.ETABS
             Config.ProcessInMemory = false;
             Config.CloneBeforePush = true;
 
-            string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
+            //string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
+            //string pathToETABS = System.IO.Path.Combine("C:","Program Files", "Computers and Structures", "ETABS 2016", "ETABS.exe");
+            string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 2016\ETABS.exe";
             cHelper helper = new ETABS2016.Helper();
 
             object runningInstance = null;
-            runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
-            if (runningInstance != null)
+            if(System.Diagnostics.Process.GetProcessesByName("ETABS").Length>0)
             {
+                runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
+
                 app = (cOAPI)runningInstance;
                 model = app.SapModel;
                 if (System.IO.File.Exists(filePath))
@@ -43,6 +46,7 @@ namespace BH.Adapter.ETABS
             {
                 //open ETABS if not running - NOTE: this behaviour is different from other adapters
                 app = helper.CreateObject(pathToETABS);
+                app.ApplicationStart();
                 model = app.SapModel;
                 model.InitializeNewModel(eUnits.kN_m_C);
                 if (System.IO.File.Exists(filePath))
