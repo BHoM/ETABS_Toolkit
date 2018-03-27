@@ -137,7 +137,7 @@ namespace ETABS_Test
 
             Material steel = BH.Engine.Common.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
 
-            ISectionProperty sec1 = BH.Engine.Structure.Create.StandardSteelISection(110, 10, 80, 20);
+            ISectionProperty sec1 = BH.Engine.Structure.Create.SteelISection(110, 10, 80, 20);
             sec1.Material = steel;// BH.Engine.Common.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500); //BH.Engine.Common.Create.Material("blue steel");//<-- this creates material of type aluminium
             sec1.Name = "Section 1";
 
@@ -164,7 +164,7 @@ namespace ETABS_Test
             Polyline outline = new Polyline();
             outline.ControlPoints = new List<Point>() { p1, p2, p3, p4, p1 };
            // Material steel = sec1.Material;// BH.Engine.Common.Create.Material("panelSteel");
-            Property2D panelProp = BH.Engine.Structure.Create.ConstantThickness(100, steel);
+            IProperty2D panelProp = BH.Engine.Structure.Create.ConstantThickness(100, steel);
             panelProp.Name = "panelProperty";
             List<ICurve> nothing = null;
             PanelPlanar panelA = BH.Engine.Structure.Create.PanelPlanar(outline, nothing);
