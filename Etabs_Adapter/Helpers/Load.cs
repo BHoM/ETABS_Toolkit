@@ -212,9 +212,6 @@ namespace BH.Adapter.ETABS
 
         }
 
-        /// <summary>
-        /// TODO: this uses way to many com calls and should be optimised - also argiment should be list of ids !
-        /// </summary>
         public static List<ILoad> GetLoads(cSapModel model, List<Loadcase> loadcases)
         {
             List<ILoad> bhLoads = new List<ILoad>();

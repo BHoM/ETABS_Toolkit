@@ -57,39 +57,39 @@ namespace BH.Engine.ETABS
         }
 
 
-        public static Bar ToBHoM(this cFrameObj barObj, string id, ModelData modelData)
-        {
-            Bar bhBar = new Bar();
-            bhBar.CustomData.Add(AdapterId, id);
-            string startId="";
-            string endId="";
-            barObj.GetPoints(id, ref startId, ref endId);
+        //public static Bar ToBHoM(this cFrameObj barObj, string id, ModelData modelData)
+        //{
+        //    Bar bhBar = new Bar();
+        //    bhBar.CustomData.Add(AdapterId, id);
+        //    string startId="";
+        //    string endId="";
+        //    barObj.GetPoints(id, ref startId, ref endId);
 
-            //this method can only be called as 'model.frameObj.ToBHoM' 
-            //still 'model' needs to be passed as argument as well in order to get the nodes at bar ends
-            //this seems a bit convoluted way to keep to the convention of .ToBHoM extension methods !!!
+        //    //this method can only be called as 'model.frameObj.ToBHoM' 
+        //    //still 'model' needs to be passed as argument as well in order to get the nodes at bar ends
+        //    //this seems a bit convoluted way to keep to the convention of .ToBHoM extension methods !!!
 
-            bhBar.StartNode = modelData.model.PointObj.ToBHoM(startId);
-            bhBar.EndNode = modelData.model.PointObj.ToBHoM(endId);
+        //    bhBar.StartNode = modelData.model.PointObj.ToBHoM(startId);
+        //    bhBar.EndNode = modelData.model.PointObj.ToBHoM(endId);
 
-            bool[] restraintStart = new bool[6];
-            double[] springStart = new double[6];
-            bool[] restraintEnd = new bool[6];
-            double[] springEnd = new double[6];
+        //    bool[] restraintStart = new bool[6];
+        //    double[] springStart = new double[6];
+        //    bool[] restraintEnd = new bool[6];
+        //    double[] springEnd = new double[6];
 
-            barObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
-            bhBar.Release = new BarRelease();
-            bhBar.Release.StartRelease = GetConstraint6DOF(restraintStart, springStart);
-            bhBar.Release.EndRelease = GetConstraint6DOF(restraintEnd, springEnd);
+        //    barObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
+        //    bhBar.Release = new BarRelease();
+        //    bhBar.Release.StartRelease = GetConstraint6DOF(restraintStart, springStart);
+        //    bhBar.Release.EndRelease = GetConstraint6DOF(restraintEnd, springEnd);
 
-            eFramePropType propertyType = eFramePropType.General;
-            string propertyName = "";
-            string sAuto = "";
-            barObj.GetSection(id, ref propertyName, ref sAuto);
-            modelData.model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
-            bhBar.SectionProperty = GetSectionProperty(modelData, propertyName, propertyType);
-            return bhBar;
-        }
+        //    eFramePropType propertyType = eFramePropType.General;
+        //    string propertyName = "";
+        //    string sAuto = "";
+        //    barObj.GetSection(id, ref propertyName, ref sAuto);
+        //    modelData.model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
+        //    bhBar.SectionProperty = GetSectionProperty(modelData, propertyName, propertyType);
+        //    return bhBar;
+        //}
 
     }
 }

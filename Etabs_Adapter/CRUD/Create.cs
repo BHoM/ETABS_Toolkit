@@ -125,47 +125,44 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
-        private bool CreateObject(Property2D property2d)
+        private bool CreateObject(IProperty2D property2d)
         {
             bool success = true;
             int retA = 0;
 
-            PanelType panelType = property2d.Type;
             string propertyName = property2d.Name;// property2d.CustomData[AdapterId].ToString();
 
-            if (panelType == PanelType.Wall)
+
+            if (property2d.GetType() == typeof(Waffle))
             {
-                retA = model.PropArea.SetWall(propertyName, ETABS2016.eWallPropType.Specified, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
-            }
-            else
-            {
-                if (property2d.GetType() == typeof(Waffle))
-                {
-                    Waffle waffleProperty = (Waffle)property2d;
-                    retA = model.PropArea.SetSlabWaffle(propertyName, waffleProperty.TotalDepthX, waffleProperty.Thickness, waffleProperty.StemWidthX, waffleProperty.StemWidthX, waffleProperty.SpacingX, waffleProperty.SpacingY);
-                }
-
-                if (property2d.GetType() == typeof(Ribbed))
-                {
-                    Ribbed ribbedProperty = (Ribbed)property2d;
-                    retA = model.PropArea.SetSlabRibbed(propertyName, ribbedProperty.TotalDepth, ribbedProperty.Thickness, ribbedProperty.StemWidth, ribbedProperty.StemWidth, ribbedProperty.Spacing, (int)ribbedProperty.Direction);
-                }
-
-                if (property2d.GetType() == typeof(LoadingPanelProperty))
-                {
-                    //not really used ATM
-                    retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
-                }
-
-                if (property2d.GetType() == typeof(ConstantThickness))
-                {
-                    retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, property2d.Thickness);
-                }
+                Waffle waffleProperty = (Waffle)property2d;
+                retA = model.PropArea.SetSlabWaffle(propertyName, waffleProperty.TotalDepthX, waffleProperty.Thickness, waffleProperty.StemWidthX, waffleProperty.StemWidthX, waffleProperty.SpacingX, waffleProperty.SpacingY);
             }
 
-            if (property2d.Modifiers != null)
+            if (property2d.GetType() == typeof(Ribbed))
             {
-                double[] modifier = property2d.Modifiers;
+                Ribbed ribbedProperty = (Ribbed)property2d;
+                retA = model.PropArea.SetSlabRibbed(propertyName, ribbedProperty.TotalDepth, ribbedProperty.Thickness, ribbedProperty.StemWidth, ribbedProperty.StemWidth, ribbedProperty.Spacing, (int)ribbedProperty.Direction);
+            }
+
+            if (property2d.GetType() == typeof(LoadingPanelProperty))
+            {
+                retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, 0);
+            }
+
+            if (property2d.GetType() == typeof(ConstantThickness))
+            {
+                ConstantThickness constantThickness = (ConstantThickness)property2d;
+                if (constantThickness.PanelType == PanelType.Wall)
+                    retA = model.PropArea.SetWall(propertyName, ETABS2016.eWallPropType.Specified, ETABS2016.eShellType.ShellThin, property2d.Material.Name, constantThickness.Thickness);
+                else
+                    retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, constantThickness.Thickness);
+            }
+
+
+            if (property2d.CustomData.ContainsKey("Modifiers"))
+            {
+                double[] modifier = (double[])property2d.CustomData["Modifiers"];
                 model.PropArea.SetModifiers(propertyName, ref modifier);
             }
 

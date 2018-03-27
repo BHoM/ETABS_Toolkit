@@ -30,14 +30,14 @@ namespace BH.Adapter.ETABS
                 return ReadMaterials(ids as dynamic);
             else if (type == typeof(PanelPlanar))
                 return ReadPanel(ids as dynamic);
-            else if (type == typeof(Property2D))
+            else if (type == typeof(IProperty2D))
                 return ReadProperty2d(ids as dynamic);
             else if (type == typeof(LoadCombination))
                 return ReadLoadCombination(ids as dynamic);
             else if (type == typeof(Loadcase))
                 return ReadLoadcase(ids as dynamic);
             else if (type == typeof(ILoad) || type.GetInterfaces().Contains(typeof(ILoad)))
-                return ReadLoad(ids as dynamic);
+                return ReadLoad(type, ids as dynamic);
 
 
             return null;//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
@@ -168,9 +168,9 @@ namespace BH.Adapter.ETABS
             return materialList;
         }
 
-        private List<Property2D> ReadProperty2d(List<string> ids = null)
+        private List<IProperty2D> ReadProperty2d(List<string> ids = null)
         {
-            List<Property2D> propertyList = new List<Property2D>();
+            List<IProperty2D> propertyList = new List<IProperty2D>();
             int nameCount = 0;
             string[] nameArr = { };
 
@@ -182,7 +182,7 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                Property2D bhProperty = null;
+                IProperty2D bhProperty = null;
                 eSlabType slabType = eSlabType.Slab;
                 eShellType shellType = eShellType.ShellThin;
                 string material = "";
@@ -197,9 +197,11 @@ namespace BH.Adapter.ETABS
                 double ribSpacing2nd = 0;
                 int direction = 0;
                 double[] modifiers = new double[] { };
+                bool hasModifiers = false;
 
                 model.PropArea.GetSlab(id, ref slabType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
-                model.PropArea.GetModifiers(id, ref modifiers);
+                if (model.PropArea.GetModifiers(id, ref modifiers) == 0)
+                    hasModifiers = true;
 
                 if (thickness==0)
                 {
@@ -209,8 +211,9 @@ namespace BH.Adapter.ETABS
                     panelConstant.CustomData[AdapterId] = id;
                     panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
                     panelConstant.Thickness = thickness;
-                    panelConstant.Type = PanelType.Wall;
-                    panelConstant.Modifiers = modifiers;
+                    panelConstant.PanelType = PanelType.Wall;
+                    if(hasModifiers)
+                        panelConstant.CustomData.Add("Modifiers", modifiers);
 
                     propertyList.Add(panelConstant);
                 }
@@ -226,12 +229,13 @@ namespace BH.Adapter.ETABS
                             panelRibbed.CustomData[AdapterId] = id;
                             panelRibbed.Material = ReadMaterials(new List<string>() { material })[0];
                             panelRibbed.Thickness = thickness;
-                            panelRibbed.Type = PanelType.Slab;
+                            panelRibbed.PanelType = PanelType.Slab;
                             panelRibbed.Direction = (PanelDirection)direction;
                             panelRibbed.Spacing = ribSpacing;
                             panelRibbed.StemWidth = stemWidthTop;
                             panelRibbed.TotalDepth = depth;
-                            panelRibbed.Modifiers = modifiers;
+                            if (hasModifiers)
+                                panelRibbed.CustomData.Add("Modifiers", modifiers);
 
                             propertyList.Add(panelRibbed);
                             break;
@@ -249,8 +253,9 @@ namespace BH.Adapter.ETABS
                             panelWaffle.Thickness = thickness;
                             panelWaffle.TotalDepthX = depth;
                             panelWaffle.TotalDepthY = depth; // ETABS does not appear to to support direction dependent depth
-                            panelWaffle.Type = PanelType.Slab;
-                            panelWaffle.Modifiers = modifiers;
+                            panelWaffle.PanelType = PanelType.Slab;
+                            if (hasModifiers)
+                                panelWaffle.CustomData.Add("Modifiers", modifiers);
 
                             propertyList.Add(panelWaffle);
                             break;
@@ -262,8 +267,9 @@ namespace BH.Adapter.ETABS
                             panelConstant.CustomData[AdapterId] = id;
                             panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
                             panelConstant.Thickness = thickness;
-                            panelConstant.Type = PanelType.Slab;
-                            panelConstant.Modifiers = modifiers;
+                            panelConstant.PanelType = PanelType.Slab;
+                            if (hasModifiers)
+                                panelConstant.CustomData.Add("Modifiers", modifiers);
 
                             propertyList.Add(panelConstant);
                             break;
@@ -307,7 +313,7 @@ namespace BH.Adapter.ETABS
                 string propertyName = "";
 
                 model.AreaObj.GetProperty(id, ref propertyName);
-                Property2D panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
+                IProperty2D panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
 
                 PanelPlanar panel = new PanelPlanar();
                 panel.CustomData[AdapterId] = id;
@@ -388,14 +394,17 @@ namespace BH.Adapter.ETABS
             return loadcaseList;
         }
 
-        private List<ILoad> ReadLoad(List<string> ids = null)
+        private List<ILoad> ReadLoad(Type type, List<string> ids = null)
         {
             List<ILoad> loadList = new List<ILoad>();
 
-            //get load cases first
+            //get loadcases first
             List<Loadcase> loadcaseList = ReadLoadcase();
 
             loadList = Helper.GetLoads(model, loadcaseList);
+
+            //filter the list to return only the right type - No, this is not a clever way of doing it !
+            loadList = loadList.Where(x => x.GetType() == type).ToList();
 
             return loadList;
         }

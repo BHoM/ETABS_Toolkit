@@ -129,10 +129,10 @@ namespace BH.Engine.ETABS
             //model.FrameObj.SetGroupAssign();
         }
 
-        public static void ToETABS(this ISectionProperty secProp, ModelData modelData)
-        {
-            SetSectionProperty(modelData, secProp);
-        }
+        //public static void ToETABS(this ISectionProperty secProp, ModelData modelData)
+        //{
+        //    SetSectionProperty(modelData, secProp);
+        //}
 
         public static void ToETABS(this Material material, ModelData modelData)
         {
