@@ -60,6 +60,14 @@ namespace BH.Adapter.ETABS
                     model.AreaObj.GetNameList(ref nameCount, ref names);
                     lastId = nameCount;//'name' is not a int-convertible string
                     break;
+                case "Loadcase":
+                    model.AreaObj.GetNameList(ref nameCount, ref names);
+                    lastId = nameCount;//'name' is not a int-convertible string
+                    break;
+                case "LoadCombination":
+                    model.AreaObj.GetNameList(ref nameCount, ref names);
+                    lastId = nameCount;//'name' is not a int-convertible string
+                    break;
 
                 default:
                     lastId = 0;
