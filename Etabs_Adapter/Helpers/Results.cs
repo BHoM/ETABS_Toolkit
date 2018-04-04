@@ -14,13 +14,13 @@ namespace BH.Adapter.ETABS
     {
         #region Node Results
 
-        public static List<NodeResult> GetNodeAcceleration(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        public static List<NodeResult> GetNodeAcceleration(cSapModel model, IList ids = null, IList cases = null)
         {
 
             throw new NotImplementedException("Node Acceleration results is not supported yet!");
         }
 
-        public static List<NodeDisplacement> GetNodeDisplacement(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        public static List<NodeDisplacement> GetNodeDisplacement(cSapModel model, IList ids = null, IList cases = null)
         {
 
             List<string> loadcaseIds = new List<string>();
@@ -98,7 +98,7 @@ namespace BH.Adapter.ETABS
 
         }
 
-        public static List<NodeReaction> GetNodeReaction(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        public static List<NodeReaction> GetNodeReaction(cSapModel model, IList ids = null, IList cases = null)
         {
             List<string> loadcaseIds = new List<string>();
             List<string> nodeIds = new List<string>();
@@ -177,11 +177,12 @@ namespace BH.Adapter.ETABS
             return nodeReactions;
         }
 
-        public static List<NodeResult> GetNodeVelocity(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        public static List<NodeResult> GetNodeVelocity(cSapModel model, IList ids = null, IList cases = null)
         {
             throw new NotImplementedException("Node Acceleration results is not supported yet!");
 
         }
+        
         #endregion
 
         #region bar Results
@@ -305,17 +306,89 @@ namespace BH.Adapter.ETABS
 
         public static List<PanelForce> GetPanelForce(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
         {
+            List<string> loadcaseIds = new List<string>();
+            List<string> panelIds = new List<string>();
+            List<PanelForce> panelForces = new List<PanelForce>();
 
+            if (ids == null)
+            {
+                int panels = 0;
+                string[] names = null;
+                model.AreaObj.GetNameList(ref panels, ref names);
+                panelIds = names.ToList();
+            }
 
+            if (cases == null)
+            {
+                int casesCount = 0;
+                string[] names = null;
+                model.LoadCases.GetNameList(ref casesCount, ref names);
+                loadcaseIds = names.ToList();
+                model.RespCombo.GetNameList(ref casesCount, ref names);
+                loadcaseIds.AddRange(names);
+            }
 
+            string Name = "";
+            eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
+	        int resultCount = 0;
+	        string[] Obj = null;
+	        string[] Elm = null;
+            string[] PointElm = null;
+            string[] LoadCase = null;
+            string[] StepType = null;
+            double[] StepNum = null;
+            double[] F11 = null;
+            double[] F22 = null;
+            double[] F12 = null;
+            double[] FMax = null;
+            double[] FMin = null;
+            double[] FAngle = null;
+            double[] FVM = null;
+            double[] M11 = null;
+            double[] M22 = null;
+            double[] M12 = null;
+            double[] MMax = null;
+            double[] MMin = null;
+            double[] MAngle = null;
+            double[] V13 = null;
+            double[] V23 = null;
+            double[] VMax = null;
+            double[] VAngle = null;
 
-            return new List<IResult>();
+            for (int i = 0; i < panelIds.Count; i++)
+            {
+
+                int ret = model.Results.AreaForceShell(panelIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref Obj, ref Elm,
+                    ref PointElm, ref LoadCase, ref StepType, ref StepNum, ref F11, ref F22, ref F12, ref FMax, ref FMin, ref FAngle, ref FVM,
+                    ref M11, ref M22, ref M12, ref MMax, ref MMin, ref MAngle, ref V13, ref V23, ref VMax, ref VAngle);
+
+                for (int j = 0; j < resultCount; j++)
+                {
+                    PanelForce pf = new PanelForce();
+                    pf.Case = loadcaseIds[j];
+                    pf.ObjectId = panelIds[i];
+                    pf.NodeId = PointElm[j];
+                    pf.TimeStep = StepNum[j];
+                    pf.NXX = F11[j];
+                    pf.NXY = F12[j];
+                    pf.NYY = F22[j];
+                    pf.MXX = M11[j];
+                    pf.MXY = M12[j];
+                    pf.MYY = M22[j];
+                    pf.VX = V13[j];
+                    pf.VY = V23[j];
+
+                    panelForces.Add(pf);
+                }
+            }
+
+            return panelForces;
         }
 
         public static List<IResult> GetPanelStress(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
         {
+            throw new NotImplementedException("Panel stress results is not supported yet!");
 
-            return new List<IResult>();
         }
 
 
