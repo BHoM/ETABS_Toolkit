@@ -43,7 +43,7 @@ namespace BH.Adapter.ETABS
         private IEnumerable<IResult> GetObjectResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
             if (type == typeof(NodeResult))
-                return GetNodeResults(type, ids, cases, divisions);
+                return GetNodeResults(type, ids, cases);
             else if (type == typeof(BarResult))
                 return GetBarResults(type, ids, cases, divisions);
             else if (type == typeof(PanelResult))
@@ -52,18 +52,18 @@ namespace BH.Adapter.ETABS
                 return new List<IResult>();
         }
 
-        private List<IResult> GetNodeResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
+        private List<IResult> GetNodeResults(Type type, IList ids = null, IList cases = null)
         {
             IEnumerable<NodeResult> results = new List<NodeResult>();
 
             if (type == typeof(NodeAcceleration))
-                results = Helper.GetNodeAcceleration(model, ids, cases, divisions);
+                results = Helper.GetNodeAcceleration(model, ids, cases,);
             else if (type == typeof(NodeDisplacement))
-                results = Helper.GetNodeDisplacement(model, ids, cases, divisions);
+                results = Helper.GetNodeDisplacement(model, ids, cases);
             else if (type == typeof(NodeReaction))
-                results = Helper.GetNodeReaction(model, ids, cases, divisions);
+                results = Helper.GetNodeReaction(model, ids, cases);
             else if (type == typeof(NodeVelocity))
-                results = Helper.GetNodeVelocity(model, ids, cases, divisions);
+                results = Helper.GetNodeVelocity(model, ids, cases);
 
             return results as List<IResult>;
         }
