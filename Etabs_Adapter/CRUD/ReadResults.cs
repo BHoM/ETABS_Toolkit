@@ -54,17 +54,18 @@ namespace BH.Adapter.ETABS
 
         private List<IResult> GetNodeResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
+            List<IResult> results = new List<IResult>();
+
             if (type == typeof(NodeAcceleration))
-                return Helper.GetNodeAcceleration(model, ids, cases, divisions);
+                results = Helper.GetNodeAcceleration(model, ids, cases, divisions);
             else if (type == typeof(NodeDisplacement))
-                return Helper.GetNodeDisplacement(model, ids, cases, divisions);
+                results = Helper.GetNodeDisplacement(model, ids, cases, divisions);
             else if (type == typeof(NodeReaction))
-                return Helper.GetNodeReaction(model, ids, cases, divisions);
+                results = Helper.GetNodeReaction(model, ids, cases, divisions);
             else if (type == typeof(NodeVelocity))
-                return Helper.GetNodeVelocity(model, ids, cases, divisions);
+                results = Helper.GetNodeVelocity(model, ids, cases, divisions);
 
-
-            return new List<IResult>();
+            return results();
         }
 
         private List<IResult> GetBarResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
