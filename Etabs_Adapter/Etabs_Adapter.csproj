@@ -77,12 +77,14 @@
     <Compile Include="CRUD\Execute.cs" />
     <Compile Include="CRUD\NextIndex.cs" />
     <Compile Include="CRUD\Read.cs" />
+    <Compile Include="CRUD\ReadResults.cs" />
     <Compile Include="ETABSAdapter.cs" />
     <Compile Include="ETABSEnums.cs" />
     <Compile Include="Helpers\Constraint.cs" />
     <Compile Include="Helpers\Load.cs" />
     <Compile Include="Helpers\Material.cs" />
     <Compile Include="Helpers\Panel.cs" />
+    <Compile Include="Helpers\Results.cs" />
     <Compile Include="Helpers\Section.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Comparer.cs" />
