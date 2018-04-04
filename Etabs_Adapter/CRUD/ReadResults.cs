@@ -54,7 +54,7 @@ namespace BH.Adapter.ETABS
 
         private List<IResult> GetNodeResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
-            List<IResult> results = new List<IResult>();
+            IEnumerable<NodeResult> results = new List<NodeResult>();
 
             if (type == typeof(NodeAcceleration))
                 results = Helper.GetNodeAcceleration(model, ids, cases, divisions);
@@ -65,32 +65,35 @@ namespace BH.Adapter.ETABS
             else if (type == typeof(NodeVelocity))
                 results = Helper.GetNodeVelocity(model, ids, cases, divisions);
 
-            return results();
+            return results as List<IResult>;
         }
 
         private List<IResult> GetBarResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
+            IEnumerable<BarResult> results = new List<BarResult>();
+
             if (type == typeof(BarDeformation))
-                return Helper.GetBarDeformation(model, ids, cases, divisions);
+                results = Helper.GetBarDeformation(model, ids, cases, divisions);
             else if (type == typeof(BarForce))
-                return Helper.GetBarForce(model, ids, cases, divisions);
+                results = Helper.GetBarForce(model, ids, cases, divisions);
             else if (type == typeof(BarStrain))
-                return Helper.GetBarStrain(model, ids, cases, divisions);
+                results = Helper.GetBarStrain(model, ids, cases, divisions);
             else if (type == typeof(BarStress))
-                return Helper.GetBarStress(model, ids, cases, divisions);
+                results = Helper.GetBarStress(model, ids, cases, divisions);
 
-
-            return new List<IResult>();
+            return results as List<IResult>;
         }
 
         private List<IResult> GetPanelResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
-            if (type == typeof(PanelForce))
-                return Helper.GetPanelForce(model, ids, cases, divisions);
-            else if (type == typeof(PanelStress))
-                return Helper.GetPanelStress(model, ids, cases, divisions);
+            IEnumerable<PanelResult> results = new List<PanelResult>();
 
-            return new List<IResult>();
+            if (type == typeof(PanelForce))
+                results = Helper.GetPanelForce(model, ids, cases, divisions);
+            else if (type == typeof(PanelStress))
+                results = Helper.GetPanelStress(model, ids, cases, divisions);
+
+            return results as List<IResult>;
         }
 
     }
