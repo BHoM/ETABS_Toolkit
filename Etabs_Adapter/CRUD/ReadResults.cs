@@ -14,10 +14,15 @@ namespace BH.Adapter.ETABS
 
         protected override IEnumerable<IResult> ReadResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
+            IEnumerable<IResult> results = new List<IResult>();
+
             if (typeof(StructuralGlobalResult).IsAssignableFrom(type))
-                return GetGlobalResults(type, cases);
+                results = GetGlobalResults(type, cases);
             else
-                return GetObjectResults(type, ids, cases, divisions);
+                results = GetObjectResults(type, ids, cases, divisions);
+
+            return results;
+
 
         }
 
@@ -42,22 +47,26 @@ namespace BH.Adapter.ETABS
 
         private IEnumerable<IResult> GetObjectResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
-            if (type == typeof(NodeResult))
-                return GetNodeResults(type, ids, cases);
-            else if (type == typeof(BarResult))
-                return GetBarResults(type, ids, cases, divisions);
-            else if (type == typeof(PanelResult))
-                return GetPanelResults(type, ids, cases, divisions);
-            else
-                return new List<IResult>();
+            IEnumerable<IResult> results = new List<IResult>();
+
+            if (typeof(NodeResult).IsAssignableFrom(type))
+                results = GetNodeResults(type, ids, cases);
+            else if (typeof(BarResult).IsAssignableFrom(type))
+                results = GetBarResults(type, ids, cases, divisions);
+            else if (typeof(PanelResult).IsAssignableFrom(type))
+                results = GetPanelResults(type, ids, cases, divisions);
+            //else
+            //    return new List<IResult>();
+
+            return results;
         }
 
-        private List<IResult> GetNodeResults(Type type, IList ids = null, IList cases = null)
+        private IEnumerable<IResult> GetNodeResults(Type type, IList ids = null, IList cases = null)
         {
-            IEnumerable<NodeResult> results = new List<NodeResult>();
+            IEnumerable<IResult> results = new List<NodeResult>();
 
             if (type == typeof(NodeAcceleration))
-                results = Helper.GetNodeAcceleration(model, ids, cases,);
+                results = Helper.GetNodeAcceleration(model, ids, cases);
             else if (type == typeof(NodeDisplacement))
                 results = Helper.GetNodeDisplacement(model, ids, cases);
             else if (type == typeof(NodeReaction))
@@ -65,10 +74,10 @@ namespace BH.Adapter.ETABS
             else if (type == typeof(NodeVelocity))
                 results = Helper.GetNodeVelocity(model, ids, cases);
 
-            return results as List<IResult>;
+            return results;
         }
 
-        private List<IResult> GetBarResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
+        private IEnumerable<IResult> GetBarResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
             IEnumerable<BarResult> results = new List<BarResult>();
 
@@ -81,10 +90,10 @@ namespace BH.Adapter.ETABS
             else if (type == typeof(BarStress))
                 results = Helper.GetBarStress(model, ids, cases, divisions);
 
-            return results as List<IResult>;
+            return results;
         }
 
-        private List<IResult> GetPanelResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
+        private IEnumerable<IResult> GetPanelResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
             IEnumerable<PanelResult> results = new List<PanelResult>();
 
@@ -93,7 +102,7 @@ namespace BH.Adapter.ETABS
             else if (type == typeof(PanelStress))
                 results = Helper.GetPanelStress(model, ids, cases, divisions);
 
-            return results as List<IResult>;
+            return results;
         }
 
     }
