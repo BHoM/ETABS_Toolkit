@@ -80,7 +80,7 @@ namespace BH.Adapter.ETABS
                         //nodeForces.Add(new NodeDisplacement<string, string, string>(objects[j], loadcaseNames[j], step, fx[j], fy[j], fz[j], mx[j], my[j], mz[j]));
 
                         NodeDisplacement nd = new NodeDisplacement();
-                        nd.Case = loadcaseIds[j];
+                        nd.Case = loadcaseNames[j];
                         nd.ObjectId = nodeIds[i];
                         nd.RX = mx[j];
                         nd.RY = my[j];
@@ -160,7 +160,7 @@ namespace BH.Adapter.ETABS
                         //string step = stepType[j] != null ? stepType[j] == "Max" ? " Max" : stepType[j] == "Min" ? " Min" : "1" : "0";
                         //nodeForces.Add(new NodeReaction<string, string, string>(objects[j], loadcaseNames[j], step, fx[j], fy[j], fz[j], mx[j], my[j], mz[j]));
                         NodeReaction nr = new NodeReaction();
-                        nr.Case = loadcaseIds[j];
+                        nr.Case = loadcaseNames[j];
                         nr.ObjectId = nodeIds[i];
                         nr.MX = mx[j];
                         nr.MY = my[j];
@@ -267,7 +267,7 @@ namespace BH.Adapter.ETABS
                         //barForces.Add(new BarForce<string, string, string>(objects[j], loadcaseNames[j], counter++, divisions, step, fx[j], fz[j], fy[j], mx[j], mz[j], my[j]));
 
                         BarForce bf = new BarForce();
-                        bf.Case = loadcaseIds[j];
+                        bf.Case = loadcaseNames[j];
                         bf.ObjectId = barIds[i];
                         bf.MX = mx[j];
                         bf.MY = my[j];
@@ -365,7 +365,7 @@ namespace BH.Adapter.ETABS
                 for (int j = 0; j < resultCount; j++)
                 {
                     PanelForce pf = new PanelForce();
-                    pf.Case = loadcaseIds[j];
+                    pf.Case = LoadCase[j];
                     pf.ObjectId = panelIds[i];
                     pf.NodeId = PointElm[j];
                     pf.TimeStep = StepNum[j];
@@ -385,7 +385,7 @@ namespace BH.Adapter.ETABS
             return panelForces;
         }
 
-        public static List<IResult> GetPanelStress(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        public static List<PanelForce> GetPanelStress(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
         {
             throw new NotImplementedException("Panel stress results is not supported yet!");
 
