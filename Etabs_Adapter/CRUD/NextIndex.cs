@@ -8,69 +8,77 @@ namespace BH.Adapter.ETABS
 {
     public partial class ETABSAdapter
     {
-        private Dictionary<Type, int> idDictionary = new Dictionary<Type, int>();
+        private Dictionary<Type, string> idDictionary = new Dictionary<Type, string>();
 
         protected override object NextId(Type objectType, bool refresh)
         {
             int index;
-            if(!refresh && idDictionary.TryGetValue(objectType, out index))
+            string id;
+            if(!refresh && idDictionary.TryGetValue(objectType, out id))
             {
-                index++;
-                idDictionary[objectType] = index;
+                if (int.TryParse(id, out index))
+                    id = (index + 1).ToString();
+                else
+                    id = GetNextIdOfType(objectType);
+                idDictionary[objectType] = id;
             }
             else
             {
-                index = GetLastIdOfType(objectType) + 1;
-                idDictionary[objectType] = index;
+                id = GetNextIdOfType(objectType);
+                idDictionary[objectType] = id;
             }
 
-            return index;
+            return id;
         }
 
-        private int GetLastIdOfType(Type objectType)
+        private string GetNextIdOfType(Type objectType)
         {
-            int lastId;
+            string lastId;
+            int lastNum;
             string typeString = objectType.Name;
-            int nameCount =0;
+            int nameCount = 0;
             string[] names = { };
 
             switch (typeString)
             {
                 case "Node":
                     model.PointObj.GetNameList(ref nameCount, ref names);
-                    lastId = nameCount == 0 ? 0 : Array.ConvertAll(names, int.Parse).Max();
+                    lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
+                    lastId = lastNum.ToString();
                     break;
                 case "Bar":
                     model.FrameObj.GetNameList(ref nameCount, ref names);
-                    lastId = nameCount == 0 ? 0 : Array.ConvertAll(names, int.Parse).Max();
-                    break;
-                case "Material":
-                    model.PropMaterial.GetNameList(ref nameCount, ref names);
-                    lastId = nameCount;//'name' is not a int-convertible string
-                    break;
-                case "SectionProperty":
-                    model.PropFrame.GetNameList(ref nameCount, ref names);
-                    lastId = nameCount;
-                    break;
-                case "Property2D":
-                    model.PropArea.GetNameList(ref nameCount, ref names);
-                    lastId = nameCount;//'name' is not a int-convertible string
+                    lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
+                    lastId = lastNum.ToString();
                     break;
                 case "PanelPlanar":
                     model.AreaObj.GetNameList(ref nameCount, ref names);
-                    lastId = nameCount == 0 ? 0 : Array.ConvertAll(names, int.Parse).Max();
+                    lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
+                    lastId = lastNum.ToString();
+                    break;
+                case "Material":
+                    model.PropMaterial.GetNameList(ref nameCount, ref names);
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
+                    break;
+                case "SectionProperty":
+                    model.PropFrame.GetNameList(ref nameCount, ref names);
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
+                    break;
+                case "Property2D":
+                    model.PropArea.GetNameList(ref nameCount, ref names);
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "Loadcase":
                     model.AreaObj.GetNameList(ref nameCount, ref names);
-                    lastId = nameCount;//'name' is not a int-convertible string
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "LoadCombination":
                     model.AreaObj.GetNameList(ref nameCount, ref names);
-                    lastId = nameCount;//'name' is not a int-convertible string
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
 
                 default:
-                    lastId = 0;
+                    lastId = "0";
                     ErrorLog.Add("Could not get count of type: " + typeString);
                     break;
             }
@@ -79,6 +87,5 @@ namespace BH.Adapter.ETABS
 
         }
 
-        private string GetNonIntId(IEnumerable<string> used )
     }
 }
