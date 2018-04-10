@@ -353,6 +353,9 @@ namespace BH.Adapter.ETABS
             model.LoadPatterns.GetNameList(ref number, ref names);
             Dictionary<string, ICase> caseDict = new Dictionary<string, ICase>();
 
+            //ensure id can be split into name and number
+            names = Helper.EnsureNameWithNum(names.ToList()).ToArray();
+
             foreach (string name in names)
                 caseDict.Add(name, Helper.GetLoadcase(model, name));
 
@@ -364,6 +367,9 @@ namespace BH.Adapter.ETABS
                 model.RespCombo.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
+
+            //ensure id can be split into name and number
+            ids = Helper.EnsureNameWithNum(ids);
 
             foreach (string id in ids)
             {
@@ -385,6 +391,9 @@ namespace BH.Adapter.ETABS
                 model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
+
+            //ensure id can be split into name and number
+            ids = Helper.EnsureNameWithNum(ids);
 
             foreach (string id in ids)
             {
