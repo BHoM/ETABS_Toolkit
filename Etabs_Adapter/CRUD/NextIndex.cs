@@ -50,7 +50,7 @@ namespace BH.Adapter.ETABS
                     break;
                 case "SectionProperty":
                     model.PropFrame.GetNameList(ref nameCount, ref names);
-                    lastId = nameCount == 0 ? 0 : Array.ConvertAll(names, int.Parse).Max();
+                    lastId = nameCount;
                     break;
                 case "Property2D":
                     model.PropArea.GetNameList(ref nameCount, ref names);
@@ -58,7 +58,7 @@ namespace BH.Adapter.ETABS
                     break;
                 case "PanelPlanar":
                     model.AreaObj.GetNameList(ref nameCount, ref names);
-                    lastId = nameCount;//'name' is not a int-convertible string
+                    lastId = nameCount == 0 ? 0 : Array.ConvertAll(names, int.Parse).Max();
                     break;
                 case "Loadcase":
                     model.AreaObj.GetNameList(ref nameCount, ref names);
@@ -78,5 +78,7 @@ namespace BH.Adapter.ETABS
             return lastId;
 
         }
+
+        private string GetNonIntId(IEnumerable<string> used )
     }
 }
