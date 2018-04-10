@@ -284,5 +284,43 @@ namespace BH.Adapter.ETABS
             return bhLoads;
 
         }
+
+        public static List<string> EnsureNameWithNum(List<string> ids)
+        {
+            List<string> nameAndNum = ids;// new List<string>();
+            List<int> usedNum = new List<int>();
+            List<int> unnumbered = new List<int>();
+            int num;
+            int high;
+            int low;
+            int diff;
+
+            for (int i = 0; i < ids.Count(); i++)
+            {
+                string[] idArr = ids[i].Split(new[] { ":::" }, StringSplitOptions.None);
+                if (idArr.Count() > 1)
+                {
+                    int.TryParse(idArr[1], out num);
+                    usedNum.Add(num);
+                }
+                else
+                {
+                    unnumbered.Add(i);
+                }
+            }
+
+            high = usedNum.Count() == 0 ? 0 : usedNum.Max();
+            low = usedNum.Count() == 0 ? 0 : usedNum.Min();
+            diff = usedNum.Count() - ids.Count();
+
+            int counter = 0;
+            for (int j = 0; j < unnumbered.Count(); j++)
+            {
+                counter = j < low ? j : counter >= high ? counter + 1 : high + 1;
+                nameAndNum[unnumbered[j]] = ids[unnumbered[j]] + ":::" + counter.ToString();
+            }
+
+            return nameAndNum;
+        }
     }
 }
