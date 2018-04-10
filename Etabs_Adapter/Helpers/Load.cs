@@ -17,10 +17,28 @@ namespace BH.Adapter.ETABS
         public static void SetLoadcase(cSapModel model, Loadcase loadcase)
         {
             //string name = loadcase.CustomData[AdapterId].ToString();
-            string name = loadcase.Number.ToString();
+            string name = loadcase.Name + ":::" + loadcase.Number.ToString();
             eLoadPatternType patternType = GetLoadPatternType(loadcase.Nature);
             
             model.LoadPatterns.Add(name, patternType);
+        }
+
+        public static Loadcase GetLoadcase(cSapModel model, string id)
+        {
+            Loadcase bhLoadcase = new Loadcase();
+            int number;
+            int.TryParse(id, out number);
+            string[] nameNum = id.Split(new [] { ":::"}, StringSplitOptions.None);
+            bhLoadcase.Name = nameNum[0];
+            int.TryParse(nameNum[1], out number);
+            bhLoadcase.Number = number;
+
+            eLoadPatternType type = eLoadPatternType.Other;
+
+            model.LoadPatterns.GetLoadType(id, ref type);
+            bhLoadcase.Nature = GetLoadNature(type);
+
+            return bhLoadcase;
         }
 
         public static LoadNature GetLoadNature(eLoadPatternType loadPatternType)
@@ -97,47 +115,34 @@ namespace BH.Adapter.ETABS
         public static void SetLoadCombination(cSapModel model, LoadCombination loadCombination)
         {
             //string combinationName = loadCombination.CustomData[AdapterId].ToString();
-            string combinationName = loadCombination.Number.ToString();
+            string combinationName = loadCombination.Name + ":::" + loadCombination.Number.ToString();
+
             model.RespCombo.Add(combinationName, 0);//0=case, 1=combo
 
             foreach (var factorCase in loadCombination.LoadCases)
             {
                 double factor = factorCase.Item1;
                 Type lcType = factorCase.Item2.GetType();
-                string lcName = factorCase.Item2.Number.ToString();
+                string lcName = factorCase.Item2.Name;// Number.ToString();
                 eCNameType cTypeName = eCNameType.LoadCase;
 
                 if (lcType == typeof(Loadcase))
                     cTypeName = eCNameType.LoadCase;
-                else if (lcType == typeof(Loadcase))
+                else if (lcType == typeof(LoadCombination))
                     cTypeName = eCNameType.LoadCombo;
 
                 model.RespCombo.SetCaseList(combinationName, ref cTypeName, lcName, factor);
-
             }
-        }
-
-        public static Loadcase GetLoadcase(cSapModel model, string id)
-        {
-            Loadcase bhLoadcase = new Loadcase();
-            int number;
-            int.TryParse(id, out number);
-            bhLoadcase.Number = number;
-
-            eLoadPatternType type = eLoadPatternType.Other;
-
-            model.LoadPatterns.GetLoadType(id, ref type);
-            bhLoadcase.Nature = GetLoadNature(type);
-
-            return bhLoadcase;
         }
 
         public static LoadCombination GetLoadCombination(cSapModel model, Dictionary<string, ICase> caseDict, string id)
         {
             LoadCombination combination = new LoadCombination();
             int number;
-            int.TryParse(id, out number);
+            string[] nameNum = id.Split(new[] { ":::" }, StringSplitOptions.None);
+            int.TryParse(nameNum[1], out number);
             combination.Number = number;
+            combination.Name = nameNum[0];
 
             string[] caseNames = null;
             double[] factors = null;
@@ -151,7 +156,7 @@ namespace BH.Adapter.ETABS
                 if (caseDict.TryGetValue(caseNames[i], out currentCase))
                     combination.LoadCases.Add(new Tuple<double, ICase>(factors[i], currentCase));
             }
-
+            
             return combination;
         }
 
@@ -226,7 +231,7 @@ namespace BH.Adapter.ETABS
                 {
                     for (int i = 0; i < nameCount; i++)
                     {
-                        if (bhLoadcase.Number.ToString() == loadcase[i])
+                        if (bhLoadcase.Name == loadcase[i])
                         {
                             Vector force = new Vector() { X = fx[i], Y = fy[i], Z = fz[i] };
                             Vector moment = new Vector() { X = mx[i], Y = my[i], Z = mz[i] };
@@ -239,7 +244,7 @@ namespace BH.Adapter.ETABS
                 {
                     for (int i = 0; i < nameCount; i++)
                     {
-                        if (bhLoadcase.Number.ToString() == loadcase[i])
+                        if (bhLoadcase.Name == loadcase[i])
                         {
                             Vector force = new Vector() { X = fx[i], Y = fy[i], Z = fz[i] };
                             Vector moment = new Vector() { X = mx[i], Y = my[i], Z = mz[i] };
@@ -254,7 +259,7 @@ namespace BH.Adapter.ETABS
 
                     for (int i = 0; i < nameCount; i++)
                     {
-                        if (bhLoadcase.Number.ToString() == loadcase[i])
+                        if (bhLoadcase.Name == loadcase[i])
                         {
                             if (!areaUniformDict.ContainsKey(loadcase[i]))
                                 areaUniformDict.Add(loadcase[i], new Vector());

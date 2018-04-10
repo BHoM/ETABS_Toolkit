@@ -69,7 +69,7 @@ namespace BH.Adapter.ETABS
                     lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "Loadcase":
-                    model.AreaObj.GetNameList(ref nameCount, ref names);
+                    model.LoadPatterns.GetNameList(ref nameCount, ref names);
                     lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "LoadCombination":
