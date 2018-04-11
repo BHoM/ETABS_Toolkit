@@ -101,6 +101,17 @@ namespace BH.Adapter.ETABS
             //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
             retB = model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
             //model.FrameObj.SetReleases();
+            BarRelease barRelease = bhBar.Release;
+            if (barRelease != null)
+            {
+                bool[] restraintStart = Helper.GetRestraint6DOF(barRelease.StartRelease);
+                double[] springStart = Helper.GetSprings6DOF(barRelease.StartRelease);
+                bool[] restraintEnd = Helper.GetRestraint6DOF(barRelease.EndRelease);
+                double[] springEnd = Helper.GetSprings6DOF(barRelease.EndRelease);
+
+                model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
+            }
+
             //model.FrameObj.SetGroupAssign();
             if (retA != 0 || retB != 0 || retC != 0)
                 success = false;
