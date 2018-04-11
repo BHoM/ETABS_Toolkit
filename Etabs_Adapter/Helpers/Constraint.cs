@@ -29,6 +29,31 @@ namespace BH.Adapter.ETABS
             return bhConstraint;
         }
 
+        public static bool[] GetRestraint6DOF(Constraint6DOF constraint)
+        {
+            bool[] restraint = new bool[6];
+            restraint[0] = constraint.TranslationX == DOFType.Fixed ? true : false;
+            restraint[1] = constraint.TranslationY == DOFType.Fixed ? true : false;
+            restraint[2] = constraint.TranslationZ == DOFType.Fixed ? true : false;
+            restraint[3] = constraint.RotationX == DOFType.Fixed ? true : false;
+            restraint[4] = constraint.RotationY == DOFType.Fixed ? true : false;
+            restraint[5] = constraint.RotationZ == DOFType.Fixed ? true : false;
+
+            return restraint;
+        }
+
+        public static double[] GetSprings6DOF(Constraint6DOF constraint)
+        {
+            double[] spring = new double[6];
+            spring[0] = constraint.TranslationalStiffnessX;
+            spring[1] = constraint.TranslationalStiffnessY;
+            spring[2] = constraint.TranslationalStiffnessZ;
+            spring[3] = constraint.RotationalStiffnessX;
+            spring[4] = constraint.RotationalStiffnessY;
+            spring[5] = constraint.RotationalStiffnessZ;
+
+            return spring;
+        }
 
     }
 }
