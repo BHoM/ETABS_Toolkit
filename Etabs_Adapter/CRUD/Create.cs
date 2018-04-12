@@ -100,7 +100,7 @@ namespace BH.Adapter.ETABS
 
             //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
             retB = model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
-            //model.FrameObj.SetReleases();
+
             BarRelease barRelease = bhBar.Release;
             if (barRelease != null)
             {
@@ -112,7 +112,10 @@ namespace BH.Adapter.ETABS
                 model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
             }
 
-            //model.FrameObj.SetGroupAssign();
+            Offset offset = bhBar.Offset;
+            if(offset!=null)
+                model.FrameObj.SetEndLengthOffset(name, false, -1 * (offset.Start.X), offset.End.X, 1);
+
             if (retA != 0 || retB != 0 || retC != 0)
                 success = false;
 
