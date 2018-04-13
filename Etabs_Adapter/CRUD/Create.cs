@@ -263,7 +263,6 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
-
         private bool CreateObject(ILoad bhLoad)
         {
             bool success = true;
@@ -274,5 +273,40 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
+        private bool CreateObject(RigidLink bhLink)
+        {
+            bool success = true;
+            int retA = 0;
+            int retB = 0;
+
+            string name = "";
+            string givenName = "";
+            string bhId = bhLink.CustomData[AdapterId].ToString();
+            name = bhId;
+
+            LinkConstraint constraint = bhLink.Constraint;//not used yet
+            Node masterNode = bhLink.MasterNode;
+            List<Node> slaveNodes = bhLink.SlaveNodes;
+            bool multiSlave = slaveNodes.Count() == 1 ? false : true;
+
+            //double XI = masterNode.Position.X;
+            //double YI = masterNode.Position.Y;
+            //double ZI = masterNode.Position.Z;
+
+            for(int i=0; i<slaveNodes.Count();i++)
+            {
+                //double XJ = slaveNodes[i].Position.X * 1000;//multiply by 1000 to compensate for Etabs strangeness: yes, one end is divided by 1000 the other end is not!
+                //double YJ = slaveNodes[i].Position.Y * 1000;
+                //double ZJ = slaveNodes[i].Position.Z * 1000;
+
+                name = multiSlave == true ? name + ":::" + i : name;
+
+                //retA = model.LinkObj.AddByCoord(XI, YI, ZI, XJ, YJ, ZJ, ref givenName, false, "Default", name);
+                retA = model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref givenName, false, "Default", name);
+
+            }
+
+            return success;
+        }
     }
 }
