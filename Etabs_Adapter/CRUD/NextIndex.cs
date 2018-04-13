@@ -76,7 +76,10 @@ namespace BH.Adapter.ETABS
                     model.AreaObj.GetNameList(ref nameCount, ref names);
                     lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
-
+                case "RigidLink":
+                    model.LinkObj.GetNameList(ref nameCount, ref names);
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
+                    break;
                 default:
                     lastId = "0";
                     ErrorLog.Add("Could not get count of type: " + typeString);
