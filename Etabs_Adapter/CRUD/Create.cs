@@ -12,6 +12,7 @@ using BH.oM.Structural.Loads;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
 using BH.oM.Common.Materials;
+using BH.Engine.Structure;
 
 namespace BH.Adapter.ETABS
 {
@@ -104,10 +105,10 @@ namespace BH.Adapter.ETABS
             BarRelease barRelease = bhBar.Release;
             if (barRelease != null)
             {
-                bool[] restraintStart = Helper.GetRestraint6DOF(barRelease.StartRelease);
-                double[] springStart = Helper.GetSprings6DOF(barRelease.StartRelease);
-                bool[] restraintEnd = Helper.GetRestraint6DOF(barRelease.EndRelease);
-                double[] springEnd = Helper.GetSprings6DOF(barRelease.EndRelease);
+                bool[] restraintStart = barRelease.StartRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.StartRelease);
+                double[] springStart = barRelease.StartRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.StartRelease);
+                bool[] restraintEnd = barRelease.EndRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.EndRelease);
+                double[] springEnd = barRelease.EndRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.EndRelease);
 
                 model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
             }
