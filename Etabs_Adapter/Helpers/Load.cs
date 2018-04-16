@@ -27,10 +27,18 @@ namespace BH.Adapter.ETABS
         {
             Loadcase bhLoadcase = new Loadcase();
             int number;
-            int.TryParse(id, out number);
+            string name = "NA";
             string[] nameNum = id.Split(new [] { ":::"}, StringSplitOptions.None);
-            bhLoadcase.Name = nameNum[0];
-            int.TryParse(nameNum[1], out number);
+            if (nameNum.Count() > 1)
+            {
+                name = nameNum[0];
+                int.TryParse(nameNum[1], out number);
+            }
+            else
+            {
+                int.TryParse(id, out number);
+            }
+            bhLoadcase.Name = name;
             bhLoadcase.Number = number;
 
             eLoadPatternType type = eLoadPatternType.Other;
