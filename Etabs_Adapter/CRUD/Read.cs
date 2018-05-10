@@ -120,8 +120,11 @@ namespace BH.Adapter.ETABS
                 string propertyName = "";
                 string sAuto = "";
                 model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
-                model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
-                bhBar.SectionProperty = Helper.GetSectionProperty(model, propertyName, propertyType);
+                if (propertyName != "None")
+                {
+                    model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
+                    bhBar.SectionProperty = Helper.GetSectionProperty(model, propertyName, propertyType);
+                }
 
                 bool autoOffset = false;
                 double startLength = 0;
