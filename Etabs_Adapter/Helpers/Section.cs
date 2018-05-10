@@ -148,10 +148,10 @@ namespace BH.Adapter.ETABS
                 case eFramePropType.SteelRod:
                     break;
                 default:
-                    throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + "is not implmented in ETABS adapter");
+                    throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + " is not implemented in ETABS adapter");
             }
             if(dimensions==null)
-                throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + "is not implmented in ETABS adapter");
+                throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + " is not implemented in ETABS adapter");
             #endregion
 
 
