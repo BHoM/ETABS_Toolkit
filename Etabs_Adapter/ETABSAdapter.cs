@@ -40,7 +40,7 @@ namespace BH.Adapter.ETABS
                 model = app.SapModel;
                 if (System.IO.File.Exists(filePath))
                     model.File.OpenFile(filePath);
-                model.SetPresentUnits(eUnits.kN_m_C);
+                model.SetPresentUnits(eUnits.N_m_C);
             }
             else
             {
@@ -48,7 +48,7 @@ namespace BH.Adapter.ETABS
                 app = helper.CreateObject(pathToETABS);
                 app.ApplicationStart();
                 model = app.SapModel;
-                model.InitializeNewModel(eUnits.kN_m_C);
+                model.InitializeNewModel(eUnits.N_m_C);
                 if (System.IO.File.Exists(filePath))
                     model.File.OpenFile(filePath);
                 else
