@@ -13,6 +13,7 @@ using ETABS2016;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
+using BH.Engine.Reflection;
 
 namespace BH.Adapter.ETABS
 {
@@ -96,48 +97,54 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                Bar bhBar = new Bar();
-                bhBar.CustomData.Add(AdapterId, id);
-                string startId = "";
-                string endId = "";
-                model.FrameObj.GetPoints(id, ref startId, ref endId);
-
-                List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
-                bhBar.StartNode = endNodes[0];
-                bhBar.EndNode = endNodes[1];
-
-                bool[] restraintStart = new bool[6];
-                double[] springStart = new double[6];
-                bool[] restraintEnd = new bool[6];
-                double[] springEnd = new double[6];
-
-                model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
-                bhBar.Release = new BarRelease();
-                bhBar.Release.StartRelease = Helper.GetConstraint6DOF(restraintStart, springStart);
-                bhBar.Release.EndRelease = Helper.GetConstraint6DOF(restraintEnd, springEnd);
-
-                eFramePropType propertyType = eFramePropType.General;
-                string propertyName = "";
-                string sAuto = "";
-                model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
-                if (propertyName != "None")
+                try
                 {
-                    model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
-                    bhBar.SectionProperty = Helper.GetSectionProperty(model, propertyName, propertyType);
-                }
+                    Bar bhBar = new Bar();
+                    bhBar.CustomData.Add(AdapterId, id);
+                    string startId = "";
+                    string endId = "";
+                    model.FrameObj.GetPoints(id, ref startId, ref endId);
 
-                bool autoOffset = false;
-                double startLength = 0;
-                double endLength = 0;
-                double rz = 0;
-                model.FrameObj.GetEndLengthOffset(id, ref autoOffset, ref startLength, ref endLength, ref rz);
-                if (!autoOffset)
+                    List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
+                    bhBar.StartNode = endNodes[0];
+                    bhBar.EndNode = endNodes[1];
+
+                    bool[] restraintStart = new bool[6];
+                    double[] springStart = new double[6];
+                    bool[] restraintEnd = new bool[6];
+                    double[] springEnd = new double[6];
+
+                    model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
+                    bhBar.Release = new BarRelease();
+                    bhBar.Release.StartRelease = Helper.GetConstraint6DOF(restraintStart, springStart);
+                    bhBar.Release.EndRelease = Helper.GetConstraint6DOF(restraintEnd, springEnd);
+
+                    eFramePropType propertyType = eFramePropType.General;
+                    string propertyName = "";
+                    string sAuto = "";
+                    model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
+                    if (propertyName != "None")
+                    {
+                        model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
+                        bhBar.SectionProperty = Helper.GetSectionProperty(model, propertyName, propertyType);
+                    }
+
+                    //bool autoOffset = false;
+                    //double startLength = 0;
+                    //double endLength = 0;
+                    //double rz = 0;
+                    //model.FrameObj.GetEndLengthOffset(id, ref autoOffset, ref startLength, ref endLength, ref rz);
+                    //if (!autoOffset)
+                    //{
+                    //    bhBar.Offset.Start = startLength == 0 ? null : new Vector() { X = startLength * (-1), Y = 0, Z = 0 };
+                    //    bhBar.Offset.End = endLength == 0 ? null : new Vector() { X = endLength, Y = 0, Z = 0 };
+                    //}
+                    barList.Add(bhBar);
+                }
+                catch
                 {
-                    bhBar.Offset.Start = startLength == 0 ? null : new Vector() { X = startLength * (-1), Y = 0, Z = 0 };
-                    bhBar.Offset.End = endLength == 0 ? null : new Vector() { X = endLength, Y = 0, Z = 0 };
+                    BH.Engine.Reflection.Compute.RecordError("Bar " + id.ToString() + " could not be pulled");
                 }
-
-                barList.Add(bhBar);
             }
             return barList;
         }
@@ -241,7 +248,7 @@ namespace BH.Adapter.ETABS
                             Ribbed panelRibbed = new Ribbed();
 
                             model.PropArea.GetSlabRibbed(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref direction);
-
+                            panelRibbed.Name = id;
                             panelRibbed.CustomData[AdapterId] = id;
                             panelRibbed.Material = ReadMaterials(new List<string>() { material })[0];
                             panelRibbed.Thickness = thickness;
@@ -259,7 +266,7 @@ namespace BH.Adapter.ETABS
                             Waffle panelWaffle = new Waffle();
 
                             model.PropArea.GetSlabWaffle(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref ribSpacing2nd);
-
+                            panelWaffle.Name = id;
                             panelWaffle.CustomData[AdapterId] = id;
                             panelWaffle.Material = ReadMaterials(new List<string>() { material })[0];
                             panelWaffle.SpacingX = ribSpacing;
@@ -281,8 +288,10 @@ namespace BH.Adapter.ETABS
                         default:
                             ConstantThickness panelConstant = new ConstantThickness();
                             panelConstant.CustomData[AdapterId] = id;
+                            panelConstant.Name = id;
                             panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
                             panelConstant.Thickness = thickness;
+                            panelConstant.Name = id;
                             panelConstant.PanelType = PanelType.Slab;
                             if (hasModifiers)
                                 panelConstant.CustomData.Add("Modifiers", modifiers);
