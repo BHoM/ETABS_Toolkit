@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Common;
-using BH.oM.Structural.Results;
+using BH.oM.Structure.Results;
 
 namespace BH.Adapter.ETABS
 {
