@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using ETABS2016;
 using BH.oM;
-using BH.oM.Structural;
-using BH.oM.Structural.Elements;
-using BH.oM.Structural.Properties;
+using BH.oM.Structure;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.Properties;
 using BH.Engine.Serialiser;
 using BH.oM.Common.Materials;
 

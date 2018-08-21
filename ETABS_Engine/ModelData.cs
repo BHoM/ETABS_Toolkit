@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Structural.Properties;
+using BH.oM.Structure.Properties;
 using BH.Engine.Structure;
 using BH.oM.Common.Materials;
 using ETABS2016;
