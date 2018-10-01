@@ -143,6 +143,17 @@ namespace BH.Adapter.ETABS
             }
         }
 
+        public static ICase CaseNameToBHoM(String csiCaseName, ICase bhomCase) // this method not used yet. Needs a second method CaseNameToCSI() and for the relevant bits to call it.
+        {
+            string[] nameNum = csiCaseName.Split(new[] { ":::" }, StringSplitOptions.None);
+            Int32 number = new Int32();
+            int.TryParse(nameNum[1], out number);
+            bhomCase.Number = number;
+            bhomCase.Name = nameNum[0];
+
+            return bhomCase;
+        }
+
         public static LoadCombination GetLoadCombination(cSapModel model, Dictionary<string, ICase> caseDict, string id)
         {
             LoadCombination combination = new LoadCombination();
@@ -171,11 +182,12 @@ namespace BH.Adapter.ETABS
         public static void SetLoad(cSapModel model, PointForce pointForce)
         {
             double[] pfValues = new double[] { pointForce.Force.X, pointForce.Force.Y, pointForce.Force.Z, pointForce.Moment.X, pointForce.Moment.Y, pointForce.Moment.Z };
-            bool replace = false;
+            bool replace = true;
             int ret = 0;
             foreach (Node node in pointForce.Objects.Elements)
             {
-                ret = model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), pointForce.Loadcase.Number.ToString(), ref pfValues, replace);
+                string csiCaseName = pointForce.Loadcase.Name + ":::" + pointForce.Loadcase.Number.ToString();
+                ret = model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), csiCaseName, ref pfValues, replace);
             }
         }
 
@@ -213,7 +225,6 @@ namespace BH.Adapter.ETABS
                     }
                 }
             }
-
         }
 
         public static List<ILoad> GetLoads(cSapModel model, List<Loadcase> loadcases)
