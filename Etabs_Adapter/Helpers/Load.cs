@@ -17,7 +17,7 @@ namespace BH.Adapter.ETABS
         public static void SetLoadcase(cSapModel model, Loadcase loadcase)
         {
             //string name = loadcase.CustomData[AdapterId].ToString();
-            string name = loadcase.Name + ":::" + loadcase.Number.ToString();
+            string name = CaseNameToCSI(loadcase);
             eLoadPatternType patternType = GetLoadPatternType(loadcase.Nature);
             
             model.LoadPatterns.Add(name, patternType);
@@ -123,7 +123,7 @@ namespace BH.Adapter.ETABS
         public static void SetLoadCombination(cSapModel model, LoadCombination loadCombination)
         {
             //string combinationName = loadCombination.CustomData[AdapterId].ToString();
-            string combinationName = loadCombination.Name + ":::" + loadCombination.Number.ToString();
+            string combinationName = CaseNameToCSI(loadCombination);
 
             model.RespCombo.Add(combinationName, 0);//0=case, 1=combo
 
@@ -152,6 +152,13 @@ namespace BH.Adapter.ETABS
             bhomCase.Name = nameNum[0];
 
             return bhomCase;
+        }
+
+        public static String CaseNameToCSI(ICase bhomCase) // this method not used yet. Needs a second method CaseNameToCSI() and for the relevant bits to call it.
+        {
+            string csiCaseName = bhomCase.Name + ":::" + bhomCase.Number.ToString();
+
+            return csiCaseName;
         }
 
         public static LoadCombination GetLoadCombination(cSapModel model, Dictionary<string, ICase> caseDict, string id)
@@ -186,24 +193,25 @@ namespace BH.Adapter.ETABS
             int ret = 0;
             foreach (Node node in pointForce.Objects.Elements)
             {
-                string csiCaseName = pointForce.Loadcase.Name + ":::" + pointForce.Loadcase.Number.ToString();
+                string csiCaseName = CaseNameToCSI(pointForce.Loadcase);
                 ret = model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), csiCaseName, ref pfValues, replace);
             }
         }
 
         public static void SetLoad(cSapModel model, BarUniformlyDistributedLoad barUniformLoad)
         {
-            int ret = 0;
 
             foreach (Bar bar in barUniformLoad.Objects.Elements)
             {
-                //force
                 for (int direction = 1; direction <= 3; direction++)
                 {
+                    int ret = 1;
                     double val = direction == 1 ? barUniformLoad.Force.X : direction == 2 ? barUniformLoad.Force.Y : barUniformLoad.Force.Z * (-1); //note: etabs acts different then stated in API documentstion
+
                     if (val != 0)
                     {
-                        ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), barUniformLoad.Loadcase.Number.ToString(), 1, direction + 3, 0, 1, val, val);
+                        string csiCaseName = CaseNameToCSI(barUniformLoad.Loadcase);
+                        ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction + 3, 0, 1, val, val);
                     }
                 }
                 //moments ? does not exist in old toolkit either! 
@@ -223,6 +231,24 @@ namespace BH.Adapter.ETABS
                         //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
                         ret = model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), areaUniformLoad.Loadcase.Number.ToString(), val, direction + 3, false);
                     }
+                }
+            }
+        }
+
+        public static void SetLoad(cSapModel model, BarVaryingDistributedLoad barLoad)
+        {
+            int ret = 0;
+
+            foreach (Bar bar in barLoad.Objects.Elements)
+            {
+                {
+                    double val1 = barLoad.ForceA.Z * (-1); //note: etabs acts different then stated in API documentstion
+                    double val2 = barLoad.ForceB.Z * (-1);
+                    double dist1 = barLoad.DistanceFromA;
+                    double dist2 = barLoad.DistanceFromB;
+                    string csiCaseName = CaseNameToCSI(barLoad.Loadcase);
+                    int direction = 6; // we're doing this for Z axis only right now.
+                    ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction, dist1, dist2, val1, val2, "Global", false, false);
                 }
             }
         }
