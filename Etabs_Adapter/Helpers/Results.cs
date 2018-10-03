@@ -79,16 +79,18 @@ namespace BH.Adapter.ETABS
                         //string step = stepType[j] != null ? stepType[j] == "Max" ? " Max" : stepType[j] == "Min" ? " Min" : "1" : "0";
                         //nodeForces.Add(new NodeDisplacement<string, string, string>(objects[j], loadcaseNames[j], step, fx[j], fy[j], fz[j], mx[j], my[j], mz[j]));
 
-                        NodeDisplacement nd = new NodeDisplacement();
-                        nd.Case = loadcaseNames[j];
-                        nd.ObjectId = nodeIds[i];
-                        nd.RX = mx[j];
-                        nd.RY = my[j];
-                        nd.RZ = mz[j];
-                        nd.UX = fx[j];
-                        nd.UY = fy[j];
-                        nd.UZ = fz[j];
-                        nd.TimeStep = stepNum[j];
+                        NodeDisplacement nd = new NodeDisplacement()
+                        {
+                            ResultCase = loadcaseNames[j],
+                            ObjectId = nodeIds[i],
+                            RX = mx[j],
+                            RY = my[j],
+                            RZ = mz[j],
+                            UX = fx[j],
+                            UY = fy[j],
+                            UZ = fz[j],
+                            TimeStep = stepNum[j]
+                        };
                         nodeDisplacements.Add(nd);
                     }
                 }
@@ -159,16 +161,18 @@ namespace BH.Adapter.ETABS
                     {
                         //string step = stepType[j] != null ? stepType[j] == "Max" ? " Max" : stepType[j] == "Min" ? " Min" : "1" : "0";
                         //nodeForces.Add(new NodeReaction<string, string, string>(objects[j], loadcaseNames[j], step, fx[j], fy[j], fz[j], mx[j], my[j], mz[j]));
-                        NodeReaction nr = new NodeReaction();
-                        nr.Case = loadcaseNames[j];
-                        nr.ObjectId = nodeIds[i];
-                        nr.MX = mx[j];
-                        nr.MY = my[j];
-                        nr.MZ = mz[j];
-                        nr.FX = fx[j];
-                        nr.FY = fy[j];
-                        nr.FZ = fz[j];
-                        nr.TimeStep = stepNum[j];
+                        NodeReaction nr = new NodeReaction()
+                        {
+                            ResultCase = loadcaseNames[j],
+                            ObjectId = nodeIds[i],
+                            MX = mx[j],
+                            MY = my[j],
+                            MZ = mz[j],
+                            FX = fx[j],
+                            FY = fy[j],
+                            FZ = fz[j],
+                            TimeStep = stepNum[j]
+                        };
                         nodeReactions.Add(nr);
                     }
                 }
@@ -266,18 +270,20 @@ namespace BH.Adapter.ETABS
                         //    counter = 1;
                         //barForces.Add(new BarForce<string, string, string>(objects[j], loadcaseNames[j], counter++, divisions, step, fx[j], fz[j], fy[j], mx[j], mz[j], my[j]));
 
-                        BarForce bf = new BarForce();
-                        bf.Case = loadcaseNames[j];
-                        bf.ObjectId = barIds[i];
-                        bf.MX = mx[j];
-                        bf.MY = my[j];
-                        bf.MZ = mz[j];
-                        bf.FX = fx[j];
-                        bf.FY = fy[j];
-                        bf.FZ = fz[j];
-                        bf.Divisions = divisions;
-                        bf.Position = objStation[j];
-                        bf.TimeStep = stepNum[j];
+                        BarForce bf = new BarForce()
+                        {
+                            ResultCase = loadcaseNames[j],
+                            ObjectId = barIds[i],
+                            MX = mx[j],
+                            MY = my[j],
+                            MZ = mz[j],
+                            FX = fx[j],
+                            FY = fy[j],
+                            FZ = fz[j],
+                            Divisions = divisions,
+                            Position = objStation[j],
+                            TimeStep = stepNum[j]
+                        };
                         barForces.Add(bf);
                     }
                 }
@@ -304,11 +310,11 @@ namespace BH.Adapter.ETABS
 
         #region Panel Results
 
-        public static List<PanelForce> GetPanelForce(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        public static List<MeshForce> GetMeshForce(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
         {
             List<string> loadcaseIds = new List<string>();
             List<string> panelIds = new List<string>();
-            List<PanelForce> panelForces = new List<PanelForce>();
+            List<MeshForce> meshForces = new List<MeshForce>();
 
             if (ids == null)
             {
@@ -364,28 +370,17 @@ namespace BH.Adapter.ETABS
 
                 for (int j = 0; j < resultCount; j++)
                 {
-                    PanelForce pf = new PanelForce();
-                    pf.Case = LoadCase[j];
-                    pf.ObjectId = panelIds[i];
-                    pf.NodeId = PointElm[j];
-                    pf.TimeStep = StepNum[j];
-                    pf.NXX = F11[j];
-                    pf.NXY = F12[j];
-                    pf.NYY = F22[j];
-                    pf.MXX = M11[j];
-                    pf.MXY = M12[j];
-                    pf.MYY = M22[j];
-                    pf.VX = V13[j];
-                    pf.VY = V23[j];
+                    MeshForce pf = new MeshForce(panelIds[i], PointElm[j], "", LoadCase[j], StepNum[j], 0, 0, 0, 
+                        new oM.Geometry.CoordinateSystem(), F11[j], F22[j], F12[j], M12[j], M22[j], M12[j], V13[j], V23[j]);
 
-                    panelForces.Add(pf);
+                    meshForces.Add(pf);
                 }
             }
 
-            return panelForces;
+            return meshForces;
         }
-
-        public static List<PanelForce> GetPanelStress(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        
+        public static List<MeshForce> GetMeshStress(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
         {
             throw new NotImplementedException("Panel stress results is not supported yet!");
 
