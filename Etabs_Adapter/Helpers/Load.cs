@@ -168,19 +168,18 @@ namespace BH.Adapter.ETABS
             return combination;
         }
 
-        public static bool SetLoad(cSapModel model, PointForce pointForce)
+        public static void SetLoad(cSapModel model, PointForce pointForce)
         {
             double[] pfValues = new double[] { pointForce.Force.X, pointForce.Force.Y, pointForce.Force.Z, pointForce.Moment.X, pointForce.Moment.Y, pointForce.Moment.Z };
             bool replace = true;
             int ret = 0;
             foreach (Node node in pointForce.Objects.Elements)
             {
-                ret = model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), pointForce.Loadcase.Name, ref pfValues, replace);
+                ret = model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), pointForce.Loadcase.Name + ":::" + pointForce.Loadcase.Number.ToString(), ref pfValues, replace);
             }
+
             if (ret != 0)
-                return false;
-            else
-                return true;
+                BH.Engine.Reflection.Compute.RecordError("Could't create Point Force for node " + pointForce.CustomData[AdapterId].ToString() + " for Loadcase " + pointForce.Loadcase.ToString());
         }
 
         public static void SetLoad(cSapModel model, BarUniformlyDistributedLoad barUniformLoad)
