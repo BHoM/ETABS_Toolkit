@@ -268,8 +268,7 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
 
-            Helper.SetLoad(model, bhLoad as dynamic);
-
+            success = Helper.SetLoad(model, bhLoad as dynamic);
 
             return success;
         }

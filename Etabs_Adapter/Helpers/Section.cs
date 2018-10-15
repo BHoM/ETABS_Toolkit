@@ -331,6 +331,11 @@ namespace BH.Adapter.ETABS
             model.PropFrame.SetRectangle(sectionName, materialName, dimensions.Height, dimensions.Width);
         }
 
+        private static void SetSpecificDimensions(CircleProfile dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            model.PropFrame.SetCircle(sectionName, materialName,dimensions.Diameter/2);
+        }
+
         #endregion
 
     }

@@ -53,8 +53,8 @@ namespace BH.Adapter.ETABS
                 results = GetNodeResults(type, ids, cases);
             else if (typeof(BarResult).IsAssignableFrom(type))
                 results = GetBarResults(type, ids, cases, divisions);
-            else if (typeof(PanelResult).IsAssignableFrom(type))
-                results = GetPanelResults(type, ids, cases, divisions);
+           // else if (typeof(PanelResult).IsAssignableFrom(type))
+           //     results = GetPanelResults(type, ids, cases, divisions);
             //else
             //    return new List<IResult>();
 
@@ -93,17 +93,17 @@ namespace BH.Adapter.ETABS
             return results;
         }
 
-        private IEnumerable<IResult> GetPanelResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
-        {
-            IEnumerable<PanelResult> results = new List<PanelResult>();
+        //private IEnumerable<IResult> GetPanelResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
+        //{
+        //    IEnumerable<PanelResult> results = new List<PanelResult>();
 
-            if (type == typeof(PanelForce))
-                results = Helper.GetPanelForce(model, ids, cases, divisions);
-            else if (type == typeof(PanelStress))
-                results = Helper.GetPanelStress(model, ids, cases, divisions);
+        //    if (type == typeof(PanelForce))
+        //        results = Helper.GetPanelForce(model, ids, cases, divisions);
+        //    else if (type == typeof(PanelStress))
+        //        results = Helper.GetPanelStress(model, ids, cases, divisions);
 
-            return results;
-        }
+        //    return results;
+        //}
 
     }
 }
