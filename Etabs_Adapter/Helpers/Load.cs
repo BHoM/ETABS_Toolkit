@@ -131,7 +131,6 @@ namespace BH.Adapter.ETABS
             {
                 double factor = factorCase.Item1;
                 Type lcType = factorCase.Item2.GetType();
-                string lcName = factorCase.Item2.Name;// Number.ToString();
                 eCNameType cTypeName = eCNameType.LoadCase;
 
                 if (lcType == typeof(Loadcase))
@@ -139,7 +138,7 @@ namespace BH.Adapter.ETABS
                 else if (lcType == typeof(LoadCombination))
                     cTypeName = eCNameType.LoadCombo;
 
-                model.RespCombo.SetCaseList(combinationName, ref cTypeName, lcName, factor);
+                model.RespCombo.SetCaseList(combinationName, ref cTypeName, CaseNameToCSI(factorCase.Item2), factor);
             }
         }
 
