@@ -333,7 +333,7 @@ namespace BH.Adapter.ETABS
 
         private static void SetSpecificDimensions(CircleProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
-            model.PropFrame.SetCircle(sectionName, materialName,dimensions.Diameter/2);
+            model.PropFrame.SetCircle(sectionName, materialName,dimensions.Diameter);
         }
 
         #endregion
