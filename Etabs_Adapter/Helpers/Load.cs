@@ -178,6 +178,7 @@ namespace BH.Adapter.ETABS
                 ret = model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), pointForce.Loadcase.Name + ":::" + pointForce.Loadcase.Number.ToString(), ref pfValues, replace);
             }
 
+
             if (ret != 0)
                 BH.Engine.Reflection.Compute.RecordError("Could't create Point Force for node " + pointForce.CustomData[AdapterId].ToString() + " for Loadcase " + pointForce.Loadcase.ToString());
         }
