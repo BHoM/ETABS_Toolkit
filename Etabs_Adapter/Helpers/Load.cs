@@ -193,7 +193,7 @@ namespace BH.Adapter.ETABS
         public static void SetLoad(cSapModel model, PointForce pointForce)
         {
             double[] pfValues = new double[] { pointForce.Force.X, pointForce.Force.Y, pointForce.Force.Z, pointForce.Moment.X, pointForce.Moment.Y, pointForce.Moment.Z };
-            bool replace = true;
+            bool replace = false;
             int ret = 0;
             foreach (Node node in pointForce.Objects.Elements)
             {
@@ -215,7 +215,7 @@ namespace BH.Adapter.ETABS
                     if (val != 0)
                     {
                         string csiCaseName = CaseNameToCSI(barUniformLoad.Loadcase);
-                        ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction + 3, 0, 1, val, val);
+                        ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction + 3, 0, 1, val, val, "Global", true, false);
                     }
                 }
                 //moments ? does not exist in old toolkit either! 
