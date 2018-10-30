@@ -247,8 +247,8 @@ namespace BH.Adapter.ETABS
             foreach (Bar bar in barLoad.Objects.Elements)
             {
                 {
-                    double val1 = barLoad.ForceA.Z * (-1); //note: etabs acts different then stated in API documentstion
-                    double val2 = barLoad.ForceB.Z * (-1);
+                    double val1 = barLoad.ForceA.Z; //note: etabs acts different then stated in API documentstion
+                    double val2 = barLoad.ForceB.Z;
                     double dist1 = barLoad.DistanceFromA;
                     double dist2 = barLoad.DistanceFromB;
                     string csiCaseName = CaseNameToCSI(barLoad.Loadcase);
