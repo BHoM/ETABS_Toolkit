@@ -126,11 +126,12 @@ namespace BH.Adapter.ETABS
             string combinationName = CaseNameToCSI(loadCombination);
 
             model.RespCombo.Add(combinationName, 0);//0=case, 1=combo
-
+            
             foreach (var factorCase in loadCombination.LoadCases)
             {
                 double factor = factorCase.Item1;
                 Type lcType = factorCase.Item2.GetType();
+                string lcName = CaseNameToCSI(factorCase.Item2);// factorCase.Item2.Name;// Number.ToString();
                 eCNameType cTypeName = eCNameType.LoadCase;
 
                 if (lcType == typeof(Loadcase))
@@ -138,7 +139,7 @@ namespace BH.Adapter.ETABS
                 else if (lcType == typeof(LoadCombination))
                     cTypeName = eCNameType.LoadCombo;
 
-                model.RespCombo.SetCaseList(combinationName, ref cTypeName, CaseNameToCSI(factorCase.Item2), factor);
+                model.RespCombo.SetCaseList(combinationName, ref cTypeName, lcName, factor);
             }
         }
 
@@ -175,13 +176,17 @@ namespace BH.Adapter.ETABS
             eCNameType[] nameTypes = null;//<--TODO: maybe need to check if 1? (1=loadcombo)
 
             model.RespCombo.GetCaseList(id, ref caseNum, ref nameTypes, ref caseNames, ref factors);
-            ICase currentCase;
-            for (int i = 0; i < caseNames.Count(); i++)
+            if (caseNames != null)
             {
-                if (caseDict.TryGetValue(caseNames[i], out currentCase))
-                    combination.LoadCases.Add(new Tuple<double, ICase>(factors[i], currentCase));
+                ICase currentCase;
+
+                for (int i = 0; i < caseNames.Count(); i++)
+                {
+                    if (caseDict.TryGetValue(caseNames[i], out currentCase))
+                        combination.LoadCases.Add(new Tuple<double, ICase>(factors[i], currentCase));
+                }
+
             }
-            
             return combination;
         }
 
@@ -205,7 +210,7 @@ namespace BH.Adapter.ETABS
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     int ret = 1;
-                    double val = direction == 1 ? barUniformLoad.Force.X : direction == 2 ? barUniformLoad.Force.Y : barUniformLoad.Force.Z * (-1); //note: etabs acts different then stated in API documentstion
+                    double val = direction == 1 ? barUniformLoad.Force.X : direction == 2 ? barUniformLoad.Force.Y : barUniformLoad.Force.Z; //note: etabs acts different then stated in API documentstion
 
                     if (val != 0)
                     {
@@ -220,15 +225,16 @@ namespace BH.Adapter.ETABS
         public static void SetLoad(cSapModel model, AreaUniformalyDistributedLoad areaUniformLoad)
         {
             int ret = 0;
+            string csiCaseName = CaseNameToCSI(areaUniformLoad.Loadcase);
             foreach (IAreaElement area in areaUniformLoad.Objects.Elements)
             {
                 for (int direction = 1; direction <= 3; direction++)
                 {
-                    double val = direction == 1 ? areaUniformLoad.Pressure.X : direction == 2 ? areaUniformLoad.Pressure.Y : areaUniformLoad.Pressure.Z * (-1);
+                    double val = direction == 1 ? areaUniformLoad.Pressure.X : direction == 2 ? areaUniformLoad.Pressure.Y : areaUniformLoad.Pressure.Z;
                     if (val != 0)
                     {
                         //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
-                        ret = model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), areaUniformLoad.Loadcase.Number.ToString(), val, direction + 3, false);
+                        ret = model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), csiCaseName, val, direction + 3, false);
                     }
                 }
             }
@@ -250,6 +256,25 @@ namespace BH.Adapter.ETABS
                     ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction, dist1, dist2, val1, val2, "Global", false, false);
                 }
             }
+        }
+
+        public static void SetLoad(cSapModel model, GravityLoad gravityLoad)
+        {
+            int ret = 0;
+
+            double selfWeightMultiplier = 0;
+
+            model.LoadPatterns.GetSelfWTMultiplier(CaseNameToCSI(gravityLoad.Loadcase), ref selfWeightMultiplier);
+
+            if (selfWeightMultiplier != 0)
+                BH.Engine.Reflection.Compute.RecordWarning($"Loadcase {gravityLoad.Loadcase.Name} allready had a selfweight multiplier which will get overridden. Previous value: {selfWeightMultiplier}, new value: {-gravityLoad.GravityDirection.Z}");
+
+            model.LoadPatterns.SetSelfWTMultiplier(CaseNameToCSI(gravityLoad.Loadcase), -gravityLoad.GravityDirection.Z);
+
+            if (gravityLoad.GravityDirection.X != 0 || gravityLoad.GravityDirection.Y != 0)
+                Engine.Reflection.Compute.RecordError("Etabs can only handle gravity loads in global z direction");
+
+            BH.Engine.Reflection.Compute.RecordWarning("Etabs handles gravity loads via loadcases, why only one gravity load per loadcase can be used. THis gravity load will be applied to all objects");
         }
 
         public static List<ILoad> GetLoads(cSapModel model, List<Loadcase> loadcases)

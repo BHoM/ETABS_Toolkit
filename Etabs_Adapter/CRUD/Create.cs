@@ -1,38 +1,68 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Architecture.Elements;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Properties;
 using BH.oM.Structure.Loads;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
 using BH.oM.Common.Materials;
+using BH.Engine.ETABS;
+using BH.oM.Adapters.ETABS.Elements;
 
 namespace BH.Adapter.ETABS
 {
     public partial class ETABSAdapter
     {
+
+        /***************************************************/
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
             bool success = true;
 
             if (typeof(BH.oM.Base.IBHoMObject).IsAssignableFrom(typeof(T)))
             {
-                foreach (T obj in objects)
-                {
-                    success = CreateObject(obj as dynamic);
-                    //if (!success)
-                    //    break;
-                    //((BH.oM.Base.IBHoMObject)obj).ToETABS(modelData);
-                }
+                success = CreateCollection(objects);
             }
             else
             {
                 success = false;
             }
 
-            model.View.RefreshView();
+            m_model.View.RefreshView();
             return success;
         }
+
+        /***************************************************/
+
+        private bool CreateCollection<T>(IEnumerable<T> objects) where T : BH.oM.Base.IObject
+        {
+            bool success = true;
+
+            if (typeof(T) == typeof(PanelPlanar))
+            {
+                List<PanelPlanar> panels = objects.Cast<PanelPlanar>().ToList();
+
+                List<Diaphragm> diaphragms = panels.Select(x => x.Diaphragm()).Where(x => x != null).ToList();
+
+                this.Replace(diaphragms);
+            }
+
+            if (typeof(T) == typeof(Level))
+            {
+                CreateCollection(objects as IEnumerable<Level>);
+            }
+            else
+            {
+                foreach (T obj in objects)
+                {
+                    success &= CreateObject(obj as dynamic);
+                }
+            }
+            return success;
+        }
+
+        /***************************************************/
 
         private bool CreateObject(Node bhNode)
         {
@@ -44,8 +74,11 @@ namespace BH.Adapter.ETABS
             string name = "";
             string bhId = bhNode.CustomData[AdapterId].ToString();
             name = bhId;
+            
+            retA = m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
 
-            retA = model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
+            if (name != bhId)
+                bhNode.CustomData[AdapterId] = name;
             //if (name != bhId)
             //    success = false; //this is not necessary if you can guarantee that it is impossible that this bhId does not match any existing name in ETABS !!!
 
@@ -67,8 +100,8 @@ namespace BH.Adapter.ETABS
                 spring[4] = bhNode.Constraint.RotationalStiffnessY;
                 spring[5] = bhNode.Constraint.RotationalStiffnessZ;
 
-                retB = model.PointObj.SetRestraint(name, ref restraint);
-                retC = model.PointObj.SetSpring(name, ref spring);
+                retB = m_model.PointObj.SetRestraint(name, ref restraint);
+                retC = m_model.PointObj.SetSpring(name, ref spring);
             }
 
             if (retA != 0 || retB != 0 || retC != 0)
@@ -76,6 +109,8 @@ namespace BH.Adapter.ETABS
 
             return success;
         }
+
+        /***************************************************/
 
         private bool CreateObject(Bar bhBar)
         {
@@ -87,13 +122,19 @@ namespace BH.Adapter.ETABS
             string name = "";
             string bhId = bhBar.CustomData[AdapterId].ToString();
             name = bhId;
-
-            retA = model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
+            
+            retA = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
             //if (bhId != name)
             //    success = false;
 
             //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
-            retB = model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
+            retB = m_model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
+
+            retC = m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI);
+
+            double[] offset1 = new double[3];
+            double[] offset2 = new double[3];
+            m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, true, ref offset1, ref offset2);
 
             BarRelease barRelease = bhBar.Release;
             if (barRelease != null)
@@ -103,12 +144,14 @@ namespace BH.Adapter.ETABS
                 bool[] restraintEnd = barRelease.EndRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.EndRelease);
                 double[] springEnd = barRelease.EndRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.EndRelease);
 
-                model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
+                m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
             }
 
-            Offset offset = bhBar.Offset;
-            if(offset!=null)
-                model.FrameObj.SetEndLengthOffset(name, false, -1 * (offset.Start.X), offset.End.X, 1);
+
+            if (bhBar.AutoLengthOffset())
+                m_model.FrameObj.SetEndLengthOffset(name, true, 0, 0, 0);
+            else if (bhBar.Offset != null)
+                m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1);
 
             if (retA != 0 || retB != 0 || retC != 0)
                 success = false;
@@ -116,23 +159,29 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
+        /***************************************************/
+
         private bool CreateObject(ISectionProperty bhSection)
         {
             bool success = true;
 
-            Helper.SetSectionProperty(model, bhSection);//TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
-
+            Helper.SetSectionProperty(m_model, bhSection);//TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
             return success;
         }
+
+        /***************************************************/
 
         private bool CreateObject(Material material)
         {
             bool success = true;
-
-            Helper.SetMaterial(model, material); //TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
+            
+            Helper.SetMaterial(m_model, material); //TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
 
             return success;
+
         }
+
+        /***************************************************/
 
         private bool CreateObject(IProperty2D property2d)
         {
@@ -145,34 +194,34 @@ namespace BH.Adapter.ETABS
             if (property2d.GetType() == typeof(Waffle))
             {
                 Waffle waffleProperty = (Waffle)property2d;
-                retA = model.PropArea.SetSlabWaffle(propertyName, waffleProperty.TotalDepthX, waffleProperty.Thickness, waffleProperty.StemWidthX, waffleProperty.StemWidthX, waffleProperty.SpacingX, waffleProperty.SpacingY);
+                retA = m_model.PropArea.SetSlabWaffle(propertyName, waffleProperty.TotalDepthX, waffleProperty.Thickness, waffleProperty.StemWidthX, waffleProperty.StemWidthX, waffleProperty.SpacingX, waffleProperty.SpacingY);
             }
 
             if (property2d.GetType() == typeof(Ribbed))
             {
                 Ribbed ribbedProperty = (Ribbed)property2d;
-                retA = model.PropArea.SetSlabRibbed(propertyName, ribbedProperty.TotalDepth, ribbedProperty.Thickness, ribbedProperty.StemWidth, ribbedProperty.StemWidth, ribbedProperty.Spacing, (int)ribbedProperty.Direction);
+                retA = m_model.PropArea.SetSlabRibbed(propertyName, ribbedProperty.TotalDepth, ribbedProperty.Thickness, ribbedProperty.StemWidth, ribbedProperty.StemWidth, ribbedProperty.Spacing, (int)ribbedProperty.Direction);
             }
 
             if (property2d.GetType() == typeof(LoadingPanelProperty))
             {
-                retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, 0);
+                retA = m_model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, 0);
             }
 
             if (property2d.GetType() == typeof(ConstantThickness))
             {
                 ConstantThickness constantThickness = (ConstantThickness)property2d;
                 if (constantThickness.PanelType == PanelType.Wall)
-                    retA = model.PropArea.SetWall(propertyName, ETABS2016.eWallPropType.Specified, ETABS2016.eShellType.ShellThin, property2d.Material.Name, constantThickness.Thickness);
+                    retA = m_model.PropArea.SetWall(propertyName, ETABS2016.eWallPropType.Specified, ETABS2016.eShellType.ShellThin, property2d.Material.Name, constantThickness.Thickness);
                 else
-                    retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, constantThickness.Thickness);
+                    retA = m_model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, constantThickness.Thickness);
             }
 
 
             if (property2d.HasModifiers())
             {
                 double[] modifier = property2d.Modifiers();//(double[])property2d.CustomData["Modifiers"];
-                model.PropArea.SetModifiers(propertyName, ref modifier);
+                m_model.PropArea.SetModifiers(propertyName, ref modifier);
             }
 
             if (retA != 0)
@@ -180,6 +229,8 @@ namespace BH.Adapter.ETABS
 
             return success;
         }
+
+        /***************************************************/
 
         private bool CreateObject(PanelPlanar bhPanel)
         {
@@ -205,7 +256,7 @@ namespace BH.Adapter.ETABS
                 z[i] = boundaryPoints[i].Z;
             }
 
-            retA = model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
+            retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
             if (retA != 0)
                 return false;
 
@@ -231,41 +282,114 @@ namespace BH.Adapter.ETABS
                     }
 
                     string openingName = name + "_Opening_" + i;
-                    model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName,"");//<-- setting panel property to empty string, verify that this is correct
-                    model.AreaObj.SetOpening(openingName, true);
+                    m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName,"");//<-- setting panel property to empty string, verify that this is correct
+                    m_model.AreaObj.SetOpening(openingName, true);
                 }
             }
 
+
+            Diaphragm diaphragm = bhPanel.Diaphragm();
+
+            if (diaphragm != null)
+            {
+                m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
+            }
+
+            //switch (bhPanel.Diaphragm())
+            //{
+            //    case oM.Adapters.ETABS.DiaphragmType.RigidDiaphragm:
+            //        model.Diaphragm.SetDiaphragm("Rigid", false);   //TODO: Check if allready added
+            //        model.AreaObj.SetDiaphragm(name, "Rigid");
+            //        break;
+            //    case oM.Adapters.ETABS.DiaphragmType.SemiRigidDiaphragm:
+            //        model.Diaphragm.SetDiaphragm("SemiRigid", false);   //TODO: Check if allready added
+            //        model.AreaObj.SetDiaphragm(name, "SemiRigid");
+            //        break;
+            //    case oM.Adapters.ETABS.DiaphragmType.None:
+            //    default:
+            //        break;
+            //}
+
             return success;
         }
+
+
+        /***************************************************/
+
+        private bool CreateObject(Diaphragm diaphragm)
+        {
+            bool sucess = true;
+            sucess &= m_model.Diaphragm.SetDiaphragm(diaphragm.Name, diaphragm.Rigidity == oM.Adapters.ETABS.DiaphragmType.SemiRigidDiaphragm) == 0;
+
+            return sucess;
+        }
+
+        /***************************************************/
 
         private bool CreateObject(Loadcase loadcase)
         {
             bool success = true;
 
-            Helper.SetLoadcase(model, loadcase);
+            Helper.SetLoadcase(m_model, loadcase);
 
             return success;
         }
+
+        /***************************************************/
+
+        private bool CreateObject(MassSource massSource)
+        {
+
+            bool includeElements = massSource.ElementSelfMass;
+            bool includeAddMass = massSource.AdditionalMass;
+            bool includeLoads = massSource.FactoredAdditionalCases.Count > 0;
+
+            int count = massSource.FactoredAdditionalCases.Count;
+            string[] cases = new string[count];
+            double[] factors = new double[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                cases[i] = Helper.CaseNameToCSI(massSource.FactoredAdditionalCases[i].Item1);
+                factors[i] = massSource.FactoredAdditionalCases[i].Item2;
+            }
+
+            return m_model.PropMaterial.SetMassSource_1(ref includeElements, ref includeAddMass, ref includeLoads, count, ref cases, ref factors) == 0;
+        }
+
+        /***************************************************/
+
+        private bool CreateObject(ModalCase modalCase)
+        {
+            bool success = true;
+
+            return false;
+        }
+
+        /***************************************************/
 
         private bool CreateObject(LoadCombination loadcombination)
         {
             bool success = true;
 
-            Helper.SetLoadCombination(model, loadcombination);
+            Helper.SetLoadCombination(m_model, loadcombination);
 
             return success;
         }
+
+        /***************************************************/
 
         private bool CreateObject(ILoad bhLoad)
         {
             bool success = true;
 
-            Helper.SetLoad(model, bhLoad as dynamic);
+            Helper.SetLoad(m_model, bhLoad as dynamic);
 
 
             return success;
         }
+
+        /***************************************************/
 
         private bool CreateObject(RigidLink bhLink)
         {
@@ -296,11 +420,53 @@ namespace BH.Adapter.ETABS
                 name = multiSlave == true ? name + ":::" + i : name;
 
                 //retA = model.LinkObj.AddByCoord(XI, YI, ZI, XJ, YJ, ZJ, ref givenName, false, "Default", name);
-                retA = model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref givenName, false, "Default", name);
+                retA = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref givenName, false, "Default", name);
 
             }
 
             return success;
         }
+
+        /***************************************************/
+
+        private bool CreateCollection(IEnumerable<Level> levels)
+        {
+            int count = levels.Count();
+            if (count < 1)
+                return true;
+
+            List<Level> levelList = levels.OrderBy(x => x.Elevation).ToList();
+
+            string[] names = levelList.Select(x => x.Name).ToArray();
+            double[] elevations = new double[count + 1];
+
+            for (int i = 0; i < count; i++)
+            {
+                elevations[i + 1] = levelList[i].Elevation;
+            }
+
+            double[] heights = new double[count];   //Heihgts empty, set by elevations
+            bool[] isMasterStory = new bool[count];
+            isMasterStory[count - 1] = true;    //Top story as master
+            string[] similarTo = new string[count];
+            for (int i = 0; i < count; i++)
+            {
+                similarTo[i] = "";  //No similarities
+            }
+
+            bool[] spliceAbove = new bool[count];   //No splice
+            double[] spliceHeight = new double[count];  //No splice
+
+
+
+            int ret = m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight);
+
+            return ret == 0;
+
+        }
+
+        /***************************************************/
+
+
     }
 }

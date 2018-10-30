@@ -1,6 +1,7 @@
 ﻿using BH.oM.Common.Materials;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Properties;
+using BH.oM.Structure.Loads;
 using System;
 using System.Collections.Generic;
 
@@ -47,6 +48,7 @@ namespace BH.Adapter.ETABS
             {typeof(PanelPlanar), new List<Type> { typeof(IProperty2D), typeof(Material) } },
             {typeof(IProperty2D), new List<Type> { typeof(Material) } },
             {typeof(RigidLink), new List<Type> { typeof(Node) } },
+            {typeof(ILoad), new List<Type> {typeof(Loadcase) } }
 
         };
 

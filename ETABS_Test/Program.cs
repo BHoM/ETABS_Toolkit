@@ -11,6 +11,7 @@ using BH.oM.Geometry;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
 using BH.oM.DataManipulation.Queries;
+using ETABS2016;
 
 namespace ETABS_Test
 {
@@ -18,10 +19,336 @@ namespace ETABS_Test
     {
         static void Main(string[] args)
         {
-            ETABSAdapter app = new ETABSAdapter();
+            ETABSAdapter app = new ETABSAdapter(null, true);
 
-            TestPushElements(app);
-            TestPullBars(app);
+            //MeshResults(app);
+            //TestPushElements(app);
+            //TestPullBars(app);
+            ExampleLevels3();
+            //ExampleStories();
+        }
+
+        private static void MeshResults(ETABSAdapter app)
+        {
+            var results = app.Pull(new FilterQuery { Type = typeof(BH.oM.Structure.Results.MeshForce) });
+        }
+
+        private static void ExampleStories()
+        {
+            cSapModel m_model;
+            
+            cOAPI m_app;
+            int ret = -1;
+            int NumberStories = 0;
+            string[] StoryNames = { };
+            double[] StoryHeights = { };
+            double[] StoryElevations = { };
+            bool[] IsMasterStory = { };
+            string[] SimilarToStory = { };
+            bool[] SpliceAbove = { };
+            double[] SpliceHeight = { };
+            // create ETABS object
+            var runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
+
+            m_app = (cOAPI)runningInstance;
+            m_model = m_app.SapModel;
+            // set stories
+
+            string[] inStoryNames =
+                {
+   "BaseStory",
+                "Foundations",
+                "Basement 02",
+                "Basement 01",
+                "Level 01",
+                "Level 02",
+                "Level 03",
+                "Level 04",
+                "Level 05",
+                "Level 06",
+                "Roof Level",
+                "Roof Edge"
+            };
+            double[] inStoryElevations = 
+            {
+                    0,
+                    5.98,
+                    6.78,
+                    10.94,
+                    15.42,
+                    19.9,
+                    24.38,
+                    28.7,
+                    32.06,
+                    36.06,
+                    40.14,
+                    41.0
+                }; 
+            double[] inStoryHeights = {
+            2,
+0.8,
+4.15,
+4.45,
+4.5,
+4.5,
+4.3,
+3.35,
+4,
+4.1,
+0.85,
+1
+};
+
+
+            //string[] inStoryNames =
+            //    {
+            //"Foundations",
+            //    "Basement 02",
+            //    "Basement 01",
+            //    "Level 01",
+            //    "Level 02",
+            //    "Level 03",
+            //};
+            //double[] inStoryElevations = {
+            //0,
+            //5,
+            //15,
+            //23,
+            //23.5,
+            //40,
+            //50 };
+            //double[] inStoryHeights = {
+            //2,
+            //5,
+            //7,
+            //33,
+            //1,
+            //9};
+        bool[] inIsMasterStory = {
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+                        false,
+            true };
+            //    string[] inSimilarToStory =
+            //        {
+            //    "None",
+            //    "",
+            //    "Level 03",
+            //    "Level 03",
+            //    "Level 03",
+            //    "Level 03"
+            //};
+
+            string[] inSimilarToStory =
+    {
+            "None",
+            "None",
+            "None",
+            "None",
+            "None",
+            "None",
+            "None",
+            "None",
+            "None",
+            "None",
+            "None",
+            "None"
+        };
+            //bool[] inSpliceAbove = {
+            //false,
+            //true,
+            //false,
+            //true,
+            //false,
+            //true };
+            //double[] inSpliceHeight = {
+            //0,
+            //0,
+            //2,
+            //2,
+            //0,
+            //1 };
+
+            bool[] inSpliceAbove = {
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+               false,
+            false,
+            false,
+            false,
+            false,
+            false};
+            double[] inSpliceHeight = {
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0};
+
+            ret = m_model.Story.SetStories(inStoryNames, inStoryElevations, inStoryHeights, inIsMasterStory, inSimilarToStory, inSpliceAbove, inSpliceHeight);
+            // get stories
+            ret = m_model.Story.GetStories(ref NumberStories, ref StoryNames, ref StoryHeights, ref StoryElevations, ref IsMasterStory, ref SimilarToStory, ref SpliceAbove, ref SpliceHeight);
+        }
+
+        private static void ExampleLevels3()
+        {
+            double[] elevations = new double[]
+                {
+                    5.98,
+                    6.78,
+                    10.94,
+                    15.42,
+                    19.9,
+                    24.38,
+                    28.7,
+                    32.06,
+                    36.06,
+                    40.14,
+                    41.0
+                };
+
+            string[] names = new string[]
+            {
+                "Foundations",
+                "Basement 02",
+                "Basement 01",
+                "Level 01",
+                "Level 02",
+                "Level 03",
+                "Level 04",
+                "Level 05",
+                "Level 06",
+                "Roof Level",
+                "Roof Edge"
+            };
+
+            List<BH.oM.Architecture.Elements.Level> levels = new List<BH.oM.Architecture.Elements.Level>();
+
+            for (int i = 0; i < elevations.Length; i++)
+            {
+                levels.Add(new BH.oM.Architecture.Elements.Level { Elevation = elevations[i], Name = names[i] });
+            }
+           
+
+            ETABSAdapter adapter = new ETABSAdapter("", true);
+
+            adapter.Push(levels);
+        }
+
+
+        private static void ExampleLevels2()
+        {
+            cSapModel m_model;
+            cOAPI m_app;
+
+            // create ETABS object
+            var runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
+
+            m_app = (cOAPI)runningInstance;
+            m_model = m_app.SapModel;
+
+            double[] elevations = new double[]
+                {
+                    5.98,
+                    6.78,
+                    10.94,
+                    15.42,
+                    19.9,
+                    24.38,
+                    28.7,
+                    32.06,
+                    36.06,
+                    40.14,
+                    41.0
+                };
+
+            string[] names = new string[]
+            {
+                "Foundations",
+                "Basement 02",
+                "Basement 01",
+                "Level 01",
+                "Level 02",
+                "Level 03",
+                "Level 04",
+                "Level 05",
+                "Level 06",
+                "Roof Level",
+                "Roof Edge"
+            };
+
+            List<BH.oM.Architecture.Elements.Level> levels = new List<BH.oM.Architecture.Elements.Level>();
+
+            for (int i = 0; i < elevations.Length; i++)
+            {
+                levels.Add(new BH.oM.Architecture.Elements.Level { Elevation = elevations[i], Name = names[i] });
+            }
+
+            double[] heights = new double[levels.Count];
+
+            elevations = levels.Select(x => x.Elevation).ToArray();
+
+            //elevations = elevations.Select(x => Math.Round(x * 20)).ToArray();
+
+            for (int i = 0; i < levels.Count-1; i++)
+            {
+                heights[i] = levels[i + 1].Elevation - levels[i].Elevation;
+            }
+
+            heights = new double[levels.Count];
+
+            elevations = new double[levels.Count + 1];
+
+            for (int i = 0; i < levels.Count; i++)
+            {
+                elevations[i + 1] = levels[i].Elevation;
+            }
+
+            heights[heights.Length - 1] = 1;
+
+            //elevations = elevations.Select(x => x / 20).ToArray();
+            //heights = heights.Select(x => x / 20).ToArray();
+
+
+
+            names = levels.Select(x => x.Name).ToArray();
+
+            bool[] isMaster = new bool[names.Length];
+
+            isMaster[isMaster.Length - 1] = true;
+
+            string[] similarTo = new string[names.Length];
+
+            for (int i = 0; i < similarTo.Length-1; i++)
+            {
+                similarTo[i] = "None";//names[names.Length - 1];
+            }
+            similarTo[similarTo.Length - 1] = "None";
+
+            bool[] spliceAbove = new bool[names.Length];
+            double[] spliceHeight = new double[names.Length];
+
+            int ret = m_model.Story.SetStories(names, elevations, heights, isMaster, similarTo, spliceAbove, spliceHeight);
+
 
         }
 
@@ -163,7 +490,7 @@ namespace ETABS_Test
             List<PanelPlanar> panels = new List<PanelPlanar>();
             Polyline outline = new Polyline();
             outline.ControlPoints = new List<Point>() { p1, p2, p3, p4, p1 };
-           // Material steel = sec1.Material;// BH.Engine.Common.Create.Material("panelSteel");
+            // Material steel = sec1.Material;// BH.Engine.Common.Create.Material("panelSteel");
             IProperty2D panelProp = BH.Engine.Structure.Create.ConstantThickness(100, steel);
             panelProp.Name = "panelProperty";
             List<ICurve> nothing = null;
@@ -182,7 +509,7 @@ namespace ETABS_Test
             panelB.Property = panelProp;
             panels.Add(panelB);
 
-            
+
             app.Push(nodesA, "Nodes");
             app.Push(nodesB, "Nodes");
             app.Push(bars1, "Bars1");
