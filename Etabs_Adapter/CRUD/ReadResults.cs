@@ -23,6 +23,7 @@ namespace BH.Adapter.ETABS
 
             return results;
 
+            
 
         }
 
@@ -66,13 +67,13 @@ namespace BH.Adapter.ETABS
             IEnumerable<IResult> results = new List<NodeResult>();
 
             if (type == typeof(NodeAcceleration))
-                results = Helper.GetNodeAcceleration(model, ids, cases);
+                results = Helper.GetNodeAcceleration(m_model, ids, cases);
             else if (type == typeof(NodeDisplacement))
-                results = Helper.GetNodeDisplacement(model, ids, cases);
+                results = Helper.GetNodeDisplacement(m_model, ids, cases);
             else if (type == typeof(NodeReaction))
-                results = Helper.GetNodeReaction(model, ids, cases);
+                results = Helper.GetNodeReaction(m_model, ids, cases);
             else if (type == typeof(NodeVelocity))
-                results = Helper.GetNodeVelocity(model, ids, cases);
+                results = Helper.GetNodeVelocity(m_model, ids, cases);
 
             return results;
         }
@@ -82,13 +83,13 @@ namespace BH.Adapter.ETABS
             IEnumerable<BarResult> results = new List<BarResult>();
 
             if (type == typeof(BarDeformation))
-                results = Helper.GetBarDeformation(model, ids, cases, divisions);
+                results = Helper.GetBarDeformation(m_model, ids, cases, divisions);
             else if (type == typeof(BarForce))
-                results = Helper.GetBarForce(model, ids, cases, divisions);
+                results = Helper.GetBarForce(m_model, ids, cases, divisions);
             else if (type == typeof(BarStrain))
-                results = Helper.GetBarStrain(model, ids, cases, divisions);
+                results = Helper.GetBarStrain(m_model, ids, cases, divisions);
             else if (type == typeof(BarStress))
-                results = Helper.GetBarStress(model, ids, cases, divisions);
+                results = Helper.GetBarStress(m_model, ids, cases, divisions);
 
             return results;
         }
@@ -98,9 +99,9 @@ namespace BH.Adapter.ETABS
             IEnumerable<MeshResult> results = new List<MeshResult>();
 
             if (type == typeof(MeshForce))
-                results = Helper.GetMeshForce(model, ids, cases, divisions);
+                results = Helper.GetMeshForce(m_model, ids, cases, divisions);
             else if (type == typeof(MeshStress))
-                results = Helper.GetMeshStress(model, ids, cases, divisions);
+                results = Helper.GetMeshStress(m_model, ids, cases, divisions);
 
             return results;
         }

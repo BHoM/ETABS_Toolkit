@@ -88,6 +88,8 @@ namespace BH.Adapter.ETABS
                 model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulus, material.PoissonsRatio, material.CoeffThermalExpansion);
                 model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
                 //modelData.materialDict.Add(material.Name, material);
+
+            
             }
 
         }

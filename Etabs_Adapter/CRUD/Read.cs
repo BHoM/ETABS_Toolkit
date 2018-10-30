@@ -43,7 +43,7 @@ namespace BH.Adapter.ETABS
                 return ReadRigidLink(ids as dynamic);
 
 
-            return null;//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
+            return new List<IBHoMObject>();//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
 
         private List<Node> ReadNodes(List<string> ids = null)
@@ -55,7 +55,7 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                model.PointObj.GetNameList(ref nameCount, ref nameArr);
+                m_model.PointObj.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
 
@@ -67,12 +67,12 @@ namespace BH.Adapter.ETABS
                 bool[] restraint = new bool[6];
                 double[] spring = new double[6];
 
-                model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
+                m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
                 bhNode.Position = new oM.Geometry.Point() { X = x, Y = y, Z = z };
                 bhNode.CustomData.Add(AdapterId, id);
 
-                model.PointObj.GetRestraint(id, ref restraint);
-                model.PointObj.SetSpring(id, ref spring);
+                m_model.PointObj.GetRestraint(id, ref restraint);
+                m_model.PointObj.SetSpring(id, ref spring);
                 bhNode.Constraint = Helper.GetConstraint6DOF(restraint, spring);
 
 
@@ -91,9 +91,12 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                model.FrameObj.GetNameList(ref nameCount, ref names);
+                m_model.FrameObj.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
+
+            //Storing the sectionproperties as they are being pulled out, to only pull each section once.
+            Dictionary<string, ISectionProperty> sectionProperties = new Dictionary<string, ISectionProperty>();
 
             foreach (string id in ids)
             {
@@ -103,7 +106,7 @@ namespace BH.Adapter.ETABS
                     bhBar.CustomData.Add(AdapterId, id);
                     string startId = "";
                     string endId = "";
-                    model.FrameObj.GetPoints(id, ref startId, ref endId);
+                    m_model.FrameObj.GetPoints(id, ref startId, ref endId);
 
                     List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
                     bhBar.StartNode = endNodes[0];
@@ -114,7 +117,7 @@ namespace BH.Adapter.ETABS
                     bool[] restraintEnd = new bool[6];
                     double[] springEnd = new double[6];
 
-                    model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
+                    m_model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
                     bhBar.Release = new BarRelease();
                     bhBar.Release.StartRelease = Helper.GetConstraint6DOF(restraintStart, springStart);
                     bhBar.Release.EndRelease = Helper.GetConstraint6DOF(restraintEnd, springEnd);
@@ -122,11 +125,21 @@ namespace BH.Adapter.ETABS
                     eFramePropType propertyType = eFramePropType.General;
                     string propertyName = "";
                     string sAuto = "";
-                    model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
+                    m_model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
                     if (propertyName != "None")
                     {
-                        model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
-                        bhBar.SectionProperty = Helper.GetSectionProperty(model, propertyName, propertyType);
+                        ISectionProperty property;
+
+                        //Check if section allready has been pulled once
+                        if (!sectionProperties.TryGetValue(propertyName, out property))
+                        {
+                            //if not pull it and store it
+                            m_model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
+                            property = Helper.GetSectionProperty(m_model, propertyName, propertyType);
+                            sectionProperties[propertyName] = property;
+                        }
+
+                        bhBar.SectionProperty = property;
                     }
 
                     //bool autoOffset = false;
@@ -157,7 +170,7 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                model.PropFrame.GetNameList(ref nameCount, ref names);
+                m_model.PropFrame.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
@@ -165,8 +178,8 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                model.PropFrame.GetTypeOAPI(id, ref propertyType);
-                propList.Add(Helper.GetSectionProperty(model, id, propertyType));
+                m_model.PropFrame.GetTypeOAPI(id, ref propertyType);
+                propList.Add(Helper.GetSectionProperty(m_model, id, propertyType));
             }
             return propList;
         }
@@ -179,13 +192,13 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                model.PropMaterial.GetNameList(ref nameCount, ref names);
+                m_model.PropMaterial.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
             foreach (string id in ids)
             {
-                materialList.Add(Helper.GetMaterial(model, id));
+                materialList.Add(Helper.GetMaterial(m_model, id));
             }
 
             return materialList;
@@ -199,7 +212,7 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                model.PropArea.GetNameList(ref nameCount, ref nameArr);
+                m_model.PropArea.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
 
@@ -222,14 +235,14 @@ namespace BH.Adapter.ETABS
                 double[] modifiers = new double[] { };
                 bool hasModifiers = false;
 
-                model.PropArea.GetSlab(id, ref slabType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
-                if (model.PropArea.GetModifiers(id, ref modifiers) == 0)
+                m_model.PropArea.GetSlab(id, ref slabType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
+                if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
                     hasModifiers = true;
 
                 if (thickness==0)
                 {
                     eWallPropType wallProperty = eWallPropType.AutoSelectList;
-                    model.PropArea.GetWall(id, ref wallProperty, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
+                    m_model.PropArea.GetWall(id, ref wallProperty, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
                     ConstantThickness panelConstant = new ConstantThickness();
                     panelConstant.CustomData[AdapterId] = id;
                     panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
@@ -247,7 +260,7 @@ namespace BH.Adapter.ETABS
                         case eSlabType.Ribbed:
                             Ribbed panelRibbed = new Ribbed();
 
-                            model.PropArea.GetSlabRibbed(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref direction);
+                            m_model.PropArea.GetSlabRibbed(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref direction);
                             panelRibbed.Name = id;
                             panelRibbed.CustomData[AdapterId] = id;
                             panelRibbed.Material = ReadMaterials(new List<string>() { material })[0];
@@ -265,7 +278,7 @@ namespace BH.Adapter.ETABS
                         case eSlabType.Waffle:
                             Waffle panelWaffle = new Waffle();
 
-                            model.PropArea.GetSlabWaffle(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref ribSpacing2nd);
+                            m_model.PropArea.GetSlabWaffle(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref ribSpacing2nd);
                             panelWaffle.Name = id;
                             panelWaffle.CustomData[AdapterId] = id;
                             panelWaffle.Material = ReadMaterials(new List<string>() { material })[0];
@@ -313,20 +326,20 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+                m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
 
             //get openings, if any
-            model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+            m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
             bool isOpening = false;
             Dictionary<string, Polyline> openingDict = new Dictionary<string, Polyline>();
             foreach (string name in nameArr)
             {
-                model.AreaObj.GetOpening(name, ref isOpening);
+                m_model.AreaObj.GetOpening(name, ref isOpening);
                 if (isOpening)
                 {
-                    openingDict.Add(name, Helper.GetPanelPerimeter(model,name));
+                    openingDict.Add(name, Helper.GetPanelPerimeter(m_model,name));
                 }
             }
 
@@ -337,13 +350,13 @@ namespace BH.Adapter.ETABS
 
                 string propertyName = "";
 
-                model.AreaObj.GetProperty(id, ref propertyName);
+                m_model.AreaObj.GetProperty(id, ref propertyName);
                 IProperty2D panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
 
                 PanelPlanar panel = new PanelPlanar();
                 panel.CustomData[AdapterId] = id;
-
-                Polyline pl = Helper.GetPanelPerimeter(model, id);
+                
+                Polyline pl = Helper.GetPanelPerimeter(m_model, id);
 
                 Edge edge = new Edge();
                 edge.Curve = pl;
@@ -375,21 +388,21 @@ namespace BH.Adapter.ETABS
             //get all load cases before combinations
             int number = 0;
             string[] names = null;
-            model.LoadPatterns.GetNameList(ref number, ref names);
+            m_model.LoadPatterns.GetNameList(ref number, ref names);
             Dictionary<string, ICase> caseDict = new Dictionary<string, ICase>();
 
             //ensure id can be split into name and number
             names = Helper.EnsureNameWithNum(names.ToList()).ToArray();
 
             foreach (string name in names)
-                caseDict.Add(name, Helper.GetLoadcase(model, name));
+                caseDict.Add(name, Helper.GetLoadcase(m_model, name));
 
             int nameCount = 0;
             string[] nameArr = { };
 
             if (ids == null)
             {
-                model.RespCombo.GetNameList(ref nameCount, ref nameArr);
+                m_model.RespCombo.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
 
@@ -398,7 +411,7 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                combinations.Add(Helper.GetLoadCombination(model, caseDict, id));
+                combinations.Add(Helper.GetLoadCombination(m_model, caseDict, id));
             }
 
             return combinations;
@@ -413,7 +426,7 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
+                m_model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
 
@@ -422,7 +435,7 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                loadcaseList.Add(Helper.GetLoadcase(model, id));
+                loadcaseList.Add(Helper.GetLoadcase(m_model, id));
             }
 
             return loadcaseList;
@@ -435,7 +448,7 @@ namespace BH.Adapter.ETABS
             //get loadcases first
             List<Loadcase> loadcaseList = ReadLoadcase();
 
-            loadList = Helper.GetLoads(model, loadcaseList);
+            loadList = Helper.GetLoads(m_model, loadcaseList);
 
             //filter the list to return only the right type - No, this is not a clever way of doing it !
             loadList = loadList.Where(x => x.GetType() == type).ToList();
@@ -452,7 +465,7 @@ namespace BH.Adapter.ETABS
 
             if (ids == null)
             {
-                model.LinkObj.GetNameList(ref nameCount, ref names);
+                m_model.LinkObj.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
@@ -488,7 +501,7 @@ namespace BH.Adapter.ETABS
                     bhLink.CustomData.Add(AdapterId, kvp.Key);
                     string startId = "";
                     string endId = "";
-                    model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
+                    m_model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
 
                     List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
                     bhLink.MasterNode= endNodes[0];
@@ -505,13 +518,13 @@ namespace BH.Adapter.ETABS
                     string multiLinkId = kvp.Key + ":::0";
                     List<string> nodeIdsToRead = new List<string>();
 
-                    model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
+                    m_model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
                     nodeIdsToRead.Add(startId);
 
                     for (int i = 1; i<kvp.Value.Count();i++)
                     {
                         multiLinkId = kvp.Key + ":::" + i;
-                        model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
+                        m_model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
                         nodeIdsToRead.Add(endId);
                     }
 

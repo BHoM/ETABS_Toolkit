@@ -14,15 +14,15 @@ namespace BH.Adapter.ETABS
     {
 
         public const string ID = "ETABS_id";
-        private cOAPI app;
-        private cSapModel model;
+        private cOAPI m_app;
+        private cSapModel m_model;
         
         public ETABSAdapter(string filePath = "", bool Active = false)
         {
             if (Active)
             {
                 AdapterId = ID;
-
+                
                 Config.SeparateProperties = true;
                 Config.MergeWithComparer = true;
                 Config.ProcessInMemory = false;
@@ -38,23 +38,23 @@ namespace BH.Adapter.ETABS
                 {
                     runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
 
-                    app = (cOAPI)runningInstance;
-                    model = app.SapModel;
+                    m_app = (cOAPI)runningInstance;
+                    m_model = m_app.SapModel;
                     if (System.IO.File.Exists(filePath))
-                        model.File.OpenFile(filePath);
-                    model.SetPresentUnits(eUnits.N_m_C);
+                        m_model.File.OpenFile(filePath);
+                    m_model.SetPresentUnits(eUnits.N_m_C);
                 }
                 else
                 {
                     //open ETABS if not running - NOTE: this behaviour is different from other adapters
-                    app = helper.CreateObject(pathToETABS);
-                    app.ApplicationStart();
-                    model = app.SapModel;
-                    model.InitializeNewModel(eUnits.N_m_C);
+                    m_app = helper.CreateObject(pathToETABS);
+                    m_app.ApplicationStart();
+                    m_model = m_app.SapModel;
+                    m_model.InitializeNewModel(eUnits.N_m_C);
                     if (System.IO.File.Exists(filePath))
-                        model.File.OpenFile(filePath);
+                        m_model.File.OpenFile(filePath);
                     else
-                        model.File.NewBlank();
+                        m_model.File.NewBlank();
                 }
 
             }

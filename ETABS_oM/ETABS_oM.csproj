@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9552D636-D903-4492-944E-0CD392D7BFE3}</ProjectGuid>
+    <ProjectGuid>{0F1B6828-633E-420D-BB61-00C16056BA8D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BH.Engine.ETABS</RootNamespace>
-    <AssemblyName>ETABS_Engine</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <RootNamespace>BH.oM.Adapters.ETABS</RootNamespace>
+    <AssemblyName>ETABS_oM</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -32,26 +32,6 @@
   <ItemGroup>
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ETABS2016">
-      <HintPath>..\..\..\..\..\..\..\Program Files\Computers and Structures\ETABS 2016\ETABS2016.dll</HintPath>
-    </Reference>
-    <Reference Include="Geometry_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
-    </Reference>
-    <Reference Include="Reflection_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
-    </Reference>
-    <Reference Include="Serialiser_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Serialiser_Engine.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Structure_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Structure_Engine.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -63,30 +43,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdapterId.cs" />
-    <Compile Include="Convert\PrivateHelpers\Constraint.cs" />
-    <Compile Include="Convert\PrivateHelpers\Material.cs" />
-    <Compile Include="Convert\PrivateHelpers\Section.cs" />
-    <Compile Include="Convert\ToBHoM.cs" />
-    <Compile Include="Convert\ToETABS.cs" />
-    <Compile Include="Create\Diaphragm.cs" />
-    <Compile Include="Create\MassSource.cs" />
-    <Compile Include="ModelData.cs" />
-    <Compile Include="Modify\SetAutoLengthOffset.cs" />
-    <Compile Include="Modify\SetDiaphragm.cs" />
-    <Compile Include="Modify\SetInsertionPoint.cs" />
+    <Compile Include="Elements\Diaphragm.cs" />
+    <Compile Include="Enums\BarInsertionPoint.cs" />
+    <Compile Include="Enums\Diaphragm.cs" />
+    <Compile Include="Loads\MassSource.cs" />
+    <Compile Include="Loads\ModalCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\AutoLengthOffset.cs" />
-    <Compile Include="Query\Diaphragm.cs" />
-    <Compile Include="Query\DiaphragmType.cs" />
-    <Compile Include="Query\InsertionPoint.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ETABS_oM\ETABS_oM.csproj">
-      <Project>{0f1b6828-633e-420d-bb61-00c16056ba8d}</Project>
-      <Name>ETABS_oM</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

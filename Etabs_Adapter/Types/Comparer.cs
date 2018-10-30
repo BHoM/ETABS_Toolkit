@@ -42,6 +42,8 @@ namespace BH.Adapter.ETABS
             {typeof(Node), new BH.Engine.Structure.NodeDistanceComparer(3) },
             {typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
             {typeof(Material), new BHoMObjectNameComparer() },
+            {typeof(IProperty2D), new BHoMObjectNameComparer() },
+            {typeof(BH.oM.Adapters.ETABS.Elements.Diaphragm), new BHoMObjectNameComparer() },
         };
 
 

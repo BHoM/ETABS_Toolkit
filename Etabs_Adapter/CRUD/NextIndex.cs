@@ -42,42 +42,42 @@ namespace BH.Adapter.ETABS
             switch (typeString)
             {
                 case "Node":
-                    model.PointObj.GetNameList(ref nameCount, ref names);
+                    m_model.PointObj.GetNameList(ref nameCount, ref names);
                     lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
                     lastId = lastNum.ToString();
                     break;
                 case "Bar":
-                    model.FrameObj.GetNameList(ref nameCount, ref names);
+                    m_model.FrameObj.GetNameList(ref nameCount, ref names);
                     lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
                     lastId = lastNum.ToString();
                     break;
                 case "PanelPlanar":
-                    model.AreaObj.GetNameList(ref nameCount, ref names);
+                    m_model.AreaObj.GetNameList(ref nameCount, ref names);
                     lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
                     lastId = lastNum.ToString();
                     break;
                 case "Material":
-                    model.PropMaterial.GetNameList(ref nameCount, ref names);
+                    m_model.PropMaterial.GetNameList(ref nameCount, ref names);
                     lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "SectionProperty":
-                    model.PropFrame.GetNameList(ref nameCount, ref names);
+                    m_model.PropFrame.GetNameList(ref nameCount, ref names);
                     lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "Property2D":
-                    model.PropArea.GetNameList(ref nameCount, ref names);
+                    m_model.PropArea.GetNameList(ref nameCount, ref names);
                     lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "Loadcase":
-                    model.LoadPatterns.GetNameList(ref nameCount, ref names);
+                    m_model.LoadPatterns.GetNameList(ref nameCount, ref names);
                     lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "LoadCombination":
-                    model.AreaObj.GetNameList(ref nameCount, ref names);
+                    m_model.AreaObj.GetNameList(ref nameCount, ref names);
                     lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "RigidLink":
-                    model.LinkObj.GetNameList(ref nameCount, ref names);
+                    m_model.LinkObj.GetNameList(ref nameCount, ref names);
                     lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 default:

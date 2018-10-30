@@ -222,6 +222,23 @@ namespace BH.Adapter.ETABS
             //without modelData and the adapter there is no reason to devide this into SetSpecificSection and SetSectionProperty... right?
             SetSpecificSection(bhSection as dynamic, model);
 
+            double[] modifiers = bhSection.Modifiers();
+
+            if (modifiers != null)
+            {
+                double[] etabsMods = new double[8];
+
+                etabsMods[0] = modifiers[0];    //Area
+                etabsMods[1] = modifiers[4];    //Minor axis shear
+                etabsMods[2] = modifiers[5];    //Major axis shear
+                etabsMods[3] = modifiers[3];    //Torsion
+                etabsMods[4] = modifiers[1];    //Major bending
+                etabsMods[5] = modifiers[2];    //Minor bending
+                etabsMods[6] = 1;               //Mass, not currently implemented
+                etabsMods[7] = 1;               //Weight, not currently implemented
+
+                model.PropFrame.SetModifiers(bhSection.Name, ref etabsMods);
+            }
             //string materialName = "";
 
             //if (modelData.sectionDict.ContainsKey(bhSection.Name))
@@ -329,6 +346,11 @@ namespace BH.Adapter.ETABS
         private static void SetSpecificDimensions(RectangleProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             model.PropFrame.SetRectangle(sectionName, materialName, dimensions.Height, dimensions.Width);
+        }
+
+        private static void SetSpecificDimensions(CircleProfile dimensions, string sectionName, string materialName, cSapModel model)
+        {
+            model.PropFrame.SetCircle(sectionName, materialName, dimensions.Diameter);
         }
 
         #endregion
