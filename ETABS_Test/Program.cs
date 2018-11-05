@@ -19,7 +19,7 @@ namespace ETABS_Test
     {
         static void Main(string[] args)
         {
-            ETABSAdapter app = new ETABSAdapter(null, true);
+            ETABSAdapter app = new ETABSAdapter(null, null, true);
 
             //MeshResults(app);
             //TestPushElements(app);
@@ -249,7 +249,7 @@ namespace ETABS_Test
             }
            
 
-            ETABSAdapter adapter = new ETABSAdapter("", true);
+            ETABSAdapter adapter = new ETABSAdapter("", null,true);
 
             adapter.Push(levels);
         }

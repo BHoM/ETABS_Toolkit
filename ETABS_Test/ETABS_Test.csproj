@@ -78,6 +78,14 @@
       <Project>{895e2ab0-e349-4c1a-9098-51a46cd3a955}</Project>
       <Name>Etabs_Adapter</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ETABS_Engine\ETABS_Engine.csproj">
+      <Project>{9552d636-d903-4492-944e-0cd392d7bfe3}</Project>
+      <Name>ETABS_Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ETABS_oM\ETABS_oM.csproj">
+      <Project>{0f1b6828-633e-420d-bb61-00c16056ba8d}</Project>
+      <Name>ETABS_oM</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

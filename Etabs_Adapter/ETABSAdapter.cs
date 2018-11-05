@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
+using BH.oM.Adapters.ETABS;
 using ETABS2016;
 
 namespace BH.Adapter.ETABS
@@ -13,15 +14,25 @@ namespace BH.Adapter.ETABS
     public partial class ETABSAdapter : BHoMAdapter
     {
 
+        /***************************************************/
+        /**** Public Properties                         ****/
+        /***************************************************/
+
         public const string ID = "ETABS_id";
-        private cOAPI m_app;
-        private cSapModel m_model;
-        
-        public ETABSAdapter(string filePath = "", bool Active = false)
+
+        public EtabsConfig EtabsConfig { get; set; } = new EtabsConfig();
+
+        /***************************************************/
+        /**** Constructors                              ****/
+        /***************************************************/
+
+        public ETABSAdapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
         {
-            if (Active)
+            if (active)
             {
                 AdapterId = ID;
+
+                this.EtabsConfig = etabsConfig == null ? new EtabsConfig() : etabsConfig;
                 
                 Config.SeparateProperties = true;
                 Config.MergeWithComparer = true;
@@ -60,6 +71,15 @@ namespace BH.Adapter.ETABS
             }
 
         }
+
+        /***************************************************/
+        /**** Private Fields                            ****/
+        /***************************************************/
+
+        private cOAPI m_app;
+        private cSapModel m_model;
+
+        /***************************************************/
 
     }
 }

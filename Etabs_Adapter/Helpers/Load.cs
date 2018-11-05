@@ -190,10 +190,9 @@ namespace BH.Adapter.ETABS
             return combination;
         }
 
-        public static void SetLoad(cSapModel model, PointForce pointForce)
+        public static void SetLoad(cSapModel model, PointForce pointForce, bool replace)
         {
             double[] pfValues = new double[] { pointForce.Force.X, pointForce.Force.Y, pointForce.Force.Z, pointForce.Moment.X, pointForce.Moment.Y, pointForce.Moment.Z };
-            bool replace = false;
             int ret = 0;
             foreach (Node node in pointForce.Objects.Elements)
             {
@@ -202,7 +201,7 @@ namespace BH.Adapter.ETABS
             }
         }
 
-        public static void SetLoad(cSapModel model, BarUniformlyDistributedLoad barUniformLoad)
+        public static void SetLoad(cSapModel model, BarUniformlyDistributedLoad barUniformLoad, bool replace)
         {
 
             foreach (Bar bar in barUniformLoad.Objects.Elements)
@@ -215,14 +214,14 @@ namespace BH.Adapter.ETABS
                     if (val != 0)
                     {
                         string csiCaseName = CaseNameToCSI(barUniformLoad.Loadcase);
-                        ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction + 3, 0, 1, val, val, "Global", true, false);
+                        ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction + 3, 0, 1, val, val, "Global", true, replace);
                     }
                 }
                 //moments ? does not exist in old toolkit either! 
             }
         }
 
-        public static void SetLoad(cSapModel model, AreaUniformalyDistributedLoad areaUniformLoad)
+        public static void SetLoad(cSapModel model, AreaUniformalyDistributedLoad areaUniformLoad, bool replace)
         {
             int ret = 0;
             string csiCaseName = CaseNameToCSI(areaUniformLoad.Loadcase);
@@ -234,13 +233,13 @@ namespace BH.Adapter.ETABS
                     if (val != 0)
                     {
                         //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
-                        ret = model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), csiCaseName, val, direction + 3, false);
+                        ret = model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), csiCaseName, val, direction + 3, replace);
                     }
                 }
             }
         }
 
-        public static void SetLoad(cSapModel model, BarVaryingDistributedLoad barLoad)
+        public static void SetLoad(cSapModel model, BarVaryingDistributedLoad barLoad, bool replace)
         {
             int ret = 0;
 
@@ -253,12 +252,12 @@ namespace BH.Adapter.ETABS
                     double dist2 = barLoad.DistanceFromB;
                     string csiCaseName = CaseNameToCSI(barLoad.Loadcase);
                     int direction = 6; // we're doing this for Z axis only right now.
-                    ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction, dist1, dist2, val1, val2, "Global", false, false);
+                    ret = model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
                 }
             }
         }
 
-        public static void SetLoad(cSapModel model, GravityLoad gravityLoad)
+        public static void SetLoad(cSapModel model, GravityLoad gravityLoad, bool replace)
         {
             int ret = 0;
 

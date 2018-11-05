@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\EtabsConfig.cs" />
     <Compile Include="Elements\Diaphragm.cs" />
     <Compile Include="Enums\BarInsertionPoint.cs" />
     <Compile Include="Enums\Diaphragm.cs" />

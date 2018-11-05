@@ -199,6 +199,7 @@ namespace BH.Adapter.ETABS
 
         public static List<BarForce> GetBarForce(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
         {
+
             List<string> loadcaseIds = new List<string>();
             List<string> barIds = new List<string>();
             List<BarForce> barForces = new List<BarForce>();
