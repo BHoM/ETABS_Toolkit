@@ -50,7 +50,7 @@ namespace BH.Adapter.ETABS
 
             if (typeof(T) == typeof(Level))
             {
-                CreateCollection(objects as IEnumerable<Level>);
+                return CreateCollection(objects as IEnumerable<Level>);
             }
             else
             {
@@ -132,8 +132,18 @@ namespace BH.Adapter.ETABS
 
             retC = m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI);
 
+            Offset offset = bhBar.Offset;
+
             double[] offset1 = new double[3];
             double[] offset2 = new double[3];
+
+            if (offset != null)
+            {
+                offset1[1] = offset.Start.Z;
+                offset1[2] = offset.Start.Y;
+                offset2[1] = offset.End.Z;
+                offset2[2] = offset.End.Y;
+            }
             m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, true, ref offset1, ref offset2);
 
             BarRelease barRelease = bhBar.Release;
@@ -146,8 +156,7 @@ namespace BH.Adapter.ETABS
 
                 m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
             }
-
-
+             
             if (bhBar.AutoLengthOffset())
                 m_model.FrameObj.SetEndLengthOffset(name, true, 0, 0, 0);
             else if (bhBar.Offset != null)
@@ -383,7 +392,7 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
 
-            Helper.SetLoad(m_model, bhLoad as dynamic);
+            Helper.SetLoad(m_model, bhLoad as dynamic, this.EtabsConfig.ReplaceLoads);
 
 
             return success;
@@ -460,6 +469,11 @@ namespace BH.Adapter.ETABS
 
 
             int ret = m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight);
+
+            if (ret != 0)
+            {
+                Engine.Reflection.Compute.RecordError("Failed to push levels. Levels can only be pushed to an empty model.");
+            }
 
             return ret == 0;
 

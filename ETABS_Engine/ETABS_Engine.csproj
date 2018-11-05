@@ -70,6 +70,7 @@
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToETABS.cs" />
     <Compile Include="Create\Diaphragm.cs" />
+    <Compile Include="Create\EtabsConfig.cs" />
     <Compile Include="Create\MassSource.cs" />
     <Compile Include="ModelData.cs" />
     <Compile Include="Modify\SetAutoLengthOffset.cs" />
