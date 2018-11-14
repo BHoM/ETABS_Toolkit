@@ -173,7 +173,7 @@ namespace BH.Adapter.ETABS
         private bool CreateObject(ISectionProperty bhSection)
         {
             bool success = true;
-
+            
             Helper.SetSectionProperty(m_model, bhSection);//TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
             return success;
         }
@@ -248,11 +248,7 @@ namespace BH.Adapter.ETABS
             
             string name = bhPanel.CustomData[AdapterId].ToString();
             string propertyName = bhPanel.Property.Name;
-            List<BH.oM.Geometry.Point> boundaryPoints = new List<oM.Geometry.Point>();
-
-            foreach(Edge edge in bhPanel.ExternalEdges)
-                boundaryPoints.AddRange(edge.Curve.IControlPoints());
-            boundaryPoints = boundaryPoints.Distinct().ToList();
+            List<BH.oM.Geometry.Point> boundaryPoints = bhPanel.ControlPoints(true).CullDuplicates();
 
             int segmentCount = boundaryPoints.Count();
             double[] x = new double[segmentCount];
@@ -273,10 +269,7 @@ namespace BH.Adapter.ETABS
             {
                 for(int i=0;i < bhPanel.Openings.Count;i++)
                 {
-                    boundaryPoints = new List<oM.Geometry.Point>();
-                    foreach(Edge edge in bhPanel.Openings[i].Edges)
-                        boundaryPoints.AddRange(edge.Curve.IControlPoints());
-                    boundaryPoints = boundaryPoints.Distinct().ToList();
+                    boundaryPoints = bhPanel.Openings[i].ControlPoints().CullDuplicates();
 
                     segmentCount = boundaryPoints.Count();
                     x = new double[segmentCount];
@@ -303,21 +296,6 @@ namespace BH.Adapter.ETABS
             {
                 m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
             }
-
-            //switch (bhPanel.Diaphragm())
-            //{
-            //    case oM.Adapters.ETABS.DiaphragmType.RigidDiaphragm:
-            //        model.Diaphragm.SetDiaphragm("Rigid", false);   //TODO: Check if allready added
-            //        model.AreaObj.SetDiaphragm(name, "Rigid");
-            //        break;
-            //    case oM.Adapters.ETABS.DiaphragmType.SemiRigidDiaphragm:
-            //        model.Diaphragm.SetDiaphragm("SemiRigid", false);   //TODO: Check if allready added
-            //        model.AreaObj.SetDiaphragm(name, "SemiRigid");
-            //        break;
-            //    case oM.Adapters.ETABS.DiaphragmType.None:
-            //    default:
-            //        break;
-            //}
 
             return success;
         }
