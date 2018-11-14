@@ -29,11 +29,15 @@ namespace BH.Adapter.ETABS
             double t2 = 0;
             double tf = 0;
             double tw = 0;
+            double twt = 0;
             double tfb = 0;
             double t2b = 0;
             int colour = 0;
             string notes = "";
             string guid = "";
+
+            bool verticalFlip = false;
+            bool horFlip = false;
 
             double Area, As2, As3, Torsion, I22, I33, S22, S33, Z22, Z33, R22, R33;
             Area = As2 = As3 = Torsion = I22 = I33 = S22 = S33 = Z22 = Z33 = R22 = R33 = 0;
@@ -58,10 +62,10 @@ namespace BH.Adapter.ETABS
                 case eFramePropType.T:
                     break;
                 case eFramePropType.Angle:
-                    break;
-                case eFramePropType.DblAngle:
                     model.PropFrame.GetAngle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
                     dimensions = Create.AngleProfile(t3, t2, tw, tf, 0, 0);
+                    break;
+                case eFramePropType.DblAngle:
                     break;
                 case eFramePropType.Box:
                     model.PropFrame.GetTube(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
@@ -122,6 +126,8 @@ namespace BH.Adapter.ETABS
                 case eFramePropType.BuiltupUHybrid:
                     break;
                 case eFramePropType.Concrete_L:
+                    model.PropFrame.GetConcreteL(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref twt, ref horFlip, ref verticalFlip, ref colour, ref notes, ref guid);
+                    dimensions = Create.AngleProfile(t3, t2, tw, tf, 0, 0, horFlip, verticalFlip);
                     break;
                 case eFramePropType.FilledTube:
                     break;
@@ -136,6 +142,8 @@ namespace BH.Adapter.ETABS
                 case eFramePropType.CoreBrace_BRB:
                     break;
                 case eFramePropType.ConcreteTee:
+                    model.PropFrame.GetConcreteTee(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref twt, ref verticalFlip, ref colour, ref notes, ref guid);
+                    dimensions = Create.TSectionProfile(t2, t2, tw, tf, 0, 0, verticalFlip);
                     break;
                 case eFramePropType.ConcreteBox:
                     break;
@@ -264,12 +272,12 @@ namespace BH.Adapter.ETABS
 
         private static void SetSpecificSection(SteelSection section, cSapModel model)
         {
-            SetSectionDimensions(section.SectionProfile, section.Name, section.Material.Name, model);
+            SetSectionDimensions(section.SectionProfile, section.Name, section.Material, model);
         }
 
         private static void SetSpecificSection(ConcreteSection section, cSapModel model)
         {
-            SetSectionDimensions(section.SectionProfile, section.Name, section.Material.Name, model);
+            SetSectionDimensions(section.SectionProfile, section.Name, section.Material, model);
         }
 
         private static void SetSpecificSection(CableSection section, cSapModel model)
@@ -291,66 +299,114 @@ namespace BH.Adapter.ETABS
 
         #region section dimensions
 
-        private static void SetSectionDimensions(IProfile sectionProfile, string sectionName, string materialName, cSapModel model)
+        private static void SetSectionDimensions(IProfile sectionProfile, string sectionName, Material material, cSapModel model)
         {
-            SetSpecificDimensions(sectionProfile as dynamic, sectionName, materialName, model);
+            SetSpecificDimensions(sectionProfile as dynamic, sectionName, material, model);
         }
 
-        private static void SetSpecificDimensions(TubeProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(TubeProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            model.PropFrame.SetPipe(sectionName, materialName, dimensions.Diameter, dimensions.Thickness);
+            model.PropFrame.SetPipe(sectionName, material.Name, dimensions.Diameter, dimensions.Thickness);
         }
 
-        private static void SetSpecificDimensions(BoxProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(BoxProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            model.PropFrame.SetTube(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.Thickness, dimensions.Thickness);
+            model.PropFrame.SetTube(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.Thickness, dimensions.Thickness);
         }
 
-        private static void SetSpecificDimensions(FabricatedBoxProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(FabricatedBoxProfile dimensions, string sectionName, Material material, cSapModel model)
         {
             if (dimensions.TopFlangeThickness != dimensions.BotFlangeThickness)
                 throw new NotImplementedException("different thickness of top and bottom flange is not supported in ETABS");
-            model.PropFrame.SetTube(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.TopFlangeThickness, dimensions.WebThickness);
+            model.PropFrame.SetTube(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.TopFlangeThickness, dimensions.WebThickness);
         }
 
-        private static void SetSpecificDimensions(ISectionProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(ISectionProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            model.PropFrame.SetISection(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.Width, dimensions.FlangeThickness);
+            model.PropFrame.SetISection(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.Width, dimensions.FlangeThickness);
         }
 
-        private static void SetSpecificDimensions(FabricatedISectionProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(FabricatedISectionProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            model.PropFrame.SetISection(sectionName, materialName, dimensions.Height, dimensions.TopFlangeWidth, dimensions.TopFlangeThickness, dimensions.WebThickness, dimensions.BotFlangeWidth, dimensions.BotFlangeThickness);
+            model.PropFrame.SetISection(sectionName, material.Name, dimensions.Height, dimensions.TopFlangeWidth, dimensions.TopFlangeThickness, dimensions.WebThickness, dimensions.BotFlangeWidth, dimensions.BotFlangeThickness);
         }
 
-        private static void SetSpecificDimensions(ChannelProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(ChannelProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            model.PropFrame.SetChannel(sectionName, materialName, dimensions.Height, dimensions.FlangeWidth, dimensions.FlangeThickness, dimensions.WebThickness);
+            model.PropFrame.SetChannel(sectionName, material.Name, dimensions.Height, dimensions.FlangeWidth, dimensions.FlangeThickness, dimensions.WebThickness);
+            if (dimensions.MirrorAboutLocalZ)
+                RecordFlippingError(sectionName);
         }
 
-        private static void SetSpecificDimensions(AngleProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(AngleProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            model.PropFrame.SetAngle(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness);
+            switch (material.Type)
+            {
+                case MaterialType.Aluminium:
+                case MaterialType.Steel:
+                    model.PropFrame.SetSteelAngle(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.RootRadius, dimensions.MirrorAboutLocalZ, dimensions.MirrorAboutLocalY);
+                    break;
+                case MaterialType.Concrete:
+                    model.PropFrame.SetConcreteL(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.WebThickness, dimensions.MirrorAboutLocalZ, dimensions.MirrorAboutLocalY);
+                    break;
+                case MaterialType.Timber:
+                case MaterialType.Rebar:
+                case MaterialType.Tendon:
+                case MaterialType.Glass:
+                case MaterialType.Cable:
+                default:
+                    model.PropFrame.SetAngle(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness);
+                    if (dimensions.MirrorAboutLocalY || dimensions.MirrorAboutLocalZ)
+                        RecordFlippingError(sectionName);
+                    break;
+            }
+            
         }
 
-        private static void SetSpecificDimensions(TSectionProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(TSectionProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            model.PropFrame.SetTee(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness);
+            switch (material.Type)
+            {
+                case MaterialType.Aluminium:
+                case MaterialType.Steel:
+                    model.PropFrame.SetSteelTee(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.RootRadius, dimensions.MirrorAboutLocalY);
+                    break;
+                case MaterialType.Concrete:
+                    model.PropFrame.SetConcreteTee(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.WebThickness, dimensions.MirrorAboutLocalY);
+                    break;
+                case MaterialType.Timber:
+                case MaterialType.Rebar:
+                case MaterialType.Tendon:
+                case MaterialType.Glass:
+                case MaterialType.Cable:
+                default:
+                    model.PropFrame.SetTee(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness);
+                    if (dimensions.MirrorAboutLocalY)
+                        RecordFlippingError(sectionName);
+                    break;
+            }
+           
         }
 
-        private static void SetSpecificDimensions(ZSectionProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(ZSectionProfile dimensions, string sectionName, Material material, cSapModel model)
         {
             throw new NotImplementedException("Zed-Section? Never heard of it!");
         }
 
-        private static void SetSpecificDimensions(RectangleProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(RectangleProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            model.PropFrame.SetRectangle(sectionName, materialName, dimensions.Height, dimensions.Width);
+            model.PropFrame.SetRectangle(sectionName, material.Name, dimensions.Height, dimensions.Width);
         }
 
-        private static void SetSpecificDimensions(CircleProfile dimensions, string sectionName, string materialName, cSapModel model)
+        private static void SetSpecificDimensions(CircleProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            model.PropFrame.SetCircle(sectionName, materialName, dimensions.Diameter);
+            model.PropFrame.SetCircle(sectionName, material.Name, dimensions.Diameter);
+        }
+
+
+        private static void RecordFlippingError(string sectionName)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning("Section with name " + sectionName + "has a flipping boolean. This is not currently supported in the Etabs_Toolkit. The section will be set to etabs unflipped");
         }
 
         #endregion
