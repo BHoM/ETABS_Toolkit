@@ -245,10 +245,12 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
             int retA = 0;
-            
+
+            double mergeTol = 1e-3; //Merging panel points to the mm, same behaviour as the default node comparer
+
             string name = bhPanel.CustomData[AdapterId].ToString();
             string propertyName = bhPanel.Property.Name;
-            List<BH.oM.Geometry.Point> boundaryPoints = bhPanel.ControlPoints(true).CullDuplicates();
+            List<BH.oM.Geometry.Point> boundaryPoints = bhPanel.ControlPoints(true).CullDuplicates(mergeTol);
 
             int segmentCount = boundaryPoints.Count();
             double[] x = new double[segmentCount];
@@ -269,7 +271,7 @@ namespace BH.Adapter.ETABS
             {
                 for(int i=0;i < bhPanel.Openings.Count;i++)
                 {
-                    boundaryPoints = bhPanel.Openings[i].ControlPoints().CullDuplicates();
+                    boundaryPoints = bhPanel.Openings[i].ControlPoints().CullDuplicates(mergeTol);
 
                     segmentCount = boundaryPoints.Count();
                     x = new double[segmentCount];
