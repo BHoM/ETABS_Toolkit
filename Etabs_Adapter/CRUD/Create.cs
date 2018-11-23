@@ -115,22 +115,32 @@ namespace BH.Adapter.ETABS
         private bool CreateObject(Bar bhBar)
         {
             bool success = true;
-            int retA = 0;
-            int retB = 0;
-            int retC = 0;
+            int ret = 0;
+
 
             string name = "";
             string bhId = bhBar.CustomData[AdapterId].ToString();
             name = bhId;
             
-            retA = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
-            //if (bhId != name)
-            //    success = false;
+            ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
 
-            //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
-            retB = m_model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
+            if (ret != 0)
+            {
+                CreateElementError("Bar", name);
+                return false;
+            }
 
-            retC = m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI);
+            if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.Name) != 0)
+            {
+                CreatePropertyWarning("SectionProperty", "Bar", name);
+                ret++;
+            }
+
+            if (m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI) != 0)
+            {
+                CreatePropertyWarning("Orientation angle", "Bar", name);
+                ret++;
+            }
 
             Offset offset = bhBar.Offset;
 
@@ -144,7 +154,12 @@ namespace BH.Adapter.ETABS
                 offset2[1] = offset.End.Z;
                 offset2[2] = offset.End.Y;
             }
-            m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, true, ref offset1, ref offset2);
+
+            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, true, ref offset1, ref offset2) != 0)
+            {
+                CreatePropertyWarning("insertion point and perpendicular offset", "Bar", name);
+                ret++;
+            }
 
             BarRelease barRelease = bhBar.Release;
             if (barRelease != null)
@@ -154,18 +169,31 @@ namespace BH.Adapter.ETABS
                 bool[] restraintEnd = barRelease.EndRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.EndRelease);
                 double[] springEnd = barRelease.EndRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.EndRelease);
 
-                m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
+                if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
+                {
+                    CreatePropertyWarning("Release", "Bar", name);
+                    ret++;
+                }
             }
-             
+
             if (bhBar.AutoLengthOffset())
-                m_model.FrameObj.SetEndLengthOffset(name, true, 0, 0, 0);
+            {
+                if (m_model.FrameObj.SetEndLengthOffset(name, true, 0, 0, 0) != 0)
+                {
+                    CreatePropertyWarning("Auto length offset", "Bar", name);
+                    ret++;
+                }
+            }
             else if (bhBar.Offset != null)
-                m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1);
+            {
+                if (m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1) != 0)
+                {
+                    CreatePropertyWarning("Length offset", "Bar", name);
+                    ret++;
+                }
+            }
 
-            if (retA != 0 || retB != 0 || retC != 0)
-                success = false;
-
-            return success;
+            return ret == 0;
         }
 
         /***************************************************/
@@ -409,12 +437,47 @@ namespace BH.Adapter.ETABS
                 name = multiSlave == true ? name + ":::" + i : name;
 
                 //retA = model.LinkObj.AddByCoord(XI, YI, ZI, XJ, YJ, ZJ, ref givenName, false, "Default", name);
-                retA = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref givenName, false, "Default", name);
+                retA = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref givenName, false, constraint.Name, name);
 
             }
 
             return success;
         }
+
+        /***************************************************/
+
+        private bool CreateObject(LinkConstraint bhLinkConstraint)
+        {
+
+            string name = bhLinkConstraint.Name;
+
+            bool[] dof = new bool[6];
+
+            for (int i = 0; i < 6; i++)
+                dof[i] = true;
+
+            bool[] fix = new bool[6];
+
+            fix[0] = bhLinkConstraint.XtoX;
+            fix[1] = bhLinkConstraint.ZtoZ;
+            fix[2] = bhLinkConstraint.YtoY;
+            fix[3] = bhLinkConstraint.XXtoXX;
+            fix[4] = bhLinkConstraint.ZZtoZZ;
+            fix[5] = bhLinkConstraint.YYtoYY;
+
+            double[] stiff = new double[6];
+            double[] damp = new double[6];
+
+            int ret = m_model.PropLink.SetLinear(name, ref dof, ref fix, ref stiff, ref damp, 0, 0);
+
+            if (ret != 0)
+                CreateElementError("Link Constraint", name);
+
+            return ret == 0;
+
+        }
+
+
 
         /***************************************************/
 
@@ -461,6 +524,32 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        private void CreateElementError(string elemType, string elemName)
+        {
+            Engine.Reflection.Compute.RecordError("Failed to create the element of type " + elemType + ", with id: " + elemName);
+        }
 
+        /***************************************************/
+
+        private void CreatePropertyError(string failedProperty, string elemType, string elemName)
+        {
+            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debuging.EventType.Error);
+        }
+
+        /***************************************************/
+
+        private void CreatePropertyWarning(string failedProperty, string elemType, string elemName)
+        {
+            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debuging.EventType.Warning);
+        }
+
+        /***************************************************/
+
+        private void CreatePropertyEvent(string failedProperty, string elemType, string elemName, oM.Reflection.Debuging.EventType eventType)
+        {
+            Engine.Reflection.Compute.RecordEvent("Failed to set property " + failedProperty + " for the " + elemType + "with id: " + elemName, eventType);
+        }
+
+        /***************************************************/
     }
 }
