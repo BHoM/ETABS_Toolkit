@@ -47,7 +47,7 @@ namespace BH.Adapter.ETABS
             {typeof(ISectionProperty), new List<Type> { typeof(Material) } },
             {typeof(PanelPlanar), new List<Type> { typeof(IProperty2D), typeof(Material) } },
             {typeof(IProperty2D), new List<Type> { typeof(Material) } },
-            {typeof(RigidLink), new List<Type> { typeof(Node) } },
+            {typeof(RigidLink), new List<Type> { typeof(Node), typeof(LinkConstraint) } },
             {typeof(ILoad), new List<Type> {typeof(Loadcase) } }
 
         };
