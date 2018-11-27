@@ -86,6 +86,7 @@
     <Compile Include="ETABSAdapter.cs" />
     <Compile Include="ETABSEnums.cs" />
     <Compile Include="Helpers\Constraint.cs" />
+    <Compile Include="Helpers\LinkConstraints.cs" />
     <Compile Include="Helpers\Load.cs" />
     <Compile Include="Helpers\Material.cs" />
     <Compile Include="Helpers\Panel.cs" />

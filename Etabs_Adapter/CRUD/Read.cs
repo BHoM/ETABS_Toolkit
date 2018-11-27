@@ -41,6 +41,8 @@ namespace BH.Adapter.ETABS
                 return ReadLoad(type, ids as dynamic);
             else if (type == typeof(RigidLink))
                 return ReadRigidLink(ids as dynamic);
+            else if (type == typeof(LinkConstraint))
+                return ReadLinkConstraints(ids as dynamic);
 
 
             return new List<IBHoMObject>();//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
@@ -180,6 +182,32 @@ namespace BH.Adapter.ETABS
             {
                 m_model.PropFrame.GetTypeOAPI(id, ref propertyType);
                 propList.Add(Helper.GetSectionProperty(m_model, id, propertyType));
+            }
+            return propList;
+        }
+
+        private List<LinkConstraint> ReadLinkConstraints(List<string> ids = null)
+        {
+            List<LinkConstraint> propList = new List<LinkConstraint>();
+            int nameCount = 0;
+            string[] names = { };
+
+            if (ids == null)
+            {
+                m_model.PropLink.GetNameList(ref nameCount, ref names);
+                ids = names.ToList();
+            }
+
+            foreach (string id in ids)
+            {
+                eLinkPropType linkType = eLinkPropType.Linear;
+                m_model.PropLink.GetTypeOAPI(id, ref linkType);
+                LinkConstraint constr = Helper.LinkConstraint(id, linkType, m_model);
+                if (constr != null)
+                    propList.Add(constr);
+                else
+                    Engine.Reflection.Compute.RecordError("Failed to read link constraint with id :" + id);
+
             }
             return propList;
         }
@@ -491,6 +519,8 @@ namespace BH.Adapter.ETABS
                 }
             }
 
+            Dictionary<string, LinkConstraint> constraints = new Dictionary<string, LinkConstraint>();
+
 
             foreach (KeyValuePair<string,List<string>> kvp in idDict)
             {
@@ -506,8 +536,6 @@ namespace BH.Adapter.ETABS
                     List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
                     bhLink.MasterNode= endNodes[0];
                     bhLink.SlaveNodes = new List<Node>() { endNodes[1] };
-
-                    linkList.Add(bhLink);
                 }
                 else
                 {
@@ -532,9 +560,19 @@ namespace BH.Adapter.ETABS
                     bhLink.MasterNode = endNodes[0];
                     endNodes.RemoveAt(0);
                     bhLink.SlaveNodes = endNodes;
-
-                    linkList.Add(bhLink);
                 }
+                string propName = "";
+                m_model.LinkObj.GetProperty(kvp.Key, ref propName);
+
+                LinkConstraint constr;
+                if (!constraints.TryGetValue(propName, out constr))
+                {
+                    constr = ReadLinkConstraints(new List<string> { propName }).FirstOrDefault();
+                    constraints[propName] = constr;
+                }
+                bhLink.Constraint = constr;
+
+                linkList.Add(bhLink);
             }
 
             return linkList;
