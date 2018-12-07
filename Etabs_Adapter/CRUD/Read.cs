@@ -19,6 +19,10 @@ namespace BH.Adapter.ETABS
 {
     public partial class ETABSAdapter
     {
+        /***************************************************/
+        /*** Private methods - Read                      ***/
+        /***************************************************/
+
         protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
             if (type == typeof(Node))
@@ -47,6 +51,8 @@ namespace BH.Adapter.ETABS
 
             return new List<IBHoMObject>();//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
+
+        /***************************************************/
 
         private List<Node> ReadNodes(List<string> ids = null)
         {
@@ -84,6 +90,8 @@ namespace BH.Adapter.ETABS
 
             return nodeList;
         }
+
+        /***************************************************/
 
         private List<Bar> ReadBars(List<string> ids = null)
         {
@@ -164,6 +172,8 @@ namespace BH.Adapter.ETABS
             return barList;
         }
 
+        /***************************************************/
+
         private List<ISectionProperty> ReadSectionProperties(List<string> ids = null)
         {
             List<ISectionProperty> propList = new List<ISectionProperty>();
@@ -185,6 +195,8 @@ namespace BH.Adapter.ETABS
             }
             return propList;
         }
+
+        /***************************************************/
 
         private List<LinkConstraint> ReadLinkConstraints(List<string> ids = null)
         {
@@ -212,6 +224,8 @@ namespace BH.Adapter.ETABS
             return propList;
         }
 
+        /***************************************************/
+
         private List<Material> ReadMaterials(List<string> ids = null)
         {
             int nameCount = 0;
@@ -231,6 +245,8 @@ namespace BH.Adapter.ETABS
 
             return materialList;
         }
+
+        /***************************************************/
 
         private List<IProperty2D> ReadProperty2d(List<string> ids = null)
         {
@@ -346,6 +362,8 @@ namespace BH.Adapter.ETABS
             return propertyList;
         }
 
+        /***************************************************/
+
         private List<PanelPlanar> ReadPanel(List<string> ids = null)
         {
             List<PanelPlanar> panelList = new List<PanelPlanar>();
@@ -409,6 +427,8 @@ namespace BH.Adapter.ETABS
             return panelList;
         }
 
+        /***************************************************/
+
         private List<LoadCombination> ReadLoadCombination(List<string> ids = null)
         {
             List<LoadCombination> combinations = new List<LoadCombination>();
@@ -445,6 +465,8 @@ namespace BH.Adapter.ETABS
             return combinations;
         }
 
+        /***************************************************/
+
         private List<Loadcase> ReadLoadcase(List<string> ids = null)
         {
             int nameCount = 0;
@@ -469,6 +491,8 @@ namespace BH.Adapter.ETABS
             return loadcaseList;
         }
 
+        /***************************************************/
+
         private List<ILoad> ReadLoad(Type type, List<string> ids = null)
         {
             List<ILoad> loadList = new List<ILoad>();
@@ -483,6 +507,8 @@ namespace BH.Adapter.ETABS
 
             return loadList;
         }
+
+        /***************************************************/
 
         private List<RigidLink> ReadRigidLink(List<string> ids = null)
         {
@@ -577,5 +603,7 @@ namespace BH.Adapter.ETABS
 
             return linkList;
         }
+
+        /***************************************************/
     }
 }
