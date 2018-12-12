@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties;
+using BH.oM.Structure.Properties.Section;
+using BH.oM.Structure.Properties.Surface;
+using BH.oM.Structure.Properties.Constraint;
 using BH.oM.Structure.Loads;
 using BH.oM.Common.Materials;
 using ETABS2016;
@@ -35,7 +37,7 @@ namespace BH.Adapter.ETABS
                 return ReadMaterials(ids as dynamic);
             else if (type == typeof(PanelPlanar))
                 return ReadPanel(ids as dynamic);
-            else if (type == typeof(IProperty2D))
+            else if (type == typeof(ISurfaceProperty))
                 return ReadProperty2d(ids as dynamic);
             else if (type == typeof(LoadCombination))
                 return ReadLoadCombination(ids as dynamic);
@@ -248,9 +250,9 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<IProperty2D> ReadProperty2d(List<string> ids = null)
+        private List<ISurfaceProperty> ReadProperty2d(List<string> ids = null)
         {
-            List<IProperty2D> propertyList = new List<IProperty2D>();
+            List<ISurfaceProperty> propertyList = new List<ISurfaceProperty>();
             int nameCount = 0;
             string[] nameArr = { };
 
@@ -262,7 +264,7 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                IProperty2D bhProperty = null;
+                ISurfaceProperty bhProperty = null;
                 eSlabType slabType = eSlabType.Slab;
                 eShellType shellType = eShellType.ShellThin;
                 string material = "";
@@ -397,7 +399,7 @@ namespace BH.Adapter.ETABS
                 string propertyName = "";
 
                 m_model.AreaObj.GetProperty(id, ref propertyName);
-                IProperty2D panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
+                ISurfaceProperty panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
 
                 PanelPlanar panel = new PanelPlanar();
                 panel.CustomData[AdapterId] = id;

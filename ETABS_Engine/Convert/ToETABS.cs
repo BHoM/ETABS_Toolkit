@@ -7,7 +7,7 @@ using ETABS2016;
 using BH.oM;
 using BH.oM.Structure;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties;
+using BH.oM.Structure.Properties.Constraint;
 using BH.Engine.Serialiser;
 using BH.oM.Common.Materials;
 
