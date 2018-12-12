@@ -1,4 +1,5 @@
-﻿using BH.oM.Structure.Properties;
+﻿using BH.oM.Structure.Properties.Section;
+using BH.oM.Structure.Properties.Section.ShapeProfiles;
 using BH.Engine.Structure;
 using CE = BH.Engine.Common;
 using ETABS2016;

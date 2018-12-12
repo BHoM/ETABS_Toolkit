@@ -3,6 +3,9 @@ using System.Linq;
 using BH.oM.Architecture.Elements;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Properties;
+using BH.oM.Structure.Properties.Section;
+using BH.oM.Structure.Properties.Constraint;
+using BH.oM.Structure.Properties.Surface;
 using BH.oM.Structure.Loads;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
@@ -220,7 +223,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private bool CreateObject(IProperty2D property2d)
+        private bool CreateObject(ISurfaceProperty property2d)
         {
             bool success = true;
             int retA = 0;
