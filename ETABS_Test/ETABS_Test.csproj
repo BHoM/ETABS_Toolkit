@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\Build\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Architecture_oM">
+      <HintPath>..\..\BHoM\Build\Architecture_oM.dll</HintPath>
+    </Reference>
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
       <Private>True</Private>
@@ -46,6 +49,12 @@
     <Reference Include="Common_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Common_Engine.dll</HintPath>
     </Reference>
+    <Reference Include="Common_oM">
+      <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
+    </Reference>
+    <Reference Include="DataManipulation_oM">
+      <HintPath>..\..\BHoM\Build\DataManipulation_oM.dll</HintPath>
+    </Reference>
     <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Computers and Structures\ETABS 2016\ETABS2016.dll</HintPath>
@@ -54,8 +63,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
     </Reference>
+    <Reference Include="Geometry_oM">
+      <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
+    </Reference>
+    <Reference Include="Reflection_oM">
+      <HintPath>..\..\BHoM\Build\Reflection_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Structure_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Structure_Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Structure_oM">
+      <HintPath>..\..\BHoM\Build\Structure_oM.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
