@@ -533,19 +533,19 @@ namespace BH.Adapter.ETABS
 
         private void CreatePropertyError(string failedProperty, string elemType, string elemName)
         {
-            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debuging.EventType.Error);
+            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debugging.EventType.Error);
         }
 
         /***************************************************/
 
         private void CreatePropertyWarning(string failedProperty, string elemType, string elemName)
         {
-            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debuging.EventType.Warning);
+            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debugging.EventType.Warning);
         }
 
         /***************************************************/
 
-        private void CreatePropertyEvent(string failedProperty, string elemType, string elemName, oM.Reflection.Debuging.EventType eventType)
+        private void CreatePropertyEvent(string failedProperty, string elemType, string elemName, oM.Reflection.Debugging.EventType eventType)
         {
             Engine.Reflection.Compute.RecordEvent("Failed to set property " + failedProperty + " for the " + elemType + "with id: " + elemName, eventType);
         }
