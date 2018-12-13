@@ -233,15 +233,30 @@ namespace BH.Adapter.ETABS
                 model.FrameObj.GetNameList(ref bars, ref names);
                 barIds = names.ToList();
             }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    barIds.Add(ids[i].ToString());
+                }
+            }
 
             if (cases == null)
             {
-                int casesCount = 0;
-                string[] names = null;
-                model.LoadCases.GetNameList(ref casesCount, ref names);
-                loadcaseIds = names.ToList();
-                model.RespCombo.GetNameList(ref casesCount, ref names);
-                loadcaseIds.AddRange(names);
+                int Count = 0;
+                string[] case_names = null;
+                string[] combo_names = null;
+                model.LoadCases.GetNameList(ref Count, ref case_names);
+                model.RespCombo.GetNameList(ref Count, ref combo_names);
+                loadcaseIds = case_names.ToList();
+                loadcaseIds.AddRange(combo_names);
+            }
+            else
+            {
+                for (int i = 0; i < cases.Count; i++)
+                {
+                    loadcaseIds.Add(cases[i].ToString());
+                }
             }
 
 
@@ -277,8 +292,6 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            //List<BarForce<string, string, string>> barForces = new List<BarForce<string, string, string>>();
-            int counter = 1;
             for (int i = 0; i < barIds.Count; i++)
             {
                 model.FrameObj.GetOutputStations(barIds[i], ref type, ref segSize, ref divisions, ref op1, ref op2);
@@ -288,10 +301,6 @@ namespace BH.Adapter.ETABS
                 {
                     for (int j = 0; j < resultCount; j++)
                     {
-                        //string step = stepType[j] != null ? stepType[j] == "Max" ? " Max" : stepType[j] == "Min" ? " Min" : "1" : "0";
-                        //if (objStation[j] == 0)
-                        //    counter = 1;
-                        //barForces.Add(new BarForce<string, string, string>(objects[j], loadcaseNames[j], counter++, divisions, step, fx[j], fz[j], fy[j], mx[j], mz[j], my[j]));
 
                         BarForce bf = new BarForce()
                         {
@@ -307,13 +316,13 @@ namespace BH.Adapter.ETABS
                             Position = objStation[j],
                             TimeStep = stepNum[j]
                         };
+
                         barForces.Add(bf);
                     }
                 }
             }
 
             return barForces;
-
         }
 
         public static List<BarResult> GetBarStrain(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
