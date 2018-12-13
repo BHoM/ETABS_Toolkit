@@ -7,6 +7,7 @@ using BH.Engine.Structure;
 using BH.Engine.Geometry;
 using BH.oM.Common.Materials;
 using BH.Engine.ETABS;
+using BH.oM.Adapters.ETABS.Elements;
 
 namespace BH.Adapter.ETABS
 {
@@ -21,6 +22,10 @@ namespace BH.Adapter.ETABS
             if (typeof(T) == typeof(Node))
             {
                 return UpdateObjects(objects as IEnumerable<Node>);
+            }
+            if (typeof(T) == typeof(PanelPlanar))
+            {
+                return UpdateObjects(objects as IEnumerable<PanelPlanar>);
             }
             else
                 return base.UpdateObjects<T>(objects);
@@ -61,6 +66,34 @@ namespace BH.Adapter.ETABS
             return sucess;
         }
 
-        /***************************************************/
-    }
+
+        private bool UpdateObjects(IEnumerable<PanelPlanar> bhPanels)
+        {
+            bool sucess = true;
+
+            foreach (PanelPlanar bhPanel in bhPanels)
+            {
+                Pier pier = bhPanel.Pier();
+                Spandrel spandrel = bhPanel.Spandrel();
+                List<string> pl = new List<string>();
+                string name = bhPanel.CustomData[AdapterId].ToString();
+
+                if (pier != null)
+                {
+                    int ret = m_model.PierLabel.SetPier(pier.Name);
+                     ret = m_model.AreaObj.SetPier(name, pier.Name);
+                }
+                if (spandrel != null)
+                {
+                    int ret = m_model.SpandrelLabel.SetSpandrel(spandrel.Name,false);
+                    ret = m_model.AreaObj.SetSpandrel(name, spandrel.Name);
+                }
+            }
+            return sucess;
+        }
+
+
+
+    /***************************************************/
+}
 }

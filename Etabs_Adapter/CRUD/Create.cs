@@ -46,7 +46,13 @@ namespace BH.Adapter.ETABS
                 List<Diaphragm> diaphragms = panels.Select(x => x.Diaphragm()).Where(x => x != null).ToList();
 
                 this.Replace(diaphragms);
+
+
+                List<Pier> piers = panels.Select(x => x.Pier()).Where(x => x != null).ToList();
+
+                this.Replace(piers);
             }
+
 
             if (typeof(T) == typeof(Level))
             {
@@ -444,6 +450,7 @@ namespace BH.Adapter.ETABS
             return success;
         }
 
+
         /***************************************************/
 
         private bool CreateObject(LinkConstraint bhLinkConstraint)
@@ -548,6 +555,17 @@ namespace BH.Adapter.ETABS
         private void CreatePropertyEvent(string failedProperty, string elemType, string elemName, oM.Reflection.Debuging.EventType eventType)
         {
             Engine.Reflection.Compute.RecordEvent("Failed to set property " + failedProperty + " for the " + elemType + "with id: " + elemName, eventType);
+        }
+
+        /***************************************************/
+
+        private bool CreateObject(Pier bhPier)
+        {
+          //  foreach (PanelPlanar p in bhPier.Panels)
+         //   {
+         //       m_model.AreaObj.SetPier(p.CustomData[AdapterId].ToString(), bhPier.Name);
+        //    }
+            return true;
         }
 
         /***************************************************/
