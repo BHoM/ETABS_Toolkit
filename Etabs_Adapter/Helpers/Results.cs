@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BH.oM.Structure.Results;
 using BH.oM.Common;
 using ETABS2016;
+using BH.oM.Adapters.ETABS.Elements;
 
 namespace BH.Adapter.ETABS
 {
@@ -292,6 +293,104 @@ namespace BH.Adapter.ETABS
 
             return barForces;
 
+        }
+
+        public static List<PierForce> GetPierForce(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        {
+
+            List<string> loadcaseIds = new List<string>();
+            List<string> barIds = new List<string>();
+            List<PierForce> pierForces = new List<PierForce>();
+
+            if (ids == null)
+            {
+                int bars = 0;
+                string[] names = null;
+                model.FrameObj.GetNameList(ref bars, ref names);
+                barIds = names.ToList();
+            }
+
+            if (cases == null)
+            {
+                int casesCount = 0;
+                string[] names = null;
+                model.LoadCases.GetNameList(ref casesCount, ref names);
+                loadcaseIds = names.ToList();
+                model.RespCombo.GetNameList(ref casesCount, ref names);
+                loadcaseIds.AddRange(names);
+            }
+
+
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] objects = null;
+            string[] elm = null;
+            double[] objStation = null;
+            double[] elmStation = null;
+            double[] stepNum = null;
+            string[] stepType = null;
+
+            int NumberResults = 0;
+            string[] StoryName = null;
+            string[] PierName = null;
+            string[] Location = null;
+
+            double[] P = null;
+            double[] V2 = null;
+            double[] V3 = null;
+            double[] T = null;
+            double[] M2 = null;
+            double[] M3 = null;
+
+            int type = 0;
+            double segSize = 0;
+            bool op1 = false;
+            bool op2 = false;
+
+
+            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
+
+            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
+            {
+                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
+                {
+                    model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]);
+                }
+            }
+
+            //List<BarForce<string, string, string>> barForces = new List<BarForce<string, string, string>>();
+            int counter = 1;
+
+                int ret = model.Results.PierForce(ref NumberResults, ref  StoryName,ref PierName, ref loadcaseNames,ref Location, ref P, ref V2, ref V3, ref T, ref M2, ref M3);
+                if (ret == 0)
+                {
+                    for (int j = 0; j < NumberResults; j++)
+                    {
+                    int position = 0;
+                    if (Location[j].ToUpper().Contains("BOTTOM"))
+                    {
+                        position = 1;
+                    }
+                        PierForce bf = new PierForce()
+                        {
+                            ResultCase = loadcaseNames[j],
+                            ObjectId = PierName[j],
+                            MX = T[j],
+                            MY = M2[j],
+                            MZ = M3[j],
+                            FX = P[j],
+                            FY = V2[j],
+                            FZ = V3[j],
+                            //Divisions = divisions,
+                            Position = position,
+                           // TimeStep = stepNum[j]
+                        };
+                       bf.Location = StoryName[j];
+                        pierForces.Add(bf);
+                    }
+                    
+                }
+            return pierForces;
         }
 
         public static List<BarResult> GetBarStrain(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)

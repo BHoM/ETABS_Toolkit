@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Common;
 using BH.oM.Structure.Results;
+using BH.oM.Adapters.ETABS.Elements;
 
 namespace BH.Adapter.ETABS
 {
@@ -90,6 +91,8 @@ namespace BH.Adapter.ETABS
                 results = Helper.GetBarStrain(m_model, ids, cases, divisions);
             else if (type == typeof(BarStress))
                 results = Helper.GetBarStress(m_model, ids, cases, divisions);
+            else if (type == typeof(PierForce))
+                results = Helper.GetPierForce(m_model, ids, cases, divisions);
 
             return results;
         }
@@ -102,6 +105,15 @@ namespace BH.Adapter.ETABS
                 results = Helper.GetMeshForce(m_model, ids, cases, divisions);
             else if (type == typeof(MeshStress))
                 results = Helper.GetMeshStress(m_model, ids, cases, divisions);
+
+            return results;
+        }
+
+        private IEnumerable<IResult> GetPierResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
+        {
+            IEnumerable<PierForce> results = new List<PierForce>();
+
+            results = Helper.GetPierForce(m_model, ids, cases, divisions);
 
             return results;
         }

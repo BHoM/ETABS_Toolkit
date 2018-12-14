@@ -46,6 +46,7 @@
     <Compile Include="Config\EtabsConfig.cs" />
     <Compile Include="Elements\Diaphragm.cs" />
     <Compile Include="Elements\Pier.cs" />
+    <Compile Include="Elements\PierForce.cs" />
     <Compile Include="Elements\Spandrel.cs" />
     <Compile Include="Enums\BarInsertionPoint.cs" />
     <Compile Include="Enums\Diaphragm.cs" />

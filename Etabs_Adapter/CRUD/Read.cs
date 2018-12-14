@@ -12,6 +12,7 @@ using BH.oM.Common.Materials;
 using ETABS2016;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
+using BH.oM.Architecture.Elements;
 using BH.Engine.Geometry;
 using BH.Engine.Reflection;
 
@@ -47,6 +48,8 @@ namespace BH.Adapter.ETABS
                 return ReadRigidLink(ids as dynamic);
             else if (type == typeof(LinkConstraint))
                 return ReadLinkConstraints(ids as dynamic);
+            else if (type == typeof(Level))
+                return ReadLevel(ids as dynamic);
 
 
             return new List<IBHoMObject>();//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
@@ -602,6 +605,32 @@ namespace BH.Adapter.ETABS
             }
 
             return linkList;
+        }
+
+        /***************************************************/
+
+        private List<Level> ReadLevel(List<string> ids = null)
+        {
+            List<Level> levellist = new List<Level>();
+            int NumberNames = 0;
+            string[] Names = null;
+
+            if (ids == null)
+            {
+                m_model.Story.GetNameList(ref NumberNames, ref Names);
+                ids = Names.ToList();
+            }
+
+            foreach (string id in ids)
+            {
+                double elevation = 0;
+                int ret = m_model.Story.GetElevation(id, ref elevation);
+           
+                Level lvl = new Level() { Elevation = elevation, Name = id };
+                levellist.Add(lvl);
+            }
+
+            return levellist;
         }
 
         /***************************************************/
