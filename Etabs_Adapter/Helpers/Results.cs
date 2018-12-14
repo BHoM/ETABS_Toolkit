@@ -88,7 +88,7 @@ namespace BH.Adapter.ETABS
             }
             else
             {
-                for (int i = 0; i < ids.Count; i++)
+                for (int i = 0; i < cases.Count; i++)
                 {
                     loadcaseIds.Add(cases[i].ToString());
                 }
@@ -168,7 +168,7 @@ namespace BH.Adapter.ETABS
             }
             else
             {
-                for (int i = 0; i < ids.Count; i++)
+                for (int i = 0; i < cases.Count; i++)
                 {
                     loadcaseIds.Add(cases[i].ToString());
                 }
@@ -402,7 +402,7 @@ namespace BH.Adapter.ETABS
             }
             else
             {
-                for (int i = 0; i < ids.Count; i++)
+                for (int i = 0; i < cases.Count; i++)
                 {
                     loadcaseIds.Add(cases[i].ToString());
                 }
