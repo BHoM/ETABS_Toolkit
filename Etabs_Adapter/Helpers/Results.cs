@@ -47,6 +47,13 @@ namespace BH.Adapter.ETABS
                 model.PointObj.GetNameList(ref nodes, ref names);
                 nodeIds = names.ToList();
             }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    nodeIds.Add(ids[i].ToString());
+                }
+            }
 
             if (cases == null)
             {
@@ -56,6 +63,13 @@ namespace BH.Adapter.ETABS
                 loadcaseIds = names.ToList();
                 model.RespCombo.GetNameList(ref casesCount, ref names);
                 loadcaseIds.AddRange(names);
+            }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    loadcaseIds.Add(cases[i].ToString());
+                }
             }
 
             model.Results.Setup.DeselectAllCasesAndCombosForOutput();
@@ -113,6 +127,13 @@ namespace BH.Adapter.ETABS
                 model.PointObj.GetNameList(ref nodes, ref names);
                 nodeIds = names.ToList();
             }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    nodeIds.Add(ids[i].ToString());
+                }
+            }
 
             if (cases == null)
             {
@@ -122,6 +143,13 @@ namespace BH.Adapter.ETABS
                 loadcaseIds = names.ToList();
                 model.RespCombo.GetNameList(ref casesCount, ref names);
                 loadcaseIds.AddRange(names);
+            }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    loadcaseIds.Add(cases[i].ToString());
+                }
             }
 
             int resultCount = 0;
@@ -333,6 +361,13 @@ namespace BH.Adapter.ETABS
                 model.AreaObj.GetNameList(ref panels, ref names);
                 panelIds = names.ToList();
             }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    panelIds.Add(ids[i].ToString());
+                }
+            }
 
             if (cases == null)
             {
@@ -342,6 +377,13 @@ namespace BH.Adapter.ETABS
                 loadcaseIds = names.ToList();
                 model.RespCombo.GetNameList(ref casesCount, ref names);
                 loadcaseIds.AddRange(names);
+            }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    loadcaseIds.Add(cases[i].ToString());
+                }
             }
 
             string Name = "";
@@ -399,103 +441,6 @@ namespace BH.Adapter.ETABS
 
         #endregion
 
-
-        //public static List<PanelForce> GetPanelForce(cSapModel model, IList ids = null, IList cases = null)
-        //{
-        //    List<string> loadcaseIds = new List<string>();
-        //    List<string> barIds = new List<string>();
-        //    List<BarForce> barForces = new List<BarForce>();
-
-        //    if (ids == null)
-        //    {
-        //        int bars = 0;
-        //        string[] names = null;
-        //        model.re(ref bars, ref names);
-        //        barIds = names.ToList();
-        //    }
-
-        //    if (cases == null)
-        //    {
-        //        int casesCount = 0;
-        //        string[] names = null;
-        //        model.LoadCases.GetNameList(ref casesCount, ref names);
-        //        loadcaseIds = names.ToList();
-        //        model.RespCombo.GetNameList(ref casesCount, ref names);
-        //        loadcaseIds.AddRange(names);
-        //    }
-
-
-        //    int resultCount = 0;
-        //    string[] loadcaseNames = null;
-        //    string[] objects = null;
-        //    string[] elm = null;
-        //    double[] objStation = null;
-        //    double[] elmStation = null;
-        //    double[] stepNum = null;
-        //    string[] stepType = null;
-
-        //    double[] fx = null;
-        //    double[] fy = null;
-        //    double[] fz = null;
-        //    double[] mx = null;
-        //    double[] my = null;
-        //    double[] mz = null;
-
-        //    int type = 0;
-        //    double segSize = 0;
-        //    bool op1 = false;
-        //    bool op2 = false;
-
-
-        //    model.Results.Setup.DeselectAllCasesAndCombosForOutput();
-
-        //    for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
-        //    {
-        //        if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
-        //        {
-        //            model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]);
-        //        }
-        //    }
-
-        //    //List<BarForce<string, string, string>> barForces = new List<BarForce<string, string, string>>();
-        //    int counter = 1;
-        //    for (int i = 0; i < barIds.Count; i++)
-        //    {
-        //        model.FrameObj.GetOutputStations(barIds[i], ref type, ref segSize, ref divisions, ref op1, ref op2);
-        //        int ret = model.Results.FrameForce(barIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref objStation, ref elm, ref elmStation,
-        //        model.AreaObj.SetPier()
-        //            model.Results.PierForce(
-        //            ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
-        //        if (ret == 0)
-        //        {
-        //            for (int j = 0; j < resultCount; j++)
-        //            {
-        //                //string step = stepType[j] != null ? stepType[j] == "Max" ? " Max" : stepType[j] == "Min" ? " Min" : "1" : "0";
-        //                //if (objStation[j] == 0)
-        //                //    counter = 1;
-        //                //barForces.Add(new BarForce<string, string, string>(objects[j], loadcaseNames[j], counter++, divisions, step, fx[j], fz[j], fy[j], mx[j], mz[j], my[j]));
-
-        //                BarForce bf = new BarForce()
-        //                {
-        //                    ResultCase = loadcaseNames[j],
-        //                    ObjectId = barIds[i],
-        //                    MX = mx[j],
-        //                    MY = my[j],
-        //                    MZ = mz[j],
-        //                    FX = fx[j],
-        //                    FY = fy[j],
-        //                    FZ = fz[j],
-        //                    Divisions = divisions,
-        //                    Position = objStation[j],
-        //                    TimeStep = stepNum[j]
-        //                };
-        //                barForces.Add(bf);
-        //            }
-        //        }
-        //    }
-
-        //    return barForces;
-
-        //}
     }
 }
+
