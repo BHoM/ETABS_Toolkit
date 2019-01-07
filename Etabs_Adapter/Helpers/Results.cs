@@ -77,22 +77,8 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            if (cases == null)
-            {
-                int casesCount = 0;
-                string[] names = null;
-                model.LoadCases.GetNameList(ref casesCount, ref names);
-                loadcaseIds = names.ToList();
-                model.RespCombo.GetNameList(ref casesCount, ref names);
-                loadcaseIds.AddRange(names);
-            }
-            else
-            {
-                for (int i = 0; i < cases.Count; i++)
-                {
-                    loadcaseIds.Add(cases[i].ToString());
-                }
-            }
+            //Get out loadcases, get all for null list
+            loadcaseIds = CheckAndGetCases(model, cases);
 
             model.Results.Setup.DeselectAllCasesAndCombosForOutput();
 
@@ -157,22 +143,8 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            if (cases == null)
-            {
-                int casesCount = 0;
-                string[] names = null;
-                model.LoadCases.GetNameList(ref casesCount, ref names);
-                loadcaseIds = names.ToList();
-                model.RespCombo.GetNameList(ref casesCount, ref names);
-                loadcaseIds.AddRange(names);
-            }
-            else
-            {
-                for (int i = 0; i < cases.Count; i++)
-                {
-                    loadcaseIds.Add(cases[i].ToString());
-                }
-            }
+            //Get out loadcases, get all for null list
+            loadcaseIds = CheckAndGetCases(model, cases);
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -269,24 +241,8 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            if (cases == null)
-            {
-                int Count = 0;
-                string[] case_names = null;
-                string[] combo_names = null;
-                model.LoadCases.GetNameList(ref Count, ref case_names);
-                model.RespCombo.GetNameList(ref Count, ref combo_names);
-                loadcaseIds = case_names.ToList();
-                loadcaseIds.AddRange(combo_names);
-            }
-            else
-            {
-                for (int i = 0; i < cases.Count; i++)
-                {
-                    loadcaseIds.Add(cases[i].ToString());
-                }
-            }
-
+            //Get out loadcases, get all for null list
+            loadcaseIds = CheckAndGetCases(model, cases);
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -391,22 +347,8 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            if (cases == null)
-            {
-                int casesCount = 0;
-                string[] names = null;
-                model.LoadCases.GetNameList(ref casesCount, ref names);
-                loadcaseIds = names.ToList();
-                model.RespCombo.GetNameList(ref casesCount, ref names);
-                loadcaseIds.AddRange(names);
-            }
-            else
-            {
-                for (int i = 0; i < cases.Count; i++)
-                {
-                    loadcaseIds.Add(cases[i].ToString());
-                }
-            }
+            //Get out loadcases, get all for null list
+            loadcaseIds = CheckAndGetCases(model, cases);
 
             string Name = "";
             eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
@@ -453,13 +395,43 @@ namespace BH.Adapter.ETABS
 
             return meshForces;
         }
-        
+
+        /***************************************************/
+
         public static List<MeshForce> GetMeshStress(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
         {
             throw new NotImplementedException("Panel stress results is not supported yet!");
 
         }
 
+        /***************************************************/
+
+        private static List<string> CheckAndGetCases(cSapModel model, IList cases)
+        {
+            List<string> loadcaseIds = new List<string>();
+                
+            if (cases == null)
+            {
+                int Count = 0;
+                string[] case_names = null;
+                string[] combo_names = null;
+                model.LoadCases.GetNameList(ref Count, ref case_names);
+                model.RespCombo.GetNameList(ref Count, ref combo_names);
+                loadcaseIds = case_names.ToList();
+
+                if(combo_names != null)
+                    loadcaseIds.AddRange(combo_names);
+            }
+            else
+            {
+                for (int i = 0; i < cases.Count; i++)
+                {
+                    loadcaseIds.Add(cases[i].ToString());
+                }
+            }
+
+            return loadcaseIds;
+        }
 
         #endregion
 
