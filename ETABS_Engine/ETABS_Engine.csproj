@@ -90,10 +90,12 @@
     <Compile Include="Modify\SetAutoLengthOffset.cs" />
     <Compile Include="Modify\SetDiaphragm.cs" />
     <Compile Include="Modify\SetInsertionPoint.cs" />
+    <Compile Include="Modify\SetShellType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\AutoLengthOffset.cs" />
     <Compile Include="Query\Diaphragm.cs" />
     <Compile Include="Query\DiaphragmType.cs" />
+    <Compile Include="Query\EtabsShellType.cs" />
     <Compile Include="Query\InsertionPoint.cs" />
   </ItemGroup>
   <ItemGroup>
