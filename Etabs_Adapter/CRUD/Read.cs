@@ -316,7 +316,8 @@ namespace BH.Adapter.ETABS
                     panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
                     panelConstant.Thickness = thickness;
                     panelConstant.PanelType = PanelType.Wall;
-                    if(hasModifiers)
+                    SetShellType(panelConstant, shellType);
+                    if (hasModifiers)
                         panelConstant.CustomData.Add("Modifiers", modifiers);
 
                     propertyList.Add(panelConstant);
@@ -338,6 +339,7 @@ namespace BH.Adapter.ETABS
                             panelRibbed.Spacing = ribSpacing;
                             panelRibbed.StemWidth = stemWidthTop;
                             panelRibbed.TotalDepth = depth;
+                            SetShellType(panelRibbed, shellType);
                             if (hasModifiers)
                                 panelRibbed.CustomData.Add("Modifiers", modifiers);
 
@@ -358,6 +360,7 @@ namespace BH.Adapter.ETABS
                             panelWaffle.TotalDepthX = depth;
                             panelWaffle.TotalDepthY = depth; // ETABS does not appear to to support direction dependent depth
                             panelWaffle.PanelType = PanelType.Slab;
+                            SetShellType(panelWaffle, shellType);
                             if (hasModifiers)
                                 panelWaffle.CustomData.Add("Modifiers", modifiers);
 
@@ -374,6 +377,7 @@ namespace BH.Adapter.ETABS
                             panelConstant.Thickness = thickness;
                             panelConstant.Name = id;
                             panelConstant.PanelType = PanelType.Slab;
+                            SetShellType(panelConstant, shellType);
                             if (hasModifiers)
                                 panelConstant.CustomData.Add("Modifiers", modifiers);
 
@@ -384,6 +388,24 @@ namespace BH.Adapter.ETABS
             }
 
             return propertyList;
+        }
+
+        /***************************************************/
+
+        private void SetShellType(ISurfaceProperty prop, eShellType eShellType)
+        {
+            switch (eShellType)
+            {
+                case eShellType.ShellThin:
+                    prop.CustomData["ShellType"] = oM.Adapters.ETABS.ShellType.ShellThin;
+                    break;
+                case eShellType.ShellThick:
+                    prop.CustomData["ShellType"] = oM.Adapters.ETABS.ShellType.ShellThick;
+                    break;
+                case eShellType.Membrane:
+                    prop.CustomData["ShellType"] = oM.Adapters.ETABS.ShellType.Membrane;
+                    break;
+            }
         }
 
         /***************************************************/
