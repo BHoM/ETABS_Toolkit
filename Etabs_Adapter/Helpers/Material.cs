@@ -108,7 +108,7 @@ namespace BH.Adapter.ETABS
                 model.PropMaterial.AddMaterial(ref name, GetMaterialType(material.Type), "", "", "");
                 model.PropMaterial.ChangeName(name, material.Name);
                 model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulus, material.PoissonsRatio, material.CoeffThermalExpansion);
-                model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
+                model.PropMaterial.SetWeightAndMass(material.Name, 2, material.Density);
                 //modelData.materialDict.Add(material.Name, material);
 
             
