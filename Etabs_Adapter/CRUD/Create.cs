@@ -100,7 +100,8 @@ namespace BH.Adapter.ETABS
             string bhId = bhNode.CustomData[AdapterId].ToString();
             name = bhId;
 
-            retA = m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
+            oM.Geometry.Point position = bhNode.Position();
+            retA = m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name);
 
             if (name != bhId)
                 bhNode.CustomData[AdapterId] = name;

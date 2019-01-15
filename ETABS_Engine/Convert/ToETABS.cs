@@ -31,6 +31,7 @@ using BH.oM.Structure;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Properties.Constraint;
 using BH.Engine.Serialiser;
+using BH.Engine.Structure;
 using BH.oM.Common.Materials;
 
 namespace BH.Engine.ETABS
@@ -56,9 +57,9 @@ namespace BH.Engine.ETABS
                 bhNode.CustomData.Add(AdapterId, "thisWillBeChanged");
             else
                 name = bhNode.CustomData[AdapterId].ToString();
-
-            modelData.model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
-
+            BH.oM.Geometry.Point position = bhNode.Position();
+            modelData.model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name);
+            
             //TODO: update the BHOM Node with the id acctually assigned in ETABS, or don't - not sure which would best align with behaviour of other adapters
             //bhNode.CustomData[AdapterId] = name;
 

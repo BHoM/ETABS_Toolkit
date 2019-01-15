@@ -93,20 +93,19 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                Node bhNode = new Node();
+
                 double x, y, z;
                 x = y = z = 0;
                 bool[] restraint = new bool[6];
                 double[] spring = new double[6];
 
                 m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
-                bhNode.Position = new oM.Geometry.Point() { X = x, Y = y, Z = z };
-                bhNode.CustomData.Add(AdapterId, id);
-
+                
                 m_model.PointObj.GetRestraint(id, ref restraint);
                 m_model.PointObj.SetSpring(id, ref spring);
-                bhNode.Constraint = Helper.GetConstraint6DOF(restraint, spring);
 
+                Node bhNode = Engine.Structure.Create.Node(new oM.Geometry.Point() { X = x, Y = y, Z = z }, "", Helper.GetConstraint6DOF(restraint, spring));
+                bhNode.CustomData.Add(AdapterId, id);
 
                 nodeList.Add(bhNode);
             }
