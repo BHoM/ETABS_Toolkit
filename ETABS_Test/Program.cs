@@ -401,10 +401,10 @@ namespace ETABS_Test
 
             List<Node> nodesA = new List<Node>();
 
-            Node n1a = new Node { Position = p5, Name = "1" };
-            Node n2a = new Node { Position = p6, Name = "2" };
-            Node n3a = new Node { Position = p7, Name = "3" };
-            Node n4a = new Node { Position = p8, Name = "4" };
+            Node n1a = BH.Engine.Structure.Create.Node(p5 , "1");
+            Node n2a = BH.Engine.Structure.Create.Node( p6 , "2" );
+            Node n3a = BH.Engine.Structure.Create.Node( p7 , "3" );
+            Node n4a = BH.Engine.Structure.Create.Node( p8 , "4" );
 
             n1a.Constraint = pin;
             n2a.Constraint = pin;
@@ -420,10 +420,10 @@ namespace ETABS_Test
 
             List<Node> nodesB = new List<Node>();
 
-            Node n1b = new Node { Position = p5b, Name = "1" };
-            Node n2b = new Node { Position = p6b, Name = "2" };
-            Node n3b = new Node { Position = p7b, Name = "3" };
-            Node n4b = new Node { Position = p8b, Name = "4" };
+            Node n1b = BH.Engine.Structure.Create.Node( p5b, "1" );
+            Node n2b = BH.Engine.Structure.Create.Node( p6b,  "2" );
+            Node n3b = BH.Engine.Structure.Create.Node( p7b,  "3" );
+            Node n4b = BH.Engine.Structure.Create.Node( p8b,  "4" );
 
             n1b.Constraint = pin;
             n2b.Constraint = pin;
@@ -435,30 +435,30 @@ namespace ETABS_Test
             nodesB.Add(n3b);
             nodesB.Add(n4b);
 
-            Bar bar1 = BH.Engine.Structure.Create.Bar(new Node { Position = p1 }, new Node { Position = p2 });
-            Bar bar2 = BH.Engine.Structure.Create.Bar(new Node { Position = p2 }, new Node { Position = p3 });
-            Bar bar3 = BH.Engine.Structure.Create.Bar(new Node { Position = p3 }, new Node { Position = p4 });
-            Bar bar4 = BH.Engine.Structure.Create.Bar(new Node { Position = p4 }, new Node { Position = p1 });
+            Bar bar1 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p1), BH.Engine.Structure.Create.Node( p2));
+            Bar bar2 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p2), BH.Engine.Structure.Create.Node( p3));
+            Bar bar3 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p3), BH.Engine.Structure.Create.Node( p4));
+            Bar bar4 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p4), BH.Engine.Structure.Create.Node( p1));
 
-            Bar bar5 = BH.Engine.Structure.Create.Bar(new Node { Position = p5 }, new Node { Position = p6 });
-            Bar bar6 = BH.Engine.Structure.Create.Bar(new Node { Position = p6 }, new Node { Position = p7 });
-            Bar bar7 = BH.Engine.Structure.Create.Bar(new Node { Position = p7 }, new Node { Position = p8 });
-            Bar bar8 = BH.Engine.Structure.Create.Bar(new Node { Position = p8 }, new Node { Position = p5 });
+            Bar bar5 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p5), BH.Engine.Structure.Create.Node( p6));
+            Bar bar6 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p6), BH.Engine.Structure.Create.Node( p7));
+            Bar bar7 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p7), BH.Engine.Structure.Create.Node( p8));
+            Bar bar8 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p8), BH.Engine.Structure.Create.Node( p5));
 
-            Bar bar9 = BH.Engine.Structure.Create.Bar(new Node { Position = p1 }, new Node { Position = p5 });
-            Bar bar10 = BH.Engine.Structure.Create.Bar(new Node { Position = p2 }, new Node { Position = p6 });
-            Bar bar11 = BH.Engine.Structure.Create.Bar(new Node { Position = p3 }, new Node { Position = p7 });
-            Bar bar12 = BH.Engine.Structure.Create.Bar(new Node { Position = p4 }, new Node { Position = p8 });
+            Bar bar9 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p1), BH.Engine.Structure.Create.Node( p5));
+            Bar bar10 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p2), BH.Engine.Structure.Create.Node( p6));
+            Bar bar11 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p3), BH.Engine.Structure.Create.Node( p7));
+            Bar bar12 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p4), BH.Engine.Structure.Create.Node( p8));
 
-            Bar bar5b = BH.Engine.Structure.Create.Bar(new Node { Position = p5b }, new Node { Position = p6b });
-            Bar bar6b = BH.Engine.Structure.Create.Bar(new Node { Position = p6b }, new Node { Position = p7b });
-            Bar bar7b = BH.Engine.Structure.Create.Bar(new Node { Position = p7b }, new Node { Position = p8b });
-            Bar bar8b = BH.Engine.Structure.Create.Bar(new Node { Position = p8b }, new Node { Position = p5b });
+            Bar bar5b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p5b), BH.Engine.Structure.Create.Node( p6b));
+            Bar bar6b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p6b), BH.Engine.Structure.Create.Node( p7b));
+            Bar bar7b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p7b), BH.Engine.Structure.Create.Node( p8b));
+            Bar bar8b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p8b), BH.Engine.Structure.Create.Node( p5b));
 
-            Bar bar9b = BH.Engine.Structure.Create.Bar(new Node { Position = p1 }, new Node { Position = p5b });
-            Bar bar10b = BH.Engine.Structure.Create.Bar(new Node { Position = p2 }, new Node { Position = p6b });
-            Bar bar11b = BH.Engine.Structure.Create.Bar(new Node { Position = p3 }, new Node { Position = p7b });
-            Bar bar12b = BH.Engine.Structure.Create.Bar(new Node { Position = p4 }, new Node { Position = p8b });
+            Bar bar9b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p1), BH.Engine.Structure.Create.Node( p5b));
+            Bar bar10b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p2), BH.Engine.Structure.Create.Node( p6b));
+            Bar bar11b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p3), BH.Engine.Structure.Create.Node( p7b));
+            Bar bar12b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p4), BH.Engine.Structure.Create.Node( p8b));
 
             List<Bar> bars1 = new List<Bar>();
             List<Bar> bars2a = new List<Bar>();
@@ -562,8 +562,8 @@ namespace ETABS_Test
                 string barId = bar.CustomData[ETABSAdapter.ID].ToString();
                 string startNodeId = bar.StartNode.CustomData[ETABSAdapter.ID].ToString();
                 string endNodeId = bar.EndNode.CustomData[ETABSAdapter.ID].ToString();
-                string startPoint = bar.StartNode.Position.X.ToString() + "," + bar.StartNode.Position.Y.ToString() + "," + bar.StartNode.Position.Z.ToString();
-                string endPoint = bar.EndNode.Position.X.ToString() + "," + bar.EndNode.Position.Y.ToString() + "," + bar.EndNode.Position.Z.ToString();
+                string startPoint = bar.StartNode.Position().X.ToString() + "," + bar.StartNode.Position().Y.ToString() + "," + bar.StartNode.Position().Z.ToString();
+                string endPoint = bar.EndNode.Position().X.ToString() + "," + bar.EndNode.Position().Y.ToString() + "," + bar.EndNode.Position().Z.ToString();
                 string section = bar.SectionProperty.Name;
                 string material = bar.SectionProperty.Material.Name;
 

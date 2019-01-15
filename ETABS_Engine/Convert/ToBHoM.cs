@@ -61,19 +61,19 @@ namespace BH.Engine.ETABS
 
         public static Node ToBHoM(this cPointObj pointObj, string id)
         {
-            Node bhNode = new Node();
+
             double x, y, z;
             x = y = z = 0;
             bool[] restraint = new bool[6];
             double[] spring = new double[6];
 
             pointObj.GetCoordCartesian(id, ref x, ref y, ref z);
-            bhNode.Position = new oM.Geometry.Point() { X = x, Y = y, Z = z };
-            bhNode.CustomData.Add(AdapterId, id);
 
             pointObj.GetRestraint(id, ref restraint);
             pointObj.SetSpring(id, ref spring);
-            bhNode.Constraint = GetConstraint6DOF(restraint, spring);
+
+            Node bhNode = Structure.Create.Node(new oM.Geometry.Point() { X = x, Y = y, Z = z }, "", GetConstraint6DOF(restraint, spring));
+            bhNode.CustomData.Add(AdapterId, id);
 
             return bhNode;
         }
