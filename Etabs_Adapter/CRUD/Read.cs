@@ -117,6 +117,12 @@ namespace BH.Adapter.ETABS
                 {
                     Bar bhBar = new Bar();
                     bhBar.CustomData.Add(AdapterId, id);
+                    string PierName = "";
+                    string SpandrelName = "";
+                    m_model.FrameObj.GetPier(id, ref PierName);
+                    m_model.FrameObj.GetSpandrel(id, ref SpandrelName);
+                    bhBar.CustomData.Add("PierName", PierName);
+                    bhBar.CustomData.Add("SpandrelName", SpandrelName);
                     string startId = "";
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);
@@ -423,6 +429,12 @@ namespace BH.Adapter.ETABS
                 }
 
                 panel.Property = panelProperty;
+                string PierName = "";
+                string SpandrelName = "";
+                m_model.AreaObj.GetPier(id, ref PierName);
+                m_model.AreaObj.GetSpandrel(id, ref SpandrelName);
+                panel.CustomData.Add("PierName", PierName);
+                panel.CustomData.Add("SpandrelName", SpandrelName);
 
                 panelList.Add(panel);
             }
