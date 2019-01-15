@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Results;
+using BH.oM.Structure.Elements;
 using BH.oM.Common;
 using ETABS2016;
 using BH.oM.Adapters.ETABS.Elements;
@@ -205,12 +206,17 @@ namespace BH.Adapter.ETABS
             List<string> barIds = new List<string>();
             List<BarForce> barForces = new List<BarForce>();
 
-            if (ids == null)
+            if (ids == null || ids.Count ==0)
             {
                 int bars = 0;
                 string[] names = null;
                 model.FrameObj.GetNameList(ref bars, ref names);
                 barIds = names.ToList();
+            }
+            else
+            {
+                foreach (var id in ids)
+                { barIds.Add(id.ToString()); }
             }
 
             if (cases == null)
@@ -222,6 +228,25 @@ namespace BH.Adapter.ETABS
                 model.RespCombo.GetNameList(ref casesCount, ref names);
                 loadcaseIds.AddRange(names);
             }
+            else
+            {
+                for (int i = 0; i < cases.Count; i++)
+                {
+                    if (cases[i].GetType().Name.ToString() == "LoadCase")
+                    {
+                        BH.oM.Structure.Loads.Loadcase tempcase = (BH.oM.Structure.Loads.Loadcase)cases[i];
+                        loadcaseIds.Add(tempcase.Name);
+                    }
+                    else if (cases[i].GetType().Name.ToString() == "LoadCombination")
+                    { 
+                            BH.oM.Structure.Loads.LoadCombination tempcombo = (BH.oM.Structure.Loads.LoadCombination)cases[i];
+                            loadcaseIds.Add(tempcombo.Name);
+                    }
+                }
+            }
+
+                
+            
 
 
             int resultCount = 0;
