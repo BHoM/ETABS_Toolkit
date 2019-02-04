@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -20,30 +20,39 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BH.oM.Structure.Properties.Surface;
 using BH.oM.Adapters.ETABS;
-
+using ETABS2016;
 
 namespace BH.Engine.ETABS
 {
-    public static partial class Create
+    public static partial class Query
     {
+
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static EtabsConfig EtabsConfig(bool replaceLoads = false)
+        public static eShellType EtabsShellType(this ISurfaceProperty panel)
         {
-            return new EtabsConfig
+            object obj;
+
+            if (panel.CustomData.TryGetValue("ShellType", out obj) && obj is ShellType)
             {
-                ReplaceLoads = replaceLoads
-            };
+                switch ((ShellType)obj)
+                {
+                    case ShellType.ShellThin:
+                        return eShellType.ShellThin;
+                    case ShellType.ShellThick:
+                        return eShellType.ShellThick;
+                    case ShellType.Membrane:
+                        return eShellType.Membrane;
+                }
+            }
+            return eShellType.ShellThin;
         }
 
         /***************************************************/
+
     }
 }

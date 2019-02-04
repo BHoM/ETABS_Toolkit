@@ -1,4 +1,26 @@
-﻿using System;
+/*
+ * This file is part of the Buildings and Habitats object Model (BHoM)
+ * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ *
+ * Each contributor holds copyright over their respective contributions.
+ * The project versioning (Git) records all such contribution source information.
+ *                                           
+ *                                                                              
+ * The BHoM is free software: you can redistribute it and/or modify         
+ * it under the terms of the GNU Lesser General Public License as published by  
+ * the Free Software Foundation, either version 3.0 of the License, or          
+ * (at your option) any later version.                                          
+ *                                                                              
+ * The BHoM is distributed in the hope that it will be useful,              
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of               
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
+ * GNU Lesser General Public License for more details.                          
+ *                                                                            
+ * You should have received a copy of the GNU Lesser General Public License     
+ * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
+ */
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +28,9 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties;
+using BH.oM.Structure.Properties.Section;
+using BH.oM.Structure.Properties.Surface;
+using BH.oM.Structure.Properties.Constraint;
 using BH.oM.Structure.Loads;
 using BH.oM.Common.Materials;
 using ETABS2016;
@@ -36,7 +60,7 @@ namespace BH.Adapter.ETABS
                 return ReadMaterials(ids as dynamic);
             else if (type == typeof(PanelPlanar))
                 return ReadPanel(ids as dynamic);
-            else if (type == typeof(IProperty2D))
+            else if (type == typeof(ISurfaceProperty))
                 return ReadProperty2d(ids as dynamic);
             else if (type == typeof(LoadCombination))
                 return ReadLoadCombination(ids as dynamic);
@@ -257,9 +281,9 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<IProperty2D> ReadProperty2d(List<string> ids = null)
+        private List<ISurfaceProperty> ReadProperty2d(List<string> ids = null)
         {
-            List<IProperty2D> propertyList = new List<IProperty2D>();
+            List<ISurfaceProperty> propertyList = new List<ISurfaceProperty>();
             int nameCount = 0;
             string[] nameArr = { };
 
@@ -271,7 +295,7 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                IProperty2D bhProperty = null;
+                ISurfaceProperty bhProperty = null;
                 eSlabType slabType = eSlabType.Slab;
                 eShellType shellType = eShellType.ShellThin;
                 string material = "";
@@ -301,7 +325,8 @@ namespace BH.Adapter.ETABS
                     panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
                     panelConstant.Thickness = thickness;
                     panelConstant.PanelType = PanelType.Wall;
-                    if(hasModifiers)
+                    SetShellType(panelConstant, shellType);
+                    if (hasModifiers)
                         panelConstant.CustomData.Add("Modifiers", modifiers);
 
                     propertyList.Add(panelConstant);
@@ -323,6 +348,7 @@ namespace BH.Adapter.ETABS
                             panelRibbed.Spacing = ribSpacing;
                             panelRibbed.StemWidth = stemWidthTop;
                             panelRibbed.TotalDepth = depth;
+                            SetShellType(panelRibbed, shellType);
                             if (hasModifiers)
                                 panelRibbed.CustomData.Add("Modifiers", modifiers);
 
@@ -343,6 +369,7 @@ namespace BH.Adapter.ETABS
                             panelWaffle.TotalDepthX = depth;
                             panelWaffle.TotalDepthY = depth; // ETABS does not appear to to support direction dependent depth
                             panelWaffle.PanelType = PanelType.Slab;
+                            SetShellType(panelWaffle, shellType);
                             if (hasModifiers)
                                 panelWaffle.CustomData.Add("Modifiers", modifiers);
 
@@ -359,6 +386,7 @@ namespace BH.Adapter.ETABS
                             panelConstant.Thickness = thickness;
                             panelConstant.Name = id;
                             panelConstant.PanelType = PanelType.Slab;
+                            SetShellType(panelConstant, shellType);
                             if (hasModifiers)
                                 panelConstant.CustomData.Add("Modifiers", modifiers);
 
@@ -369,6 +397,24 @@ namespace BH.Adapter.ETABS
             }
 
             return propertyList;
+        }
+
+        /***************************************************/
+
+        private void SetShellType(ISurfaceProperty prop, eShellType eShellType)
+        {
+            switch (eShellType)
+            {
+                case eShellType.ShellThin:
+                    prop.CustomData["ShellType"] = oM.Adapters.ETABS.ShellType.ShellThin;
+                    break;
+                case eShellType.ShellThick:
+                    prop.CustomData["ShellType"] = oM.Adapters.ETABS.ShellType.ShellThick;
+                    break;
+                case eShellType.Membrane:
+                    prop.CustomData["ShellType"] = oM.Adapters.ETABS.ShellType.Membrane;
+                    break;
+            }
         }
 
         /***************************************************/
@@ -406,7 +452,7 @@ namespace BH.Adapter.ETABS
                 string propertyName = "";
 
                 m_model.AreaObj.GetProperty(id, ref propertyName);
-                IProperty2D panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
+                ISurfaceProperty panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
 
                 PanelPlanar panel = new PanelPlanar();
                 panel.CustomData[AdapterId] = id;

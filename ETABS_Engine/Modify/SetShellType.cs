@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -20,28 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BH.oM.Structure.Properties.Surface;
 using BH.oM.Adapters.ETABS;
-
 
 namespace BH.Engine.ETABS
 {
-    public static partial class Create
+    public static partial class Modify
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static EtabsConfig EtabsConfig(bool replaceLoads = false)
+        public static ISurfaceProperty SetShellType(this ISurfaceProperty property, ShellType shellType)
         {
-            return new EtabsConfig
-            {
-                ReplaceLoads = replaceLoads
-            };
+            ISurfaceProperty clone = (ISurfaceProperty)property.GetShallowClone();
+
+            clone.CustomData["ShellType"] = shellType;
+
+            return clone;
         }
 
         /***************************************************/
