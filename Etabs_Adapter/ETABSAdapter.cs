@@ -53,7 +53,7 @@ namespace BH.Adapter.ETABS
                     m_model = m_app.SapModel;
                     if (System.IO.File.Exists(filePath))
                         m_model.File.OpenFile(filePath);
-                    m_model.SetPresentUnits(eUnits.kip_ft_F);
+                    m_model.SetPresentUnits(eUnits.N_m_C);
                 }
                 else
                 {
