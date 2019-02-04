@@ -242,8 +242,7 @@ namespace BH.Adapter.ETABS
                     barIds.Add(ids[i].ToString());
                 }
             }
-            else
-            {
+
                 for (int i = 0; i < cases.Count; i++)
                 {
                     if (cases[i].GetType().Name.ToString() == "LoadCase")
@@ -257,7 +256,7 @@ namespace BH.Adapter.ETABS
                             loadcaseIds.Add(tempcombo.Name);
                     }
                 }
-            }
+       
 
                 
             
