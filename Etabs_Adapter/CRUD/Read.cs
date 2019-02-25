@@ -303,8 +303,9 @@ namespace BH.Adapter.ETABS
                 double[] modifiers = new double[] { };
                 bool hasModifiers = false;
 
-                m_model.PropArea.GetWall(id, ref wallType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
-                m_model.PropArea.GetSlab(id, ref slabType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
+                int ret = m_model.PropArea.GetSlab(id, ref slabType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
+                if (ret != 0)
+                    m_model.PropArea.GetWall(id, ref wallType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
 
                 if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
                     hasModifiers = true;
@@ -318,7 +319,7 @@ namespace BH.Adapter.ETABS
                     m_model.PropArea.GetWall(currentProperty, ref wallType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
 
                     ConstantThickness panelConstant = new ConstantThickness();
-                    panelConstant.Name = id;
+                    panelConstant.Name = currentProperty;
                     panelConstant.CustomData[AdapterId] = id;
                     panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
                     panelConstant.Thickness = thickness;
