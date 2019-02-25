@@ -288,6 +288,7 @@ namespace BH.Adapter.ETABS
                 ISurfaceProperty bhProperty = null;
                 eSlabType slabType = eSlabType.Slab;
                 eShellType shellType = eShellType.ShellThin;
+                eWallPropType wallType = eWallPropType.Specified;
                 string material = "";
                 double thickness = 0;
                 int colour = 0;
@@ -302,15 +303,22 @@ namespace BH.Adapter.ETABS
                 double[] modifiers = new double[] { };
                 bool hasModifiers = false;
 
+                m_model.PropArea.GetWall(id, ref wallType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
                 m_model.PropArea.GetSlab(id, ref slabType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
+
                 if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
                     hasModifiers = true;
 
-                if (thickness==0)
+                if (wallType == eWallPropType.AutoSelectList)
                 {
-                    eWallPropType wallProperty = eWallPropType.AutoSelectList;
-                    m_model.PropArea.GetWall(id, ref wallProperty, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
+                    string[] propList = null;
+                    string currentProperty = "";
+
+                    m_model.PropArea.GetWallAutoSelectList(id, ref propList, ref currentProperty);
+                    m_model.PropArea.GetWall(currentProperty, ref wallType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
+
                     ConstantThickness panelConstant = new ConstantThickness();
+                    panelConstant.Name = id;
                     panelConstant.CustomData[AdapterId] = id;
                     panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
                     panelConstant.Thickness = thickness;
