@@ -329,20 +329,13 @@ namespace BH.Adapter.ETABS
             return barForces;
         }
 
+
         public static List<PierForce> GetPierForce(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
         {
 
             List<string> loadcaseIds = new List<string>();
             List<string> barIds = new List<string>();
             List<PierForce> pierForces = new List<PierForce>();
-
-            if (ids == null)
-            {
-                int bars = 0;
-                string[] names = null;
-                model.FrameObj.GetNameList(ref bars, ref names);
-                barIds = names.ToList();
-            }
 
             if (cases == null)
             {
@@ -392,7 +385,6 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            //List<BarForce<string, string, string>> barForces = new List<BarForce<string, string, string>>();
             int counter = 1;
 
             int ret = model.Results.PierForce(ref NumberResults, ref StoryName, ref PierName, ref loadcaseNames, ref Location, ref P, ref V2, ref V3, ref T, ref M2, ref M3);
