@@ -334,8 +334,6 @@ namespace BH.Adapter.ETABS
             double[] m2 = null;
             double[] m3 = null;
 
-
-
             model.Results.Setup.DeselectAllCasesAndCombosForOutput();
 
             for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
