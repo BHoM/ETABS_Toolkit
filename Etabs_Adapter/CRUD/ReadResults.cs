@@ -131,16 +131,6 @@ namespace BH.Adapter.ETABS
             return results;
         }
 
-        private IEnumerable<IResult> GetPierResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
-        {
-            IEnumerable<PierForce> results = new List<PierForce>();
-
-            results = Helper.GetPierForce(m_model, ids, cases, divisions);
-
-            return results;
-        }
-
-
     }
 
 }
