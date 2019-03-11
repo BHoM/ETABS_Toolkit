@@ -339,14 +339,8 @@ namespace BH.Adapter.ETABS
 
             if (cases == null)
             {
-                int casesCount = 0;
-                string[] names = null;
-                model.LoadCases.GetNameList(ref casesCount, ref names);
-                loadcaseIds = names.ToList();
-                model.RespCombo.GetNameList(ref casesCount, ref names);
-                loadcaseIds.AddRange(names);
+                loadcaseIds = CheckAndGetCases(model, cases);
             }
-
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -543,6 +537,8 @@ namespace BH.Adapter.ETABS
 
             return loadcaseIds;
         }
+
+
 
         #endregion
 
