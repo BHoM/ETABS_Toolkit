@@ -246,24 +246,6 @@ namespace BH.Adapter.ETABS
             //Get out loadcases, get all for null list
             loadcaseIds = CheckAndGetCases(model, cases);
 
-            for (int i = 0; i < cases.Count; i++)
-            {
-                if (cases[i].GetType().Name.ToString() == "LoadCase")
-                {
-                    BH.oM.Structure.Loads.Loadcase tempcase = (BH.oM.Structure.Loads.Loadcase)cases[i];
-                    loadcaseIds.Add(tempcase.Name);
-                }
-                else if (cases[i].GetType().Name.ToString() == "LoadCombination")
-                {
-                    BH.oM.Structure.Loads.LoadCombination tempcombo = (BH.oM.Structure.Loads.LoadCombination)cases[i];
-                    loadcaseIds.Add(tempcombo.Name);
-                }
-            }
-
-
-
-
-
             int resultCount = 0;
             string[] loadcaseNames = null;
             string[] objects = null;
@@ -332,15 +314,11 @@ namespace BH.Adapter.ETABS
 
         public static List<PierForce> GetPierForce(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
         {
-
             List<string> loadcaseIds = new List<string>();
             List<string> barIds = new List<string>();
             List<PierForce> pierForces = new List<PierForce>();
 
-            if (cases == null)
-            {
-                loadcaseIds = CheckAndGetCases(model, cases);
-            }
+            loadcaseIds = CheckAndGetCases(model, cases);
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -515,7 +493,7 @@ namespace BH.Adapter.ETABS
         {
             List<string> loadcaseIds = new List<string>();
                 
-            if (cases == null)
+            if (cases == null||cases.Count == 0)
             {
                 int Count = 0;
                 string[] case_names = null;
@@ -531,7 +509,13 @@ namespace BH.Adapter.ETABS
             {
                 for (int i = 0; i < cases.Count; i++)
                 {
-                    loadcaseIds.Add(cases[i].ToString());
+                    if (cases[i] is BH.oM.Structure.Loads.ICase)
+                    {
+                        string id = CaseNameToCSI(cases[i] as BH.oM.Structure.Loads.ICase);
+                        loadcaseIds.Add(id);
+                    }
+                    else
+                        loadcaseIds.Add(cases[i].ToString());
                 }
             }
 
