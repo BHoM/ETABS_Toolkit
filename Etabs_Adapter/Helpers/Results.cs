@@ -320,14 +320,7 @@ namespace BH.Adapter.ETABS
 
             loadcaseIds = CheckAndGetCases(model, cases);
 
-            int resultCount = 0;
             string[] loadcaseNames = null;
-            string[] objects = null;
-            string[] elm = null;
-            double[] objStation = null;
-            double[] elmStation = null;
-            double[] stepNum = null;
-            string[] stepType = null;
 
             int numberResults = 0;
             string[] storyName = null;
@@ -341,10 +334,6 @@ namespace BH.Adapter.ETABS
             double[] m2 = null;
             double[] m3 = null;
 
-            int type = 0;
-            double segSize = 0;
-            bool op1 = false;
-            bool op2 = false;
 
 
             model.Results.Setup.DeselectAllCasesAndCombosForOutput();
@@ -356,8 +345,6 @@ namespace BH.Adapter.ETABS
                     model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]);
                 }
             }
-
-            int counter = 1;
 
             int ret = model.Results.PierForce(ref numberResults, ref storyName, ref pierName, ref loadcaseNames, ref location, ref p, ref v2, ref v3, ref t, ref m2, ref m3);
             if (ret == 0)
