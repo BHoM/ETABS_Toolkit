@@ -71,10 +71,6 @@ namespace BH.Adapter.ETABS
                 List<Diaphragm> diaphragms = panels.Select(x => x.Diaphragm()).Where(x => x != null).ToList();
 
                 this.Replace(diaphragms);
-
-                List<Pier> piers = panels.Select(x => x.Pier()).Where(x => x != null).ToList();
-
-                this.Replace(piers);
             }
 
             if (typeof(T) == typeof(Level))
