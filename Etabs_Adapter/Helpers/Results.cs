@@ -329,17 +329,17 @@ namespace BH.Adapter.ETABS
             double[] stepNum = null;
             string[] stepType = null;
 
-            int NumberResults = 0;
-            string[] StoryName = null;
-            string[] PierName = null;
-            string[] Location = null;
+            int numberResults = 0;
+            string[] storyName = null;
+            string[] pierName = null;
+            string[] location = null;
 
-            double[] P = null;
-            double[] V2 = null;
-            double[] V3 = null;
-            double[] T = null;
-            double[] M2 = null;
-            double[] M3 = null;
+            double[] p = null;
+            double[] v2 = null;
+            double[] v3 = null;
+            double[] t = null;
+            double[] m2 = null;
+            double[] m3 = null;
 
             int type = 0;
             double segSize = 0;
@@ -359,31 +359,31 @@ namespace BH.Adapter.ETABS
 
             int counter = 1;
 
-            int ret = model.Results.PierForce(ref NumberResults, ref StoryName, ref PierName, ref loadcaseNames, ref Location, ref P, ref V2, ref V3, ref T, ref M2, ref M3);
+            int ret = model.Results.PierForce(ref numberResults, ref storyName, ref pierName, ref loadcaseNames, ref location, ref p, ref v2, ref v3, ref t, ref m2, ref m3);
             if (ret == 0)
             {
-                for (int j = 0; j < NumberResults; j++)
+                for (int j = 0; j < numberResults; j++)
                 {
                     int position = 0;
-                    if (Location[j].ToUpper().Contains("BOTTOM"))
+                    if (location[j].ToUpper().Contains("BOTTOM"))
                     {
                         position = 1;
                     }
                     PierForce bf = new PierForce()
                     {
                         ResultCase = loadcaseNames[j],
-                        ObjectId = PierName[j],
-                        MX = T[j],
-                        MY = M2[j],
-                        MZ = M3[j],
-                        FX = P[j],
-                        FY = V2[j],
-                        FZ = V3[j],
+                        ObjectId = pierName[j],
+                        MX = t[j],
+                        MY = m2[j],
+                        MZ = m3[j],
+                        FX = p[j],
+                        FY = v2[j],
+                        FZ = v3[j],
                         //Divisions = divisions,
                         Position = position,
                         // TimeStep = stepNum[j]
                     };
-                    bf.Location = StoryName[j];
+                    bf.Location = storyName[j];
                     pierForces.Add(bf);
                 }
 
