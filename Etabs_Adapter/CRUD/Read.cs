@@ -478,8 +478,8 @@ namespace BH.Adapter.ETABS
                 string SpandrelName = "";
                 m_model.AreaObj.GetPier(id, ref PierName);
                 m_model.AreaObj.GetSpandrel(id, ref SpandrelName);
-                panel.CustomData.Add("Pier",  new Pier { Name = PierName });
-                panel.CustomData.Add("Spandrel", new Spandrel { Name = SpandrelName });
+                panel.SetSpandrel(new Spandrel { Name = SpandrelName });
+                panel.SetPier(new Pier { Name = PierName });
 
                 panelList.Add(panel);
             }
