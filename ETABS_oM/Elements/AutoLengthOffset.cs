@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -20,48 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Structure.Elements;
-using BH.oM.Adapters.ETABS.Elements;
 
-namespace BH.Engine.ETABS
+using BH.oM.Base;
+using System.ComponentModel;
+
+namespace BH.oM.Adapters.ETABS.Elements
 {
-    public static partial class Query
+    public class AutoLengthOffset : BHoMObject
     {
-
         /***************************************************/
-        /**** Public Methods                            ****/
-        /***************************************************/
-
-        public static bool AutoLengthOffset(this Bar bar)
-        {
-            object obj;
-
-            if (bar.CustomData.TryGetValue("EtabsAutoLengthOffset", out obj) && obj is AutoLengthOffset)
-            {
-                return ((AutoLengthOffset)obj).AutoOffset;
-            }
-            return false;
-        }
-
+        /**** Public Properties                         ****/
         /***************************************************/
 
-        public static double AutoLengthOffsetRigidZoneFactor(this Bar bar)
-        {
-            object obj;
+        public bool AutoOffset { get; set; } = false;
 
-            if (bar.CustomData.TryGetValue("EtabsAutoLengthOffset", out obj) && obj is AutoLengthOffset)
-            {
-                return ((AutoLengthOffset)obj).RigidZoneFactor;
-            }
-            return 0;
-        }
+        [Description("Value descibing the factor of the rigid zone. Needs to be between 0 and 1")]
+        public double RigidZoneFactor { get; set; } = 1.0;
 
         /***************************************************/
-
     }
 }

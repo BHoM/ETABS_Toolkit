@@ -26,7 +26,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
-using BH.oM.Adapters.ETABS;
+using BH.oM.Adapters.ETABS.Elements;
 
 namespace BH.Engine.ETABS
 {
@@ -39,9 +39,22 @@ namespace BH.Engine.ETABS
 
         public static Bar SetAutoLengthOffset(this Bar bar, bool autoLengthOffset)
         {
+            return SetAutoLengthOffset(bar, autoLengthOffset, 1.0);
+        }
+
+        /***************************************************/
+
+        public static Bar SetAutoLengthOffset(this Bar bar, bool autoLengthOffset, double rigidZoneFactor)
+        {
+            if (rigidZoneFactor < 0 || rigidZoneFactor > 1.0)
+            {
+                rigidZoneFactor = Math.Min(Math.Max(0, rigidZoneFactor), 1);
+                Engine.Reflection.Compute.RecordWarning("Rigid zone factor needs to be between 0 and 1. The value has been updated to fit in this interval");
+            }
+
             Bar clone = (Bar)bar.GetShallowClone();
 
-            clone.CustomData["EtabsAutoLengthOffset"] = autoLengthOffset;
+            clone.CustomData["EtabsAutoLengthOffset"] = new AutoLengthOffset { AutoOffset = autoLengthOffset, RigidZoneFactor = rigidZoneFactor };
 
             return clone;
         }

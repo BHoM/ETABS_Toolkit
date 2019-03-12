@@ -178,16 +178,21 @@ namespace BH.Adapter.ETABS
                         bhBar.SectionProperty = property;
                     }
 
-                    //bool autoOffset = false;
-                    //double startLength = 0;
-                    //double endLength = 0;
-                    //double rz = 0;
-                    //model.FrameObj.GetEndLengthOffset(id, ref autoOffset, ref startLength, ref endLength, ref rz);
-                    //if (!autoOffset)
-                    //{
-                    //    bhBar.Offset.Start = startLength == 0 ? null : new Vector() { X = startLength * (-1), Y = 0, Z = 0 };
-                    //    bhBar.Offset.End = endLength == 0 ? null : new Vector() { X = endLength, Y = 0, Z = 0 };
-                    //}
+                    bool autoOffset = false;
+                    double startLength = 0;
+                    double endLength = 0;
+                    double rz = 0;
+                    m_model.FrameObj.GetEndLengthOffset(id, ref autoOffset, ref startLength, ref endLength, ref rz);
+                    if (!autoOffset)
+                    {
+                        bhBar.Offset.Start = startLength == 0 ? null : new Vector() { X = startLength * (-1), Y = 0, Z = 0 };
+                        bhBar.Offset.End = endLength == 0 ? null : new Vector() { X = endLength, Y = 0, Z = 0 };
+                    }
+                    else
+                    {
+                        bhBar = bhBar.SetAutoLengthOffset(autoOffset, rz);
+                    }
+
                     barList.Add(bhBar);
                 }
                 catch
