@@ -188,7 +188,7 @@ namespace BH.Adapter.ETABS
                         bhBar.Offset.Start = startLength == 0 ? null : new Vector() { X = startLength * (-1), Y = 0, Z = 0 };
                         bhBar.Offset.End = endLength == 0 ? null : new Vector() { X = endLength, Y = 0, Z = 0 };
                     }
-                    else
+                    else if(rz > 0)
                     {
                         bhBar = bhBar.SetAutoLengthOffset(autoOffset, rz);
                     }
