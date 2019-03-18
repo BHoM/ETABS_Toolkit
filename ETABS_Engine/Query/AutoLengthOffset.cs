@@ -37,28 +37,15 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static bool AutoLengthOffset(this Bar bar)
+        public static AutoLengthOffset AutoLengthOffset(this Bar bar)
         {
             object obj;
 
             if (bar.CustomData.TryGetValue("EtabsAutoLengthOffset", out obj) && obj is AutoLengthOffset)
             {
-                return ((AutoLengthOffset)obj).AutoOffset;
+                return (AutoLengthOffset)obj;
             }
-            return false;
-        }
-
-        /***************************************************/
-
-        public static double AutoLengthOffsetRigidZoneFactor(this Bar bar)
-        {
-            object obj;
-
-            if (bar.CustomData.TryGetValue("EtabsAutoLengthOffset", out obj) && obj is AutoLengthOffset)
-            {
-                return ((AutoLengthOffset)obj).RigidZoneFactor;
-            }
-            return 0;
+            return null;
         }
 
         /***************************************************/
