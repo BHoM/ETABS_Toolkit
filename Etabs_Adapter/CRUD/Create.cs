@@ -202,11 +202,12 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            if (bhBar.AutoLengthOffset())
+            AutoLengthOffset autoLengthOffset = bhBar.AutoLengthOffset();
+            if (autoLengthOffset != null)
             {
                 //the Rigid Zone Factor is not picked up when setting the auto length = true for the method call. Hence need to call this method twice.
-                int retAutoLEngthOffset = m_model.FrameObj.SetEndLengthOffset(name, false, 0, 0, bhBar.AutoLengthOffsetRigidZoneFactor());
-                retAutoLEngthOffset += m_model.FrameObj.SetEndLengthOffset(name, true, 0, 0, 0);
+                int retAutoLEngthOffset = m_model.FrameObj.SetEndLengthOffset(name, false, 0, 0, autoLengthOffset.RigidZoneFactor);
+                retAutoLEngthOffset += m_model.FrameObj.SetEndLengthOffset(name, autoLengthOffset.AutoOffset, 0, 0, 0);
                 if (retAutoLEngthOffset != 0)
                 {
                     CreatePropertyWarning("Auto length offset", "Bar", name);
@@ -221,6 +222,7 @@ namespace BH.Adapter.ETABS
                     ret++;
                 }
             }
+
 
             return ret == 0;
         }
