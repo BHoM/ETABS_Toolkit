@@ -63,9 +63,11 @@ namespace BH.Adapter.ETABS
 
         private IEnumerable<IResult> GetGlobalReactions(IList cases)
         {
+            IEnumerable<IResult> results = new List<IResult>();
 
+            results = Helper.GetGlobalReactions(m_model, cases);
 
-            return new List<IResult>();
+            return results;
 
         }
 

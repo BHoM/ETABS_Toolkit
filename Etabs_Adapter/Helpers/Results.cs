@@ -477,8 +477,8 @@ namespace BH.Adapter.ETABS
         private static List<string> CheckAndGetCases(cSapModel model, IList cases)
         {
             List<string> loadcaseIds = new List<string>();
-                
-            if (cases == null||cases.Count == 0)
+
+            if (cases == null || cases.Count == 0)
             {
                 int Count = 0;
                 string[] case_names = null;
@@ -508,6 +508,57 @@ namespace BH.Adapter.ETABS
         }
 
 
+
+        #endregion
+
+        #region Other results
+
+        public static List<GlobalReactions> GetGlobalReactions(cSapModel model, IList cases = null)
+        {
+            List<string> loadcaseIds = new List<string>();
+            List<GlobalReactions> globalReactions = new List<GlobalReactions>();
+
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] stepType = null; double[] stepNum = null;
+            double[] fx = null; double[] fy = null; double[] fz = null;
+            double[] mx = null; double[] my = null; double[] mz = null;
+            double gx = 0; double gy = 0; double gz = 0;
+
+            //Get out loadcases, get all for null list
+            loadcaseIds = CheckAndGetCases(model, cases);
+
+            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
+
+            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
+            {
+                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
+                {
+                    model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]);
+                }
+            }
+
+            model.Results.BaseReact(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, ref gx, ref gy, ref gz);
+
+            for (int i = 0; i < resultCount; i++)
+            {
+                GlobalReactions g = new GlobalReactions()
+                {
+                    ResultCase = loadcaseNames[i],
+                    FX = fx[i],
+                    FY = fy[i],
+                    FZ = fz[i],
+                    MX = mx[i],
+                    MY = my[i],
+                    MZ = mz[i],
+                    TimeStep = stepNum[i]
+                };
+
+                globalReactions.Add(g);
+            }
+
+            return globalReactions;
+        }
 
         #endregion
 
