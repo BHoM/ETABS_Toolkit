@@ -511,6 +511,54 @@ namespace BH.Adapter.ETABS
 
         #endregion
 
+
+        public static List<ModalDynamics> GetModalParticipationMassRatios(cSapModel model, IList cases = null)
+        {
+            List<string> loadcaseIds = new List<string>();
+            List<ModalDynamics> partRatios = new List<ModalDynamics>();
+
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] stepType = null; double[] stepNum = null;
+            double[] period = null;
+            double[] ux = null; double[] uy = null; double[] uz = null;
+            double[] sumUx = null; double[] sumUy = null; double[] sumUz = null;
+            double[] rx = null; double[] ry = null; double[] rz = null;
+            double[] sumRx = null; double[] sumRy = null; double[] sumRz = null;
+
+            model.Results.ModalParticipatingMassRatios(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
+                ref period, ref ux, ref uy, ref uz, ref sumUx, ref sumUy, ref sumUz, ref rx, ref ry, ref rz, ref sumRx, ref sumRy, ref sumRz);
+
+            string previousModalCase = "";
+            int modeNumber = 1;
+
+            for (int i = 0; i < resultCount; i++)
+            {
+                if (loadcaseNames[i] != previousModalCase)
+                    modeNumber = 1;
+
+                ModalDynamics mod = new ModalDynamics()
+                {
+                    ResultCase = loadcaseNames[i],
+                    ModeNumber = modeNumber,
+                    Frequency = 1/period[i],
+                    MassRatioX = ux[i],
+                    MassRatioY = uy[i],
+                    MassRatioZ = uz[i]
+                };
+
+                modeNumber += 1;
+                previousModalCase = loadcaseNames[i];
+
+                partRatios.Add(mod);
+            }
+
+            return partRatios;
+        }
+
+        #endregion
+
+>>>>>>> Stashed changes
     }
 }
 
