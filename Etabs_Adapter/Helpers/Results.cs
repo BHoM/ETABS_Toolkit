@@ -556,9 +556,7 @@ namespace BH.Adapter.ETABS
             return partRatios;
         }
 
-        #endregion
 
->>>>>>> Stashed changes
     }
 }
 
