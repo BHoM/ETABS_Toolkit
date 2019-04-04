@@ -86,9 +86,14 @@ namespace BH.Adapter.ETABS
 
             for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
             {
+                // Try setting it as a Load Case
                 if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
                 {
-                    model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]);
+                    // If that fails, try setting it as a Load Combination
+                    if (model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]) != 0)
+                    {
+                        Engine.Reflection.Compute.RecordWarning("Failed to setup result extraction for case " + loadcaseIds[loadcase]);
+                    }
                 }
             }
 
