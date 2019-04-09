@@ -210,7 +210,7 @@ namespace BH.Adapter.ETABS
             throw new NotImplementedException("Node Acceleration results is not supported yet!");
 
         }
-
+        
         #endregion
 
         #region bar Results
@@ -420,9 +420,9 @@ namespace BH.Adapter.ETABS
 
             string Name = "";
             eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
-            int resultCount = 0;
-            string[] Obj = null;
-            string[] Elm = null;
+	        int resultCount = 0;
+	        string[] Obj = null;
+	        string[] Elm = null;
             string[] PointElm = null;
             string[] LoadCase = null;
             string[] StepType = null;
@@ -447,14 +447,14 @@ namespace BH.Adapter.ETABS
 
             for (int i = 0; i < panelIds.Count; i++)
             {
-
+                
                 int ret = model.Results.AreaForceShell(panelIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref Obj, ref Elm,
                     ref PointElm, ref LoadCase, ref StepType, ref StepNum, ref F11, ref F22, ref F12, ref FMax, ref FMin, ref FAngle, ref FVM,
                     ref M11, ref M22, ref M12, ref MMax, ref MMin, ref MAngle, ref V13, ref V23, ref VMax, ref VAngle);
 
                 for (int j = 0; j < resultCount; j++)
                 {
-                    MeshForce pf = new MeshForce(panelIds[i], PointElm[j], "", LoadCase[j], StepNum[j], 0, 0, 0,
+                    MeshForce pf = new MeshForce(panelIds[i], PointElm[j], "", LoadCase[j], StepNum[j], 0, 0, 0, 
                         new oM.Geometry.CoordinateSystem.Cartesian(), F11[j], F22[j], F12[j], M12[j], M22[j], M12[j], V13[j], V23[j]);
 
                     meshForces.Add(pf);
@@ -477,8 +477,8 @@ namespace BH.Adapter.ETABS
         private static List<string> CheckAndGetCases(cSapModel model, IList cases)
         {
             List<string> loadcaseIds = new List<string>();
-
-            if (cases == null || cases.Count == 0)
+                
+            if (cases == null||cases.Count == 0)
             {
                 int Count = 0;
                 string[] case_names = null;
@@ -487,7 +487,7 @@ namespace BH.Adapter.ETABS
                 model.RespCombo.GetNameList(ref Count, ref combo_names);
                 loadcaseIds = case_names.ToList();
 
-                if (combo_names != null)
+                if(combo_names != null)
                     loadcaseIds.AddRange(combo_names);
             }
             else
@@ -526,28 +526,29 @@ namespace BH.Adapter.ETABS
             double[] rx = null; double[] ry = null; double[] rz = null;
             double[] sumRx = null; double[] sumRy = null; double[] sumRz = null;
 
-            int res = model.Results.ModalParticipatingMassRatios(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
+            model.Results.ModalParticipatingMassRatios(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
                 ref period, ref ux, ref uy, ref uz, ref sumUx, ref sumUy, ref sumUz, ref rx, ref ry, ref rz, ref sumRx, ref sumRy, ref sumRz);
 
-            if (res != 0)
-                BH.Engine.Reflection.Compute.RecordError("Could not extract Modal information. API method failed.");
-
+            string previousModalCase = "";
+            int modeNumber = 1;
 
             for (int i = 0; i < resultCount; i++)
             {
+                if (loadcaseNames[i] != previousModalCase)
+                    modeNumber = 1;
 
                 ModalDynamics mod = new ModalDynamics()
                 {
                     ResultCase = loadcaseNames[i],
-                    ModeNumber = Convert.ToInt32(stepNum[i]),
-                    Frequency = 1 / period[i],
+                    ModeNumber = modeNumber,
+                    Frequency = 1/period[i],
                     MassRatioX = ux[i],
                     MassRatioY = uy[i],
-                    MassRatioZ = uz[i],
-                    InertiaRatioX = rx[i],
-                    InertiaRatioY = ry[i],
-                    InertiaRatioZ = rz[i]
+                    MassRatioZ = uz[i]
                 };
+
+                modeNumber += 1;
+                previousModalCase = loadcaseNames[i];
 
                 partRatios.Add(mod);
             }
