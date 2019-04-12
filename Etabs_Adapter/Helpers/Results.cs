@@ -565,6 +565,74 @@ namespace BH.Adapter.ETABS
             return globalReactions;
         }
 
+        public static List<ModalDynamics> GetModalParticipationMassRatios(cSapModel model, IList cases = null)
+        {
+            List<string> loadcaseIds = new List<string>();
+
+            //Get out loadcases, get all for null list
+            loadcaseIds = CheckAndGetCases(model, cases);
+            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
+
+            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
+            {
+                // Try setting it as a Load Case
+                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
+                {
+                    // If that fails, try setting it as a Load Combination
+                    if (model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]) != 0)
+                    {
+                        Engine.Reflection.Compute.RecordWarning("Failed to setup result extraction for case " + loadcaseIds[loadcase]);
+                    }
+                }
+            }
+
+            List<ModalDynamics> partRatios = new List<ModalDynamics>();
+
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] stepType = null; double[] stepNum = null;
+            double[] period = null;
+            double[] ux = null; double[] uy = null; double[] uz = null;
+            double[] sumUx = null; double[] sumUy = null; double[] sumUz = null;
+            double[] rx = null; double[] ry = null; double[] rz = null;
+            double[] sumRx = null; double[] sumRy = null; double[] sumRz = null;
+
+            int res = model.Results.ModalParticipatingMassRatios(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
+                ref period, ref ux, ref uy, ref uz, ref sumUx, ref sumUy, ref sumUz, ref rx, ref ry, ref rz, ref sumRx, ref sumRy, ref sumRz);
+
+            if (res != 0) Engine.Reflection.Compute.RecordError("Could not extract Modal information.");
+
+
+            // Although API documentation says that StepNumber should correspond to the Mode Number, testing shows that StepNumber is always 0.
+            string previousModalCase = "";
+            int modeNumber = 1; //makes up for stepnumber always = 0
+            for (int i = 0; i < resultCount; i++)
+            {
+                if (loadcaseNames[i] != previousModalCase)
+                    modeNumber = 1;
+
+                ModalDynamics mod = new ModalDynamics()
+                {
+                    ResultCase = loadcaseNames[i],
+                    ModeNumber = modeNumber,
+                    Frequency = 1 / period[i],
+                    MassRatioX = ux[i],
+                    MassRatioY = uy[i],
+                    MassRatioZ = uz[i],
+                    InertiaRatioX = rx[i],
+                    InertiaRatioY = ry[i],
+                    InertiaRatioZ = rz[i]
+                };
+
+                modeNumber += 1;
+                previousModalCase = loadcaseNames[i];
+
+                partRatios.Add(mod);
+            }
+
+            return partRatios;
+        }
+
         #endregion
 
     }
