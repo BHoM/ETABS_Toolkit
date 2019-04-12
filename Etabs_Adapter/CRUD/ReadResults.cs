@@ -55,7 +55,7 @@ namespace BH.Adapter.ETABS
             if (typeof(GlobalReactions).IsAssignableFrom(type))
                 return GetGlobalReactions(cases);
             if (typeof(ModalDynamics).IsAssignableFrom(type))
-                throw new NotImplementedException("modal dynamics not supported yet");
+                return GetModalParticipationMassRatios(cases);
 
             return new List<IResult>();
 
