@@ -71,6 +71,17 @@ namespace BH.Adapter.ETABS
 
         }
 
+        private IEnumerable<IResult> GetModalParticipationMassRatios(IList cases)
+        {
+            IEnumerable<IResult> results = new List<IResult>();
+
+            results = Helper.GetModalParticipationMassRatios(m_model, cases);
+
+            return results;
+
+        }
+
+
         private IEnumerable<IResult> GetObjectResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
             IEnumerable<IResult> results = new List<IResult>();
