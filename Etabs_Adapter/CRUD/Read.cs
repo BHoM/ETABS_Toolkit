@@ -185,6 +185,7 @@ namespace BH.Adapter.ETABS
                     m_model.FrameObj.GetEndLengthOffset(id, ref autoOffset, ref startLength, ref endLength, ref rz);
                     if (!autoOffset)
                     {
+                        bhBar.Offset = new oM.Structure.Properties.Offset();
                         bhBar.Offset.Start = startLength == 0 ? null : new Vector() { X = startLength * (-1), Y = 0, Z = 0 };
                         bhBar.Offset.End = endLength == 0 ? null : new Vector() { X = endLength, Y = 0, Z = 0 };
                     }
