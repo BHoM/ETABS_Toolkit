@@ -29,10 +29,10 @@ using ETABS2016;
 using BH.oM;
 using BH.oM.Structure;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties.Constraint;
+using BH.oM.Structure.Constraints;
 using BH.Engine.Serialiser;
 using BH.Engine.Structure;
-using BH.oM.Common.Materials;
+using BH.oM.Physical.Materials;
 
 namespace BH.Engine.ETABS
 {

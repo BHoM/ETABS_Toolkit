@@ -39,7 +39,7 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Diaphragm Diaphragm(/*List<PanelPlanar> panels,*/ string name, DiaphragmType type = DiaphragmType.RigidDiaphragm)
+        public static Diaphragm Diaphragm(/*List<Panel> panels,*/ string name, DiaphragmType type = DiaphragmType.RigidDiaphragm)
         {
             //List<double> zvals = panels.SelectMany(x => x.AllEdgeCurves().SelectMany(y => y.IControlPoints().Select(z => z.Z))).ToList();
 

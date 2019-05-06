@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Structure.Properties;
 using BH.Engine.Structure;
 using ETABS2016;
 using System;

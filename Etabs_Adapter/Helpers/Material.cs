@@ -26,7 +26,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Common.Materials;
+using BH.oM.Physical.Materials;
+using BH.oM.Structure.MaterialFragments;
+using BH.oM.Geometry;
+using BH.Engine.Structure;
 
 namespace BH.Adapter.ETABS
 {
@@ -37,10 +40,6 @@ namespace BH.Adapter.ETABS
         /// </summary>
         public static Material GetMaterial(cSapModel model, string materialName)
         {
-            //if (modelData.materialDict.ContainsKey(materialName))
-            //    return modelData.materialDict[materialName];
-
-
             eMatType matType = eMatType.NoDesign;
             int colour = 0;
             string guid = "";
@@ -66,28 +65,16 @@ namespace BH.Adapter.ETABS
                 int i2 = 0;
                 bool b1 = false;
 
-                Material m = new Material();
-                m.Name = materialName;
-                m.Type = GetMaterialType(matType);
-                
-                m.PoissonsRatio = v;
-                //m.ShearModulus = g;
-                m.YoungsModulus = e;
-                m.CoeffThermalExpansion = thermCo;
-                m.Density = mass;
+                Material m = null;
                 //new Material(name, GetMaterialType(matType), e, v, thermCo, g, mass);
                 if (model.PropMaterial.GetOSteel(materialName, ref compStr, ref tensStr, ref v1, ref v2, ref i1, ref i2, ref v3, ref v4, ref v5) == 0)
                 {
-                    m.CompressiveYieldStrength = compStr;
-                    m.TensileYieldStrength = compStr;
+                    m = Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, tensStr, v1);
                 }
                 else if (model.PropMaterial.GetOConcrete(materialName, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref v1, ref v2, ref v3, ref v4) == 0)
                 {
-                    m.CompressiveYieldStrength = compStr;
-                    m.TensileYieldStrength = compStr * tensStr;
+                    m = Engine.Structure.Create.ConcreteMaterial(materialName, e, v, thermCo, mass, 0);
                 }
-
-                m.CustomData.Add(AdapterId,materialName);
                 //TODO: add get methods for Tendon and Rebar
                 return m;
             }
@@ -95,26 +82,51 @@ namespace BH.Adapter.ETABS
 
         }
 
+        /***************************************************/
+
         public static void SetMaterial(cSapModel model, Material material)
         {
+
+            if (!material.IsStructural())
+            {
+                Engine.Reflection.Compute.RecordWarning("Material with name " + material.Name + " is does not contain structural properties. Please check the material");
+                return;
+            }
+
             eMatType matType = eMatType.NoDesign;
             int colour = 0;
             string guid = "";
             string notes = "";
-            string name = material.CustomData[AdapterId].ToString();
-
+            string name = "";
             if (model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
             {
-                model.PropMaterial.AddMaterial(ref name, GetMaterialType(material.Type), "", "", "");
+                model.PropMaterial.AddMaterial(ref name, GetMaterialType(material.MaterialType()), "", "", "");
                 model.PropMaterial.ChangeName(name, material.Name);
-                model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulus, material.PoissonsRatio, material.CoeffThermalExpansion);
-                model.PropMaterial.SetWeightAndMass(material.Name, 2, material.Density);
-                //modelData.materialDict.Add(material.Name, material);
-
-            
+                if (material.IsIsotropic())
+                {
+                    model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulusIsotropic(), material.PoissonsRatioIsotropic(), material.ThermalExpansionCoeffIsotropic());
+                }
+                else if (material.IsOrthotropic())
+                {
+                    double[] e = material.YoungsModulusOrthotropic().ToDoubleArray();
+                    double[] v = material.PoissonsRatioOrthotropic().ToDoubleArray();
+                    double[] a = material.ThermalExpansionCoeffOrthotropic().ToDoubleArray();
+                    double[] g = material.ShearModulusOrthotropic().ToDoubleArray();
+                    model.PropMaterial.SetMPOrthotropic(material.Name, ref e, ref v, ref a, ref g);
+                }
+                model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
             }
 
         }
+
+        /***************************************************/
+
+        private static double[] ToDoubleArray(this Vector v)
+        {
+            return new double[] { v.X, v.Y, v.Z };
+        }
+
+        /***************************************************/
 
         private static MaterialType GetMaterialType(eMatType materialType)
         {

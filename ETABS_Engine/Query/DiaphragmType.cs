@@ -37,7 +37,7 @@
 //        /**** Public Methods                            ****/
 //        /***************************************************/
 
-//        public static DiaphragmType? Diaphragm(this PanelPlanar panel)
+//        public static DiaphragmType? Diaphragm(this Panel panel)
 //        {
 //            object obj;
 

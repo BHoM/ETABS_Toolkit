@@ -38,7 +38,7 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Spandrel Spandrel(this PanelPlanar panel)
+        public static Spandrel Spandrel(this Panel panel)
         {
             object obj;
 

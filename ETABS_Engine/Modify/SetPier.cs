@@ -39,9 +39,9 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static PanelPlanar SetPier(this PanelPlanar panel, Pier pier)
+        public static Panel SetPier(this Panel panel, Pier pier)
         {
-            PanelPlanar clone = (PanelPlanar)panel.GetShallowClone();
+            Panel clone = (Panel)panel.GetShallowClone();
 
             clone.CustomData["EtabsPier"] = pier;
 

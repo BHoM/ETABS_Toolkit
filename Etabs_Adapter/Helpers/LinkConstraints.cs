@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using ETABS2016;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure;
-using BH.oM.Structure.Properties.Constraint;
+using BH.oM.Structure.Constraints;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Geometry;

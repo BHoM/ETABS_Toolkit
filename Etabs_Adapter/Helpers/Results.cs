@@ -460,7 +460,7 @@ namespace BH.Adapter.ETABS
                 for (int j = 0; j < resultCount; j++)
                 {
                     MeshForce pf = new MeshForce(panelIds[i], PointElm[j], "", LoadCase[j], StepNum[j], 0, 0, 0, 
-                        new oM.Geometry.CoordinateSystem.Cartesian(), F11[j], F22[j], F12[j], M12[j], M22[j], M12[j], V13[j], V23[j]);
+                        oM.Geometry.Basis.XY, F11[j], F22[j], F12[j], M12[j], M22[j], M12[j], V13[j], V23[j]);
 
                     meshForces.Add(pf);
                 }

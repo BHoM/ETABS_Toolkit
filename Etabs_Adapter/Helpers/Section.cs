@@ -20,8 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Section.ShapeProfiles;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Structure;
 using CE = BH.Engine.Common;
 using ETABS2016;
@@ -30,7 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Common.Materials;
+using BH.oM.Physical.Materials;
 
 namespace BH.Adapter.ETABS
 {
@@ -74,43 +75,43 @@ namespace BH.Adapter.ETABS
                 case eFramePropType.I:
                     model.PropFrame.GetISection(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref t2b, ref tfb, ref colour, ref notes, ref guid);
                     if (t2==t2b)
-                        dimensions = Create.ISectionProfile(t3, t2, tw, tf, 0, 0);
+                        dimensions = Engine.Geometry.Create.ISectionProfile(t3, t2, tw, tf, 0, 0);
                     else
-                        dimensions =Create.FabricatedISectionProfile(t3, t2, t2b, tw, tf, tfb, 0);
+                        dimensions = Engine.Geometry.Create.FabricatedISectionProfile(t3, t2, t2b, tw, tf, tfb, 0);
                     break;
                 case eFramePropType.Channel:
                     model.PropFrame.GetChannel(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    dimensions = Create.ChannelProfile(t3, t2, tw, tf, 0, 0);
+                    dimensions = Engine.Geometry.Create.ChannelProfile(t3, t2, tw, tf, 0, 0);
                     break;
                 case eFramePropType.T:
                     break;
                 case eFramePropType.Angle:
                     model.PropFrame.GetAngle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    dimensions = Create.AngleProfile(t3, t2, tw, tf, 0, 0);
+                    dimensions = Engine.Geometry.Create.AngleProfile(t3, t2, tw, tf, 0, 0);
                     break;
                 case eFramePropType.DblAngle:
                     break;
                 case eFramePropType.Box:
                     model.PropFrame.GetTube(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
                     if (tf == tw)
-                        dimensions = Create.BoxProfile(t3, t2, tf, 0, 0);
+                        dimensions = Engine.Geometry.Create.BoxProfile(t3, t2, tf, 0, 0);
                     else
-                        dimensions = Create.FabricatedBoxProfile(t3, t2, tw, tf, tf, 0);
+                        dimensions = Engine.Geometry.Create.FabricatedBoxProfile(t3, t2, tw, tf, tf, 0);
                     break;
                 case eFramePropType.Pipe:
                     model.PropFrame.GetPipe(propertyName, ref fileName, ref materialName, ref t3, ref tw, ref colour, ref notes, ref guid);
-                    dimensions = Create.TubeProfile(t3, tw);
+                    dimensions = Engine.Geometry.Create.TubeProfile(t3, tw);
                     break;
                 case eFramePropType.Rectangular:
                     model.PropFrame.GetRectangle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref colour, ref notes, ref guid);
-                    dimensions = Create.RectangleProfile(t3, t2, 0);
+                    dimensions = Engine.Geometry.Create.RectangleProfile(t3, t2, 0);
                     break;
                 case eFramePropType.Auto://not member will have this assigned but it still exists in the propertyType list
-                    dimensions = Create.CircleProfile(0.2);
+                    dimensions = Engine.Geometry.Create.CircleProfile(0.2);
                     break;
                 case eFramePropType.Circle:
                     model.PropFrame.GetCircle(propertyName, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
-                    dimensions = Create.CircleProfile(t3);
+                    dimensions = Engine.Geometry.Create.CircleProfile(t3);
                     break;
                 case eFramePropType.General:
                     constructSelector = "explicit";
@@ -150,7 +151,7 @@ namespace BH.Adapter.ETABS
                     break;
                 case eFramePropType.Concrete_L:
                     model.PropFrame.GetConcreteL(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref twt, ref horFlip, ref verticalFlip, ref colour, ref notes, ref guid);
-                    dimensions = Create.AngleProfile(t3, t2, tw, tf, 0, 0, horFlip, verticalFlip);
+                    dimensions = Engine.Geometry.Create.AngleProfile(t3, t2, tw, tf, 0, 0, horFlip, verticalFlip);
                     break;
                 case eFramePropType.FilledTube:
                     break;
@@ -166,7 +167,7 @@ namespace BH.Adapter.ETABS
                     break;
                 case eFramePropType.ConcreteTee:
                     model.PropFrame.GetConcreteTee(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref twt, ref verticalFlip, ref colour, ref notes, ref guid);
-                    dimensions = Create.TSectionProfile(t2, t2, tw, tf, 0, 0, verticalFlip);
+                    dimensions = Engine.Geometry.Create.TSectionProfile(t2, t2, tw, tf, 0, 0, verticalFlip);
                     break;
                 case eFramePropType.ConcreteBox:
                     break;
@@ -186,9 +187,9 @@ namespace BH.Adapter.ETABS
             #endregion
 
 
-            oM.Common.Materials.Material material;
+            oM.Physical.Materials.Material material;
             if (materialName == "")
-                material = CE.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
+                material = Engine.Structure.Create.SteelMaterial("Steel");
             else
                 material = GetMaterial(model, materialName);
 
@@ -196,22 +197,22 @@ namespace BH.Adapter.ETABS
             switch (constructSelector)
             {
                 case "fromDimensions":
-                    switch (material.Type)
+                    switch (material.MaterialType())
                     {
-                        case oM.Common.Materials.MaterialType.Aluminium:
-                        case oM.Common.Materials.MaterialType.Steel:
+                        case MaterialType.Aluminium:
+                        case MaterialType.Steel:
                             bhSectionProperty = Create.SteelSectionFromProfile(dimensions);
                             break;
-                        case oM.Common.Materials.MaterialType.Concrete:
+                        case MaterialType.Concrete:
                             bhSectionProperty = Create.ConcreteSectionFromProfile(dimensions);
                             break;
-                        case oM.Common.Materials.MaterialType.Timber:
-                        case oM.Common.Materials.MaterialType.Rebar:
-                        case oM.Common.Materials.MaterialType.Tendon:
-                        case oM.Common.Materials.MaterialType.Glass:
-                        case oM.Common.Materials.MaterialType.Cable:
+                        case MaterialType.Timber:
+                        case MaterialType.Rebar:
+                        case MaterialType.Tendon:
+                        case MaterialType.Glass:
+                        case MaterialType.Cable:
                         default:
-                            throw new NotImplementedException("no material type for " + material.Type.ToString() + " implemented");
+                            throw new NotImplementedException("no material type for " + material.MaterialType().ToString() + " implemented");
                     }
                     break;
                 case "explicit":
@@ -363,7 +364,7 @@ namespace BH.Adapter.ETABS
 
         private static void SetSpecificDimensions(AngleProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            switch (material.Type)
+            switch (material.MaterialType())
             {
                 case MaterialType.Aluminium:
                 case MaterialType.Steel:
@@ -388,7 +389,7 @@ namespace BH.Adapter.ETABS
 
         private static void SetSpecificDimensions(TSectionProfile dimensions, string sectionName, Material material, cSapModel model)
         {
-            switch (material.Type)
+            switch (material.MaterialType())
             {
                 case MaterialType.Aluminium:
                 case MaterialType.Steel:

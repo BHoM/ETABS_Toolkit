@@ -26,11 +26,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.Adapter.ETABS;
-using BH.oM.Common.Materials;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Section.ShapeProfiles;
-using BH.oM.Structure.Properties.Constraint;
-using BH.oM.Structure.Properties.Surface;
+using BH.oM.Physical.Materials;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.Elements;
 using BH.oM.Geometry;
 using BH.Engine.Structure;
@@ -44,14 +44,51 @@ namespace ETABS_Test
     {
         static void Main(string[] args)
         {
-            ETABSAdapter app = new ETABSAdapter(null, null, true);
+            //ETABSAdapter app = new ETABSAdapter(null, null, true);
+
+            TestBarReleases();
 
             //MeshResults(app);
             //TestPushElements(app);
             //TestPullBars(app);
-            ExampleLevels3();
+            //ExampleLevels3();
             //ExampleStories();
         }
+
+        private static void TestBarReleases()
+        {
+            cSapModel m_model;
+
+            cOAPI m_app;
+            string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 2016\ETABS.exe";
+            cHelper helper = new ETABS2016.Helper();
+
+
+            //open ETABS if not running - NOTE: this behaviour is different from other adapters
+            m_app = helper.CreateObject(pathToETABS);
+            m_app.ApplicationStart();
+
+            m_model = m_app.SapModel;
+
+            m_model.InitializeNewModel();
+            m_model.File.NewBlank();
+
+            string name = "1";
+
+            m_model.FrameObj.AddByCoord(0, 0, 0, 0, 0, 10, ref name);
+
+            bool[] ii = new bool[6];
+            bool[] jj = new bool[6];
+            double[] startVal = new double[6];
+            double[] endVal = new double[6];
+            ii[5] = true;
+            jj[5] = true;
+
+            int ret = m_model.FrameObj.SetReleases(name, ref ii, ref jj, ref startVal, ref endVal);
+
+
+        }
+
 
         private static void MeshResults(ETABSAdapter app)
         {
@@ -377,175 +414,175 @@ namespace ETABS_Test
 
         }
 
-        private static void TestPushElements(ETABSAdapter app)
-        {
-            Console.WriteLine("Testing Push Bars ...");
+        //private static void TestPushElements(ETABSAdapter app)
+        //{
+        //    Console.WriteLine("Testing Push Bars ...");
 
-            Point p1 = new Point { X = 0, Y = 0, Z = 0 };
-            Point p2 = new Point { X = 1, Y = 0, Z = 0 };
-            Point p3 = new Point { X = 1, Y = 1, Z = 0 };
-            Point p4 = new Point { X = 0, Y = 1, Z = 0 };
-            Point p5 = new Point { X = 0, Y = 0, Z = 1 };
-            Point p6 = new Point { X = 1, Y = 0, Z = 1 };
-            Point p7 = new Point { X = 1, Y = 1, Z = 1 };
-            Point p8 = new Point { X = 0, Y = 1, Z = 1 };
+        //    Point p1 = new Point { X = 0, Y = 0, Z = 0 };
+        //    Point p2 = new Point { X = 1, Y = 0, Z = 0 };
+        //    Point p3 = new Point { X = 1, Y = 1, Z = 0 };
+        //    Point p4 = new Point { X = 0, Y = 1, Z = 0 };
+        //    Point p5 = new Point { X = 0, Y = 0, Z = 1 };
+        //    Point p6 = new Point { X = 1, Y = 0, Z = 1 };
+        //    Point p7 = new Point { X = 1, Y = 1, Z = 1 };
+        //    Point p8 = new Point { X = 0, Y = 1, Z = 1 };
 
-            Point p5b = new Point { X = 0, Y = 0, Z = 2 };
-            Point p6b = new Point { X = 1, Y = 0, Z = 2 };
-            Point p7b = new Point { X = 1, Y = 1, Z = 2 };
-            Point p8b = new Point { X = 0, Y = 1, Z = 2 };
+        //    Point p5b = new Point { X = 0, Y = 0, Z = 2 };
+        //    Point p6b = new Point { X = 1, Y = 0, Z = 2 };
+        //    Point p7b = new Point { X = 1, Y = 1, Z = 2 };
+        //    Point p8b = new Point { X = 0, Y = 1, Z = 2 };
 
-            Constraint6DOF pin = BH.Engine.Structure.Create.PinConstraint6DOF();
-            Constraint6DOF fix = BH.Engine.Structure.Create.FixConstraint6DOF();
-            Constraint6DOF full = BH.Engine.Structure.Create.FullReleaseConstraint6DOF();
+        //    Constraint6DOF pin = BH.Engine.Structure.Create.PinConstraint6DOF();
+        //    Constraint6DOF fix = BH.Engine.Structure.Create.FixConstraint6DOF();
+        //    Constraint6DOF full = BH.Engine.Structure.Create.FullReleaseConstraint6DOF();
 
-            List<Node> nodesA = new List<Node>();
+        //    List<Node> nodesA = new List<Node>();
 
-            Node n1a = BH.Engine.Structure.Create.Node(p5 , "1");
-            Node n2a = BH.Engine.Structure.Create.Node( p6 , "2" );
-            Node n3a = BH.Engine.Structure.Create.Node( p7 , "3" );
-            Node n4a = BH.Engine.Structure.Create.Node( p8 , "4" );
+        //    Node n1a = BH.Engine.Structure.Create.Node(p5 , "1");
+        //    Node n2a = BH.Engine.Structure.Create.Node( p6 , "2" );
+        //    Node n3a = BH.Engine.Structure.Create.Node( p7 , "3" );
+        //    Node n4a = BH.Engine.Structure.Create.Node( p8 , "4" );
 
-            n1a.Constraint = pin;
-            n2a.Constraint = pin;
-            n3a.Constraint = fix;
-            n4a.Constraint = fix;
+        //    n1a.Constraint = pin;
+        //    n2a.Constraint = pin;
+        //    n3a.Constraint = fix;
+        //    n4a.Constraint = fix;
 
-            nodesA.Add(n1a);
-            nodesA.Add(n2a);
-            nodesA.Add(n3a);
-            nodesA.Add(n4a);
-
-
-
-            List<Node> nodesB = new List<Node>();
-
-            Node n1b = BH.Engine.Structure.Create.Node( p5b, "1" );
-            Node n2b = BH.Engine.Structure.Create.Node( p6b,  "2" );
-            Node n3b = BH.Engine.Structure.Create.Node( p7b,  "3" );
-            Node n4b = BH.Engine.Structure.Create.Node( p8b,  "4" );
-
-            n1b.Constraint = pin;
-            n2b.Constraint = pin;
-            n3b.Constraint = full;
-            n4b.Constraint = fix;
-
-            nodesB.Add(n1b);
-            nodesB.Add(n2b);
-            nodesB.Add(n3b);
-            nodesB.Add(n4b);
-
-            Bar bar1 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p1), BH.Engine.Structure.Create.Node( p2));
-            Bar bar2 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p2), BH.Engine.Structure.Create.Node( p3));
-            Bar bar3 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p3), BH.Engine.Structure.Create.Node( p4));
-            Bar bar4 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p4), BH.Engine.Structure.Create.Node( p1));
-
-            Bar bar5 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p5), BH.Engine.Structure.Create.Node( p6));
-            Bar bar6 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p6), BH.Engine.Structure.Create.Node( p7));
-            Bar bar7 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p7), BH.Engine.Structure.Create.Node( p8));
-            Bar bar8 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p8), BH.Engine.Structure.Create.Node( p5));
-
-            Bar bar9 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p1), BH.Engine.Structure.Create.Node( p5));
-            Bar bar10 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p2), BH.Engine.Structure.Create.Node( p6));
-            Bar bar11 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p3), BH.Engine.Structure.Create.Node( p7));
-            Bar bar12 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p4), BH.Engine.Structure.Create.Node( p8));
-
-            Bar bar5b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p5b), BH.Engine.Structure.Create.Node( p6b));
-            Bar bar6b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p6b), BH.Engine.Structure.Create.Node( p7b));
-            Bar bar7b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p7b), BH.Engine.Structure.Create.Node( p8b));
-            Bar bar8b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p8b), BH.Engine.Structure.Create.Node( p5b));
-
-            Bar bar9b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p1), BH.Engine.Structure.Create.Node( p5b));
-            Bar bar10b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p2), BH.Engine.Structure.Create.Node( p6b));
-            Bar bar11b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p3), BH.Engine.Structure.Create.Node( p7b));
-            Bar bar12b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p4), BH.Engine.Structure.Create.Node( p8b));
-
-            List<Bar> bars1 = new List<Bar>();
-            List<Bar> bars2a = new List<Bar>();
-            List<Bar> bars2b = new List<Bar>();
-
-            bars1.Add(bar1);
-            bars1.Add(bar2);
-            bars1.Add(bar3);
-            bars1.Add(bar4);
-
-            bars2a.Add(bar5);
-            bars2a.Add(bar6);
-            bars2a.Add(bar7);
-            bars2a.Add(bar8);
-            bars2a.Add(bar9);
-            bars2a.Add(bar10);
-            bars2a.Add(bar11);
-            bars2a.Add(bar12);
-
-            bars2b.Add(bar5b);
-            bars2b.Add(bar6b);
-            bars2b.Add(bar7b);
-            bars2b.Add(bar8b);
-            bars2b.Add(bar9b);
-            bars2b.Add(bar10b);
-            bars2b.Add(bar11b);
-            bars2b.Add(bar12b);
-
-            Material steel = BH.Engine.Common.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
-
-            ISectionProperty sec1 = BH.Engine.Structure.Create.SteelISection(110, 10, 80, 20);
-            sec1.Material = steel;// BH.Engine.Common.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500); //BH.Engine.Common.Create.Material("blue steel");//<-- this creates material of type aluminium
-            sec1.Name = "Section 1";
-
-            ISectionProperty sec2a = BH.Engine.Structure.Create.ConcreteRectangleSection(200, 120);
-            sec2a.Material = BH.Engine.Common.Create.Material("myConcrete", MaterialType.Concrete, 10, 10, 10, 10);
-            sec2a.Name = "Section 2a";
-
-            ISectionProperty sec2b = new ExplicitSection();
-            sec2b.Material = BH.Engine.Common.Create.Material("otherSteel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
-            sec2b.Name = "Section 2b";
+        //    nodesA.Add(n1a);
+        //    nodesA.Add(n2a);
+        //    nodesA.Add(n3a);
+        //    nodesA.Add(n4a);
 
 
-            foreach (Bar b in bars1)
-                b.SectionProperty = sec1;
 
-            foreach (Bar b in bars2a)
-                b.SectionProperty = sec2a;
+        //    List<Node> nodesB = new List<Node>();
 
-            foreach (Bar b in bars2b)
-                b.SectionProperty = sec2b;
+        //    Node n1b = BH.Engine.Structure.Create.Node( p5b, "1" );
+        //    Node n2b = BH.Engine.Structure.Create.Node( p6b,  "2" );
+        //    Node n3b = BH.Engine.Structure.Create.Node( p7b,  "3" );
+        //    Node n4b = BH.Engine.Structure.Create.Node( p8b,  "4" );
+
+        //    n1b.Constraint = pin;
+        //    n2b.Constraint = pin;
+        //    n3b.Constraint = full;
+        //    n4b.Constraint = fix;
+
+        //    nodesB.Add(n1b);
+        //    nodesB.Add(n2b);
+        //    nodesB.Add(n3b);
+        //    nodesB.Add(n4b);
+
+        //    Bar bar1 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p1), BH.Engine.Structure.Create.Node( p2));
+        //    Bar bar2 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p2), BH.Engine.Structure.Create.Node( p3));
+        //    Bar bar3 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p3), BH.Engine.Structure.Create.Node( p4));
+        //    Bar bar4 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p4), BH.Engine.Structure.Create.Node( p1));
+
+        //    Bar bar5 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p5), BH.Engine.Structure.Create.Node( p6));
+        //    Bar bar6 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p6), BH.Engine.Structure.Create.Node( p7));
+        //    Bar bar7 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p7), BH.Engine.Structure.Create.Node( p8));
+        //    Bar bar8 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p8), BH.Engine.Structure.Create.Node( p5));
+
+        //    Bar bar9 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p1), BH.Engine.Structure.Create.Node( p5));
+        //    Bar bar10 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p2), BH.Engine.Structure.Create.Node( p6));
+        //    Bar bar11 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p3), BH.Engine.Structure.Create.Node( p7));
+        //    Bar bar12 = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p4), BH.Engine.Structure.Create.Node( p8));
+
+        //    Bar bar5b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p5b), BH.Engine.Structure.Create.Node( p6b));
+        //    Bar bar6b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p6b), BH.Engine.Structure.Create.Node( p7b));
+        //    Bar bar7b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p7b), BH.Engine.Structure.Create.Node( p8b));
+        //    Bar bar8b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p8b), BH.Engine.Structure.Create.Node( p5b));
+
+        //    Bar bar9b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p1), BH.Engine.Structure.Create.Node( p5b));
+        //    Bar bar10b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p2), BH.Engine.Structure.Create.Node( p6b));
+        //    Bar bar11b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p3), BH.Engine.Structure.Create.Node( p7b));
+        //    Bar bar12b = BH.Engine.Structure.Create.Bar(BH.Engine.Structure.Create.Node( p4), BH.Engine.Structure.Create.Node( p8b));
+
+        //    List<Bar> bars1 = new List<Bar>();
+        //    List<Bar> bars2a = new List<Bar>();
+        //    List<Bar> bars2b = new List<Bar>();
+
+        //    bars1.Add(bar1);
+        //    bars1.Add(bar2);
+        //    bars1.Add(bar3);
+        //    bars1.Add(bar4);
+
+        //    bars2a.Add(bar5);
+        //    bars2a.Add(bar6);
+        //    bars2a.Add(bar7);
+        //    bars2a.Add(bar8);
+        //    bars2a.Add(bar9);
+        //    bars2a.Add(bar10);
+        //    bars2a.Add(bar11);
+        //    bars2a.Add(bar12);
+
+        //    bars2b.Add(bar5b);
+        //    bars2b.Add(bar6b);
+        //    bars2b.Add(bar7b);
+        //    bars2b.Add(bar8b);
+        //    bars2b.Add(bar9b);
+        //    bars2b.Add(bar10b);
+        //    bars2b.Add(bar11b);
+        //    bars2b.Add(bar12b);
+
+        //    //Material steel = BH.Engine.Common.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
+
+        //    ISectionProperty sec1 = BH.Engine.Structure.Create.SteelISection(110, 10, 80, 20);
+        //    //sec1.Material = steel;// BH.Engine.Common.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500); //BH.Engine.Common.Create.Material("blue steel");//<-- this creates material of type aluminium
+        //    sec1.Name = "Section 1";
+
+        //    ISectionProperty sec2a = BH.Engine.Structure.Create.ConcreteRectangleSection(200, 120);
+        //    //sec2a.Material = BH.Engine.Common.Create.Material("myConcrete", MaterialType.Concrete, 10, 10, 10, 10);
+        //    sec2a.Name = "Section 2a";
+
+        //    ISectionProperty sec2b = new ExplicitSection();
+        //    //sec2b.Material = BH.Engine.Common.Create.Material("otherSteel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
+        //    sec2b.Name = "Section 2b";
 
 
-            List<PanelPlanar> panels = new List<PanelPlanar>();
-            Polyline outline = new Polyline();
-            outline.ControlPoints = new List<Point>() { p1, p2, p3, p4, p1 };
-            // Material steel = sec1.Material;// BH.Engine.Common.Create.Material("panelSteel");
-            ISurfaceProperty panelProp = BH.Engine.Structure.Create.ConstantThickness(100, steel);
-            panelProp.Name = "panelProperty";
-            List<ICurve> nothing = null;
-            PanelPlanar panelA = BH.Engine.Structure.Create.PanelPlanar(outline, nothing);
-            panelA.Property = panelProp;
-            panels.Add(panelA);
+        //    foreach (Bar b in bars1)
+        //        b.SectionProperty = sec1;
 
-            outline.ControlPoints = new List<Point>() { p5, p6, p7, p8, p5 };
-            Point op5 = new Point { X = 0.2, Y = 0.2, Z = 1 };
-            Point op6 = new Point { X = 0.8, Y = 0.2, Z = 1 };
-            Point op7 = new Point { X = 0.8, Y = 0.8, Z = 1 };
-            Point op8 = new Point { X = 0.2, Y = 0.8, Z = 1 };
-            Polyline hole = new Polyline() { ControlPoints = new List<Point>() { op5, op6, op7, op8 } };
-            Opening opening = new Opening() { Edges = new List<Edge>() { new Edge() { Curve = hole } } };
-            PanelPlanar panelB = BH.Engine.Structure.Create.PanelPlanar(outline, new List<Opening>() { opening });
-            panelB.Property = panelProp;
-            panels.Add(panelB);
+        //    foreach (Bar b in bars2a)
+        //        b.SectionProperty = sec2a;
+
+        //    foreach (Bar b in bars2b)
+        //        b.SectionProperty = sec2b;
 
 
-            app.Push(nodesA, "Nodes");
-            app.Push(nodesB, "Nodes");
-            app.Push(bars1, "Bars1");
-            app.Push(bars2a, "Bars2");
-            app.Push(bars2b, "Bars2");
+        //    List<Panel> panels = new List<Panel>();
+        //    Polyline outline = new Polyline();
+        //    outline.ControlPoints = new List<Point>() { p1, p2, p3, p4, p1 };
+        //    // Material steel = sec1.Material;// BH.Engine.Common.Create.Material("panelSteel");
+        //    ISurfaceProperty panelProp = BH.Engine.Structure.Create.ConstantThickness(100, steel);
+        //    panelProp.Name = "panelProperty";
+        //    List<ICurve> nothing = null;
+        //    Panel panelA = BH.Engine.Structure.Create.Panel(outline, nothing);
+        //    panelA.Property = panelProp;
+        //    panels.Add(panelA);
 
-            app.Push(panels, "panels");
+        //    outline.ControlPoints = new List<Point>() { p5, p6, p7, p8, p5 };
+        //    Point op5 = new Point { X = 0.2, Y = 0.2, Z = 1 };
+        //    Point op6 = new Point { X = 0.8, Y = 0.2, Z = 1 };
+        //    Point op7 = new Point { X = 0.8, Y = 0.8, Z = 1 };
+        //    Point op8 = new Point { X = 0.2, Y = 0.8, Z = 1 };
+        //    Polyline hole = new Polyline() { ControlPoints = new List<Point>() { op5, op6, op7, op8 } };
+        //    Opening opening = new Opening() { Edges = new List<Edge>() { new Edge() { Curve = hole } } };
+        //    Panel panelB = BH.Engine.Structure.Create.Panel(outline, new List<Opening>() { opening });
+        //    panelB.Property = panelProp;
+        //    panels.Add(panelB);
 
-            Console.WriteLine("All elements Pushed !");
-            Console.ReadLine();
-        }
+
+        //    app.Push(nodesA, "Nodes");
+        //    app.Push(nodesB, "Nodes");
+        //    app.Push(bars1, "Bars1");
+        //    app.Push(bars2a, "Bars2");
+        //    app.Push(bars2b, "Bars2");
+
+        //    app.Push(panels, "panels");
+
+        //    Console.WriteLine("All elements Pushed !");
+        //    Console.ReadLine();
+        //}
 
         private static void TestPullBars(ETABSAdapter app)
         {
