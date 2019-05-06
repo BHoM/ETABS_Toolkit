@@ -28,11 +28,11 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Surface;
-using BH.oM.Structure.Properties.Constraint;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.SurfaceProperties;
+using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Loads;
-using BH.oM.Common.Materials;
+using BH.oM.Physical.Materials;
 using ETABS2016;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
@@ -59,7 +59,7 @@ namespace BH.Adapter.ETABS
                 return ReadSectionProperties(ids as dynamic);
             else if (type == typeof(Material))
                 return ReadMaterials(ids as dynamic);
-            else if (type == typeof(PanelPlanar))
+            else if (type == typeof(Panel))
                 return ReadPanel(ids as dynamic);
             else if (type == typeof(ISurfaceProperty))
                 return ReadProperty2d(ids as dynamic);
@@ -185,7 +185,7 @@ namespace BH.Adapter.ETABS
                     m_model.FrameObj.GetEndLengthOffset(id, ref autoOffset, ref startLength, ref endLength, ref rz);
                     if (!autoOffset)
                     {
-                        bhBar.Offset = new oM.Structure.Properties.Offset();
+                        bhBar.Offset = new oM.Structure.Offsets.Offset();
                         bhBar.Offset.Start = startLength == 0 ? null : new Vector() { X = startLength * (-1), Y = 0, Z = 0 };
                         bhBar.Offset.End = endLength == 0 ? null : new Vector() { X = endLength, Y = 0, Z = 0 };
                     }
@@ -427,9 +427,9 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<PanelPlanar> ReadPanel(List<string> ids = null)
+        private List<Panel> ReadPanel(List<string> ids = null)
         {
-            List<PanelPlanar> panelList = new List<PanelPlanar>();
+            List<Panel> panelList = new List<Panel>();
             int nameCount = 0;
             string[] nameArr = { };
 
@@ -462,7 +462,7 @@ namespace BH.Adapter.ETABS
                 m_model.AreaObj.GetProperty(id, ref propertyName);
                 ISurfaceProperty panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
 
-                PanelPlanar panel = new PanelPlanar();
+                Panel panel = new Panel();
                 panel.CustomData[AdapterId] = id;
                 
                 Polyline pl = Helper.GetPanelPerimeter(m_model, id);

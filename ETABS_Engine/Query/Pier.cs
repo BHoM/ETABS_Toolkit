@@ -38,7 +38,7 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Pier Pier(this PanelPlanar panel)
+        public static Pier Pier(this Panel panel)
         {
             object obj;
 

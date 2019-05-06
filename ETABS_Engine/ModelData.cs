@@ -25,9 +25,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Structure.Properties.Section;
+using BH.oM.Structure.SectionProperties;
 using BH.Engine.Structure;
-using BH.oM.Common.Materials;
+using BH.oM.Physical.Materials;
 using ETABS2016;
 
 namespace BH.Engine.ETABS

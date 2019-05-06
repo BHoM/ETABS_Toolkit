@@ -24,14 +24,14 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Architecture.Elements;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Constraint;
-using BH.oM.Structure.Properties.Surface;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.Loads;
+using BH.oM.Structure.Offsets;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
-using BH.oM.Common.Materials;
+using BH.oM.Physical.Materials;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 
@@ -64,9 +64,9 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
 
-            if (typeof(T) == typeof(PanelPlanar))
+            if (typeof(T) == typeof(Panel))
             {
-                List<PanelPlanar> panels = objects.Cast<PanelPlanar>().ToList();
+                List<Panel> panels = objects.Cast<Panel>().ToList();
 
                 List<Diaphragm> diaphragms = panels.Select(x => x.Diaphragm()).Where(x => x != null).ToList();
 
@@ -190,10 +190,13 @@ namespace BH.Adapter.ETABS
             BarRelease barRelease = bhBar.Release;
             if (barRelease != null)
             {
-                bool[] restraintStart = barRelease.StartRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.StartRelease);
-                double[] springStart = barRelease.StartRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.StartRelease);
-                bool[] restraintEnd = barRelease.EndRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.EndRelease);
-                double[] springEnd = barRelease.EndRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.EndRelease);
+                bool[] restraintStart;// = barRelease.StartRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.StartRelease);
+                double[] springStart;// = barRelease.StartRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.StartRelease);
+                bool[] restraintEnd;// = barRelease.EndRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.EndRelease);
+                double[] springEnd;// = barRelease.EndRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.EndRelease);
+
+
+                GetBarReleaseArrays(barRelease, out restraintStart, out restraintEnd, out springStart, out springEnd);
 
                 if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
                 {
@@ -301,7 +304,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private bool CreateObject(PanelPlanar bhPanel)
+        private bool CreateObject(Panel bhPanel)
         {
             bool success = true;
             int retA = 0;
@@ -552,6 +555,44 @@ namespace BH.Adapter.ETABS
             }
 
             return ret == 0;
+
+        }
+
+        /***************************************************/
+
+        private void GetBarReleaseArrays(BarRelease release, out bool[] startFixities, out bool[] endFixities, out double[] startValues, out double[] endValues)
+        {
+            GetOneSideBarReleaseArrays(release.StartRelease, out startFixities, out startValues);
+            GetOneSideBarReleaseArrays(release.EndRelease, out endFixities, out endValues);
+        }
+
+        /***************************************************/
+
+        private void GetOneSideBarReleaseArrays(Constraint6DOF constraint, out bool[] fixities, out double[] values)
+        {
+            fixities = new bool[6];
+
+            //Note: Etabs does not follow the same convention as the BHoM. Different notation is also used
+            //where 1,2 and 3 is used instead of X,Y, and Z. The convention is as follows: 1 = X, 2 = Z and 3 = Y in etabs
+
+            fixities[0] = constraint.TranslationX != DOFType.Fixed;
+            fixities[1] = constraint.TranslationZ != DOFType.Fixed;
+            fixities[2] = constraint.TranslationY != DOFType.Fixed;
+
+            fixities[3] = constraint.RotationX != DOFType.Fixed;
+            fixities[4] = constraint.RotationZ != DOFType.Fixed;    
+            fixities[5] = constraint.RotationY != DOFType.Fixed;   
+
+            values = new double[6];
+
+            values[0] = constraint.TranslationalStiffnessX;
+            values[1] = constraint.TranslationalStiffnessZ;
+            values[2] = constraint.TranslationalStiffnessY;
+
+
+            values[3] = constraint.RotationalStiffnessX;
+            values[4] = constraint.RotationalStiffnessZ;
+            values[5] = constraint.RotationalStiffnessY;
 
         }
 

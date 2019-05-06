@@ -37,7 +37,7 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Diaphragm Diaphragm(this PanelPlanar panel)
+        public static Diaphragm Diaphragm(this Panel panel)
         {
             object obj;
 

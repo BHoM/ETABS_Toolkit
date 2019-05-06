@@ -39,9 +39,9 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static PanelPlanar SetSpandrel(this PanelPlanar panel, Spandrel spandrel)
+        public static Panel SetSpandrel(this Panel panel, Spandrel spandrel)
         {
-            PanelPlanar clone = (PanelPlanar)panel.GetShallowClone();
+            Panel clone = (Panel)panel.GetShallowClone();
 
             clone.CustomData["EtabsSpandrel"] = spandrel;
 

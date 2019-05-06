@@ -73,7 +73,7 @@ namespace BH.Adapter.ETABS
                     lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
                     lastId = lastNum.ToString();
                     break;
-                case "PanelPlanar":
+                case "Panel":
                     m_model.AreaObj.GetNameList(ref nameCount, ref names);
                     lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
                     lastId = lastNum.ToString();

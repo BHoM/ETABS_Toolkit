@@ -38,9 +38,9 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static PanelPlanar SetDiaphragm(this PanelPlanar panel, Diaphragm diaphragm)
+        public static Panel SetDiaphragm(this Panel panel, Diaphragm diaphragm)
         {
-            PanelPlanar clone = (PanelPlanar)panel.GetShallowClone();
+            Panel clone = (Panel)panel.GetShallowClone();
 
             clone.CustomData["EtabsDiaphragm"] = diaphragm;
 

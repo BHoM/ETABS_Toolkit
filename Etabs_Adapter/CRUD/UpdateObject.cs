@@ -23,13 +23,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Constraint;
-using BH.oM.Structure.Properties;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Loads;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
-using BH.oM.Common.Materials;
+using BH.oM.Physical.Materials;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 
@@ -47,9 +46,9 @@ namespace BH.Adapter.ETABS
             {
                 return UpdateObjects(objects as IEnumerable<Node>);
             }
-            if (typeof(T) == typeof(PanelPlanar))
+            if (typeof(T) == typeof(Panel))
             {
-                return UpdateObjects(objects as IEnumerable<PanelPlanar>);
+                return UpdateObjects(objects as IEnumerable<Panel>);
             }
             else
                 return base.UpdateObjects<T>(objects);
@@ -90,11 +89,11 @@ namespace BH.Adapter.ETABS
             return sucess;
         }
 
-        private bool UpdateObjects(IEnumerable<PanelPlanar> bhPanels)
+        private bool UpdateObjects(IEnumerable<Panel> bhPanels)
         {
             bool sucess = true;
 
-            foreach (PanelPlanar bhPanel in bhPanels)
+            foreach (Panel bhPanel in bhPanels)
             {
                 Pier pier = bhPanel.Pier();
                 Spandrel spandrel = bhPanel.Spandrel();

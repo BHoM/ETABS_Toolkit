@@ -212,13 +212,13 @@ namespace BH.Adapter.ETABS
             return combination;
         }
 
-        public static void SetLoad(cSapModel model, PointForce pointForce, bool replace)
+        public static void SetLoad(cSapModel model, PointLoad pointLoad, bool replace)
         {
-            double[] pfValues = new double[] { pointForce.Force.X, pointForce.Force.Y, pointForce.Force.Z, pointForce.Moment.X, pointForce.Moment.Y, pointForce.Moment.Z };
+            double[] pfValues = new double[] { pointLoad.Force.X, pointLoad.Force.Y, pointLoad.Force.Z, pointLoad.Moment.X, pointLoad.Moment.Y, pointLoad.Moment.Z };
             int ret = 0;
-            foreach (Node node in pointForce.Objects.Elements)
+            foreach (Node node in pointLoad.Objects.Elements)
             {
-                string csiCaseName = CaseNameToCSI(pointForce.Loadcase);
+                string csiCaseName = CaseNameToCSI(pointLoad.Loadcase);
                 ret = model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), csiCaseName, ref pfValues, replace);
             }
         }
@@ -243,7 +243,7 @@ namespace BH.Adapter.ETABS
             }
         }
 
-        public static void SetLoad(cSapModel model, AreaUniformalyDistributedLoad areaUniformLoad, bool replace)
+        public static void SetLoad(cSapModel model, AreaUniformlyDistributedLoad areaUniformLoad, bool replace)
         {
             int ret = 0;
             string csiCaseName = CaseNameToCSI(areaUniformLoad.Loadcase);
@@ -325,7 +325,7 @@ namespace BH.Adapter.ETABS
                         {
                             Vector force = new Vector() { X = fx[i], Y = fy[i], Z = fz[i] };
                             Vector moment = new Vector() { X = mx[i], Y = my[i], Z = mz[i] };
-                            bhLoads.Add(new PointForce() { Force = force, Moment = moment, Loadcase = bhLoadcase });
+                            bhLoads.Add(new PointLoad() { Force = force, Moment = moment, Loadcase = bhLoadcase });
                         }
                     }
                 }
@@ -366,7 +366,7 @@ namespace BH.Adapter.ETABS
 
                     foreach (var kvp in areaUniformDict)
                     {
-                        bhLoads.Add(new AreaUniformalyDistributedLoad() { Loadcase = bhLoadcase, Pressure = kvp.Value });
+                        bhLoads.Add(new AreaUniformlyDistributedLoad() { Loadcase = bhLoadcase, Pressure = kvp.Value });
                     }
                 }
 
