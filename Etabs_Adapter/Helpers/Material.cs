@@ -75,6 +75,9 @@ namespace BH.Adapter.ETABS
                 {
                     m = Engine.Structure.Create.ConcreteMaterial(materialName, e, v, thermCo, mass, 0);
                 }
+
+                m.CustomData[AdapterId] = materialName;
+
                 //TODO: add get methods for Tendon and Rebar
                 return m;
             }
