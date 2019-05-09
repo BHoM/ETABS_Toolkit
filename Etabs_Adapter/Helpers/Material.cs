@@ -56,24 +56,48 @@ namespace BH.Adapter.ETABS
                 model.PropMaterial.GetWeightAndMass(materialName, ref weight, ref mass);
                 double compStr = 0;
                 double tensStr = 0;
-                double v1 = 0;//expected yield stress
-                double v2 = 0;//expected tensile stress
+                double fy = 0;//expected yield stress
+                double fu = 0;//expected tensile stress
+                double efy = 0;//expected yield stress
+                double efu = 0;//expected tensile stress
                 double v3 = 0;//strain at hardening
                 double v4 = 0;//strain at max stress
                 double v5 = 0;//strain at rupture
+                double strainAtFc = 0;
+                double strainUlt = 0;
                 int i1 = 0;//stress-strain curvetype
                 int i2 = 0;
+
+
+
                 bool b1 = false;
 
                 Material m = null;
                 //new Material(name, GetMaterialType(matType), e, v, thermCo, g, mass);
-                if (model.PropMaterial.GetOSteel(materialName, ref compStr, ref tensStr, ref v1, ref v2, ref i1, ref i2, ref v3, ref v4, ref v5) == 0)
+                if (model.PropMaterial.GetOSteel(materialName, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref v5) == 0 || matType == eMatType.Steel || matType == eMatType.ColdFormed)
                 {
-                    m = Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, tensStr, v1);
+                    m = Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, fy, fu);
                 }
-                else if (model.PropMaterial.GetOConcrete(materialName, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref v1, ref v2, ref v3, ref v4) == 0)
+                else if (model.PropMaterial.GetOConcrete(materialName, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref strainAtFc, ref strainUlt, ref v3, ref v4) == 0 || matType == eMatType.Concrete)
                 {
                     m = Engine.Structure.Create.ConcreteMaterial(materialName, e, v, thermCo, mass, 0);
+                }
+                else if (model.PropMaterial.GetORebar(materialName, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref b1) == 0 || matType == eMatType.Rebar)
+                {
+                    m = Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, fy, fu);
+                }
+                else if (model.PropMaterial.GetOTendon(materialName, ref fy, ref fu, ref i1, ref i2) == 0 || matType == eMatType.Tendon)
+                {
+                    m = Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, fy, fu);
+                }
+                else if (matType == eMatType.Aluminum)
+                {
+                    m = Engine.Structure.Create.AluminiumMaterial(materialName, e, v, thermCo, mass, 0);
+                }
+                else
+                {
+                    m = new Material() { Name = materialName, Density = mass };
+                    Engine.Reflection.Compute.RecordWarning("Could not extract structural properties for material " + materialName);
                 }
 
                 m.CustomData[AdapterId] = materialName;
