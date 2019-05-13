@@ -87,10 +87,7 @@
   <ItemGroup>
     <Compile Include="AdapterId.cs" />
     <Compile Include="Convert\PrivateHelpers\Constraint.cs" />
-    <Compile Include="Convert\PrivateHelpers\Material.cs" />
-    <Compile Include="Convert\PrivateHelpers\Section.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
-    <Compile Include="Convert\ToETABS.cs" />
     <Compile Include="Create\Diaphragm.cs" />
     <Compile Include="Create\EtabsConfig.cs" />
     <Compile Include="Create\MassSource.cs" />
