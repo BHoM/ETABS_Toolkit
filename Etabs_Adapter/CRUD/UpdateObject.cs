@@ -28,7 +28,7 @@ using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Loads;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
-using BH.oM.Physical.Materials;
+using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 

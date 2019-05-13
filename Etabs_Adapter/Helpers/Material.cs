@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Physical.Materials;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry;
 using BH.Engine.Structure;
@@ -38,7 +37,7 @@ namespace BH.Adapter.ETABS
         /// <summary>
         /// NOTE: the materialName is NOT convertable to integer as the values stored in the 'name' field on most other ETABS elements
         /// </summary>
-        public static Material GetMaterial(cSapModel model, string materialName)
+        public static IStructuralMaterial GetMaterial(cSapModel model, string materialName)
         {
             eMatType matType = eMatType.NoDesign;
             int colour = 0;
@@ -72,32 +71,32 @@ namespace BH.Adapter.ETABS
 
                 bool b1 = false;
 
-                Material m = null;
+                IStructuralMaterial m = null;
                 //new Material(name, GetMaterialType(matType), e, v, thermCo, g, mass);
                 if (model.PropMaterial.GetOSteel(materialName, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref v5) == 0 || matType == eMatType.Steel || matType == eMatType.ColdFormed)
                 {
-                    m = Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, fy, fu);
+                    m = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                 }
                 else if (model.PropMaterial.GetOConcrete(materialName, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref strainAtFc, ref strainUlt, ref v3, ref v4) == 0 || matType == eMatType.Concrete)
                 {
-                    m = Engine.Structure.Create.ConcreteMaterial(materialName, e, v, thermCo, mass, 0);
+                    m = Engine.Structure.Create.Concrete(materialName, e, v, thermCo, mass, 0);
                 }
                 else if (model.PropMaterial.GetORebar(materialName, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref b1) == 0 || matType == eMatType.Rebar)
                 {
-                    m = Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, fy, fu);
+                    m = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                 }
                 else if (model.PropMaterial.GetOTendon(materialName, ref fy, ref fu, ref i1, ref i2) == 0 || matType == eMatType.Tendon)
                 {
-                    m = Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, fy, fu);
+                    m = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                 }
                 else if (matType == eMatType.Aluminum)
                 {
-                    m = Engine.Structure.Create.AluminiumMaterial(materialName, e, v, thermCo, mass, 0);
+                    m = Engine.Structure.Create.Aluminium(materialName, e, v, thermCo, mass, 0);
                 }
                 else
                 {
-                    m = new Material() { Name = materialName, Density = mass };
                     Engine.Reflection.Compute.RecordWarning("Could not extract structural properties for material " + materialName);
+                    return null;
                 }
 
                 m.CustomData[AdapterId] = materialName;
@@ -111,14 +110,9 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public static void SetMaterial(cSapModel model, Material material)
+        public static void SetMaterial(cSapModel model, IStructuralMaterial material)
         {
 
-            if (!material.IsStructural())
-            {
-                Engine.Reflection.Compute.RecordWarning("Material with name " + material.Name + " is does not contain structural properties. Please check the material");
-                return;
-            }
 
             eMatType matType = eMatType.NoDesign;
             int colour = 0;
@@ -127,18 +121,20 @@ namespace BH.Adapter.ETABS
             string name = "";
             if (model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
             {
-                model.PropMaterial.AddMaterial(ref name, GetMaterialType(material.MaterialType()), "", "", "");
+                model.PropMaterial.AddMaterial(ref name, GetMaterialType(material), "", "", "");
                 model.PropMaterial.ChangeName(name, material.Name);
-                if (material.IsIsotropic())
+                if (material is IIsotropic)
                 {
-                    model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulusIsotropic(), material.PoissonsRatioIsotropic(), material.ThermalExpansionCoeffIsotropic());
+                    IIsotropic isotropic = material as IIsotropic;
+                    model.PropMaterial.SetMPIsotropic(material.Name, isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff);
                 }
-                else if (material.IsOrthotropic())
+                else if (material is IOrthotropic)
                 {
-                    double[] e = material.YoungsModulusOrthotropic().ToDoubleArray();
-                    double[] v = material.PoissonsRatioOrthotropic().ToDoubleArray();
-                    double[] a = material.ThermalExpansionCoeffOrthotropic().ToDoubleArray();
-                    double[] g = material.ShearModulusOrthotropic().ToDoubleArray();
+                    IOrthotropic orthoTropic = material as IOrthotropic;
+                    double[] e = orthoTropic.YoungsModulus.ToDoubleArray();
+                    double[] v = orthoTropic.PoissonsRatio.ToDoubleArray();
+                    double[] a = orthoTropic.ThermalExpansionCoeff.ToDoubleArray();
+                    double[] g = orthoTropic.ShearModulus.ToDoubleArray();
                     model.PropMaterial.SetMPOrthotropic(material.Name, ref e, ref v, ref a, ref g);
                 }
                 model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
@@ -179,6 +175,24 @@ namespace BH.Adapter.ETABS
                     return MaterialType.Steel;
             }
         }
+
+        /***************************************************/
+
+        private static eMatType GetMaterialType(IStructuralMaterial material)
+        {
+            if (material is Steel)
+                return eMatType.Steel;
+            else if (material is Concrete)
+                return eMatType.Concrete;
+            else if (material is Aluminium)
+                return eMatType.Aluminum;
+            else if (material is Timber)
+                return eMatType.NoDesign;
+            else
+                return eMatType.NoDesign;
+        }
+
+        /***************************************************/
 
         private static eMatType GetMaterialType(MaterialType materialType)
         {

@@ -31,7 +31,7 @@ using BH.oM.Structure.Loads;
 using BH.oM.Structure.Offsets;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
-using BH.oM.Physical.Materials;
+using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 
@@ -242,7 +242,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private bool CreateObject(Material material)
+        private bool CreateObject(IStructuralMaterial material)
         {
             bool success = true;
             

@@ -32,7 +32,7 @@ using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Loads;
-using BH.oM.Physical.Materials;
+using BH.oM.Structure.MaterialFragments;
 using ETABS2016;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
@@ -57,7 +57,7 @@ namespace BH.Adapter.ETABS
                 return ReadBars(ids as dynamic);
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
                 return ReadSectionProperties(ids as dynamic);
-            else if (type == typeof(Material))
+            else if (type == typeof(IStructuralMaterial))
                 return ReadMaterials(ids as dynamic);
             else if (type == typeof(Panel))
                 return ReadPanel(ids as dynamic);
@@ -258,11 +258,11 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<Material> ReadMaterials(List<string> ids = null)
+        private List<IStructuralMaterial> ReadMaterials(List<string> ids = null)
         {
             int nameCount = 0;
             string[] names = { };
-            List<Material> materialList = new List<Material>();
+            List<IStructuralMaterial> materialList = new List<IStructuralMaterial>();
 
             if (ids == null)
             {

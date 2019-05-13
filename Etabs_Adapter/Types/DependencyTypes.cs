@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Physical.Materials;
+using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.SurfaceProperties;
@@ -68,9 +68,9 @@ namespace BH.Adapter.ETABS
         private static Dictionary<Type, List<Type>> m_DependencyTypes = new Dictionary<Type, List<Type>>
         {
             {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
-            {typeof(ISectionProperty), new List<Type> { typeof(Material) } },
-            {typeof(Panel), new List<Type> { typeof(ISurfaceProperty), typeof(Material) } },
-            {typeof(ISurfaceProperty), new List<Type> { typeof(Material) } },
+            {typeof(ISectionProperty), new List<Type> { typeof(IStructuralMaterial) } },
+            {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } },
+            {typeof(ISurfaceProperty), new List<Type> { typeof(IStructuralMaterial) } },
             {typeof(RigidLink), new List<Type> { typeof(Node), typeof(LinkConstraint) } },
             {typeof(ILoad), new List<Type> {typeof(Loadcase) } }
 
