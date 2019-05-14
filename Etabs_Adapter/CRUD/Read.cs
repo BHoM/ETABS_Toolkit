@@ -57,7 +57,7 @@ namespace BH.Adapter.ETABS
                 return ReadBars(ids as dynamic);
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
                 return ReadSectionProperties(ids as dynamic);
-            else if (type == typeof(IStructuralMaterial))
+            else if (type == typeof(IMaterialFragment))
                 return ReadMaterials(ids as dynamic);
             else if (type == typeof(Panel))
                 return ReadPanel(ids as dynamic);
@@ -258,11 +258,11 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<IStructuralMaterial> ReadMaterials(List<string> ids = null)
+        private List<IMaterialFragment> ReadMaterials(List<string> ids = null)
         {
             int nameCount = 0;
             string[] names = { };
-            List<IStructuralMaterial> materialList = new List<IStructuralMaterial>();
+            List<IMaterialFragment> materialList = new List<IMaterialFragment>();
 
             if (ids == null)
             {
