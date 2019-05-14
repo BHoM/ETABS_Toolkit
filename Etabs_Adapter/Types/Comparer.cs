@@ -65,7 +65,7 @@ namespace BH.Adapter.ETABS
         {
             {typeof(Node), new BH.Engine.Structure.NodeDistanceComparer(3) },
             {typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
-            {typeof(IStructuralMaterial), new BHoMObjectNameComparer() },
+            {typeof(IMaterialFragment), new BHoMObjectNameComparer() },
             {typeof(ISurfaceProperty), new BHoMObjectNameComparer() },
             {typeof(BH.oM.Adapters.ETABS.Elements.Diaphragm), new BHoMObjectNameComparer() },
         };

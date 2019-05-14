@@ -187,7 +187,7 @@ namespace BH.Adapter.ETABS
             #endregion
 
 
-            IStructuralMaterial material;
+            IMaterialFragment material;
             if (materialName == "")
                 material = Engine.Structure.Create.Steel("Steel");
             else
@@ -317,46 +317,46 @@ namespace BH.Adapter.ETABS
 
         #region section dimensions
 
-        private static void SetSectionDimensions(IProfile sectionProfile, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSectionDimensions(IProfile sectionProfile, string sectionName, IMaterialFragment material, cSapModel model)
         {
             SetSpecificDimensions(sectionProfile as dynamic, sectionName, material, model);
         }
 
-        private static void SetSpecificDimensions(TubeProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(TubeProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
             model.PropFrame.SetPipe(sectionName, material.Name, dimensions.Diameter, dimensions.Thickness);
         }
 
-        private static void SetSpecificDimensions(BoxProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(BoxProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
             model.PropFrame.SetTube(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.Thickness, dimensions.Thickness);
         }
 
-        private static void SetSpecificDimensions(FabricatedBoxProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(FabricatedBoxProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
             if (dimensions.TopFlangeThickness != dimensions.BotFlangeThickness)
                 throw new NotImplementedException("different thickness of top and bottom flange is not supported in ETABS");
             model.PropFrame.SetTube(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.TopFlangeThickness, dimensions.WebThickness);
         }
 
-        private static void SetSpecificDimensions(ISectionProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(ISectionProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
             model.PropFrame.SetISection(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.Width, dimensions.FlangeThickness);
         }
 
-        private static void SetSpecificDimensions(FabricatedISectionProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(FabricatedISectionProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
             model.PropFrame.SetISection(sectionName, material.Name, dimensions.Height, dimensions.TopFlangeWidth, dimensions.TopFlangeThickness, dimensions.WebThickness, dimensions.BotFlangeWidth, dimensions.BotFlangeThickness);
         }
 
-        private static void SetSpecificDimensions(ChannelProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(ChannelProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
             model.PropFrame.SetChannel(sectionName, material.Name, dimensions.Height, dimensions.FlangeWidth, dimensions.FlangeThickness, dimensions.WebThickness);
             if (dimensions.MirrorAboutLocalZ)
                 RecordFlippingError(sectionName);
         }
 
-        private static void SetSpecificDimensions(AngleProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(AngleProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
 
             if (material is Steel || material is Aluminium)
@@ -372,7 +372,7 @@ namespace BH.Adapter.ETABS
 
         }
 
-        private static void SetSpecificDimensions(TSectionProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(TSectionProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
             if (material is Steel || material is Aluminium)
                 model.PropFrame.SetSteelTee(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.RootRadius, dimensions.MirrorAboutLocalY);
@@ -387,17 +387,17 @@ namespace BH.Adapter.ETABS
 
         }
 
-        private static void SetSpecificDimensions(ZSectionProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(ZSectionProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
             Engine.Reflection.Compute.RecordWarning("Z-Section currently not supported in the Etabs adapter. Section with name " + sectionName + " has not been pushed.");
         }
 
-        private static void SetSpecificDimensions(RectangleProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(RectangleProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
             model.PropFrame.SetRectangle(sectionName, material.Name, dimensions.Height, dimensions.Width);
         }
 
-        private static void SetSpecificDimensions(CircleProfile dimensions, string sectionName, IStructuralMaterial material, cSapModel model)
+        private static void SetSpecificDimensions(CircleProfile dimensions, string sectionName, IMaterialFragment material, cSapModel model)
         {
             model.PropFrame.SetCircle(sectionName, material.Name, dimensions.Diameter);
         }

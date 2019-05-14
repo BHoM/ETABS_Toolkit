@@ -37,7 +37,7 @@ namespace BH.Adapter.ETABS
         /// <summary>
         /// NOTE: the materialName is NOT convertable to integer as the values stored in the 'name' field on most other ETABS elements
         /// </summary>
-        public static IStructuralMaterial GetMaterial(cSapModel model, string materialName)
+        public static IMaterialFragment GetMaterial(cSapModel model, string materialName)
         {
             eMatType matType = eMatType.NoDesign;
             int colour = 0;
@@ -71,7 +71,7 @@ namespace BH.Adapter.ETABS
 
                 bool b1 = false;
 
-                IStructuralMaterial m = null;
+                IMaterialFragment m = null;
                 //new Material(name, GetMaterialType(matType), e, v, thermCo, g, mass);
                 if (model.PropMaterial.GetOSteel(materialName, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref v5) == 0 || matType == eMatType.Steel || matType == eMatType.ColdFormed)
                 {
@@ -110,7 +110,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public static void SetMaterial(cSapModel model, IStructuralMaterial material)
+        public static void SetMaterial(cSapModel model, IMaterialFragment material)
         {
 
 
@@ -178,7 +178,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private static eMatType GetMaterialType(IStructuralMaterial material)
+        private static eMatType GetMaterialType(IMaterialFragment material)
         {
             if (material is Steel)
                 return eMatType.Steel;

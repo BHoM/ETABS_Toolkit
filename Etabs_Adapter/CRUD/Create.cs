@@ -242,7 +242,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private bool CreateObject(IStructuralMaterial material)
+        private bool CreateObject(IMaterialFragment material)
         {
             bool success = true;
             
