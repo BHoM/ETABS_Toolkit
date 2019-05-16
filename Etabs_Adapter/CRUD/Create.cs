@@ -108,23 +108,23 @@ namespace BH.Adapter.ETABS
             //if (name != bhId)
             //    success = false; //this is not necessary if you can guarantee that it is impossible that this bhId does not match any existing name in ETABS !!!
 
-            if (bhNode.Constraint != null)
+            if (bhNode.Support != null)
             {
                 bool[] restraint = new bool[6];
-                restraint[0] = bhNode.Constraint.TranslationX == DOFType.Fixed;
-                restraint[1] = bhNode.Constraint.TranslationY == DOFType.Fixed;
-                restraint[2] = bhNode.Constraint.TranslationZ == DOFType.Fixed;
-                restraint[3] = bhNode.Constraint.RotationX == DOFType.Fixed;
-                restraint[4] = bhNode.Constraint.RotationY == DOFType.Fixed;
-                restraint[5] = bhNode.Constraint.RotationZ == DOFType.Fixed;
+                restraint[0] = bhNode.Support.TranslationX == DOFType.Fixed;
+                restraint[1] = bhNode.Support.TranslationY == DOFType.Fixed;
+                restraint[2] = bhNode.Support.TranslationZ == DOFType.Fixed;
+                restraint[3] = bhNode.Support.RotationX == DOFType.Fixed;
+                restraint[4] = bhNode.Support.RotationY == DOFType.Fixed;
+                restraint[5] = bhNode.Support.RotationZ == DOFType.Fixed;
 
                 double[] spring = new double[6];
-                spring[0] = bhNode.Constraint.TranslationalStiffnessX;
-                spring[1] = bhNode.Constraint.TranslationalStiffnessY;
-                spring[2] = bhNode.Constraint.TranslationalStiffnessZ;
-                spring[3] = bhNode.Constraint.RotationalStiffnessX;
-                spring[4] = bhNode.Constraint.RotationalStiffnessY;
-                spring[5] = bhNode.Constraint.RotationalStiffnessZ;
+                spring[0] = bhNode.Support.TranslationalStiffnessX;
+                spring[1] = bhNode.Support.TranslationalStiffnessY;
+                spring[2] = bhNode.Support.TranslationalStiffnessZ;
+                spring[3] = bhNode.Support.RotationalStiffnessX;
+                spring[4] = bhNode.Support.RotationalStiffnessY;
+                spring[5] = bhNode.Support.RotationalStiffnessZ;
 
                 retB = m_model.PointObj.SetRestraint(name, ref restraint);
                 retC = m_model.PointObj.SetSpring(name, ref spring);
