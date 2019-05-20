@@ -79,24 +79,9 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            //Get out loadcases, get all for null list
-            loadcaseIds = CheckAndGetCases(model, cases);
-
-            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
-
-            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
-            {
-                // Try setting it as a Load Case
-                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
-                {
-                    // If that fails, try setting it as a Load Combination
-                    if (model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]) != 0)
-                    {
-                        Engine.Reflection.Compute.RecordWarning("Failed to setup result extraction for case " + loadcaseIds[loadcase]);
-                    }
-                }
-            }
-
+            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
+            loadcaseIds = CheckAndSetUpCases(model, cases);
+            
             for (int i = 0; i < nodeIds.Count; i++)
             {
                 int ret = model.Results.JointDispl(nodeIds[i].ToString(), eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
@@ -150,8 +135,8 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            //Get out loadcases, get all for null list
-            loadcaseIds = CheckAndGetCases(model, cases);
+            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
+            loadcaseIds = CheckAndSetUpCases(model, cases);
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -167,16 +152,6 @@ namespace BH.Adapter.ETABS
             double[] my = null;
             double[] mz = null;
 
-
-            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
-
-            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
-            {
-                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
-                {
-                    model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]);
-                }
-            }
 
 
             //List<NodeReaction<string, string, string>> nodeForces = new List<NodeReaction<string, string, string>>();
@@ -248,8 +223,8 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            //Get out loadcases, get all for null list
-            loadcaseIds = CheckAndGetCases(model, cases);
+            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
+            loadcaseIds = CheckAndSetUpCases(model, cases);
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -272,16 +247,6 @@ namespace BH.Adapter.ETABS
             bool op1 = false;
             bool op2 = false;
 
-
-            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
-
-            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
-            {
-                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
-                {
-                    model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]);
-                }
-            }
 
             for (int i = 0; i < barIds.Count; i++)
             {
@@ -323,7 +288,8 @@ namespace BH.Adapter.ETABS
             List<string> barIds = new List<string>();
             List<PierForce> pierForces = new List<PierForce>();
 
-            loadcaseIds = CheckAndGetCases(model, cases);
+            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
+            loadcaseIds = CheckAndSetUpCases(model, cases);
 
             string[] loadcaseNames = null;
 
@@ -339,15 +305,6 @@ namespace BH.Adapter.ETABS
             double[] m2 = null;
             double[] m3 = null;
 
-            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
-
-            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
-            {
-                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
-                {
-                    model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]);
-                }
-            }
 
             int ret = model.Results.PierForce(ref numberResults, ref storyName, ref pierName, ref loadcaseNames, ref location, ref p, ref v2, ref v3, ref t, ref m2, ref m3);
             if (ret == 0)
@@ -420,8 +377,8 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            //Get out loadcases, get all for null list
-            loadcaseIds = CheckAndGetCases(model, cases);
+            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
+            loadcaseIds = CheckAndSetUpCases(model, cases);
 
             string Name = "";
             eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
@@ -459,7 +416,7 @@ namespace BH.Adapter.ETABS
 
                 for (int j = 0; j < resultCount; j++)
                 {
-                    MeshForce pf = new MeshForce(panelIds[i], PointElm[j], "", LoadCase[j], StepNum[j], 0, 0, 0, 
+                    MeshForce pf = new MeshForce(panelIds[i], PointElm[j], Elm[i], LoadCase[j], StepNum[j], 0, 0, 0, 
                         oM.Geometry.Basis.XY, F11[j], F22[j], F12[j], M12[j], M22[j], M12[j], V13[j], V23[j]);
 
                     meshForces.Add(pf);
@@ -471,48 +428,82 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public static List<MeshForce> GetMeshStress(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        public static List<MeshStress> GetMeshStress(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
         {
-            throw new NotImplementedException("Panel stress results is not supported yet!");
 
-        }
-
-        /***************************************************/
-
-        private static List<string> CheckAndGetCases(cSapModel model, IList cases)
-        {
             List<string> loadcaseIds = new List<string>();
+            List<string> panelIds = new List<string>();
+            List<MeshStress> meshStresses = new List<MeshStress>();
 
-            if (cases == null || cases.Count == 0)
+            if (ids == null)
             {
-                int Count = 0;
-                string[] case_names = null;
-                string[] combo_names = null;
-                model.LoadCases.GetNameList(ref Count, ref case_names);
-                model.RespCombo.GetNameList(ref Count, ref combo_names);
-                loadcaseIds = case_names.ToList();
-
-                if(combo_names != null)
-                    loadcaseIds.AddRange(combo_names);
+                int panels = 0;
+                string[] names = null;
+                model.AreaObj.GetNameList(ref panels, ref names);
+                panelIds = names.ToList();
             }
             else
             {
-                for (int i = 0; i < cases.Count; i++)
+                for (int i = 0; i < ids.Count; i++)
                 {
-                    if (cases[i] is BH.oM.Structure.Loads.ICase)
-                    {
-                        string id = CaseNameToCSI(cases[i] as BH.oM.Structure.Loads.ICase);
-                        loadcaseIds.Add(id);
-                    }
-                    else
-                        loadcaseIds.Add(cases[i].ToString());
+                    panelIds.Add(ids[i].ToString());
                 }
             }
 
-            return loadcaseIds;
+            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
+            loadcaseIds = CheckAndSetUpCases(model, cases);
+
+            string Name = "";
+            eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
+            int resultCount = 0;
+            string[] obj = null;
+            string[] elm = null;
+            string[] pointElm = null;
+            string[] loadCase = null;
+            string[] stepType = null;
+            double[] stepNum = null;
+            double[] s11Top = null;
+            double[] s22Top = null;
+            double[] s12Top = null;
+            double[] sMaxTop = null;
+            double[] sMinTop = null;
+            double[] sAngTop = null;
+            double[] svmTop = null;
+            double[] s11Bot = null;
+            double[] s22Bot = null;
+            double[] s12Bot = null;
+            double[] sMaxBot = null;
+            double[] sMinBot = null;
+            double[] sAngBot = null;
+            double[] svmBot = null;
+            double[] s13Avg = null;
+            double[] s23Avg = null;
+            double[] sMaxAvg = null;
+            double[] sAngAvg = null;
+
+            
+            for (int i = 0; i < panelIds.Count; i++)
+            {
+                int ret = model.Results.AreaStressShell(panelIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
+                
+                if (ret == 0)
+                {
+                    for (int j = 0; j < resultCount; j++)
+                    {
+                        MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], sMaxAvg[j]);
+                        MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], sMaxAvg[j]);
+
+                        meshStresses.Add(mStressBot);
+                        meshStresses.Add(mStressTop);
+                    }
+
+                }
+            }
+
+            return meshStresses;
         }
 
-
+        /***************************************************/
 
         #endregion
 
@@ -530,18 +521,8 @@ namespace BH.Adapter.ETABS
             double[] mx = null; double[] my = null; double[] mz = null;
             double gx = 0; double gy = 0; double gz = 0;
 
-            //Get out loadcases, get all for null list
-            loadcaseIds = CheckAndGetCases(model, cases);
-
-            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
-
-            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
-            {
-                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
-                {
-                    model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]);
-                }
-            }
+            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
+            loadcaseIds = CheckAndSetUpCases(model, cases);
 
             model.Results.BaseReact(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, ref gx, ref gy, ref gz);
 
@@ -565,26 +546,14 @@ namespace BH.Adapter.ETABS
             return globalReactions;
         }
 
+        /***************************************************/
+
         public static List<ModalDynamics> GetModalParticipationMassRatios(cSapModel model, IList cases = null)
         {
             List<string> loadcaseIds = new List<string>();
 
-            //Get out loadcases, get all for null list
-            loadcaseIds = CheckAndGetCases(model, cases);
-            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
-
-            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
-            {
-                // Try setting it as a Load Case
-                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
-                {
-                    // If that fails, try setting it as a Load Combination
-                    if (model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]) != 0)
-                    {
-                        Engine.Reflection.Compute.RecordWarning("Failed to setup result extraction for case " + loadcaseIds[loadcase]);
-                    }
-                }
-            }
+            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
+            loadcaseIds = CheckAndSetUpCases(model, cases);
 
             List<ModalDynamics> partRatios = new List<ModalDynamics>();
 
@@ -635,6 +604,58 @@ namespace BH.Adapter.ETABS
 
         #endregion
 
+        /***************************************************/
+
+        private static List<string> CheckAndSetUpCases(cSapModel model, IList cases)
+        {
+            List<string> loadcaseIds = new List<string>();
+
+            if (cases == null || cases.Count == 0)
+            {
+                int Count = 0;
+                string[] case_names = null;
+                string[] combo_names = null;
+                model.LoadCases.GetNameList(ref Count, ref case_names);
+                model.RespCombo.GetNameList(ref Count, ref combo_names);
+                loadcaseIds = case_names.ToList();
+
+                if (combo_names != null)
+                    loadcaseIds.AddRange(combo_names);
+            }
+            else
+            {
+                for (int i = 0; i < cases.Count; i++)
+                {
+                    if (cases[i] is BH.oM.Structure.Loads.ICase)
+                    {
+                        string id = CaseNameToCSI(cases[i] as BH.oM.Structure.Loads.ICase);
+                        loadcaseIds.Add(id);
+                    }
+                    else
+                        loadcaseIds.Add(cases[i].ToString());
+                }
+            }
+
+            //Clear any previous case setup
+            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
+
+            //Loop through and setup all the cases
+            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
+            {
+                // Try setting it as a Load Case
+                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
+                {
+                    // If that fails, try setting it as a Load Combination
+                    if (model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]) != 0)
+                    {
+                        Engine.Reflection.Compute.RecordWarning("Failed to setup result extraction for case " + loadcaseIds[loadcase]);
+                    }
+                }
+            }
+
+            return loadcaseIds;
+        }
+        /***************************************************/
     }
 }
 
