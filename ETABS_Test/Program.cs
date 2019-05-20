@@ -46,13 +46,57 @@ namespace ETABS_Test
         {
             //ETABSAdapter app = new ETABSAdapter(null, null, true);
 
-            TestBarReleases();
-
+            //TestBarReleases();
+            TestMesh();
             //MeshResults(app);
             //TestPushElements(app);
             //TestPullBars(app);
             //ExampleLevels3();
             //ExampleStories();
+        }
+
+        private static void TestMesh()
+        {
+            object runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
+
+            cOAPI app = (cOAPI)runningInstance;
+            cSapModel model = app.SapModel;
+            model.SetPresentUnits(eUnits.N_m_C);
+
+
+
+            int nameCount = 0;
+            string[] nameArr = { };
+
+            model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+
+            List<Point> pts = new List<Point>();
+
+            for (int i = 0; i < nameCount; i++)
+            {
+                int nbELem = 0;
+                string[] elemNames = new string[0];
+                model.AreaObj.GetElm(nameArr[i], ref nbELem, ref elemNames);
+
+                for (int j = 0; j < nbELem; j++)
+                {
+                    int nbPts = 0;
+                    string[] ptsNames = new string[0];
+                    model.AreaElm.GetPoints(elemNames[j], ref nbPts, ref ptsNames);
+
+                    for (int k = 0; k < nbPts; k++)
+                    {
+                        double x = 0;
+                        double y = 0;
+                        double z = 0;
+                        model.PointElm.GetCoordCartesian(ptsNames[k], ref x, ref y, ref z);
+
+                        pts.Add(new Point() { X = x, Y = y, Z = z });
+                    }
+                }
+            }
+
+
         }
 
         private static void TestBarReleases()

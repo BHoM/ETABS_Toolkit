@@ -75,6 +75,8 @@ namespace BH.Adapter.ETABS
                 return ReadLinkConstraints(ids as dynamic);
             else if (type == typeof(Level))
                 return ReadLevel(ids as dynamic);
+            else if (type == typeof(FEMesh))
+                return ReadMeshes(ids as dynamic);
 
             return new List<IBHoMObject>();//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
@@ -491,6 +493,90 @@ namespace BH.Adapter.ETABS
             }
 
             return panelList;
+        }
+
+        /***************************************************/
+
+        private List<FEMesh> ReadMeshes(List<string> ids = null)
+        {
+            List<Panel> panelList = new List<Panel>();
+            int nameCount = 0;
+            string[] nameArr = { };
+
+            if (ids == null)
+            {
+                m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+                ids = nameArr.ToList();
+            }
+
+            List<FEMesh> meshes = new List<FEMesh>();
+            Dictionary<string, Node> nodes = new Dictionary<string, Node>();
+
+            foreach (string id in ids)
+            {
+                List<string> meshNodeIds = new List<string>();
+
+                string propertyName = "";
+
+                m_model.AreaObj.GetProperty(id, ref propertyName);
+                ISurfaceProperty panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
+
+                FEMesh mesh = new FEMesh() { Property = panelProperty };
+                mesh.CustomData[AdapterId] = id;
+
+                //Get out the "Element" ids, i.e. the mesh faces
+                int nbELem = 0;
+                string[] elemNames = new string[0];
+                m_model.AreaObj.GetElm(id, ref nbELem, ref elemNames);
+
+                for (int j = 0; j < nbELem; j++)
+                {
+                    //Get out the name of the points for each face
+                    int nbPts = 0;
+                    string[] ptsNames = new string[0];
+                    m_model.AreaElm.GetPoints(elemNames[j], ref nbPts, ref ptsNames);
+
+                    FEMeshFace face = new FEMeshFace();
+                    face.CustomData[AdapterId] = elemNames[j];
+
+                    for (int k = 0; k < nbPts; k++)
+                    {
+                        string nodeId = ptsNames[k];
+                        Node node;
+
+                        //Check if node already has been pulled
+                        if (!nodes.TryGetValue(nodeId, out node))
+                        {
+                            //Extract node. TODO: to be generalised using read node method
+                            double x = 0;
+                            double y = 0;
+                            double z = 0;
+                            m_model.PointElm.GetCoordCartesian(nodeId, ref x, ref y, ref z);
+                            node = new Node() { Position = new Point { X = x, Y = y, Z = z } };
+                            node.CustomData[AdapterId] = nodeId;
+                            nodes[ptsNames[k]] = node;
+                        }
+
+                        //Check if nodealready has been added to the mesh
+                        if (!meshNodeIds.Contains(nodeId))
+                            meshNodeIds.Add(nodeId);
+
+                        //Get corresponding node index
+                        face.NodeListIndices.Add(meshNodeIds.IndexOf(nodeId));
+                    }
+
+                    //Add face to list
+                    mesh.Faces.Add(face);
+
+                }
+
+                //Set mesh nodes
+                mesh.Nodes = meshNodeIds.Select(x => nodes[x]).ToList();
+
+                meshes.Add(mesh);
+            }
+
+            return meshes;
         }
 
         /***************************************************/
