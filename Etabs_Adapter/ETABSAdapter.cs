@@ -29,7 +29,11 @@ using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
+#if Debug2017
+using ETABSv17;
+#else
 using ETABS2016;
+#endif
 
 namespace BH.Adapter.ETABS
 {
@@ -63,8 +67,14 @@ namespace BH.Adapter.ETABS
 
                 //string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
                 //string pathToETABS = System.IO.Path.Combine("C:","Program Files", "Computers and Structures", "ETABS 2016", "ETABS.exe");
+#if Debug2017
+                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 17\ETABS.exe";
+                cHelper helper = new ETABSv17.Helper();
+#else
                 string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 2016\ETABS.exe";
                 cHelper helper = new ETABS2016.Helper();
+#endif
+
 
                 object runningInstance = null;
                 if (System.Diagnostics.Process.GetProcessesByName("ETABS").Length > 0)

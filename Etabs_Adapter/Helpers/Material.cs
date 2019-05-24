@@ -20,7 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+#if (Debug2017)
+using ETABSv17;
+#else
 using ETABS2016;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;

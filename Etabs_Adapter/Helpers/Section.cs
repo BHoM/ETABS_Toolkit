@@ -25,7 +25,11 @@ using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Structure;
 using CE = BH.Engine.Common;
+#if (Debug2017)
+using ETABSv17;
+#else
 using ETABS2016;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;

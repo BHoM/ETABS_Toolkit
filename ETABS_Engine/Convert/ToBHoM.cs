@@ -25,7 +25,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+#if (Debug2017)
+using ETABSv17;
+#else
 using ETABS2016;
+#endif
 using BH.oM;
 using BH.oM.Structure;
 using BH.oM.Structure.Elements;
