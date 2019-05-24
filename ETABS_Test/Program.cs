@@ -36,7 +36,11 @@ using BH.oM.Geometry;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
 using BH.oM.DataManipulation.Queries;
+#if (Debug2017)
+using ETABSv17;
+#else
 using ETABS2016;
+#endif
 
 namespace ETABS_Test
 {
@@ -104,8 +108,13 @@ namespace ETABS_Test
             cSapModel m_model;
 
             cOAPI m_app;
-            string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 2016\ETABS.exe";
-            cHelper helper = new ETABS2016.Helper();
+#if Debug2017
+            string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 17\ETABS.exe";
+            cHelper helper = new ETABSv17.Helper();
+#else
+                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 2016\ETABS.exe";
+                cHelper helper = new ETABS2016.Helper();
+#endif
 
 
             //open ETABS if not running - NOTE: this behaviour is different from other adapters

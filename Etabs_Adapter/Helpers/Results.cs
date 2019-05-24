@@ -28,7 +28,11 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Results;
 using BH.oM.Common;
+#if (Debug2017)
+using ETABSv17;
+#else
 using ETABS2016;
+#endif
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
 
