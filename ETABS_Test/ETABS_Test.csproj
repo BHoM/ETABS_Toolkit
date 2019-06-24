@@ -81,8 +81,9 @@
     <Reference Include="Common_oM">
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
     </Reference>
-    <Reference Include="DataManipulation_oM">
-      <HintPath>..\..\BHoM\Build\DataManipulation_oM.dll</HintPath>
+    <Reference Include="Data_oM, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
     </Reference>
     <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
