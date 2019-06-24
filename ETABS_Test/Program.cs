@@ -35,7 +35,7 @@ using BH.oM.Structure.Elements;
 using BH.oM.Geometry;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 #if (Debug2017)
 using ETABSv17;
 #else
@@ -145,7 +145,7 @@ namespace ETABS_Test
 
         private static void MeshResults(ETABSAdapter app)
         {
-            var results = app.Pull(new FilterQuery { Type = typeof(BH.oM.Structure.Results.MeshForce) });
+            var results = app.Pull(new FilterRequest { Type = typeof(BH.oM.Structure.Results.MeshForce) });
         }
 
         private static void ExampleStories()
@@ -640,8 +640,8 @@ namespace ETABS_Test
         private static void TestPullBars(ETABSAdapter app)
         {
             Console.WriteLine("Test Pull Bars");
-            FilterQuery nodeQuery = new FilterQuery { Type = typeof(Node) };
-            FilterQuery barQuery = new FilterQuery { Type = typeof(Bar) };
+            FilterRequest nodeQuery = new FilterRequest { Type = typeof(Node) };
+            FilterRequest barQuery = new FilterRequest { Type = typeof(Bar) };
 
             IEnumerable<object> barObjects = app.Pull(barQuery);
 
