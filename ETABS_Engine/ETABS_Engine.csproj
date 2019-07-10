@@ -51,13 +51,14 @@
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
     </Reference>
     <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CSI_ETABSv2016_x64.1.0.3\lib\ETABS2016.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Computers and Structures\ETABS 2016\ETABS2016.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ETABSv17, Version=17.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CSI_ETABSv17_x64.1.0.3\lib\ETABSv17.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files\Computers and Structures\ETABS 17\ETABSv17.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Geometry_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -127,6 +128,9 @@
       <Project>{0f1b6828-633e-420d-bb61-00c16056ba8d}</Project>
       <Name>ETABS_oM</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
