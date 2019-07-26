@@ -425,12 +425,7 @@ namespace BH.Adapter.ETABS
                             bhLoads.Add(new AreaUniformlyDistributedLoad() { Loadcase = bhLoadcase, Pressure = pressure, Objects = panelObjects });
                         }
                     }
-
-                    foreach (var kvp in areaUniformDict)
-                    {
-                    }
                 }
-
             }
             return bhLoads;
 
