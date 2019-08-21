@@ -24,6 +24,7 @@ using BH.oM.Structure.SectionProperties;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Structure;
+using BH.Engine.Reflection;
 using CE = BH.Engine.Common;
 #if (Debug2017)
 using ETABSv17;
@@ -35,7 +36,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Structure.MaterialFragments;
 
 namespace BH.Adapter.ETABS
 {
@@ -184,10 +184,11 @@ namespace BH.Adapter.ETABS
                 case eFramePropType.SteelRod:
                     break;
                 default:
-                    throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + " is not implemented in ETABS adapter");
+                    break;
             }
             if(dimensions==null)
-                throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + " is not implemented in ETABS adapter");
+                Engine.Reflection.Compute.RecordWarning("Section conversion for the type: " + propertyType.ToString() + " is not implemented in ETABS adapter. A 1m circle has been returned.");
+                dimensions = Engine.Geometry.Create.CircleProfile(1);
             #endregion
 
 
@@ -203,9 +204,9 @@ namespace BH.Adapter.ETABS
                 case "fromDimensions":
                     if (material is Steel || material is Aluminium)
 
-                        bhSectionProperty = Create.SteelSectionFromProfile(dimensions);
+                        bhSectionProperty = Engine.Structure.Create.SteelSectionFromProfile(dimensions);
                     else if (material is Concrete)
-                        bhSectionProperty = Create.ConcreteSectionFromProfile(dimensions);
+                        bhSectionProperty = Engine.Structure.Create.ConcreteSectionFromProfile(dimensions);
                     else
                     {
                         Engine.Reflection.Compute.RecordWarning("Reading sections of material type " + material.GetType().Name + "is not supported. Section with name " + propertyName + " was not pulled");

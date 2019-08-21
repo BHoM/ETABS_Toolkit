@@ -300,7 +300,6 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                ISurfaceProperty bhProperty = null;
                 eSlabType slabType = eSlabType.Slab;
                 eShellType shellType = eShellType.ShellThin;
                 eWallPropType wallType = eWallPropType.Specified;

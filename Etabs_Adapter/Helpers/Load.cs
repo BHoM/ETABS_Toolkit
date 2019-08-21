@@ -285,8 +285,6 @@ namespace BH.Adapter.ETABS
 
         public static void SetLoad(cSapModel model, GravityLoad gravityLoad, bool replace)
         {
-            int ret = 0;
-
             double selfWeightMultiplier = 0;
 
             model.LoadPatterns.GetSelfWTMultiplier(CaseNameToCSI(gravityLoad.Loadcase), ref selfWeightMultiplier);
