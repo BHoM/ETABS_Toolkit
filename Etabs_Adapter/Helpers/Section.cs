@@ -247,7 +247,7 @@ namespace BH.Adapter.ETABS
 
             bhSectionProperty.Material = material;
             bhSectionProperty.Name = propertyName;
-            bhSectionProperty.CustomData.Add(AdapterId, propertyName);
+            bhSectionProperty.CustomData[AdapterId] = propertyName;
             //modelData.sectionDict.Add(propertyName, bhSectionProperty);
 
             return bhSectionProperty;
