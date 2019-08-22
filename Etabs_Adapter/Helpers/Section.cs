@@ -72,7 +72,6 @@ namespace BH.Adapter.ETABS
 
             string constructSelector = "fromDimensions";
 
-
             #region long switch on section property type
             switch (propertyType)
             {
@@ -226,26 +225,21 @@ namespace BH.Adapter.ETABS
                     
                     break;
                 case "explicit":
-                    ExplicitSection eSection = new ExplicitSection();
-                    eSection.Area = Area;
-                    eSection.Asy = As2;
-                    eSection.Asz = As3;
-                    //eSection.CentreY = ;
-                    //eSection.CentreZ = ;
-                    //eSection.Iw = 0;//warping
-                    eSection.Iy = I22;
-                    eSection.Iz = I33;
-                    eSection.J = Torsion;
-                    eSection.Rgy = R22;
-                    eSection.Rgz = R33;
-                    eSection.Wply = S22;//capacity - plastic (wply)
-                    eSection.Wplz = S33;
-                    //eSection.Vpy = 0;
-                    //eSection.Vpz = 0;
-                    //eSection.Vy = 0;
-                    //eSection.Vz = 0;
-                    eSection.Wely = Z22;//capacity elastic
-                    eSection.Welz = Z33;
+                    bhSectionProperty = new ExplicitSection()
+                    {
+                        Area = Area,
+                        Asy = As2,
+                        Asz = As3,
+                        Iy = I22,
+                        Iz = I33,
+                        J = Torsion,
+                        Rgy = R22,
+                        Rgz = R33,
+                        Wply = S22,//capacity - plastic (wply)
+                        Wplz = S33,
+                        Wely = Z22,//capacity elastic
+                        Welz = Z33
+                    };
                     break;
                 default:
                     break;
