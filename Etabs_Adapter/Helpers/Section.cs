@@ -174,21 +174,32 @@ namespace BH.Adapter.ETABS
                     dimensions = Engine.Geometry.Create.TSectionProfile(t2, t2, tw, tf, 0, 0, verticalFlip);
                     break;
                 case eFramePropType.ConcreteBox:
+                    model.PropFrame.GetTube(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
+                    if (tf == tw)
+                        dimensions = Engine.Geometry.Create.BoxProfile(t3, t2, tf, 0, 0);
+                    else
+                        dimensions = Engine.Geometry.Create.FabricatedBoxProfile(t3, t2, tw, tf, tf, 0);
                     break;
                 case eFramePropType.ConcretePipe:
+                    model.PropFrame.GetPipe(propertyName, ref fileName, ref materialName, ref t3, ref tw, ref colour, ref notes, ref guid);
+                    dimensions = Engine.Geometry.Create.TubeProfile(t3, tw);
                     break;
                 case eFramePropType.ConcreteCross:
                     break;
                 case eFramePropType.SteelPlate:
+                    model.PropFrame.GetPlate(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref colour, ref notes, ref guid);
+                    dimensions = Engine.Geometry.Create.RectangleProfile(t3, t2, 0);
                     break;
                 case eFramePropType.SteelRod:
+                    model.PropFrame.GetRod(propertyName, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
+                    dimensions = Engine.Geometry.Create.CircleProfile(t3);
                     break;
                 default:
                     break;
             }
             if(dimensions==null)
-                Engine.Reflection.Compute.RecordWarning("Section conversion for the type: " + propertyType.ToString() + " is not implemented in ETABS adapter. A 1m circle has been returned.");
-                dimensions = Engine.Geometry.Create.CircleProfile(1);
+                Engine.Reflection.Compute.RecordWarning("Section conversion for the type: " + propertyType.ToString() + " is not implemented in ETABS adapter. An empty section has been returned.");
+                constructSelector = "explicit";
             #endregion
 
 
