@@ -102,14 +102,11 @@ namespace BH.Adapter.ETABS
             int retC = 0;
 
             string name = "";
-            string bhId = bhNode.CustomData[AdapterId].ToString();
-            name = bhId;
 
             oM.Geometry.Point position = bhNode.Position();
             retA = m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name);
-
-            if (name != bhId)
-                bhNode.CustomData[AdapterId] = name;
+            
+            bhNode.CustomData[AdapterId] = name;
             //if (name != bhId)
             //    success = false; //this is not necessary if you can guarantee that it is impossible that this bhId does not match any existing name in ETABS !!!
 
@@ -145,15 +142,14 @@ namespace BH.Adapter.ETABS
 
         private bool CreateObject(Bar bhBar)
         {
-            bool success = true;
             int ret = 0;
 
 
             string name = "";
-            string bhId = bhBar.CustomData[AdapterId].ToString();
-            name = bhId;
             
             ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
+
+            bhBar.CustomData[AdapterId] = name;
 
             if (ret != 0)
             {
@@ -230,7 +226,6 @@ namespace BH.Adapter.ETABS
                     ret++;
                 }
             }
-
 
             return ret == 0;
         }
@@ -316,7 +311,7 @@ namespace BH.Adapter.ETABS
 
             double mergeTol = 1e-3; //Merging panel points to the mm, same behaviour as the default node comparer
 
-            string name = bhPanel.CustomData[AdapterId].ToString();
+            string name = "";
             string propertyName = bhPanel.Property.Name;
             List<BH.oM.Geometry.Point> boundaryPoints = bhPanel.ControlPoints(true).CullDuplicates(mergeTol);
 
@@ -332,6 +327,8 @@ namespace BH.Adapter.ETABS
             }
 
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
+
+            bhPanel.CustomData[AdapterId] = name;
 
             if (retA != 0)
                 return false;
@@ -454,33 +451,24 @@ namespace BH.Adapter.ETABS
             bool success = true;
             int retA = 0;
             int retB = 0;
-
-            string name = "";
-            string givenName = "";
-            string bhId = bhLink.CustomData[AdapterId].ToString();
-            name = bhId;
+            
+            List<string> linkIds = null;
 
             LinkConstraint constraint = bhLink.Constraint;//not used yet
             Node masterNode = bhLink.MasterNode;
             List<Node> slaveNodes = bhLink.SlaveNodes;
             bool multiSlave = slaveNodes.Count() == 1 ? false : true;
-
-            //double XI = masterNode.Position.X;
-            //double YI = masterNode.Position.Y;
-            //double ZI = masterNode.Position.Z;
-
+            
             for(int i=0; i<slaveNodes.Count();i++)
             {
-                //double XJ = slaveNodes[i].Position.X * 1000;//multiply by 1000 to compensate for Etabs strangeness: yes, one end is divided by 1000 the other end is not!
-                //double YJ = slaveNodes[i].Position.Y * 1000;
-                //double ZJ = slaveNodes[i].Position.Z * 1000;
+                string name = "";
+                
+                retA = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref name, false, constraint.Name);
 
-                name = multiSlave == true ? name + ":::" + i : name;
-
-                //retA = model.LinkObj.AddByCoord(XI, YI, ZI, XJ, YJ, ZJ, ref givenName, false, "Default", name);
-                retA = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref givenName, false, constraint.Name, name);
-
+                linkIds.Add(name);
             }
+
+            bhLink.CustomData[AdapterId] = linkIds;
 
             return success;
         }
@@ -517,9 +505,7 @@ namespace BH.Adapter.ETABS
             return ret == 0;
 
         }
-
-
-
+        
         /***************************************************/
 
         private bool CreateCollection(IEnumerable<Level> levels)
