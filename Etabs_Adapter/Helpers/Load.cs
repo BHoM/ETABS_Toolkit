@@ -305,7 +305,8 @@ namespace BH.Adapter.ETABS
             List<ILoad> bhLoads = new List<ILoad>();
             string[] names = null;
             string[] loadcase = null;
-            string[] Csys = null;
+            string[] CSys = null;
+            int[] myType = null;
             int[] step = null;
             int[] dir = null;
             int nameCount = 0;
@@ -316,62 +317,113 @@ namespace BH.Adapter.ETABS
             double[] my = null;
             double[] mz = null;
             double[] f = null;
+            double[] rd1 = null;
+            double[] rd2 = null;
+            double[] dist1 = null;
+            double[] dist2 = null;
+            double[] val1 = null;
+            double[] val2 = null;
 
             foreach (Loadcase bhLoadcase in loadcases)
             {
-                if (model.PointObj.GetLoadForce("All", ref nameCount, ref names, ref loadcase, ref step, ref Csys, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, eItemType.Group) == 0)
+                if (model.PointObj.GetLoadForce("All", ref nameCount, ref names, ref loadcase, ref step, ref CSys, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, eItemType.Group) == 0)
                 {
                     for (int i = 0; i < nameCount; i++)
                     {
                         if (bhLoadcase.Name == loadcase[i])
                         {
+                            Node fakeNode = new Node();
+                            fakeNode.CustomData[AdapterId] = names[i];
+                            BHoMGroup<Node> nodeObjects = new BHoMGroup<Node>() { Elements = { fakeNode } };
+                            Engine.Reflection.Compute.RecordNote("An empty node with the relevant ETABS id has been returned for point loads.");
                             Vector force = new Vector() { X = fx[i], Y = fy[i], Z = fz[i] };
                             Vector moment = new Vector() { X = mx[i], Y = my[i], Z = mz[i] };
-                            bhLoads.Add(new PointLoad() { Force = force, Moment = moment, Loadcase = bhLoadcase });
+                            bhLoads.Add(new PointLoad() { Force = force, Moment = moment, Loadcase = bhLoadcase, Objects = nodeObjects });
                         }
                     }
                 }
 
-                if (model.FrameObj.GetLoadDistributed("All", ref nameCount, ref names, ref loadcase, ref step, ref Csys, ref dir, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, eItemType.Group) == 0)
+                if (model.FrameObj.GetLoadDistributed("All", ref nameCount, ref names, ref loadcase, ref myType, ref CSys, ref dir, ref rd1, ref rd2, ref dist1, ref dist2, ref val1, ref val2, eItemType.Group) == 0)
                 {
                     for (int i = 0; i < nameCount; i++)
                     {
                         if (bhLoadcase.Name == loadcase[i])
                         {
-                            Vector force = new Vector() { X = fx[i], Y = fy[i], Z = fz[i] };
-                            Vector moment = new Vector() { X = mx[i], Y = my[i], Z = mz[i] };
-                            bhLoads.Add(new BarUniformlyDistributedLoad() { Force = force, Moment = moment, Loadcase = bhLoadcase });
+                            if (dist1[i] != 0 || rd2[i] != 1)
+                            {
+                                BH.Engine.Reflection.Compute.RecordWarning("Partial distributed loads are not supported");
+                            }
+                            double val = (val1[i] + val2[i]) / 2;
+                            Vector force = new Vector();
+                            switch (dir[i])
+                            {
+                                case 4:
+                                    force.X = val;
+                                    break;
+                                case 5:
+                                    force.Y = val;
+                                    break;
+                                case 6:
+                                    force.Z = val;
+                                    break;
+                                default:
+                                    BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                                    break;
+                            }
+                            Bar fakeBar = new Bar();
+                            fakeBar.CustomData[AdapterId] = names[i];
+                            BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { fakeBar } };
+                            Engine.Reflection.Compute.RecordNote("An empty bar with the relevant ETABS id has been returned for distributed loads.");
+                            switch (myType[i])
+                            {
+                                case 1:
+                                    bhLoads.Add(new BarUniformlyDistributedLoad() { Force = force, Loadcase = bhLoadcase, Objects = barObjects });
+                                    break;
+                                case 2:
+                                    bhLoads.Add(new BarUniformlyDistributedLoad() { Moment = force, Loadcase = bhLoadcase, Objects = barObjects });
+                                    break;
+                                default:
+                                    BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
+                                    break;
+                            }
+
                         }
                     }
                 }
 
-                if (model.AreaObj.GetLoadUniform("All", ref nameCount, ref names, ref loadcase, ref Csys, ref dir, ref f, eItemType.Group) == 0)
+                if (model.AreaObj.GetLoadUniform("All", ref nameCount, ref names, ref loadcase, ref CSys, ref dir, ref f, eItemType.Group) == 0)
                 {
                     Dictionary<string, Vector> areaUniformDict = new Dictionary<string, Vector>();
-
+                    Vector pressure = new Vector();
                     for (int i = 0; i < nameCount; i++)
                     {
                         if (bhLoadcase.Name == loadcase[i])
                         {
-                            if (!areaUniformDict.ContainsKey(loadcase[i]))
-                                areaUniformDict.Add(loadcase[i], new Vector());
-                            //only sypporting global directions (x=4,y=5,z=6)
-                            //would be preferential to add one load of x,y,z instead of 1 load for each direction as Etabs does
-                            if (dir[i] == 4)
-                                areaUniformDict[loadcase[i]].X = f[i];
-                            if (dir[i] == 5)
-                                areaUniformDict[loadcase[i]].Y = f[i];
-                            if (dir[i] == 6)
-                                areaUniformDict[loadcase[i]].Z = f[i];
+                            IAreaElement fakePanel = new Panel();
+                            fakePanel.CustomData[AdapterId] = names[i];
+                            BHoMGroup<IAreaElement> panelObjects = new BHoMGroup<IAreaElement>() { Elements = { fakePanel } };
+                            Engine.Reflection.Compute.RecordNote("An empty panel with the relevant ETABS id has been returned for distributed loads.");
+
+                            switch (dir[i])
+                            {
+                                case 4:
+                                    pressure.X = f[i];
+                                    break;
+                                case 5:
+                                    pressure.Y = f[i];
+                                    break;
+                                case 6:
+                                    pressure.Z = f[i];
+                                    break;
+                                default:
+                                    BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                                    break;
+                            }
+
+                            bhLoads.Add(new AreaUniformlyDistributedLoad() { Loadcase = bhLoadcase, Pressure = pressure, Objects = panelObjects });
                         }
                     }
-
-                    foreach (var kvp in areaUniformDict)
-                    {
-                        bhLoads.Add(new AreaUniformlyDistributedLoad() { Loadcase = bhLoadcase, Pressure = kvp.Value });
-                    }
                 }
-
             }
             return bhLoads;
 
