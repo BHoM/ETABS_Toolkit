@@ -107,8 +107,6 @@ namespace BH.Adapter.ETABS
             retA = m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name);
             
             bhNode.CustomData[AdapterId] = name;
-            //if (name != bhId)
-            //    success = false; //this is not necessary if you can guarantee that it is impossible that this bhId does not match any existing name in ETABS !!!
 
             if (bhNode.Support != null)
             {
