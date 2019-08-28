@@ -197,7 +197,7 @@ namespace BH.Adapter.ETABS
                     break;
             }
             if(dimensions==null)
-                Engine.Reflection.Compute.RecordWarning("Section conversion for the type: " + propertyType.ToString() + " is not implemented in ETABS adapter. An empty section has been returned.");
+                Engine.Reflection.Compute.RecordNote(propertyType.ToString() + " properties are not implemented in ETABS adapter. An empty section has been returned.");
                 constructSelector = "explicit";
             #endregion
 
@@ -219,7 +219,7 @@ namespace BH.Adapter.ETABS
                         bhSectionProperty = Engine.Structure.Create.ConcreteSectionFromProfile(dimensions);
                     else
                     {
-                        Engine.Reflection.Compute.RecordWarning("Reading sections of material type " + material.GetType().Name + "is not supported. Section with name " + propertyName + " was not pulled");
+                        Engine.Reflection.Compute.RecordWarning("Could not create " + propertyType.ToString() + ". Nothing was returned.");
                         return null;
                     }
                     
