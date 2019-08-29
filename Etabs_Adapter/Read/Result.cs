@@ -35,20 +35,120 @@ using ETABS2016;
 #endif
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.Engine.ETABS;
 
 namespace BH.Adapter.ETABS
 {
-    public static partial class Helper
+    public partial class ETABSAdapter
     {
-        #region Node Results
+        /***************************************************/
+        
+        protected override IEnumerable<IResult> ReadResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
+        {
+            IEnumerable<IResult> results = new List<IResult>();
 
-        public static List<NodeResult> GetNodeAcceleration(cSapModel model, IList ids = null, IList cases = null)
+            if (typeof(StructuralGlobalResult).IsAssignableFrom(type))
+                results = GetGlobalResults(type, cases);
+            else
+                results = GetObjectResults(type, ids, cases, divisions);
+
+            return results;
+        }
+
+        /***************************************************/
+
+        private IEnumerable<IResult> GetGlobalResults(Type type, IList cases)
+        {
+            if (typeof(GlobalReactions).IsAssignableFrom(type))
+                return GetGlobalReactions(cases);
+            if (typeof(ModalDynamics).IsAssignableFrom(type))
+                return GetModalParticipationMassRatios(cases);
+
+            return new List<IResult>();
+
+        }
+
+        /***************************************************/
+
+        private IEnumerable<IResult> GetObjectResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
+        {
+            IEnumerable<IResult> results = new List<IResult>();
+
+            if (typeof(NodeResult).IsAssignableFrom(type))
+                results = GetNodeResults(type, ids, cases);
+            else if (typeof(BarResult).IsAssignableFrom(type))
+                results = GetBarResults(type, ids, cases, divisions);
+            else if (typeof(MeshResult).IsAssignableFrom(type))
+                results = GetMeshResults(type, ids, cases, divisions);
+            //else
+            //    return new List<IResult>();
+
+            return results;
+        }
+
+        /***************************************************/
+
+        private IEnumerable<IResult> GetNodeResults(Type type, IList ids = null, IList cases = null)
+        {
+            IEnumerable<IResult> results = new List<NodeResult>();
+
+            if (type == typeof(NodeAcceleration))
+                results = GetNodeAcceleration(ids, cases);
+            else if (type == typeof(NodeDisplacement))
+                results = GetNodeDisplacement(ids, cases);
+            else if (type == typeof(NodeReaction))
+                results = GetNodeReaction(ids, cases);
+            else if (type == typeof(NodeVelocity))
+                results = GetNodeVelocity(ids, cases);
+
+            return results;
+        }
+
+        /***************************************************/
+
+        private IEnumerable<IResult> GetBarResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
+        {
+            IEnumerable<BarResult> results = new List<BarResult>();
+
+            if (type == typeof(BarDeformation))
+                results = GetBarDeformation(ids, cases, divisions);
+            else if (type == typeof(BarForce))
+                results = GetBarForce(ids, cases, divisions);
+            else if (type == typeof(BarStrain))
+                results = GetBarStrain(ids, cases, divisions);
+            else if (type == typeof(BarStress))
+                results = GetBarStress(ids, cases, divisions);
+            else if (type == typeof(PierForce))
+                results = GetPierForce(ids, cases, divisions);
+
+            return results;
+        }
+
+        /***************************************************/
+
+        private IEnumerable<IResult> GetMeshResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
+        {
+            IEnumerable<MeshResult> results = new List<MeshResult>();
+
+            if (type == typeof(MeshForce))
+                results = GetMeshForce(ids, cases, divisions);
+            else if (type == typeof(MeshStress))
+                results = GetMeshStress(ids, cases, divisions);
+
+            return results;
+        }
+
+        /***************************************************/
+
+        private List<NodeResult> GetNodeAcceleration(IList ids = null, IList cases = null)
         {
 
             throw new NotImplementedException("Node Acceleration results is not supported yet!");
         }
 
-        public static List<NodeDisplacement> GetNodeDisplacement(cSapModel model, IList ids = null, IList cases = null)
+        /***************************************************/
+
+        private List<NodeDisplacement> GetNodeDisplacement(IList ids = null, IList cases = null)
         {
 
             List<string> loadcaseIds = new List<string>();
@@ -72,7 +172,7 @@ namespace BH.Adapter.ETABS
             {
                 int nodes = 0;
                 string[] names = null;
-                model.PointObj.GetNameList(ref nodes, ref names);
+                m_model.PointObj.GetNameList(ref nodes, ref names);
                 nodeIds = names.ToList();
             }
             else
@@ -84,11 +184,11 @@ namespace BH.Adapter.ETABS
             }
 
             //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(model, cases);
+            loadcaseIds = CheckAndSetUpCases(cases);
             
             for (int i = 0; i < nodeIds.Count; i++)
             {
-                int ret = model.Results.JointDispl(nodeIds[i].ToString(), eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
+                int ret = m_model.Results.JointDispl(nodeIds[i].ToString(), eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
                 ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
                 if (ret == 0)
                 {
@@ -118,7 +218,9 @@ namespace BH.Adapter.ETABS
 
         }
 
-        public static List<NodeReaction> GetNodeReaction(cSapModel model, IList ids = null, IList cases = null)
+        /***************************************************/
+
+        private List<NodeReaction> GetNodeReaction(IList ids = null, IList cases = null)
         {
             List<string> loadcaseIds = new List<string>();
             List<string> nodeIds = new List<string>();
@@ -128,7 +230,7 @@ namespace BH.Adapter.ETABS
             {
                 int nodes = 0;
                 string[] names = null;
-                model.PointObj.GetNameList(ref nodes, ref names);
+                m_model.PointObj.GetNameList(ref nodes, ref names);
                 nodeIds = names.ToList();
             }
             else
@@ -140,7 +242,7 @@ namespace BH.Adapter.ETABS
             }
 
             //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(model, cases);
+            loadcaseIds = CheckAndSetUpCases(cases);
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -161,7 +263,7 @@ namespace BH.Adapter.ETABS
             //List<NodeReaction<string, string, string>> nodeForces = new List<NodeReaction<string, string, string>>();
             for (int i = 0; i < nodeIds.Count; i++)
             {
-                int ret = model.Results.JointReact(nodeIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
+                int ret = m_model.Results.JointReact(nodeIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
                 ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
                 if (ret == 0)
                 {
@@ -189,23 +291,25 @@ namespace BH.Adapter.ETABS
             return nodeReactions;
         }
 
-        public static List<NodeResult> GetNodeVelocity(cSapModel model, IList ids = null, IList cases = null)
+        /***************************************************/
+
+        private List<NodeResult> GetNodeVelocity(IList ids = null, IList cases = null)
         {
             throw new NotImplementedException("Node Acceleration results is not supported yet!");
 
         }
-        
-        #endregion
 
-        #region bar Results
+        /***************************************************/
 
-        public static List<BarResult> GetBarDeformation(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        private List<BarResult> GetBarDeformation(IList ids = null, IList cases = null, int divisions = 5)
         {
 
             throw new NotImplementedException("Bar deformation results is not supported yet!");
         }
 
-        public static List<BarForce> GetBarForce(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        /***************************************************/
+
+        private List<BarForce> GetBarForce(IList ids = null, IList cases = null, int divisions = 5)
         {
 
             List<string> loadcaseIds = new List<string>();
@@ -216,7 +320,7 @@ namespace BH.Adapter.ETABS
             {
                 int bars = 0;
                 string[] names = null;
-                model.FrameObj.GetNameList(ref bars, ref names);
+                m_model.FrameObj.GetNameList(ref bars, ref names);
                 barIds = names.ToList();
             }
             else
@@ -228,7 +332,7 @@ namespace BH.Adapter.ETABS
             }
 
             //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(model, cases);
+            loadcaseIds = CheckAndSetUpCases(cases);
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -254,8 +358,8 @@ namespace BH.Adapter.ETABS
 
             for (int i = 0; i < barIds.Count; i++)
             {
-                model.FrameObj.GetOutputStations(barIds[i], ref type, ref segSize, ref divisions, ref op1, ref op2);
-                int ret = model.Results.FrameForce(barIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref objStation, ref elm, ref elmStation,
+                m_model.FrameObj.GetOutputStations(barIds[i], ref type, ref segSize, ref divisions, ref op1, ref op2);
+                int ret = m_model.Results.FrameForce(barIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref objStation, ref elm, ref elmStation,
                 ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
                 if (ret == 0)
                 {
@@ -285,15 +389,16 @@ namespace BH.Adapter.ETABS
             return barForces;
         }
 
+        /***************************************************/
 
-        public static List<PierForce> GetPierForce(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        private List<PierForce> GetPierForce(IList ids = null, IList cases = null, int divisions = 5)
         {
             List<string> loadcaseIds = new List<string>();
             List<string> barIds = new List<string>();
             List<PierForce> pierForces = new List<PierForce>();
 
             //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(model, cases);
+            loadcaseIds = CheckAndSetUpCases(cases);
 
             string[] loadcaseNames = null;
 
@@ -310,7 +415,7 @@ namespace BH.Adapter.ETABS
             double[] m3 = null;
 
 
-            int ret = model.Results.PierForce(ref numberResults, ref storyName, ref pierName, ref loadcaseNames, ref location, ref p, ref v2, ref v3, ref t, ref m2, ref m3);
+            int ret = m_model.Results.PierForce(ref numberResults, ref storyName, ref pierName, ref loadcaseNames, ref location, ref p, ref v2, ref v3, ref t, ref m2, ref m3);
             if (ret == 0)
             {
                 for (int j = 0; j < numberResults; j++)
@@ -341,26 +446,26 @@ namespace BH.Adapter.ETABS
             }
             return pierForces;
         }
+        
+        /***************************************************/
 
-
-        public static List<BarResult> GetBarStrain(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        private List<BarResult> GetBarStrain(IList ids = null, IList cases = null, int divisions = 5)
         {
 
             throw new NotImplementedException("Bar strain results is not supported yet!");
         }
 
-        public static List<BarResult> GetBarStress(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        /***************************************************/
+
+        private List<BarResult> GetBarStress(IList ids = null, IList cases = null, int divisions = 5)
         {
 
             throw new NotImplementedException("Bar stress results is not supported yet!");
         }
 
+        /***************************************************/
 
-        #endregion
-
-        #region Panel Results
-
-        public static List<MeshForce> GetMeshForce(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        private List<MeshForce> GetMeshForce(IList ids = null, IList cases = null, int divisions = 5)
         {
             List<string> loadcaseIds = new List<string>();
             List<string> panelIds = new List<string>();
@@ -370,7 +475,7 @@ namespace BH.Adapter.ETABS
             {
                 int panels = 0;
                 string[] names = null;
-                model.AreaObj.GetNameList(ref panels, ref names);
+                m_model.AreaObj.GetNameList(ref panels, ref names);
                 panelIds = names.ToList();
             }
             else
@@ -382,7 +487,7 @@ namespace BH.Adapter.ETABS
             }
 
             //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(model, cases);
+            loadcaseIds = CheckAndSetUpCases(cases);
 
             string Name = "";
             eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
@@ -414,7 +519,7 @@ namespace BH.Adapter.ETABS
             for (int i = 0; i < panelIds.Count; i++)
             {
                 
-                int ret = model.Results.AreaForceShell(panelIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref Obj, ref Elm,
+                int ret = m_model.Results.AreaForceShell(panelIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref Obj, ref Elm,
                     ref PointElm, ref LoadCase, ref StepType, ref StepNum, ref F11, ref F22, ref F12, ref FMax, ref FMin, ref FAngle, ref FVM,
                     ref M11, ref M22, ref M12, ref MMax, ref MMin, ref MAngle, ref V13, ref V23, ref VMax, ref VAngle);
 
@@ -432,7 +537,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public static List<MeshStress> GetMeshStress(cSapModel model, IList ids = null, IList cases = null, int divisions = 5)
+        private List<MeshStress> GetMeshStress(IList ids = null, IList cases = null, int divisions = 5)
         {
 
             List<string> loadcaseIds = new List<string>();
@@ -443,7 +548,7 @@ namespace BH.Adapter.ETABS
             {
                 int panels = 0;
                 string[] names = null;
-                model.AreaObj.GetNameList(ref panels, ref names);
+                m_model.AreaObj.GetNameList(ref panels, ref names);
                 panelIds = names.ToList();
             }
             else
@@ -455,7 +560,7 @@ namespace BH.Adapter.ETABS
             }
 
             //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(model, cases);
+            loadcaseIds = CheckAndSetUpCases(cases);
 
             string Name = "";
             eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
@@ -488,7 +593,7 @@ namespace BH.Adapter.ETABS
             
             for (int i = 0; i < panelIds.Count; i++)
             {
-                int ret = model.Results.AreaStressShell(panelIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
+                int ret = m_model.Results.AreaStressShell(panelIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
                 
                 if (ret == 0)
                 {
@@ -508,12 +613,8 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
-
-        #endregion
-
-        #region Other results
-
-        public static List<GlobalReactions> GetGlobalReactions(cSapModel model, IList cases = null)
+        
+        private List<GlobalReactions> GetGlobalReactions(IList cases = null)
         {
             List<string> loadcaseIds = new List<string>();
             List<GlobalReactions> globalReactions = new List<GlobalReactions>();
@@ -526,9 +627,9 @@ namespace BH.Adapter.ETABS
             double gx = 0; double gy = 0; double gz = 0;
 
             //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(model, cases);
+            loadcaseIds = CheckAndSetUpCases(cases);
 
-            model.Results.BaseReact(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, ref gx, ref gy, ref gz);
+            m_model.Results.BaseReact(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, ref gx, ref gy, ref gz);
 
             for (int i = 0; i < resultCount; i++)
             {
@@ -552,12 +653,12 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public static List<ModalDynamics> GetModalParticipationMassRatios(cSapModel model, IList cases = null)
+        private List<ModalDynamics> GetModalParticipationMassRatios(IList cases = null)
         {
             List<string> loadcaseIds = new List<string>();
 
             //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(model, cases);
+            loadcaseIds = CheckAndSetUpCases(cases);
 
             List<ModalDynamics> partRatios = new List<ModalDynamics>();
 
@@ -570,7 +671,7 @@ namespace BH.Adapter.ETABS
             double[] rx = null; double[] ry = null; double[] rz = null;
             double[] sumRx = null; double[] sumRy = null; double[] sumRz = null;
 
-            int res = model.Results.ModalParticipatingMassRatios(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
+            int res = m_model.Results.ModalParticipatingMassRatios(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
                 ref period, ref ux, ref uy, ref uz, ref sumUx, ref sumUy, ref sumUz, ref rx, ref ry, ref rz, ref sumRx, ref sumRy, ref sumRz);
 
             if (res != 0) Engine.Reflection.Compute.RecordError("Could not extract Modal information.");
@@ -605,12 +706,10 @@ namespace BH.Adapter.ETABS
 
             return partRatios;
         }
-
-        #endregion
-
+        
         /***************************************************/
 
-        private static List<string> CheckAndSetUpCases(cSapModel model, IList cases)
+        private List<string> CheckAndSetUpCases(IList cases)
         {
             List<string> loadcaseIds = new List<string>();
 
@@ -619,8 +718,8 @@ namespace BH.Adapter.ETABS
                 int Count = 0;
                 string[] case_names = null;
                 string[] combo_names = null;
-                model.LoadCases.GetNameList(ref Count, ref case_names);
-                model.RespCombo.GetNameList(ref Count, ref combo_names);
+                m_model.LoadCases.GetNameList(ref Count, ref case_names);
+                m_model.RespCombo.GetNameList(ref Count, ref combo_names);
                 loadcaseIds = case_names.ToList();
 
                 if (combo_names != null)
@@ -632,7 +731,7 @@ namespace BH.Adapter.ETABS
                 {
                     if (cases[i] is BH.oM.Structure.Loads.ICase)
                     {
-                        string id = CaseNameToCSI(cases[i] as BH.oM.Structure.Loads.ICase);
+                        string id = Engine.ETABS.Convert.ToCSI(cases[i] as BH.oM.Structure.Loads.ICase);
                         loadcaseIds.Add(id);
                     }
                     else
@@ -641,16 +740,16 @@ namespace BH.Adapter.ETABS
             }
 
             //Clear any previous case setup
-            model.Results.Setup.DeselectAllCasesAndCombosForOutput();
+            m_model.Results.Setup.DeselectAllCasesAndCombosForOutput();
 
             //Loop through and setup all the cases
             for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
             {
                 // Try setting it as a Load Case
-                if (model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
+                if (m_model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
                 {
                     // If that fails, try setting it as a Load Combination
-                    if (model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]) != 0)
+                    if (m_model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]) != 0)
                     {
                         Engine.Reflection.Compute.RecordWarning("Failed to setup result extraction for case " + loadcaseIds[loadcase]);
                     }
@@ -659,6 +758,7 @@ namespace BH.Adapter.ETABS
 
             return loadcaseIds;
         }
+
         /***************************************************/
     }
 }

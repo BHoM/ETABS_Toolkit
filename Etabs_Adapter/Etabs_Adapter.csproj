@@ -112,22 +112,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CRUD\Create.cs" />
-    <Compile Include="CRUD\Delete.cs" />
-    <Compile Include="CRUD\Execute.cs" />
-    <Compile Include="CRUD\NextIndex.cs" />
-    <Compile Include="CRUD\Read.cs" />
-    <Compile Include="CRUD\ReadResults.cs" />
-    <Compile Include="CRUD\UpdateObject.cs" />
+    <Compile Include="Create\Panel.cs" />
+    <Compile Include="Create\Material.cs" />
+    <Compile Include="Create\Load.cs" />
+    <Compile Include="Create\Level.cs" />
+    <Compile Include="Create\Error.cs" />
+    <Compile Include="Create\Link.cs" />
+    <Compile Include="Create\Node.cs" />
+    <Compile Include="Create\Bar.cs" />
+    <Compile Include="Create\_Create.cs" />
+    <Compile Include="Delete\_Delete.cs" />
+    <Compile Include="Types\NextIndex.cs" />
+    <Compile Include="Read\Link.cs" />
+    <Compile Include="Read\Material.cs" />
+    <Compile Include="Read\Panel.cs" />
+    <Compile Include="Read\Mesh.cs" />
+    <Compile Include="Read\Load.cs" />
+    <Compile Include="Read\Level.cs" />
+    <Compile Include="Read\Bar.cs" />
+    <Compile Include="Read\Node.cs" />
+    <Compile Include="Read\_Read.cs" />
+    <Compile Include="Update\_Update.cs" />
     <Compile Include="ETABSAdapter.cs" />
     <Compile Include="ETABSEnums.cs" />
-    <Compile Include="Helpers\Constraint.cs" />
-    <Compile Include="Helpers\LinkConstraints.cs" />
-    <Compile Include="Helpers\Load.cs" />
-    <Compile Include="Helpers\Material.cs" />
-    <Compile Include="Helpers\Panel.cs" />
-    <Compile Include="Helpers\Results.cs" />
-    <Compile Include="Helpers\Section.cs" />
+    <Compile Include="Read\Result.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Comparer.cs" />
     <Compile Include="Types\DependencyTypes.cs" />
@@ -145,6 +153,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Execute\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

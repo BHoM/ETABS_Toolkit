@@ -21,19 +21,48 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Architecture.Elements;
+#if (Debug2017)
+using ETABSv17;
+#else
+using ETABS2016;
+#endif
 
 namespace BH.Adapter.ETABS
 {
     public partial class ETABSAdapter
     {
-        protected override int Delete(Type type, IEnumerable<object> ids)
+        /***************************************************/
+
+        private List<Level> ReadLevel(List<string> ids = null)
         {
-            return 0;
-            throw new NotImplementedException();
+            List<Level> levellist = new List<Level>();
+            int NumberNames = 0;
+            string[] Names = null;
+
+            if (ids == null)
+            {
+                m_model.Story.GetNameList(ref NumberNames, ref Names);
+                ids = Names.ToList();
+            }
+
+            foreach (string id in ids)
+            {
+                double elevation = 0;
+                int ret = m_model.Story.GetElevation(id, ref elevation);
+
+                Level lvl = new Level() { Elevation = elevation, Name = id };
+                levellist.Add(lvl);
+            }
+
+            return levellist;
         }
+
+        /***************************************************/
     }
 }
