@@ -48,17 +48,17 @@ namespace BH.Adapter.ETABS
         private List<Bar> ReadBars(List<string> ids = null)
         {
             List<Bar> barList = new List<Bar>();
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, ISectionProperty> bhomSections = new Dictionary<string, ISectionProperty>();
+
             int nameCount = 0;
             string[] names = { };
+            m_model.FrameObj.GetNameList(ref nameCount, ref names);
 
             if (ids == null)
             {
-                m_model.FrameObj.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
-            }
-
-            //Storing the sectionproperties as they are being pulled out, to only pull each section once.
-            Dictionary<string, ISectionProperty> sectionProperties = new Dictionary<string, ISectionProperty>();
+            }            
 
             foreach (string id in ids)
             {
@@ -70,9 +70,8 @@ namespace BH.Adapter.ETABS
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);
 
-                    List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
-                    bhBar.StartNode = endNodes[0];
-                    bhBar.EndNode = endNodes[1];
+                    bhBar.StartNode = bhomNodes[startId];
+                    bhBar.EndNode = bhomNodes[endId];
 
                     bool[] restraintStart = new bool[6];
                     double[] springStart = new double[6];
@@ -80,28 +79,14 @@ namespace BH.Adapter.ETABS
                     double[] springEnd = new double[6];
 
                     m_model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
-                    bhBar.Release = new BarRelease();
-                    bhBar.Release.StartRelease = Engine.ETABS.Convert.GetConstraint6DOF(restraintStart, springStart);
-                    bhBar.Release.EndRelease = Engine.ETABS.Convert.GetConstraint6DOF(restraintEnd, springEnd);
-
-                    eFramePropType propertyType = eFramePropType.General;
+                    bhBar.Release = Engine.ETABS.Convert.GetBarRelease(restraintStart, springStart, restraintEnd, springEnd);
+                    
                     string propertyName = "";
                     string sAuto = "";
                     m_model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
                     if (propertyName != "None")
                     {
-                        ISectionProperty property;
-
-                        //Check if section allready has been pulled once
-                        if (!sectionProperties.TryGetValue(propertyName, out property))
-                        {
-                            //if not pull it and store it
-                            m_model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
-                            property = GetSectionProperty(propertyName, propertyType);
-                            sectionProperties[propertyName] = property;
-                        }
-
-                        bhBar.SectionProperty = property;
+                        bhBar.SectionProperty = bhomSections[propertyName];
                     }
 
                     bool autoOffset = false;
@@ -135,12 +120,14 @@ namespace BH.Adapter.ETABS
         private List<ISectionProperty> ReadSectionProperties(List<string> ids = null)
         {
             List<ISectionProperty> propList = new List<ISectionProperty>();
+            Dictionary<String, IMaterialFragment> bhomMaterials = ReadMaterials().ToDictionary(x => x.Name);
+
             int nameCount = 0;
             string[] names = { };
+            m_model.PropFrame.GetNameList(ref nameCount, ref names);
 
             if (ids == null)
             {
-                m_model.PropFrame.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
@@ -148,222 +135,220 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
-                m_model.PropFrame.GetTypeOAPI(id, ref propertyType);
-                propList.Add(GetSectionProperty(id, propertyType));
+                m_model.PropFrame.GetTypeOAPI((string)id, ref propertyType);
+
+                ISectionProperty bhSectionProperty = null;
+                IProfile dimensions = null;
+                string materialName = "";
+
+                string fileName = "";
+                double t3 = 0;
+                double t2 = 0;
+                double tf = 0;
+                double tw = 0;
+                double twt = 0;
+                double tfb = 0;
+                double t2b = 0;
+                int colour = 0;
+                string notes = "";
+                string guid = "";
+
+                bool verticalFlip = false;
+                bool horFlip = false;
+
+                double Area, As2, As3, Torsion, I22, I33, S22, S33, Z22, Z33, R22, R33;
+                Area = As2 = As3 = Torsion = I22 = I33 = S22 = S33 = Z22 = Z33 = R22 = R33 = 0;
+
+                string constructSelector = "fromDimensions";
+
+                #region long switch on section property type
+                switch (propertyType)
+                {
+                    case eFramePropType.I:
+                        m_model.PropFrame.GetISection(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref t2b, ref tfb, ref colour, ref notes, ref guid);
+                        if (t2 == t2b)
+                            dimensions = Engine.Geometry.Create.ISectionProfile(t3, t2, tw, tf, 0, 0);
+                        else
+                            dimensions = Engine.Geometry.Create.FabricatedISectionProfile(t3, t2, t2b, tw, tf, tfb, 0);
+                        break;
+                    case eFramePropType.Channel:
+                        m_model.PropFrame.GetChannel(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
+                        dimensions = Engine.Geometry.Create.ChannelProfile(t3, t2, tw, tf, 0, 0);
+                        break;
+                    case eFramePropType.T:
+                        break;
+                    case eFramePropType.Angle:
+                        m_model.PropFrame.GetAngle(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
+                        dimensions = Engine.Geometry.Create.AngleProfile(t3, t2, tw, tf, 0, 0);
+                        break;
+                    case eFramePropType.DblAngle:
+                        break;
+                    case eFramePropType.Box:
+                        m_model.PropFrame.GetTube(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
+                        if (tf == tw)
+                            dimensions = Engine.Geometry.Create.BoxProfile(t3, t2, tf, 0, 0);
+                        else
+                            dimensions = Engine.Geometry.Create.FabricatedBoxProfile(t3, t2, tw, tf, tf, 0);
+                        break;
+                    case eFramePropType.Pipe:
+                        m_model.PropFrame.GetPipe(id, ref fileName, ref materialName, ref t3, ref tw, ref colour, ref notes, ref guid);
+                        dimensions = Engine.Geometry.Create.TubeProfile(t3, tw);
+                        break;
+                    case eFramePropType.Rectangular:
+                        m_model.PropFrame.GetRectangle(id, ref fileName, ref materialName, ref t3, ref t2, ref colour, ref notes, ref guid);
+                        dimensions = Engine.Geometry.Create.RectangleProfile(t3, t2, 0);
+                        break;
+                    case eFramePropType.Auto://not member will have this assigned but it still exists in the propertyType list
+                        dimensions = Engine.Geometry.Create.CircleProfile(0.2);
+                        break;
+                    case eFramePropType.Circle:
+                        m_model.PropFrame.GetCircle(id, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
+                        dimensions = Engine.Geometry.Create.CircleProfile(t3);
+                        break;
+                    case eFramePropType.General:
+                        constructSelector = "explicit";
+                        m_model.PropFrame.GetGeneral(id, ref fileName, ref materialName, ref t3, ref t2, ref Area, ref As2, ref As3, ref Torsion, ref I22, ref I33, ref S22, ref S33, ref Z22, ref Z33, ref R22, ref R33, ref colour, ref notes, ref guid);
+                        break;
+                    case eFramePropType.DbChannel:
+                        break;
+                    case eFramePropType.SD:
+                        break;
+                    case eFramePropType.Variable:
+                        break;
+                    case eFramePropType.Joist:
+                        break;
+                    case eFramePropType.Bridge:
+                        break;
+                    case eFramePropType.Cold_C:
+                        break;
+                    case eFramePropType.Cold_2C:
+                        break;
+                    case eFramePropType.Cold_Z:
+                        break;
+                    case eFramePropType.Cold_L:
+                        break;
+                    case eFramePropType.Cold_2L:
+                        break;
+                    case eFramePropType.Cold_Hat:
+                        break;
+                    case eFramePropType.BuiltupICoverplate:
+                        break;
+                    case eFramePropType.PCCGirderI:
+                        break;
+                    case eFramePropType.PCCGirderU:
+                        break;
+                    case eFramePropType.BuiltupIHybrid:
+                        break;
+                    case eFramePropType.BuiltupUHybrid:
+                        break;
+                    case eFramePropType.Concrete_L:
+                        m_model.PropFrame.GetConcreteL(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref twt, ref horFlip, ref verticalFlip, ref colour, ref notes, ref guid);
+                        dimensions = Engine.Geometry.Create.AngleProfile(t3, t2, tw, tf, 0, 0, horFlip, verticalFlip);
+                        break;
+                    case eFramePropType.FilledTube:
+                        break;
+                    case eFramePropType.FilledPipe:
+                        break;
+                    case eFramePropType.EncasedRectangle:
+                        break;
+                    case eFramePropType.EncasedCircle:
+                        break;
+                    case eFramePropType.BucklingRestrainedBrace:
+                        break;
+                    case eFramePropType.CoreBrace_BRB:
+                        break;
+                    case eFramePropType.ConcreteTee:
+                        m_model.PropFrame.GetConcreteTee(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref twt, ref verticalFlip, ref colour, ref notes, ref guid);
+                        dimensions = Engine.Geometry.Create.TSectionProfile(t2, t2, tw, tf, 0, 0, verticalFlip);
+                        break;
+                    case eFramePropType.ConcreteBox:
+                        m_model.PropFrame.GetTube(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
+                        if (tf == tw)
+                            dimensions = Engine.Geometry.Create.BoxProfile(t3, t2, tf, 0, 0);
+                        else
+                            dimensions = Engine.Geometry.Create.FabricatedBoxProfile(t3, t2, tw, tf, tf, 0);
+                        break;
+                    case eFramePropType.ConcretePipe:
+                        m_model.PropFrame.GetPipe(id, ref fileName, ref materialName, ref t3, ref tw, ref colour, ref notes, ref guid);
+                        dimensions = Engine.Geometry.Create.TubeProfile(t3, tw);
+                        break;
+                    case eFramePropType.ConcreteCross:
+                        break;
+                    case eFramePropType.SteelPlate:
+                        m_model.PropFrame.GetPlate(id, ref fileName, ref materialName, ref t3, ref t2, ref colour, ref notes, ref guid);
+                        dimensions = Engine.Geometry.Create.RectangleProfile(t3, t2, 0);
+                        break;
+                    case eFramePropType.SteelRod:
+                        m_model.PropFrame.GetRod(id, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
+                        dimensions = Engine.Geometry.Create.CircleProfile(t3);
+                        break;
+                    default:
+                        break;
+                }
+                if (dimensions == null)
+                    Engine.Reflection.Compute.RecordNote(propertyType.ToString() + " properties are not implemented in ETABS adapter. An empty section has been returned.");
+                constructSelector = "explicit";
+                #endregion
+
+
+                IMaterialFragment material;
+                try
+                {
+                    material = bhomMaterials[materialName];
+                }
+                catch (Exception)
+                {
+                    material = bhomMaterials.FirstOrDefault().Value;
+                    Engine.Reflection.Compute.RecordWarning("Could not get material from SAP. Using a default material");
+                }
+
+
+                switch (constructSelector)
+                {
+                    case "fromDimensions":
+                        if (material is Steel || material is Aluminium)
+
+                            bhSectionProperty = Engine.Structure.Create.SteelSectionFromProfile(dimensions);
+                        else if (material is Concrete)
+                            bhSectionProperty = Engine.Structure.Create.ConcreteSectionFromProfile(dimensions);
+                        else
+                        {
+                            Engine.Reflection.Compute.RecordWarning("Could not create " + propertyType.ToString() + ". Nothing was returned.");
+                            return null;
+                        }
+
+                        break;
+                    case "explicit":
+                        bhSectionProperty = new ExplicitSection()
+                        {
+                            Area = Area,
+                            Asy = As2,
+                            Asz = As3,
+                            Iy = I22,
+                            Iz = I33,
+                            J = Torsion,
+                            Rgy = R22,
+                            Rgz = R33,
+                            Wply = S22,//capacity - plastic (wply)
+                            Wplz = S33,
+                            Wely = Z22,//capacity elastic
+                            Welz = Z33
+                        };
+                        break;
+                    default:
+                        break;
+                }
+
+                bhSectionProperty.Material = material;
+                bhSectionProperty.Name = id;
+                bhSectionProperty.CustomData[AdapterId] = id;
+
+                propList.Add(bhSectionProperty);
             }
+
             return propList;
         }
 
         /***************************************************/
-
-        private ISectionProperty GetSectionProperty(string propertyName, eFramePropType propertyType)
-        {
-            //if (modelData.sectionDict.ContainsKey(propertyName))
-            //    return modelData.sectionDict[propertyName];
-
-            ISectionProperty bhSectionProperty = null;
-            IProfile dimensions = null;
-            string materialName = "";
-
-            string fileName = "";
-            double t3 = 0;
-            double t2 = 0;
-            double tf = 0;
-            double tw = 0;
-            double twt = 0;
-            double tfb = 0;
-            double t2b = 0;
-            int colour = 0;
-            string notes = "";
-            string guid = "";
-
-            bool verticalFlip = false;
-            bool horFlip = false;
-
-            double Area, As2, As3, Torsion, I22, I33, S22, S33, Z22, Z33, R22, R33;
-            Area = As2 = As3 = Torsion = I22 = I33 = S22 = S33 = Z22 = Z33 = R22 = R33 = 0;
-
-            string constructSelector = "fromDimensions";
-            
-            #region long switch on section property type
-            switch (propertyType)
-            {
-                case eFramePropType.I:
-                    m_model.PropFrame.GetISection(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref t2b, ref tfb, ref colour, ref notes, ref guid);
-                    if (t2 == t2b)
-                        dimensions = Engine.Geometry.Create.ISectionProfile(t3, t2, tw, tf, 0, 0);
-                    else
-                        dimensions = Engine.Geometry.Create.FabricatedISectionProfile(t3, t2, t2b, tw, tf, tfb, 0);
-                    break;
-                case eFramePropType.Channel:
-                    m_model.PropFrame.GetChannel(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    dimensions = Engine.Geometry.Create.ChannelProfile(t3, t2, tw, tf, 0, 0);
-                    break;
-                case eFramePropType.T:
-                    break;
-                case eFramePropType.Angle:
-                    m_model.PropFrame.GetAngle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    dimensions = Engine.Geometry.Create.AngleProfile(t3, t2, tw, tf, 0, 0);
-                    break;
-                case eFramePropType.DblAngle:
-                    break;
-                case eFramePropType.Box:
-                    m_model.PropFrame.GetTube(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    if (tf == tw)
-                        dimensions = Engine.Geometry.Create.BoxProfile(t3, t2, tf, 0, 0);
-                    else
-                        dimensions = Engine.Geometry.Create.FabricatedBoxProfile(t3, t2, tw, tf, tf, 0);
-                    break;
-                case eFramePropType.Pipe:
-                    m_model.PropFrame.GetPipe(propertyName, ref fileName, ref materialName, ref t3, ref tw, ref colour, ref notes, ref guid);
-                    dimensions = Engine.Geometry.Create.TubeProfile(t3, tw);
-                    break;
-                case eFramePropType.Rectangular:
-                    m_model.PropFrame.GetRectangle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref colour, ref notes, ref guid);
-                    dimensions = Engine.Geometry.Create.RectangleProfile(t3, t2, 0);
-                    break;
-                case eFramePropType.Auto://not member will have this assigned but it still exists in the propertyType list
-                    dimensions = Engine.Geometry.Create.CircleProfile(0.2);
-                    break;
-                case eFramePropType.Circle:
-                    m_model.PropFrame.GetCircle(propertyName, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
-                    dimensions = Engine.Geometry.Create.CircleProfile(t3);
-                    break;
-                case eFramePropType.General:
-                    constructSelector = "explicit";
-                    m_model.PropFrame.GetGeneral(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref Area, ref As2, ref As3, ref Torsion, ref I22, ref I33, ref S22, ref S33, ref Z22, ref Z33, ref R22, ref R33, ref colour, ref notes, ref guid);
-                    break;
-                case eFramePropType.DbChannel:
-                    break;
-                case eFramePropType.SD:
-                    break;
-                case eFramePropType.Variable:
-                    break;
-                case eFramePropType.Joist:
-                    break;
-                case eFramePropType.Bridge:
-                    break;
-                case eFramePropType.Cold_C:
-                    break;
-                case eFramePropType.Cold_2C:
-                    break;
-                case eFramePropType.Cold_Z:
-                    break;
-                case eFramePropType.Cold_L:
-                    break;
-                case eFramePropType.Cold_2L:
-                    break;
-                case eFramePropType.Cold_Hat:
-                    break;
-                case eFramePropType.BuiltupICoverplate:
-                    break;
-                case eFramePropType.PCCGirderI:
-                    break;
-                case eFramePropType.PCCGirderU:
-                    break;
-                case eFramePropType.BuiltupIHybrid:
-                    break;
-                case eFramePropType.BuiltupUHybrid:
-                    break;
-                case eFramePropType.Concrete_L:
-                    m_model.PropFrame.GetConcreteL(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref twt, ref horFlip, ref verticalFlip, ref colour, ref notes, ref guid);
-                    dimensions = Engine.Geometry.Create.AngleProfile(t3, t2, tw, tf, 0, 0, horFlip, verticalFlip);
-                    break;
-                case eFramePropType.FilledTube:
-                    break;
-                case eFramePropType.FilledPipe:
-                    break;
-                case eFramePropType.EncasedRectangle:
-                    break;
-                case eFramePropType.EncasedCircle:
-                    break;
-                case eFramePropType.BucklingRestrainedBrace:
-                    break;
-                case eFramePropType.CoreBrace_BRB:
-                    break;
-                case eFramePropType.ConcreteTee:
-                    m_model.PropFrame.GetConcreteTee(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref twt, ref verticalFlip, ref colour, ref notes, ref guid);
-                    dimensions = Engine.Geometry.Create.TSectionProfile(t2, t2, tw, tf, 0, 0, verticalFlip);
-                    break;
-                case eFramePropType.ConcreteBox:
-                    m_model.PropFrame.GetTube(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    if (tf == tw)
-                        dimensions = Engine.Geometry.Create.BoxProfile(t3, t2, tf, 0, 0);
-                    else
-                        dimensions = Engine.Geometry.Create.FabricatedBoxProfile(t3, t2, tw, tf, tf, 0);
-                    break;
-                case eFramePropType.ConcretePipe:
-                    m_model.PropFrame.GetPipe(propertyName, ref fileName, ref materialName, ref t3, ref tw, ref colour, ref notes, ref guid);
-                    dimensions = Engine.Geometry.Create.TubeProfile(t3, tw);
-                    break;
-                case eFramePropType.ConcreteCross:
-                    break;
-                case eFramePropType.SteelPlate:
-                    m_model.PropFrame.GetPlate(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref colour, ref notes, ref guid);
-                    dimensions = Engine.Geometry.Create.RectangleProfile(t3, t2, 0);
-                    break;
-                case eFramePropType.SteelRod:
-                    m_model.PropFrame.GetRod(propertyName, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
-                    dimensions = Engine.Geometry.Create.CircleProfile(t3);
-                    break;
-                default:
-                    break;
-            }
-            if (dimensions == null)
-                Engine.Reflection.Compute.RecordNote(propertyType.ToString() + " properties are not implemented in ETABS adapter. An empty section has been returned.");
-            constructSelector = "explicit";
-            #endregion
-
-
-            IMaterialFragment material;
-            if (materialName == "")
-                material = Engine.Structure.Create.Steel("Steel");
-            else
-                material = GetMaterial(materialName);
-
-
-            switch (constructSelector)
-            {
-                case "fromDimensions":
-                    if (material is Steel || material is Aluminium)
-
-                        bhSectionProperty = Engine.Structure.Create.SteelSectionFromProfile(dimensions);
-                    else if (material is Concrete)
-                        bhSectionProperty = Engine.Structure.Create.ConcreteSectionFromProfile(dimensions);
-                    else
-                    {
-                        Engine.Reflection.Compute.RecordWarning("Could not create " + propertyType.ToString() + ". Nothing was returned.");
-                        return null;
-                    }
-
-                    break;
-                case "explicit":
-                    bhSectionProperty = new ExplicitSection()
-                    {
-                        Area = Area,
-                        Asy = As2,
-                        Asz = As3,
-                        Iy = I22,
-                        Iz = I33,
-                        J = Torsion,
-                        Rgy = R22,
-                        Rgz = R33,
-                        Wply = S22,//capacity - plastic (wply)
-                        Wplz = S33,
-                        Wely = Z22,//capacity elastic
-                        Welz = Z33
-                    };
-                    break;
-                default:
-                    break;
-            }
-
-            bhSectionProperty.Material = material;
-            bhSectionProperty.Name = propertyName;
-            bhSectionProperty.CustomData[AdapterId] = propertyName;
-            //modelData.sectionDict.Add(propertyName, bhSectionProperty);
-
-            return bhSectionProperty;
-        }
     }
 }

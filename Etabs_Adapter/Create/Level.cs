@@ -52,7 +52,7 @@ namespace BH.Adapter.ETABS
                 elevations[i + 1] = levelList[i].Elevation;
             }
 
-            double[] heights = new double[count];   //Heihgts empty, set by elevations
+            double[] heights = new double[count];   //Heights empty, set by elevations
             bool[] isMasterStory = new bool[count];
             isMasterStory[count - 1] = true;    //Top story as master
             string[] similarTo = new string[count];
@@ -64,17 +64,14 @@ namespace BH.Adapter.ETABS
             bool[] spliceAbove = new bool[count];   //No splice
             double[] spliceHeight = new double[count];  //No splice
 
-
-
-            int ret = m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight);
-
-            if (ret != 0)
+            if(m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight) == 0) { }
+            else
             {
+
                 Engine.Reflection.Compute.RecordError("Failed to push levels. Levels can only be pushed to an empty model.");
             }
 
-            return ret == 0;
-
+            return true;
         }
 
         /***************************************************/

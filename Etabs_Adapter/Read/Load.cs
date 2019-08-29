@@ -28,65 +28,19 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.SectionProperties;
-using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Loads;
-using BH.oM.Structure.MaterialFragments;
+using BH.Engine.ETABS;
+using BH.oM.Geometry;
 #if (Debug2017)
 using ETABSv17;
 #else
 using ETABS2016;
 #endif
-using BH.Engine.ETABS;
-using BH.oM.Geometry;
-using BH.Engine.Geometry;
-using BH.Engine.Reflection;
-using BH.oM.Architecture.Elements;
-using BH.oM.Adapters.ETABS.Elements;
 
 namespace BH.Adapter.ETABS
 {
     public partial class ETABSAdapter
     {
-        /***************************************************/
-
-        private List<LoadCombination> ReadLoadCombination(List<string> ids = null)
-        {
-            List<LoadCombination> combinations = new List<LoadCombination>();
-
-            //get all load cases before combinations
-            int number = 0;
-            string[] names = null;
-            m_model.LoadPatterns.GetNameList(ref number, ref names);
-            Dictionary<string, ICase> caseDict = new Dictionary<string, ICase>();
-
-            //ensure id can be split into name and number
-            names = EnsureNameWithNum(names.ToList()).ToArray();
-
-            foreach (string name in names)
-                caseDict.Add(name, GetLoadcase(name));
-
-            int nameCount = 0;
-            string[] nameArr = { };
-
-            if (ids == null)
-            {
-                m_model.RespCombo.GetNameList(ref nameCount, ref nameArr);
-                ids = nameArr.ToList();
-            }
-
-            //ensure id can be split into name and number
-            ids = EnsureNameWithNum(ids);
-
-            foreach (string id in ids)
-            {
-                combinations.Add(GetLoadCombination(caseDict, id));
-            }
-
-            return combinations;
-        }
-
         /***************************************************/
 
         private List<Loadcase> ReadLoadcase(List<string> ids = null)
@@ -102,12 +56,19 @@ namespace BH.Adapter.ETABS
                 ids = nameArr.ToList();
             }
 
-            //ensure id can be split into name and number
-            ids = EnsureNameWithNum(ids);
-
             foreach (string id in ids)
             {
-                loadcaseList.Add(GetLoadcase(id));
+                Loadcase bhLoadcase = new Loadcase();
+
+                eLoadPatternType type = eLoadPatternType.Other;
+
+                if (m_model.LoadPatterns.GetLoadType(id, ref type) == 0)
+                {
+                    bhLoadcase.Name = id;
+                    bhLoadcase.Nature = type.ToBHoM();
+                }
+
+                loadcaseList.Add(bhLoadcase);
             }
 
             return loadcaseList;
@@ -115,91 +76,89 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        private List<LoadCombination> ReadLoadCombination(List<string> ids = null)
+        {
+            List<LoadCombination> combinations = new List<LoadCombination>();
+
+            //get all load cases before combinations
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+
+            int nameCount = 0;
+            string[] nameArr = { };
+
+            if (ids == null)
+            {
+                m_model.RespCombo.GetNameList(ref nameCount, ref nameArr);
+                ids = nameArr.ToList();
+            }
+            
+            foreach (string id in ids)
+            {
+                LoadCombination combination = new LoadCombination();
+
+                string[] caseNames = null;
+                double[] factors = null;
+                int caseNum = 0;
+                eCNameType[] nameTypes = null;//<--TODO: maybe need to check if 1? (1=loadcombo)
+
+                if (m_model.RespCombo.GetCaseList(id, ref caseNum, ref nameTypes, ref caseNames, ref factors) == 0)
+                {
+                    combination.Name = id;
+
+                    if (caseNames != null)
+                    {
+                        Loadcase currentCase;
+
+                        for (int i = 0; i < caseNames.Count(); i++)
+                        {
+                            if (bhomCases.TryGetValue(caseNames[i], out currentCase))
+                                combination.LoadCases.Add(new Tuple<double, ICase>(factors[i], currentCase));
+                        }
+                    }
+
+                    combinations.Add(combination);
+                }
+            }
+
+            return combinations;
+        }
+
+        /***************************************************/
+
         private List<ILoad> ReadLoad(Type type, List<string> ids = null)
         {
             List<ILoad> loadList = new List<ILoad>();
-
-            //get loadcases first
+            
             List<Loadcase> loadcaseList = ReadLoadcase();
 
-            loadList = GetLoads(loadcaseList);
-
-            //filter the list to return only the right type - No, this is not a clever way of doing it !
-            loadList = loadList.Where(x => x.GetType() == type).ToList();
-
-            return loadList;
-        }
-
-        /***************************************************/
-
-        private Loadcase GetLoadcase(string id)
-        {
-            Loadcase bhLoadcase = new Loadcase();
-            int number;
-            string name = "NA";
-            string[] nameNum = id.Split(new[] { ":::" }, StringSplitOptions.None);
-            if (nameNum.Count() > 1)
-            {
-                name = nameNum[0];
-                int.TryParse(nameNum[1], out number);
-            }
+            if (type == typeof(PointLoad))
+                return ReadPointLoad(loadcaseList);
+            else if (type == typeof(BarUniformlyDistributedLoad))
+                return ReadBarLoad(loadcaseList);
+            else if (type == typeof(AreaUniformlyDistributedLoad))
+                return ReadAreaLoad(loadcaseList);
             else
             {
-                int.TryParse(id, out number);
+                List<ILoad> loads = new List<ILoad>();
+                loads.AddRange(ReadPointLoad(loadcaseList));
+                loads.AddRange(ReadBarLoad(loadcaseList));
+                loads.AddRange(ReadAreaLoad(loadcaseList));
+                return loads;
             }
-            bhLoadcase.Name = name;
-            bhLoadcase.Number = number;
-
-            eLoadPatternType type = eLoadPatternType.Other;
-
-            m_model.LoadPatterns.GetLoadType(id, ref type);
-            bhLoadcase.Nature = type.ToBHoM();
-
-            return bhLoadcase;
         }
 
         /***************************************************/
 
-        private LoadCombination GetLoadCombination(Dictionary<string, ICase> caseDict, string id)
-        {
-            LoadCombination combination = new LoadCombination();
-            int number;
-            string[] nameNum = id.Split(new[] { ":::" }, StringSplitOptions.None);
-            int.TryParse(nameNum[1], out number);
-            combination.Number = number;
-            combination.Name = nameNum[0];
-
-            string[] caseNames = null;
-            double[] factors = null;
-            int caseNum = 0;
-            eCNameType[] nameTypes = null;//<--TODO: maybe need to check if 1? (1=loadcombo)
-
-            m_model.RespCombo.GetCaseList(id, ref caseNum, ref nameTypes, ref caseNames, ref factors);
-            if (caseNames != null)
-            {
-                ICase currentCase;
-
-                for (int i = 0; i < caseNames.Count(); i++)
-                {
-                    if (caseDict.TryGetValue(caseNames[i], out currentCase))
-                        combination.LoadCases.Add(new Tuple<double, ICase>(factors[i], currentCase));
-                }
-
-            }
-            return combination;
-        }
-
-        /***************************************************/
-
-        private List<ILoad> GetLoads(List<Loadcase> loadcases)
+        private List<ILoad> ReadPointLoad(List<Loadcase> loadcases)
         {
             List<ILoad> bhLoads = new List<ILoad>();
+
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
+
             string[] names = null;
             string[] loadcase = null;
             string[] CSys = null;
-            int[] myType = null;
             int[] step = null;
-            int[] dir = null;
             int nameCount = 0;
             double[] fx = null;
             double[] fy = null;
@@ -207,13 +166,6 @@ namespace BH.Adapter.ETABS
             double[] mx = null;
             double[] my = null;
             double[] mz = null;
-            double[] f = null;
-            double[] rd1 = null;
-            double[] rd2 = null;
-            double[] dist1 = null;
-            double[] dist2 = null;
-            double[] val1 = null;
-            double[] val2 = null;
 
             foreach (Loadcase bhLoadcase in loadcases)
             {
@@ -223,17 +175,45 @@ namespace BH.Adapter.ETABS
                     {
                         if (bhLoadcase.Name == loadcase[i])
                         {
-                            Node fakeNode = new Node();
-                            fakeNode.CustomData[AdapterId] = names[i];
-                            BHoMGroup<Node> nodeObjects = new BHoMGroup<Node>() { Elements = { fakeNode } };
-                            Engine.Reflection.Compute.RecordNote("An empty node with the relevant ETABS id has been returned for point loads.");
-                            Vector force = new Vector() { X = fx[i], Y = fy[i], Z = fz[i] };
-                            Vector moment = new Vector() { X = mx[i], Y = my[i], Z = mz[i] };
-                            bhLoads.Add(new PointLoad() { Force = force, Moment = moment, Loadcase = bhLoadcase, Objects = nodeObjects });
+                            PointLoad bhLoad = new PointLoad()
+                            {
+                                Force = new Vector() { X = fx[i], Y = fy[i], Z = fz[i] },
+                                Moment = new Vector() { X = mx[i], Y = my[i], Z = mz[i] },
+                                Loadcase = bhLoadcase,
+                                Objects = new BHoMGroup<Node>() { Elements = { bhomNodes[names[i]] } }
+                            };
+                            bhLoads.Add(bhLoad);
                         }
                     }
                 }
+            }
+            return bhLoads;
 
+        }
+
+        /***************************************************/
+
+        private List<ILoad> ReadBarLoad(List<Loadcase> loadcases)
+        {
+            List<ILoad> bhLoads = new List<ILoad>();
+            
+            Dictionary<string, Bar> bhomBars = ReadBars().ToDictionary(x => x.CustomData[AdapterId].ToString());
+
+            string[] names = null;
+            string[] loadcase = null;
+            string[] CSys = null;
+            int[] myType = null;
+            int[] dir = null;
+            int nameCount = 0;
+            double[] rd1 = null;
+            double[] rd2 = null;
+            double[] dist1 = null;
+            double[] dist2 = null;
+            double[] val1 = null;
+            double[] val2 = null;
+
+            foreach (Loadcase bhLoadcase in loadcases)
+            {
                 if (m_model.FrameObj.GetLoadDistributed("All", ref nameCount, ref names, ref loadcase, ref myType, ref CSys, ref dir, ref rd1, ref rd2, ref dist1, ref dist2, ref val1, ref val2, eItemType.Group) == 0)
                 {
                     for (int i = 0; i < nameCount; i++)
@@ -261,10 +241,8 @@ namespace BH.Adapter.ETABS
                                     BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
                                     break;
                             }
-                            Bar fakeBar = new Bar();
-                            fakeBar.CustomData[AdapterId] = names[i];
-                            BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { fakeBar } };
-                            Engine.Reflection.Compute.RecordNote("An empty bar with the relevant ETABS id has been returned for distributed loads.");
+                            BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhomBars[names[i]] } };
+
                             switch (myType[i])
                             {
                                 case 1:
@@ -281,7 +259,28 @@ namespace BH.Adapter.ETABS
                         }
                     }
                 }
+            }
+            return bhLoads;
 
+        }
+
+        /***************************************************/
+
+        private List<ILoad> ReadAreaLoad(List<Loadcase> loadcases)
+        {
+            List<ILoad> bhLoads = new List<ILoad>();
+
+            Dictionary<string, Panel> bhomPanels = ReadPanel().ToDictionary(x => x.CustomData[AdapterId].ToString());
+
+            string[] names = null;
+            string[] loadcase = null;
+            string[] CSys = null;
+            int[] dir = null;
+            int nameCount = 0;
+            double[] f = null;
+
+            foreach (Loadcase bhLoadcase in loadcases)
+            {
                 if (m_model.AreaObj.GetLoadUniform("All", ref nameCount, ref names, ref loadcase, ref CSys, ref dir, ref f, eItemType.Group) == 0)
                 {
                     Dictionary<string, Vector> areaUniformDict = new Dictionary<string, Vector>();
@@ -290,10 +289,7 @@ namespace BH.Adapter.ETABS
                     {
                         if (bhLoadcase.Name == loadcase[i])
                         {
-                            IAreaElement fakePanel = new Panel();
-                            fakePanel.CustomData[AdapterId] = names[i];
-                            BHoMGroup<IAreaElement> panelObjects = new BHoMGroup<IAreaElement>() { Elements = { fakePanel } };
-                            Engine.Reflection.Compute.RecordNote("An empty panel with the relevant ETABS id has been returned for distributed loads.");
+                            BHoMGroup<IAreaElement> panelObjects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanels[names[i]] } };
 
                             switch (dir[i])
                             {
@@ -321,46 +317,5 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
-
-        private List<string> EnsureNameWithNum(List<string> ids)
-        {
-            List<string> nameAndNum = ids;// new List<string>();
-            List<int> usedNum = new List<int>();
-            List<int> unnumbered = new List<int>();
-            int num;
-            int high;
-            int low;
-            int diff;
-
-            for (int i = 0; i < ids.Count(); i++)
-            {
-                string[] idArr = ids[i].Split(new[] { ":::" }, StringSplitOptions.None);
-                if (idArr.Count() > 1)
-                {
-                    int.TryParse(idArr[1], out num);
-                    usedNum.Add(num);
-                }
-                else
-                {
-                    unnumbered.Add(i);
-                }
-            }
-
-            high = usedNum.Count() == 0 ? 0 : usedNum.Max();
-            low = usedNum.Count() == 0 ? 0 : usedNum.Min();
-            diff = usedNum.Count() - ids.Count();
-
-            int counter = 0;
-            for (int j = 0; j < unnumbered.Count(); j++)
-            {
-                counter = j < low ? j : counter >= high ? counter + 1 : high + 1;
-                nameAndNum[unnumbered[j]] = ids[unnumbered[j]] + ":::" + counter.ToString();
-            }
-
-            return nameAndNum;
-        }
-
-        /***************************************************/
-
     }
 }

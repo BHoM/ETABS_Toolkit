@@ -34,23 +34,23 @@ namespace BH.Adapter.ETABS
 
         protected override object NextId(Type objectType, bool refresh)
         {
-            int index;
-            string id;
-            if(!refresh && idDictionary.TryGetValue(objectType, out id))
-            {
-                if (int.TryParse(id, out index))
-                    id = (index + 1).ToString();
-                else
-                    id = GetNextIdOfType(objectType);
-                idDictionary[objectType] = id;
-            }
-            else
-            {
-                id = GetNextIdOfType(objectType);
-                idDictionary[objectType] = id;
-            }
+            //int index;
+            //string id;
+            //if(!refresh && idDictionary.TryGetValue(objectType, out id))
+            //{
+            //    if (int.TryParse(id, out index))
+            //        id = (index + 1).ToString();
+            //    else
+            //        id = GetNextIdOfType(objectType);
+            //    idDictionary[objectType] = id;
+            //}
+            //else
+            //{
+            //    id = GetNextIdOfType(objectType);
+            //    idDictionary[objectType] = id;
+            //}
 
-            return id;
+            return -1;
         }
 
         private string GetNextIdOfType(Type objectType)

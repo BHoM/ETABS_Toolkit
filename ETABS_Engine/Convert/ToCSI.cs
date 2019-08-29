@@ -126,10 +126,29 @@ namespace BH.Engine.ETABS
 
         /***************************************************/
 
-        public static void GetCSIBarRelease(this Bar bar, ref bool[] startRestraint, ref double[] startSpring, ref bool[] endRestraint, ref double[] endSpring)
+        public static void ToCSI(this Constraint6DOF support, ref bool[] restraint, ref double[] spring)
         {
-            BarRelease release = bar.Release;
+            restraint = new bool[6];
+            restraint[0] = support.TranslationX == DOFType.Fixed;
+            restraint[1] = support.TranslationY == DOFType.Fixed;
+            restraint[2] = support.TranslationZ == DOFType.Fixed;
+            restraint[3] = support.RotationX == DOFType.Fixed;
+            restraint[4] = support.RotationY == DOFType.Fixed;
+            restraint[5] = support.RotationZ == DOFType.Fixed;
 
+            spring = new double[6];
+            spring[0] = support.TranslationalStiffnessX;
+            spring[1] = support.TranslationalStiffnessY;
+            spring[2] = support.TranslationalStiffnessZ;
+            spring[3] = support.RotationalStiffnessX;
+            spring[4] = support.RotationalStiffnessY;
+            spring[5] = support.RotationalStiffnessZ;
+        }
+
+        /***************************************************/
+
+        public static void ToCSI(this BarRelease release, ref bool[] startRestraint, ref double[] startSpring, ref bool[] endRestraint, ref double[] endSpring)
+        {
             startRestraint = new bool[6];
             startRestraint[0] = release.StartRelease.TranslationX == DOFType.Free;
             startRestraint[1] = release.StartRelease.TranslationY == DOFType.Free;

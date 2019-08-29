@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.Adapter.SAP2000
+namespace BH.Adapter.ETABS
 {
-    public partial class SAP2000Adapter
+    public partial class ETABSAdapter
     {
         /***************************************************/
         /**** Public Methods                            ****/

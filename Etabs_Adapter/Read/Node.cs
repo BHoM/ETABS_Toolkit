@@ -75,9 +75,11 @@ namespace BH.Adapter.ETABS
                 m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
 
                 m_model.PointObj.GetRestraint(id, ref restraint);
-                m_model.PointObj.SetSpring(id, ref spring);
+                m_model.PointObj.GetSpring(id, ref spring);
 
-                Node bhNode = Engine.Structure.Create.Node(new oM.Geometry.Point() { X = x, Y = y, Z = z }, "", Engine.ETABS.Convert.GetConstraint6DOF(restraint, spring));
+                Constraint6DOF support = Engine.ETABS.Convert.GetConstraint6DOF(restraint, spring);
+
+                Node bhNode = Engine.Structure.Create.Node(new oM.Geometry.Point() { X = x, Y = y, Z = z }, "", support);
                 bhNode.CustomData.Add(AdapterId, id);
 
                 nodeList.Add(bhNode);

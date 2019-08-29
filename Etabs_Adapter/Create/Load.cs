@@ -38,20 +38,25 @@ namespace BH.Adapter.ETABS
     {
         /***************************************************/
 
-        private bool CreateObject(Loadcase loadcase)
+        public bool CreateObject(Loadcase loadcase)
         {
-            bool success = true;
+            eLoadPatternType patternType = loadcase.Nature.ToCSI();
 
-            SetLoadcase(loadcase);
-
-            return success;
+            if (m_model.LoadPatterns.Add(loadcase.Name, patternType) == 0)
+            {
+                loadcase.CustomData[AdapterId] = loadcase.Name;
+            }
+            else
+            {
+                CreateElementError("Loadcase", loadcase.Name);
+            }
+            return true;
         }
 
         /***************************************************/
 
         private bool CreateObject(MassSource massSource)
         {
-
             bool includeElements = massSource.ElementSelfMass;
             bool includeAddMass = massSource.AdditionalMass;
             bool includeLoads = massSource.FactoredAdditionalCases.Count > 0;
@@ -66,7 +71,13 @@ namespace BH.Adapter.ETABS
                 factors[i] = massSource.FactoredAdditionalCases[i].Item2;
             }
 
-            return m_model.PropMaterial.SetMassSource_1(ref includeElements, ref includeAddMass, ref includeLoads, count, ref cases, ref factors) == 0;
+            if (m_model.PropMaterial.SetMassSource_1(ref includeElements, ref includeAddMass, ref includeLoads, count, ref cases, ref factors) == 0) { }
+            else
+            {
+                CreateElementError("mass source", massSource.Name);
+            }
+
+            return true;
         }
 
         /***************************************************/
@@ -78,9 +89,30 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private bool CreateObject(LoadCombination loadcombination)
+        private bool CreateObject(LoadCombination loadCombination)
         {
-            SetLoadCombination(loadcombination);
+            if (m_model.RespCombo.Add(loadCombination.Name, 0) == 0) //0=case, 1=combo 
+            {
+                foreach (var factorCase in loadCombination.LoadCases)
+                {
+                    double factor = factorCase.Item1;
+                    Type lcType = factorCase.Item2.GetType();
+                    string lcName = factorCase.Item2.Name;// factorCase.Item2.Name;// Number.ToString();
+                    eCNameType cTypeName = eCNameType.LoadCase;
+
+                    if (lcType == typeof(Loadcase))
+                        cTypeName = eCNameType.LoadCase;
+                    else if (lcType == typeof(LoadCombination))
+                        cTypeName = eCNameType.LoadCombo;
+
+                    m_model.RespCombo.SetCaseList(loadCombination.Name, ref cTypeName, lcName, factor);
+                }
+                loadCombination.CustomData[AdapterId] = loadCombination.Name;
+            }
+            else
+            {
+                CreateElementError(loadCombination.GetType().ToString(), loadCombination.Name);
+            }
 
             return true;
         }
@@ -89,49 +121,11 @@ namespace BH.Adapter.ETABS
 
         private bool CreateObject(ILoad bhLoad)
         {
-            bool success = true;
-
             SetLoad(bhLoad as dynamic, this.EtabsConfig.ReplaceLoads);
 
-            return success;
+            return true;
         }
-
-        /***************************************************/
         
-        public void SetLoadcase( Loadcase loadcase)
-        {
-            //string name = loadcase.CustomData[AdapterId].ToString();
-            string name = loadcase.ToCSI();
-            eLoadPatternType patternType = loadcase.Nature.ToCSI();
-
-            m_model.LoadPatterns.Add(name, patternType);
-        }
-
-        /***************************************************/
-
-        public void SetLoadCombination(LoadCombination loadCombination)
-        {
-            //string combinationName = loadCombination.CustomData[AdapterId].ToString();
-            string combinationName = loadCombination.ToCSI();
-
-            m_model.RespCombo.Add(combinationName, 0);//0=case, 1=combo
-
-            foreach (var factorCase in loadCombination.LoadCases)
-            {
-                double factor = factorCase.Item1;
-                Type lcType = factorCase.Item2.GetType();
-                string lcName = factorCase.Item2.ToCSI();// factorCase.Item2.Name;// Number.ToString();
-                eCNameType cTypeName = eCNameType.LoadCase;
-
-                if (lcType == typeof(Loadcase))
-                    cTypeName = eCNameType.LoadCase;
-                else if (lcType == typeof(LoadCombination))
-                    cTypeName = eCNameType.LoadCombo;
-
-                m_model.RespCombo.SetCaseList(combinationName, ref cTypeName, lcName, factor);
-            }
-        }
-
         /***************************************************/
 
         public void SetLoad(PointLoad pointLoad, bool replace)
