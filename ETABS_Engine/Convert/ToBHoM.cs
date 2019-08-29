@@ -87,19 +87,6 @@ namespace BH.Engine.ETABS
 
         /***************************************************/
 
-        public static ICase CaseNameToBHoM(String csiCaseName, ICase bhomCase)
-        {
-            string[] nameNum = csiCaseName.Split(new[] { ":::" }, StringSplitOptions.None);
-            Int32 number = new Int32();
-            int.TryParse(nameNum[1], out number);
-            bhomCase.Number = number;
-            bhomCase.Name = nameNum[0];
-
-            return bhomCase;
-        }
-
-        /***************************************************/
-
         public static LoadNature ToBHoM(this eLoadPatternType loadPatternType)
         {
             switch (loadPatternType)
@@ -130,7 +117,7 @@ namespace BH.Engine.ETABS
         
         /***************************************************/
 
-        private static MaterialType ToBHoM(this eMatType materialType)
+        public static MaterialType ToBHoM(this eMatType materialType)
         {
             switch (materialType)
             {
@@ -157,6 +144,23 @@ namespace BH.Engine.ETABS
 
         /***************************************************/
 
+        public static String ToBHoM(this eShellType shellType)
+        {
+            switch (shellType)
+            {
+                case eShellType.ShellThin:
+                    return oM.Adapters.ETABS.ShellType.ShellThin.ToString();
+                case eShellType.ShellThick:
+                    return oM.Adapters.ETABS.ShellType.ShellThick.ToString();
+                case eShellType.Membrane:
+                    return oM.Adapters.ETABS.ShellType.Membrane.ToString();
+                default:
+                    return "None";
+            }
+        }
+
+        /***************************************************/
+
         public static Constraint6DOF GetConstraint6DOF(bool[] restraint, double[] springs)
         {
             Constraint6DOF bhConstraint = new Constraint6DOF();
@@ -178,5 +182,44 @@ namespace BH.Engine.ETABS
         }
 
         /***************************************************/
+
+        public static BarRelease GetBarRelease(bool[] startRestraint, double[] startSpring, bool[] endRestraint, double[] endSpring)
+        {
+            Constraint6DOF startRelease = new Constraint6DOF();
+
+            startRelease.TranslationX = startRestraint[0] == true ? DOFType.Free : DOFType.Fixed;
+            startRelease.TranslationY = startRestraint[1] == true ? DOFType.Free : DOFType.Fixed;
+            startRelease.TranslationZ = startRestraint[2] == true ? DOFType.Free : DOFType.Fixed;
+            startRelease.RotationX = startRestraint[3] == true ? DOFType.Free : DOFType.Fixed;
+            startRelease.RotationY = startRestraint[4] == true ? DOFType.Free : DOFType.Fixed;
+            startRelease.RotationZ = startRestraint[5] == true ? DOFType.Free : DOFType.Fixed;
+
+            startRelease.TranslationalStiffnessX = startSpring[0];
+            startRelease.TranslationalStiffnessY = startSpring[1];
+            startRelease.TranslationalStiffnessZ = startSpring[2];
+            startRelease.RotationalStiffnessX = startSpring[3];
+            startRelease.RotationalStiffnessY = startSpring[4];
+            startRelease.RotationalStiffnessZ = startSpring[5];
+
+            Constraint6DOF endRelease = new Constraint6DOF();
+
+            endRelease.TranslationX = endRestraint[0] == true ? DOFType.Free : DOFType.Fixed;
+            endRelease.TranslationY = endRestraint[1] == true ? DOFType.Free : DOFType.Fixed;
+            endRelease.TranslationZ = endRestraint[2] == true ? DOFType.Free : DOFType.Fixed;
+            endRelease.RotationX = endRestraint[3] == true ? DOFType.Free : DOFType.Fixed;
+            endRelease.RotationY = endRestraint[4] == true ? DOFType.Free : DOFType.Fixed;
+            endRelease.RotationZ = endRestraint[5] == true ? DOFType.Free : DOFType.Fixed;
+
+            endRelease.TranslationalStiffnessX = endSpring[0];
+            endRelease.TranslationalStiffnessY = endSpring[1];
+            endRelease.TranslationalStiffnessZ = endSpring[2];
+            endRelease.RotationalStiffnessX = endSpring[3];
+            endRelease.RotationalStiffnessY = endSpring[4];
+            endRelease.RotationalStiffnessZ = endSpring[5];
+
+            BarRelease barRelease = new BarRelease() { StartRelease = startRelease, EndRelease = endRelease };
+
+            return barRelease;
+        }
     }
 }

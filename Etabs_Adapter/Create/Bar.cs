@@ -94,17 +94,15 @@ namespace BH.Adapter.ETABS
                 CreatePropertyWarning("insertion point and perpendicular offset", "Bar", name);
                 ret++;
             }
-
-            BarRelease barRelease = bhBar.Release;
-            if (barRelease != null)
+            
+            if (bhBar.Release != null)
             {
-                bool[] restraintStart = null;// = barRelease.StartRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.StartRelease);
-                double[] springStart = null;// = barRelease.StartRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.StartRelease);
-                bool[] restraintEnd = null;// = barRelease.EndRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.EndRelease);
-                double[] springEnd = null;// = barRelease.EndRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.EndRelease);
+                bool[] restraintStart = null;
+                double[] springStart = null;
+                bool[] restraintEnd = null;
+                double[] springEnd = null;
 
-
-                bhBar.GetCSIBarRelease(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd);
+                bhBar.Release.ToCSI(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd);
 
                 if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
                 {
@@ -141,18 +139,6 @@ namespace BH.Adapter.ETABS
 
         private bool CreateObject(ISectionProperty bhSection)
         {
-            bool success = true;
-
-            SetSection(bhSection);
-
-            return success;
-        }
-
-        /***************************************************/
-
-        private bool SetSection(ISectionProperty bhSection)
-        {
-            //without modelData and the adapter there is no reason to devide this into SetSection and SetSectionProperty... right?
             SetSection(bhSection as dynamic);
 
             double[] modifiers = bhSection.Modifiers();
@@ -220,63 +206,63 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private void SetProfile(TubeProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(TubeProfile profile, string sectionName, IMaterialFragment material)
         {
-            m_model.PropFrame.SetPipe(sectionName, material.Name, dimensions.Diameter, dimensions.Thickness);
+            m_model.PropFrame.SetPipe(sectionName, material.Name, profile.Diameter, profile.Thickness);
         }
 
         /***************************************************/
 
-        private void SetProfile(BoxProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(BoxProfile profile, string sectionName, IMaterialFragment material)
         {
-            m_model.PropFrame.SetTube(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.Thickness, dimensions.Thickness);
+            m_model.PropFrame.SetTube(sectionName, material.Name, profile.Height, profile.Width, profile.Thickness, profile.Thickness);
         }
 
         /***************************************************/
 
-        private void SetProfile(FabricatedBoxProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(FabricatedBoxProfile profile, string sectionName, IMaterialFragment material)
         {
-            if (dimensions.TopFlangeThickness != dimensions.BotFlangeThickness)
+            if (profile.TopFlangeThickness != profile.BotFlangeThickness)
                 Engine.Reflection.Compute.RecordWarning("different thickness of top and bottom flange is not supported in ETABS");
-            m_model.PropFrame.SetTube(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.TopFlangeThickness, dimensions.WebThickness);
+            m_model.PropFrame.SetTube(sectionName, material.Name, profile.Height, profile.Width, profile.TopFlangeThickness, profile.WebThickness);
         }
 
         /***************************************************/
 
-        private void SetProfile(ISectionProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(ISectionProfile profile, string sectionName, IMaterialFragment material)
         {
-            m_model.PropFrame.SetISection(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.Width, dimensions.FlangeThickness);
+            m_model.PropFrame.SetISection(sectionName, material.Name, profile.Height, profile.Width, profile.FlangeThickness, profile.WebThickness, profile.Width, profile.FlangeThickness);
         }
 
         /***************************************************/
 
-        private void SetProfile(FabricatedISectionProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(FabricatedISectionProfile profile, string sectionName, IMaterialFragment material)
         {
-            m_model.PropFrame.SetISection(sectionName, material.Name, dimensions.Height, dimensions.TopFlangeWidth, dimensions.TopFlangeThickness, dimensions.WebThickness, dimensions.BotFlangeWidth, dimensions.BotFlangeThickness);
+            m_model.PropFrame.SetISection(sectionName, material.Name, profile.Height, profile.TopFlangeWidth, profile.TopFlangeThickness, profile.WebThickness, profile.BotFlangeWidth, profile.BotFlangeThickness);
         }
 
         /***************************************************/
 
-        private void SetProfile(ChannelProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(ChannelProfile profile, string sectionName, IMaterialFragment material)
         {
-            m_model.PropFrame.SetChannel(sectionName, material.Name, dimensions.Height, dimensions.FlangeWidth, dimensions.FlangeThickness, dimensions.WebThickness);
-            if (dimensions.MirrorAboutLocalZ)
+            m_model.PropFrame.SetChannel(sectionName, material.Name, profile.Height, profile.FlangeWidth, profile.FlangeThickness, profile.WebThickness);
+            if (profile.MirrorAboutLocalZ)
                 RecordFlippingError(sectionName);
         }
 
         /***************************************************/
 
-        private void SetProfile(AngleProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(AngleProfile profile, string sectionName, IMaterialFragment material)
         {
 
             if (material is Steel || material is Aluminium)
-                m_model.PropFrame.SetSteelAngle(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.RootRadius, dimensions.MirrorAboutLocalZ, dimensions.MirrorAboutLocalY);
+                m_model.PropFrame.SetSteelAngle(sectionName, material.Name, profile.Height, profile.Width, profile.FlangeThickness, profile.WebThickness, profile.RootRadius, profile.MirrorAboutLocalZ, profile.MirrorAboutLocalY);
             else if (material is Concrete)
-                m_model.PropFrame.SetConcreteL(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.WebThickness, dimensions.MirrorAboutLocalZ, dimensions.MirrorAboutLocalY);
+                m_model.PropFrame.SetConcreteL(sectionName, material.Name, profile.Height, profile.Width, profile.FlangeThickness, profile.WebThickness, profile.WebThickness, profile.MirrorAboutLocalZ, profile.MirrorAboutLocalY);
             else
             {
-                m_model.PropFrame.SetAngle(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness);
-                if (dimensions.MirrorAboutLocalY || dimensions.MirrorAboutLocalZ)
+                m_model.PropFrame.SetAngle(sectionName, material.Name, profile.Height, profile.Width, profile.FlangeThickness, profile.WebThickness);
+                if (profile.MirrorAboutLocalY || profile.MirrorAboutLocalZ)
                     RecordFlippingError(sectionName);
             }
 
@@ -284,16 +270,16 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private void SetProfile(TSectionProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(TSectionProfile profile, string sectionName, IMaterialFragment material)
         {
             if (material is Steel || material is Aluminium)
-                m_model.PropFrame.SetSteelTee(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.RootRadius, dimensions.MirrorAboutLocalY);
+                m_model.PropFrame.SetSteelTee(sectionName, material.Name, profile.Height, profile.Width, profile.FlangeThickness, profile.WebThickness, profile.RootRadius, profile.MirrorAboutLocalY);
             else if (material is Concrete)
-                m_model.PropFrame.SetConcreteTee(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.WebThickness, dimensions.MirrorAboutLocalY);
+                m_model.PropFrame.SetConcreteTee(sectionName, material.Name, profile.Height, profile.Width, profile.FlangeThickness, profile.WebThickness, profile.WebThickness, profile.MirrorAboutLocalY);
             else
             {
-                m_model.PropFrame.SetTee(sectionName, material.Name, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness);
-                if (dimensions.MirrorAboutLocalY)
+                m_model.PropFrame.SetTee(sectionName, material.Name, profile.Height, profile.Width, profile.FlangeThickness, profile.WebThickness);
+                if (profile.MirrorAboutLocalY)
                     RecordFlippingError(sectionName);
             }
 
@@ -301,23 +287,23 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private void SetProfile(ZSectionProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(ZSectionProfile profile, string sectionName, IMaterialFragment material)
         {
             Engine.Reflection.Compute.RecordWarning("Z-Section currently not supported in the Etabs adapter. Section with name " + sectionName + " has not been pushed.");
         }
 
         /***************************************************/
 
-        private void SetProfile(RectangleProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(RectangleProfile profile, string sectionName, IMaterialFragment material)
         {
-            m_model.PropFrame.SetRectangle(sectionName, material.Name, dimensions.Height, dimensions.Width);
+            m_model.PropFrame.SetRectangle(sectionName, material.Name, profile.Height, profile.Width);
         }
 
         /***************************************************/
 
-        private void SetProfile(CircleProfile dimensions, string sectionName, IMaterialFragment material)
+        private void SetProfile(CircleProfile profile, string sectionName, IMaterialFragment material)
         {
-            m_model.PropFrame.SetCircle(sectionName, material.Name, dimensions.Diameter);
+            m_model.PropFrame.SetCircle(sectionName, material.Name, profile.Diameter);
         }
 
         /***************************************************/

@@ -47,44 +47,34 @@ namespace BH.Adapter.ETABS
         /***************************************************/
         private bool CreateObject(Node bhNode)
         {
-            bool success = true;
-            int retA = 0;
-            int retB = 0;
-            int retC = 0;
-
             string name = "";
 
             oM.Geometry.Point position = bhNode.Position();
-            retA = m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name);
-
-            bhNode.CustomData[AdapterId] = name;
-
-            if (bhNode.Support != null)
+            if (m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name) == 0)
             {
-                bool[] restraint = new bool[6];
-                restraint[0] = bhNode.Support.TranslationX == DOFType.Fixed;
-                restraint[1] = bhNode.Support.TranslationY == DOFType.Fixed;
-                restraint[2] = bhNode.Support.TranslationZ == DOFType.Fixed;
-                restraint[3] = bhNode.Support.RotationX == DOFType.Fixed;
-                restraint[4] = bhNode.Support.RotationY == DOFType.Fixed;
-                restraint[5] = bhNode.Support.RotationZ == DOFType.Fixed;
+                bhNode.CustomData[AdapterId] = name;
 
-                double[] spring = new double[6];
-                spring[0] = bhNode.Support.TranslationalStiffnessX;
-                spring[1] = bhNode.Support.TranslationalStiffnessY;
-                spring[2] = bhNode.Support.TranslationalStiffnessZ;
-                spring[3] = bhNode.Support.RotationalStiffnessX;
-                spring[4] = bhNode.Support.RotationalStiffnessY;
-                spring[5] = bhNode.Support.RotationalStiffnessZ;
+                if (bhNode.Support != null)
+                {
+                    bool[] restraint = new bool[6];
+                    double[] spring = new double[6];
 
-                retB = m_model.PointObj.SetRestraint(name, ref restraint);
-                retC = m_model.PointObj.SetSpring(name, ref spring);
+                    bhNode.Support.ToCSI(ref restraint, ref spring);
+
+                    if (m_model.PointObj.SetRestraint(name, ref restraint) == 0) { }
+                    else
+                    {
+                        CreatePropertyWarning("Node Restraint", "Node", name);
+                    }
+                    if (m_model.PointObj.SetSpring(name, ref spring) == 0) { }
+                    else
+                    {
+                        CreatePropertyWarning("Node Spring", "Node", name);
+                    }
+                }
             }
 
-            if (retA != 0 || retB != 0 || retC != 0)
-                success = false;
-
-            return success;
+            return true;
         }
 
         /***************************************************/
