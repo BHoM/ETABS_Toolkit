@@ -100,7 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterId.cs" />
-    <Compile Include="Convert\PrivateHelpers\Constraint.cs" />
+    <Compile Include="Convert\ToCSI.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Create\Diaphragm.cs" />
     <Compile Include="Create\EtabsConfig.cs" />

@@ -20,41 +20,63 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-#if (Debug2017)
+using BH.oM.Architecture.Elements;
+using BH.Engine.ETABS;
+#if Debug2017
 using ETABSv17;
 #else
 using ETABS2016;
 #endif
-using BH.oM.Geometry;
 
 namespace BH.Adapter.ETABS
 {
-    public partial class Helper
+    public partial class ETABSAdapter
     {
-        public static Polyline GetPanelPerimeter(cSapModel model, string id)
+        /***************************************************/
+
+        private bool CreateCollection(IEnumerable<Level> levels)
         {
-            string[] pName = null;
-            int pointCount = 0;
-            double pX1 = 0;
-            double pY1 = 0;
-            double pZ1 = 0;
-            model.AreaObj.GetPoints(id, ref pointCount, ref pName);
-            List<Point> pts = new List<Point>();
-            for (int j = 0; j < pointCount; j++)
+            int count = levels.Count();
+            if (count < 1)
+                return true;
+
+            List<Level> levelList = levels.OrderBy(x => x.Elevation).ToList();
+
+            string[] names = levelList.Select(x => x.Name).ToArray();
+            double[] elevations = new double[count + 1];
+
+            for (int i = 0; i < count; i++)
             {
-                model.PointObj.GetCoordCartesian(pName[j], ref pX1, ref pY1, ref pZ1);
-                pts.Add(new Point() { X = pX1, Y = pY1, Z = pZ1 });
+                elevations[i + 1] = levelList[i].Elevation;
             }
-            pts.Add(pts[0]);
 
-            Polyline pl = new Polyline() { ControlPoints = pts };
+            double[] heights = new double[count];   //Heihgts empty, set by elevations
+            bool[] isMasterStory = new bool[count];
+            isMasterStory[count - 1] = true;    //Top story as master
+            string[] similarTo = new string[count];
+            for (int i = 0; i < count; i++)
+            {
+                similarTo[i] = "";  //No similarities
+            }
 
-            return pl;
+            bool[] spliceAbove = new bool[count];   //No splice
+            double[] spliceHeight = new double[count];  //No splice
+
+
+
+            int ret = m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight);
+
+            if (ret != 0)
+            {
+                Engine.Reflection.Compute.RecordError("Failed to push levels. Levels can only be pushed to an empty model.");
+            }
+
+            return ret == 0;
+
         }
+
+        /***************************************************/
     }
 }

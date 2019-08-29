@@ -1,0 +1,138 @@
+/*
+ * This file is part of the Buildings and Habitats object Model (BHoM)
+ * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ *
+ * Each contributor holds copyright over their respective contributions.
+ * The project versioning (Git) records all such contribution source information.
+ *                                           
+ *                                                                              
+ * The BHoM is free software: you can redistribute it and/or modify         
+ * it under the terms of the GNU Lesser General Public License as published by  
+ * the Free Software Foundation, either version 3.0 of the License, or          
+ * (at your option) any later version.                                          
+ *                                                                              
+ * The BHoM is distributed in the hope that it will be useful,              
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of               
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
+ * GNU Lesser General Public License for more details.                          
+ *                                                                            
+ * You should have received a copy of the GNU Lesser General Public License     
+ * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
+ */
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using BH.oM.Base;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.SurfaceProperties;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.Loads;
+using BH.oM.Structure.MaterialFragments;
+#if (Debug2017)
+using ETABSv17;
+#else
+using ETABS2016;
+#endif
+using BH.Engine.ETABS;
+using BH.oM.Geometry;
+using BH.Engine.Geometry;
+using BH.Engine.Reflection;
+using BH.oM.Architecture.Elements;
+using BH.oM.Adapters.ETABS.Elements;
+
+namespace BH.Adapter.ETABS
+{
+    public partial class ETABSAdapter
+    {
+        /***************************************************/
+
+        private List<FEMesh> ReadMeshes(List<string> ids = null)
+        {
+            List<Panel> panelList = new List<Panel>();
+            int nameCount = 0;
+            string[] nameArr = { };
+
+            if (ids == null)
+            {
+                m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+                ids = nameArr.ToList();
+            }
+
+            List<FEMesh> meshes = new List<FEMesh>();
+            Dictionary<string, Node> nodes = new Dictionary<string, Node>();
+
+            foreach (string id in ids)
+            {
+                List<string> meshNodeIds = new List<string>();
+
+                string propertyName = "";
+
+                m_model.AreaObj.GetProperty(id, ref propertyName);
+                ISurfaceProperty panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
+
+                FEMesh mesh = new FEMesh() { Property = panelProperty };
+                mesh.CustomData[AdapterId] = id;
+
+                //Get out the "Element" ids, i.e. the mesh faces
+                int nbELem = 0;
+                string[] elemNames = new string[0];
+                m_model.AreaObj.GetElm(id, ref nbELem, ref elemNames);
+
+                for (int j = 0; j < nbELem; j++)
+                {
+                    //Get out the name of the points for each face
+                    int nbPts = 0;
+                    string[] ptsNames = new string[0];
+                    m_model.AreaElm.GetPoints(elemNames[j], ref nbPts, ref ptsNames);
+
+                    FEMeshFace face = new FEMeshFace();
+                    face.CustomData[AdapterId] = elemNames[j];
+
+                    for (int k = 0; k < nbPts; k++)
+                    {
+                        string nodeId = ptsNames[k];
+                        Node node;
+
+                        //Check if node already has been pulled
+                        if (!nodes.TryGetValue(nodeId, out node))
+                        {
+                            //Extract node. TODO: to be generalised using read node method
+                            double x = 0;
+                            double y = 0;
+                            double z = 0;
+                            m_model.PointElm.GetCoordCartesian(nodeId, ref x, ref y, ref z);
+                            node = new Node() { Position = new Point { X = x, Y = y, Z = z } };
+                            node.CustomData[AdapterId] = nodeId;
+                            nodes[ptsNames[k]] = node;
+                        }
+
+                        //Check if nodealready has been added to the mesh
+                        if (!meshNodeIds.Contains(nodeId))
+                            meshNodeIds.Add(nodeId);
+
+                        //Get corresponding node index
+                        face.NodeListIndices.Add(meshNodeIds.IndexOf(nodeId));
+                    }
+
+                    //Add face to list
+                    mesh.Faces.Add(face);
+
+                }
+
+                //Set mesh nodes
+                mesh.Nodes = meshNodeIds.Select(x => nodes[x]).ToList();
+
+                meshes.Add(mesh);
+            }
+
+            return meshes;
+        }
+
+        /***************************************************/
+    }
+}
