@@ -51,7 +51,7 @@ namespace BH.Adapter.ETABS
     {
         /***************************************************/
 
-        private List<IMaterialFragment> ReadMaterials(List<string> ids = null)
+        private List<IMaterialFragment> ReadMaterial(List<string> ids = null)
         {
             int nameCount = 0;
             string[] names = { };

@@ -51,7 +51,7 @@ namespace BH.Adapter.ETABS
     {
         /***************************************************/
 
-        private List<FEMesh> ReadMeshes(List<string> ids = null)
+        private List<FEMesh> ReadMesh(List<string> ids = null)
         {
             List<Panel> panelList = new List<Panel>();
             int nameCount = 0;
@@ -73,7 +73,7 @@ namespace BH.Adapter.ETABS
                 string propertyName = "";
 
                 m_model.AreaObj.GetProperty(id, ref propertyName);
-                ISurfaceProperty panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
+                ISurfaceProperty panelProperty = ReadSurfaceProperty(new List<string>() { propertyName })[0];
 
                 FEMesh mesh = new FEMesh() { Property = panelProperty };
                 mesh.CustomData[AdapterId] = id;

@@ -56,17 +56,17 @@ namespace BH.Adapter.ETABS
         protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
             if (type == typeof(Node))
-                return ReadNodes(ids as dynamic);
+                return ReadNode(ids as dynamic);
             else if (type == typeof(Bar))
-                return ReadBars(ids as dynamic);
+                return ReadBar(ids as dynamic);
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
-                return ReadSectionProperties(ids as dynamic);
+                return ReadSectionProperty(ids as dynamic);
             else if (type == typeof(IMaterialFragment))
-                return ReadMaterials(ids as dynamic);
+                return ReadMaterial(ids as dynamic);
             else if (type == typeof(Panel))
                 return ReadPanel(ids as dynamic);
             else if (type == typeof(ISurfaceProperty))
-                return ReadProperty2d(ids as dynamic);
+                return ReadSurfaceProperty(ids as dynamic);
             else if (type == typeof(LoadCombination))
                 return ReadLoadCombination(ids as dynamic);
             else if (type == typeof(Loadcase))
@@ -80,7 +80,7 @@ namespace BH.Adapter.ETABS
             else if (type == typeof(Level))
                 return ReadLevel(ids as dynamic);
             else if (type == typeof(FEMesh))
-                return ReadMeshes(ids as dynamic);
+                return ReadMesh(ids as dynamic);
 
             return new List<IBHoMObject>();//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
