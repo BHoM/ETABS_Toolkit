@@ -488,8 +488,7 @@ namespace BH.Adapter.ETABS
 
             //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
             loadcaseIds = CheckAndSetUpCases(cases);
-
-            string Name = "";
+            
             eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
 	        int resultCount = 0;
 	        string[] Obj = null;
@@ -519,7 +518,7 @@ namespace BH.Adapter.ETABS
             for (int i = 0; i < panelIds.Count; i++)
             {
                 
-                int ret = m_model.Results.AreaForceShell(panelIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref Obj, ref Elm,
+                int ret = m_model.Results.AreaForceShell(panelIds[i], ItemTypeElm, ref resultCount, ref Obj, ref Elm,
                     ref PointElm, ref LoadCase, ref StepType, ref StepNum, ref F11, ref F22, ref F12, ref FMax, ref FMin, ref FAngle, ref FVM,
                     ref M11, ref M22, ref M12, ref MMax, ref MMin, ref MAngle, ref V13, ref V23, ref VMax, ref VAngle);
 
@@ -561,8 +560,7 @@ namespace BH.Adapter.ETABS
 
             //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
             loadcaseIds = CheckAndSetUpCases(cases);
-
-            string Name = "";
+            
             eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
             int resultCount = 0;
             string[] obj = null;
@@ -593,7 +591,7 @@ namespace BH.Adapter.ETABS
             
             for (int i = 0; i < panelIds.Count; i++)
             {
-                int ret = m_model.Results.AreaStressShell(panelIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
+                int ret = m_model.Results.AreaStressShell(panelIds[i], ItemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
                 
                 if (ret == 0)
                 {

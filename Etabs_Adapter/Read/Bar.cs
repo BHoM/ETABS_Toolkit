@@ -45,11 +45,11 @@ namespace BH.Adapter.ETABS
     {
         /***************************************************/
 
-        private List<Bar> ReadBars(List<string> ids = null)
+        private List<Bar> ReadBar(List<string> ids = null)
         {
             List<Bar> barList = new List<Bar>();
-            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
-            Dictionary<string, ISectionProperty> bhomSections = new Dictionary<string, ISectionProperty>();
+            Dictionary<string, Node> bhomNodes = ReadNode().ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperty().ToDictionary(x => x.CustomData[AdapterId].ToString());
 
             int nameCount = 0;
             string[] names = { };
@@ -117,10 +117,10 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<ISectionProperty> ReadSectionProperties(List<string> ids = null)
+        private List<ISectionProperty> ReadSectionProperty(List<string> ids = null)
         {
             List<ISectionProperty> propList = new List<ISectionProperty>();
-            Dictionary<String, IMaterialFragment> bhomMaterials = ReadMaterials().ToDictionary(x => x.Name);
+            Dictionary<String, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.Name);
 
             int nameCount = 0;
             string[] names = { };
