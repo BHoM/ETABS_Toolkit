@@ -299,7 +299,7 @@ namespace BH.Adapter.ETABS
                 catch (Exception)
                 {
                     material = bhomMaterials.FirstOrDefault().Value;
-                    Engine.Reflection.Compute.RecordWarning("Could not get material from SAP. Using a default material");
+                    Engine.Reflection.Compute.RecordNote("Could not get material from ETABS. Using a default material");
                 }
 
 

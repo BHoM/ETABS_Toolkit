@@ -64,10 +64,13 @@ namespace BH.Adapter.ETABS
                 return false;
             }
 
-            if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.Name) != 0)
+            if (bhBar.SectionProperty != null)
             {
-                CreatePropertyWarning("SectionProperty", "Bar", name);
-                ret++;
+                if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.Name) != 0)
+                {
+                    CreatePropertyWarning("SectionProperty", "Bar", name);
+                    ret++;
+                }
             }
 
             if (m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI) != 0)
@@ -103,7 +106,7 @@ namespace BH.Adapter.ETABS
                 double[] springEnd = null;
 
                 bhBar.Release.ToCSI(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd);
-
+                
                 if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
                 {
                     CreatePropertyWarning("Release", "Bar", name);
@@ -132,7 +135,7 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            return ret == 0;
+            return true;
         }
 
         /***************************************************/

@@ -729,7 +729,7 @@ namespace BH.Adapter.ETABS
                 {
                     if (cases[i] is BH.oM.Structure.Loads.ICase)
                     {
-                        string id = Engine.ETABS.Convert.ToCSI(cases[i] as BH.oM.Structure.Loads.ICase);
+                        string id = cases[i].ToString();
                         loadcaseIds.Add(id);
                     }
                     else

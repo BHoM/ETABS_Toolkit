@@ -44,13 +44,6 @@ namespace BH.Engine.ETABS
 {
     public static partial class Convert
     {
-        public static String ToCSI(this ICase bhomCase)
-        {
-            string csiCaseName = bhomCase.Name + ":::" + bhomCase.Number.ToString();
-
-            return csiCaseName;
-        }
-
         /***************************************************/
 
         public static eLoadPatternType ToCSI(this LoadNature loadNature)
