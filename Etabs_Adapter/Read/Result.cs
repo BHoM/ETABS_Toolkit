@@ -728,15 +728,10 @@ namespace BH.Adapter.ETABS
             {
                 foreach (object thisCase in cases)
                 {
-                    if (thisCase is Loadcase)
+                    if (thisCase is ICase)
                     {
-                        Loadcase bhCase = thisCase as Loadcase;
-                        loadcaseIds.Add(bhCase.CustomData[AdapterId].ToString());
-                    }
-                    else if (thisCase is LoadCombination)
-                    {
-                        LoadCombination bhCombo = thisCase as LoadCombination;
-                        loadcaseIds.Add(bhCombo.CustomData[AdapterId].ToString());
+                        ICase bhCase = thisCase as ICase;
+                        loadcaseIds.Add(bhCase.Name.ToString());
                     }
                     else if (thisCase is string)
                     {
