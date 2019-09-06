@@ -42,14 +42,13 @@ namespace BH.Adapter.ETABS
         {
             eLoadPatternType patternType = loadcase.Nature.ToCSI();
 
-            if (m_model.LoadPatterns.Add(loadcase.Name, patternType) == 0)
-            {
-                loadcase.CustomData[AdapterId] = loadcase.Name;
-            }
-            else
-            {
-                CreateElementError("Loadcase", loadcase.Name);
-            }
+            double selfWeight = 0;
+            if (loadcase.Nature == LoadNature.Dead)
+                selfWeight = 1;
+
+            int ret = m_model.LoadPatterns.Add(loadcase.Name, patternType, selfWeight, true);
+            loadcase.CustomData[AdapterId] = loadcase.Name;
+
             return true;
         }
 
@@ -67,7 +66,7 @@ namespace BH.Adapter.ETABS
 
             for (int i = 0; i < count; i++)
             {
-                cases[i] = massSource.FactoredAdditionalCases[i].Item1.ToCSI();
+                cases[i] = massSource.FactoredAdditionalCases[i].Item1.CustomData[AdapterId].ToString();
                 factors[i] = massSource.FactoredAdditionalCases[i].Item2;
             }
 
@@ -134,8 +133,9 @@ namespace BH.Adapter.ETABS
             int ret = 0;
             foreach (Node node in pointLoad.Objects.Elements)
             {
-                string csiCaseName = pointLoad.Loadcase.ToCSI();
-                ret = m_model.PointObj.SetLoadForce(node.CustomData[AdapterId].ToString(), csiCaseName, ref pfValues, replace);
+                string caseName = pointLoad.Loadcase.CustomData[AdapterId].ToString();
+                string nodeName = node.CustomData[AdapterId].ToString();
+                ret = m_model.PointObj.SetLoadForce(nodeName, caseName, ref pfValues, replace);
             }
         }
 
@@ -146,6 +146,11 @@ namespace BH.Adapter.ETABS
 
             foreach (Bar bar in barUniformLoad.Objects.Elements)
             {
+                bool stepReplace = replace;
+
+                string caseName = barUniformLoad.Loadcase.CustomData[AdapterId].ToString();
+                string barName = bar.CustomData[AdapterId].ToString();
+
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     int ret = 1;
@@ -153,9 +158,10 @@ namespace BH.Adapter.ETABS
 
                     if (val != 0)
                     {
-                        string csiCaseName = barUniformLoad.Loadcase.ToCSI();
-                        ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction + 3, 0, 1, val, val, "Global", true, replace);
+                        ret = m_model.FrameObj.SetLoadDistributed(barName, caseName, 1, direction + 3, 0, 1, val, val, "Global", true, stepReplace);
                     }
+
+                    stepReplace = false;
                 }
                 //moments ? does not exist in old toolkit either! 
             }
@@ -166,7 +172,7 @@ namespace BH.Adapter.ETABS
         public void SetLoad(AreaUniformlyDistributedLoad areaUniformLoad, bool replace)
         {
             int ret = 0;
-            string csiCaseName = areaUniformLoad.Loadcase.ToCSI();
+            string caseName = areaUniformLoad.Loadcase.CustomData[AdapterId].ToString();
             foreach (IAreaElement area in areaUniformLoad.Objects.Elements)
             {
                 for (int direction = 1; direction <= 3; direction++)
@@ -175,7 +181,7 @@ namespace BH.Adapter.ETABS
                     if (val != 0)
                     {
                         //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
-                        ret = m_model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), csiCaseName, val, direction + 3, replace);
+                        ret = m_model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), caseName, val, direction + 3, replace);
                     }
                 }
             }
@@ -194,9 +200,10 @@ namespace BH.Adapter.ETABS
                     double val2 = barLoad.ForceB.Z;
                     double dist1 = barLoad.DistanceFromA;
                     double dist2 = barLoad.DistanceFromB;
-                    string csiCaseName = barLoad.Loadcase.ToCSI();
+                    string caseName = barLoad.Loadcase.CustomData[AdapterId].ToString();
+                    string nodeName = bar.CustomData[AdapterId].ToString();
                     int direction = 6; // we're doing this for Z axis only right now.
-                    ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), csiCaseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
+                    ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
                 }
             }
         }
@@ -207,12 +214,14 @@ namespace BH.Adapter.ETABS
         {
             double selfWeightMultiplier = 0;
 
-            m_model.LoadPatterns.GetSelfWTMultiplier(gravityLoad.Loadcase.ToCSI(), ref selfWeightMultiplier);
+            string caseName = gravityLoad.Loadcase.CustomData[AdapterId].ToString();
+
+            m_model.LoadPatterns.GetSelfWTMultiplier(caseName, ref selfWeightMultiplier);
 
             if (selfWeightMultiplier != 0)
                 BH.Engine.Reflection.Compute.RecordWarning($"Loadcase {gravityLoad.Loadcase.Name} allready had a selfweight multiplier which will get overridden. Previous value: {selfWeightMultiplier}, new value: {-gravityLoad.GravityDirection.Z}");
 
-            m_model.LoadPatterns.SetSelfWTMultiplier(gravityLoad.Loadcase.ToCSI(), -gravityLoad.GravityDirection.Z);
+            m_model.LoadPatterns.SetSelfWTMultiplier(caseName, -gravityLoad.GravityDirection.Z);
 
             if (gravityLoad.GravityDirection.X != 0 || gravityLoad.GravityDirection.Y != 0)
                 Engine.Reflection.Compute.RecordError("Etabs can only handle gravity loads in global z direction");
