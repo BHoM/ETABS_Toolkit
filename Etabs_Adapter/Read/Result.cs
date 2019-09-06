@@ -36,6 +36,7 @@ using ETABS2016;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.Engine.ETABS;
+using BH.oM.Structure.Loads;
 
 namespace BH.Adapter.ETABS
 {
@@ -725,15 +726,24 @@ namespace BH.Adapter.ETABS
             }
             else
             {
-                for (int i = 0; i < cases.Count; i++)
+                foreach (object thisCase in cases)
                 {
-                    if (cases[i] is BH.oM.Structure.Loads.ICase)
+                    if (thisCase is Loadcase)
                     {
-                        string id = cases[i].ToString();
-                        loadcaseIds.Add(id);
+                        Loadcase bhCase = thisCase as Loadcase;
+                        loadcaseIds.Add(bhCase.CustomData[AdapterId].ToString());
                     }
-                    else
-                        loadcaseIds.Add(cases[i].ToString());
+                    else if (thisCase is LoadCombination)
+                    {
+                        LoadCombination bhCombo = thisCase as LoadCombination;
+                        loadcaseIds.Add(bhCombo.CustomData[AdapterId].ToString());
+                    }
+                    else if (thisCase is string)
+                    {
+                        string caseId = thisCase as string;
+                        loadcaseIds.Add(caseId);
+                    }
+
                 }
             }
 
