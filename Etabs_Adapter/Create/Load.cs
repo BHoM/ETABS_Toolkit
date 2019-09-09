@@ -41,10 +41,7 @@ namespace BH.Adapter.ETABS
         public bool CreateObject(Loadcase loadcase)
         {
             eLoadPatternType patternType = loadcase.Nature.ToCSI();
-
             double selfWeight = 0;
-            if (loadcase.Nature == LoadNature.Dead)
-                selfWeight = 1;
 
             int ret = m_model.LoadPatterns.Add(loadcase.Name, patternType, selfWeight, true);
             loadcase.CustomData[AdapterId] = loadcase.Name;
