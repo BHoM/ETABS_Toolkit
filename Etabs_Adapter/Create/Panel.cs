@@ -117,7 +117,17 @@ namespace BH.Adapter.ETABS
             bool success = true;
             int retA = 0;
 
-            string propertyName = property2d.Name;// property2d.CustomData[AdapterId].ToString();
+            string propertyName = "None";
+            if (property2d.Name != "")
+            {
+                property2d.CustomData[AdapterId] = propertyName = property2d.Name;
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordNote("Surface properties with no name will be assigned 'None'.");
+                property2d.CustomData[AdapterId] = "None";
+                return true;
+            }
 
             eShellType shellType = property2d.EtabsShellType();
 
