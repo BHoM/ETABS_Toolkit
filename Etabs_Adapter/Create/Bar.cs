@@ -66,7 +66,7 @@ namespace BH.Adapter.ETABS
 
             if (bhBar.SectionProperty != null)
             {
-                if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.Name) != 0)
+                if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.CustomData[AdapterId].ToString()) != 0)
                 {
                     CreatePropertyWarning("SectionProperty", "Bar", name);
                     ret++;
@@ -142,6 +142,18 @@ namespace BH.Adapter.ETABS
 
         private bool CreateObject(ISectionProperty bhSection)
         {
+            string propertyName = "None";
+            if (bhSection.Name != "")
+            {
+                bhSection.CustomData[AdapterId] = propertyName = bhSection.Name;
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("Section properties with no name will be converted to the null property 'None'.");
+                bhSection.CustomData[AdapterId] = "None";
+                return true;
+            }
+
             SetSection(bhSection as dynamic);
 
             double[] modifiers = bhSection.Modifiers();
