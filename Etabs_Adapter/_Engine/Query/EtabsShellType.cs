@@ -28,6 +28,14 @@ using ETABSv17;
 using ETABS2016;
 #endif
 
+// ******************************************************
+// NOTE
+// These Engine methods are improperly put in the Adapter Project
+// as a temporary workaround to the different naming of ETABS dlls (2016, 2017).
+// Any Engine method that does not require a direct reference to the ETABS dlls
+// must be put in the Engine project.
+// ******************************************************
+
 namespace BH.Engine.ETABS
 {
     public static partial class Query

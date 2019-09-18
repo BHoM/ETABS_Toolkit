@@ -65,16 +65,6 @@
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Debug2016' OR '$(Configuration)' == 'Release'">
-      <HintPath>..\packages\CSI_ETABSv2016_x64.1.0.3\lib\ETABS2016.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ETABSv17, Version=17.0.0.0, Culture=neutral, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Debug2017'">
-      <HintPath>..\packages\CSI_ETABSv17_x64.1.0.3\lib\ETABSv17.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Geometry_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
@@ -120,9 +110,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdapterId.cs" />
-    <Compile Include="Convert\ToCSI.cs" />
-    <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Create\Diaphragm.cs" />
     <Compile Include="Create\EtabsConfig.cs" />
     <Compile Include="Create\MassSource.cs" />
@@ -139,7 +126,6 @@
     <Compile Include="Query\AutoLengthOffset.cs" />
     <Compile Include="Query\Diaphragm.cs" />
     <Compile Include="Query\DiaphragmType.cs" />
-    <Compile Include="Query\EtabsShellType.cs" />
     <Compile Include="Query\InsertionPoint.cs" />
     <Compile Include="Query\Pier.cs" />
     <Compile Include="Query\Spandrel.cs" />

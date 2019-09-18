@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace BH.Adapter.ETABS
 {
-    public partial class ETABSAdapter
+#if Debug2017
+    public partial class ETABS2017Adapter : BHoMAdapter
+#else
+    public partial class ETABS2016Adapter : BHoMAdapter
+#endif
     {
         /***************************************************/
         /**** Public Methods                            ****/

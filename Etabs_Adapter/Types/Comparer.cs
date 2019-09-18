@@ -34,12 +34,16 @@ using BH.Engine.Base.Objects;
 
 namespace BH.Adapter.ETABS
 {
-    public partial class ETABSAdapter : BHoMAdapter
-    {
+#if Debug2017
+    public partial class ETABS2017Adapter : BHoMAdapter
+#else
+    public partial class ETABS2016Adapter : BHoMAdapter
+#endif
+    { 
 
-        /***************************************************/
-        /**** BHoM Adapter Interface                    ****/
-        /***************************************************/
+    /***************************************************/
+    /**** BHoM Adapter Interface                    ****/
+    /***************************************************/
 
         protected override IEqualityComparer<T> Comparer<T>()
         {
