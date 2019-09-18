@@ -21,24 +21,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.Constraints;
+using BH.oM.Structure.MaterialFragments;
+using BH.oM.Geometry;
+
 #if (Debug2017)
 using ETABSv17;
 #else
 using ETABS2016;
 #endif
-using BH.oM;
-using BH.oM.Structure;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.MaterialFragments;
-using BH.oM.Geometry;
 
+// ******************************************************
+// NOTE
+// These Engine methods are improperly put in the Adapter Project
+// as a temporary workaround to the different naming of ETABS dlls (2016, 2017).
+// Any Engine method that does not require a direct reference to the ETABS dlls
+// must be put in the Engine project.
+// ******************************************************
 
 namespace BH.Engine.ETABS
 {

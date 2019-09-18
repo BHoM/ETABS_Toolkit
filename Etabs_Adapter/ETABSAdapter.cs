@@ -37,9 +37,12 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-    public partial class ETABSAdapter : BHoMAdapter
+#if Debug2017
+    public partial class ETABS2017Adapter : BHoMAdapter
+#else
+    public partial class ETABS2016Adapter : BHoMAdapter
+#endif
     {
-
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/
@@ -52,14 +55,18 @@ namespace BH.Adapter.ETABS
         /**** Constructors                              ****/
         /***************************************************/
 
-        public ETABSAdapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+#if Debug2017
+        public ETABS2017Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+#else
+        public ETABS2016Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+#endif
         {
             if (active)
             {
                 AdapterId = ID;
 
                 this.EtabsConfig = etabsConfig == null ? new EtabsConfig() : etabsConfig;
-                
+
                 Config.SeparateProperties = true;
                 Config.MergeWithComparer = true;
                 Config.ProcessInMemory = false;
