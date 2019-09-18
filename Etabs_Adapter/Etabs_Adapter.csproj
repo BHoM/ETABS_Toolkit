@@ -175,7 +175,6 @@
     <ProjectReference Include="..\ETABS_oM\ETABS_oM.csproj">
       <Project>{0f1b6828-633e-420d-bb61-00c16056ba8d}</Project>
       <Name>ETABS_oM</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
