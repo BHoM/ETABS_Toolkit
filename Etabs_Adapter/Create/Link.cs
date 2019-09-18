@@ -99,6 +99,16 @@ namespace BH.Adapter.ETABS
 
         }
 
+        public override string ToString()
+        {
+#if Debug2017
+    return base.ToString();
+#else
+            return base.ToString();
+#endif
+
+        }
+
         /***************************************************/
     }
 }

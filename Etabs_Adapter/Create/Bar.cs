@@ -36,9 +36,9 @@ using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Geometry.ShapeProfiles;
 #if Debug2017
-using ETABSv17;
+    using ETABSv17;
 #else
-using ETABS2016;
+    using ETABS2016;
 #endif
 
 namespace BH.Adapter.ETABS

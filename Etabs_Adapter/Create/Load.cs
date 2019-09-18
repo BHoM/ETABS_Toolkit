@@ -26,7 +26,8 @@ using System;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.Engine.ETABS;
-#if Debug2017
+
+#if (Debug2017)
 using ETABSv17;
 #else
 using ETABS2016;

@@ -33,17 +33,18 @@ using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.MaterialFragments;
-#if (Debug2017)
-using ETABSv17;
-#else
-using ETABS2016;
-#endif
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.Engine.Reflection;
 using BH.oM.Architecture.Elements;
 using BH.oM.Adapters.ETABS.Elements;
+
+#if (Debug2017)
+using ETABSv17;
+#else
+using ETABS2016;
+#endif
 
 namespace BH.Adapter.ETABS
 {

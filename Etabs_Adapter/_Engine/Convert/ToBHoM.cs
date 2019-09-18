@@ -85,7 +85,15 @@ namespace BH.Engine.ETABS
             pointObj.SetSpring(id, ref spring);
 
             Node bhNode = Structure.Create.Node(new oM.Geometry.Point() { X = x, Y = y, Z = z }, "", GetConstraint6DOF(restraint, spring));
-            bhNode.CustomData.Add(ETABS2017Adapter.ID, id);
+
+            string AdapterId;
+
+#if Debug2017
+            AdapterId = ETABS2017Adapter.ID;
+#else
+            AdapterId = ETABS2016Adapter.ID;
+#endif
+            bhNode.CustomData.Add(AdapterId, id);
 
             return bhNode;
         }
@@ -118,8 +126,8 @@ namespace BH.Engine.ETABS
                     return LoadNature.Other;
 
             }
-        }       
-        
+        }
+
         /***************************************************/
 
         public static MaterialType ToBHoM(this eMatType materialType)
