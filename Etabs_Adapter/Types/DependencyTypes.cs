@@ -36,7 +36,7 @@ namespace BH.Adapter.ETABS
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif
-    {
+    { 
         /***************************************************/
         /**** BHoM Adapter Interface                    ****/
         /***************************************************/

@@ -36,9 +36,15 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static EtabsConfig EtabsConfig(bool replaceLoads = false)
+#if Debug2017
+        public static Etabs2017Config EtabsConfig(bool replaceLoads = false)
         {
-            return new EtabsConfig
+            return new Etabs2017Config
+#else
+     public static Etabs2016Config EtabsConfig(bool replaceLoads = false)
+                    {
+            return new Etabs2016Config
+#endif
             {
                 ReplaceLoads = replaceLoads
             };
