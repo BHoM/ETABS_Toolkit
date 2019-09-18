@@ -31,12 +31,9 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.ETABS
 {
-#if Debug2017
-     public class Etabs2017Config : BHoMObject
-#else
-    public class Etabs2016Config : BHoMObject
-#endif
-    {
+
+     public class EtabsConfig : BHoMObject
+  {
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/

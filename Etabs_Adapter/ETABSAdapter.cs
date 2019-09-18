@@ -49,34 +49,23 @@ namespace BH.Adapter.ETABS
 
         public const string ID = "ETABS_id";
 
-#if Debug2017
-        public Etabs2017Config EtabsConfig { get; set; } = new Etabs2017Config();
-#else
-        public Etabs2016Config EtabsConfig { get; set; } = new Etabs2016Config();
-#endif
-
+        public EtabsConfig EtabsConfig { get; set; } = new EtabsConfig();
 
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
 
 #if Debug2017
-        public ETABS2017Adapter(string filePath = "", Etabs2017Config etabsConfig = null, bool active = false)
+        public ETABS2017Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
 #else
-        public ETABS2016Adapter(string filePath = "", Etabs2016Config etabsConfig = null, bool active = false)
+        public ETABS2016Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
 #endif
         {
             if (active)
             {
                 AdapterId = ID;
 
-                this.EtabsConfig = etabsConfig == null ?
-                    #if Debug2017
-                            new Etabs2017Config()
-                    #else
-                            new Etabs2016Config()
-                    #endif
-                    : etabsConfig;
+                this.EtabsConfig = etabsConfig == null ? new EtabsConfig() : etabsConfig;
 
                 Config.SeparateProperties = true;
                 Config.MergeWithComparer = true;
