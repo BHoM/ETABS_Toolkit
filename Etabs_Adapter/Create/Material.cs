@@ -35,7 +35,7 @@ using ETABS2016;
 namespace BH.Adapter.ETABS
 {
 #if Debug2017
-    public partial class ETABS2017Adapter : BHoMAdapter
+    public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif
