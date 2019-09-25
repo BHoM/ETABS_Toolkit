@@ -38,7 +38,7 @@ using ETABS2016;
 namespace BH.Adapter.ETABS
 {
 #if Debug2017
-    public partial class ETABS2017Adapter : BHoMAdapter
+    public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif
@@ -56,7 +56,7 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
 #if Debug2017
-        public ETABS2017Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+        public ETABS17Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
 #else
         public ETABS2016Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
 #endif
