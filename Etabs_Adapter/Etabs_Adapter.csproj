@@ -19,7 +19,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BH.Adapter.ETABS</RootNamespace>
-    <AssemblyName>Etabs2017_Adapter</AssemblyName>
+    <AssemblyName>ETABS17_Adapter</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -51,7 +51,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <AssemblyName>Etabs2017_Adapter</AssemblyName>
+    <AssemblyName>ETABS17_Adapter</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytical_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
