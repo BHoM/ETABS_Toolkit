@@ -22,7 +22,7 @@
 
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Adapters.ETABS;
-#if Debug17 || Release17
+#if (Debug2017)
 using ETABSv17;
 #else
 using ETABS2016;

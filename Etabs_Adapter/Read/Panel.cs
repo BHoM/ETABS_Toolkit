@@ -40,7 +40,7 @@ using BH.Engine.Reflection;
 using BH.oM.Architecture.Elements;
 using BH.oM.Adapters.ETABS.Elements;
 
-#if Debug17 || Release17
+#if (Debug2017)
 using ETABSv17;
 #else
 using ETABS2016;
