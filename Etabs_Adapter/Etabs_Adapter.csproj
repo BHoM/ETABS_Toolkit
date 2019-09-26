@@ -2,7 +2,7 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug2016</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug16</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{895E2AB0-E349-4C1A-9098-51A46CD3A955}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug2017</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug17</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{895E2AB0-E349-4C1A-9098-51A46CD3A955}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -98,12 +98,12 @@
     <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSI_ETABSv2016_x64.1.0.3\lib\ETABS2016.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ETABSv17, Version=17.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSI_ETABSv17_x64.1.0.3\lib\ETABSv17.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Geometry_Engine">
       <SpecificVersion>False</SpecificVersion>
