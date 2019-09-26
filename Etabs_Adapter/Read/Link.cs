@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
-#if (Debug2017)
+#if Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
