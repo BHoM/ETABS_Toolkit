@@ -34,7 +34,7 @@ using BH.Engine.Geometry;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
-#if Debug2017
+#if Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -42,7 +42,7 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug2017
+#if Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
