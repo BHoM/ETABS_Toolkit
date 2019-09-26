@@ -33,7 +33,7 @@ using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.MaterialFragments;
-#if Debug17 || Release17
+#if (Debug2017)
 using ETABSv17;
 #else
 using ETABS2016;

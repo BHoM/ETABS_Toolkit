@@ -33,7 +33,7 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
 using BH.oM.Geometry.ShapeProfiles;
-#if Debug17 || Release17
+#if (Debug2017)
 using ETABSv17;
 #else
 using ETABS2016;

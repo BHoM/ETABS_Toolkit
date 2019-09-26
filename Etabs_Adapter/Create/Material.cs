@@ -26,7 +26,7 @@ using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 
-#if Debug17 || Release17
+#if (Debug2017)
 using ETABSv17;
 #else
 using ETABS2016;
