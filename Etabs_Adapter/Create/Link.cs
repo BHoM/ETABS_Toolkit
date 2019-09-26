@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
-#if Debug2017
+#if Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -32,7 +32,7 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug2017
+#if Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
@@ -101,7 +101,7 @@ namespace BH.Adapter.ETABS
 
         public override string ToString()
         {
-#if Debug2017
+#if Debug17 || Release17
     return base.ToString();
 #else
             return base.ToString();
