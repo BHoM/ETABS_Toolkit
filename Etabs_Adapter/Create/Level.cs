@@ -22,7 +22,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Architecture.Elements;
+using BH.oM.Geometry.SettingOut;
 using BH.Engine.ETABS;
 #if Debug17 || Release17
 using ETABSv17;
