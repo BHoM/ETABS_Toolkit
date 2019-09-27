@@ -37,7 +37,7 @@ using BH.Engine.ETABS;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.Engine.Reflection;
-using BH.oM.Architecture.Elements;
+using BH.oM.Geometry.SettingOut;
 using BH.oM.Adapters.ETABS.Elements;
 
 #if Debug17 || Release17
