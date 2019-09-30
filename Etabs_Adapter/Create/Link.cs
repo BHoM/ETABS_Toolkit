@@ -41,7 +41,7 @@ namespace BH.Adapter.ETABS
             bool success = true;
             int retA = 0;
 
-            List<string> linkIds = null;
+            List<string> linkIds = new List<string>();
 
             LinkConstraint constraint = bhLink.Constraint;//not used yet
             Node masterNode = bhLink.MasterNode;
@@ -57,7 +57,10 @@ namespace BH.Adapter.ETABS
                 linkIds.Add(name);
             }
 
-            bhLink.CustomData[AdapterId] = linkIds;
+            if (linkIds.Count == 0)
+                bhLink.CustomData[AdapterId] = null;
+            else
+                bhLink.CustomData[AdapterId] = linkIds;
 
             return success;
         }
