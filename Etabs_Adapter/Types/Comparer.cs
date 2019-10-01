@@ -34,7 +34,9 @@ using BH.Engine.Base.Objects;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter

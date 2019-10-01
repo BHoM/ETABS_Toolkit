@@ -33,7 +33,9 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
 using BH.oM.Geometry.ShapeProfiles;
-#if Debug17 || Release17
+#if Debug18 || Release18
+using ETABSv1;
+#elif Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -41,7 +43,9 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter

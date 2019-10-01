@@ -29,7 +29,9 @@ using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Constraints;
 using BH.Adapter.ETABS;
 
-#if Debug17 || Release17
+#if Debug18 || Release18
+using ETABSv1;
+#elif Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
