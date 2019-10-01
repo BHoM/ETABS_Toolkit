@@ -78,17 +78,7 @@ namespace BH.Adapter.ETABS
                 Config.ProcessInMemory = false;
                 Config.CloneBeforePush = true;
 
-                //string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
-                //string pathToETABS = System.IO.Path.Combine("C:","Program Files", "Computers and Structures", "ETABS 2016", "ETABS.exe");
-#if Debug18 || Release18
-                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 18\ETABS.exe";                
-#elif Debug17 || Release17
-                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 17\ETABS.exe";
 
-#else
-                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 2016\ETABS.exe";
-
-#endif
                 cHelper helper = new Helper();
 
                 object runningInstance = null;
@@ -105,7 +95,7 @@ namespace BH.Adapter.ETABS
                 else
                 {
                     //open ETABS if not running - NOTE: this behaviour is different from other adapters
-                    m_app = helper.CreateObject(pathToETABS);
+                    m_app = helper.CreateObjectProgID("CSI.ETABS.API.ETABSObject");
                     m_app.ApplicationStart();
                     m_model = m_app.SapModel;
                     m_model.InitializeNewModel(eUnits.N_m_C);
