@@ -41,7 +41,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BH.Adapter.ETABS</RootNamespace>
-    <AssemblyName>ETABS17_Adapter</AssemblyName>
+    <AssemblyName>ETABS_Adapter</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

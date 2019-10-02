@@ -107,7 +107,7 @@ namespace BH.Adapter.ETABS
                     }
                     else if (m_model.PropMaterial.GetOConcrete(id, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref strainAtFc, ref strainUlt, ref v3, ref v4) == 0 || matType == eMatType.Concrete)
                     {
-                        m = Engine.Structure.Create.Concrete(id, e, v, thermCo, mass, 0);
+                        m = Engine.Structure.Create.Concrete(id, e, v, thermCo, mass, 0, 0, compStr);
                     }
                     else if (m_model.PropMaterial.GetORebar(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref b1) == 0 || matType == eMatType.Rebar)
                     {
@@ -123,8 +123,9 @@ namespace BH.Adapter.ETABS
                     }
                     else
                     {
-                        Engine.Reflection.Compute.RecordWarning("Could not extract structural properties for material " + id);
-                        return null;
+                        string msg = string.Format("Could not extract structural properties for material {0}, this has been replaced with a concrete material with no properties.", id);
+                        Engine.Reflection.Compute.RecordWarning(msg);
+                        m = Engine.Structure.Create.Concrete(id + "_replacement");
                     }
 
                     m.CustomData[AdapterId] = id;
