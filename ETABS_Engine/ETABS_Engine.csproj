@@ -78,7 +78,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug18|AnyCPU'">
-    <OutputPath>bin\Debug18\</OutputPath>
+    <OutputPath>..\Build\</OutputPath>
     <DefineConstants>TRACE;DEBUG;Debug18</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -89,7 +89,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release18|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Release18\</OutputPath>
+    <OutputPath>..\Build\</OutputPath>
     <DefineConstants>TRACE;Release18</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
