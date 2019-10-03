@@ -23,6 +23,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Geometry.SettingOut;
+using BH.oM.Architecture.Elements;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.Constraints;
@@ -82,9 +83,15 @@ namespace BH.Adapter.ETABS
                 this.Replace(diaphragms);
             }
 
-            if (typeof(T) == typeof(Level))
+            if (typeof(T) == typeof(oM.Geometry.SettingOut.Level))
             {
-                return CreateCollection(objects as IEnumerable<Level>);
+                return CreateCollection(objects as IEnumerable<oM.Geometry.SettingOut.Level>);
+            }
+            else if(typeof(T) == typeof(oM.Architecture.Elements.Level))
+            {
+                List<oM.Geometry.SettingOut.Level> levels = (objects as List<oM.Architecture.Elements.Level>).UpgradeVersion();
+
+                return CreateCollection(levels as IEnumerable<oM.Geometry.SettingOut.Level>);
             }
             else
             {
@@ -97,5 +104,6 @@ namespace BH.Adapter.ETABS
         }
         
         /***************************************************/
+
     }
 }

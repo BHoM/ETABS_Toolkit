@@ -43,6 +43,7 @@ using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.Engine.Reflection;
 using BH.oM.Geometry.SettingOut;
+using BH.oM.Architecture.Elements;
 using BH.oM.Adapters.ETABS.Elements;
 
 namespace BH.Adapter.ETABS
@@ -81,7 +82,7 @@ namespace BH.Adapter.ETABS
                 return ReadRigidLink(ids as dynamic);
             else if (type == typeof(LinkConstraint))
                 return ReadLinkConstraints(ids as dynamic);
-            else if (type == typeof(Level))
+            else if (type == typeof(oM.Geometry.SettingOut.Level) || type == typeof(oM.Architecture.Elements.Level))
                 return ReadLevel(ids as dynamic);
             else if (type == typeof(FEMesh))
                 return ReadMesh(ids as dynamic);
