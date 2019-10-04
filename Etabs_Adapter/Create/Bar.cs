@@ -310,7 +310,7 @@ namespace BH.Adapter.ETABS
 
         private void SetProfile(ZSectionProfile profile, string sectionName, IMaterialFragment material)
         {
-            Engine.Reflection.Compute.RecordWarning("Z-Section currently not supported in the Etabs adapter. Section with name " + sectionName + " has not been pushed.");
+            Engine.Reflection.Compute.RecordWarning("Z-Section currently not supported in the ETABS adapter. Section with name " + sectionName + " has not been pushed.");
         }
 
         /***************************************************/

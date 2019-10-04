@@ -27,11 +27,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Etabs_Adapter")]
+[assembly: AssemblyTitle("ETABS_Adapter")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Etabs_Adapter")]
+[assembly: AssemblyProduct("ETABS_Adapter")]
 [assembly: AssemblyCopyright("Copyright © https://github.com/BHoM")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

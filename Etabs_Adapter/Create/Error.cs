@@ -80,7 +80,7 @@ namespace BH.Adapter.ETABS
 
         private static void RecordFlippingError(string sectionName)
         {
-            BH.Engine.Reflection.Compute.RecordWarning("Section with name " + sectionName + "has a flipping boolean. This is not currently supported in the Etabs_Toolkit. The section will be set to etabs unflipped");
+            BH.Engine.Reflection.Compute.RecordWarning("Section with name " + sectionName + "has a flipping boolean. This is not currently supported in the ETABS_Toolkit. The section will be set to etabs unflipped");
         }
 
         /***************************************************/
