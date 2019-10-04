@@ -89,7 +89,7 @@ namespace BH.Adapter.ETABS
             }
             else if(typeof(T) == typeof(oM.Architecture.Elements.Level))
             {
-                List<oM.Geometry.SettingOut.Level> levels = (objects as List<oM.Architecture.Elements.Level>).UpgradeVersion();
+                List<oM.Geometry.SettingOut.Level> levels = objects.Select(x => (x as oM.Architecture.Elements.Level).UpgradeVersion()).ToList();
 
                 return CreateCollection(levels as IEnumerable<oM.Geometry.SettingOut.Level>);
             }
