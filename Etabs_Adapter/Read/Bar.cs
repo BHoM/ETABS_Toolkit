@@ -290,8 +290,10 @@ namespace BH.Adapter.ETABS
                         break;
                 }
                 if (dimensions == null)
+                {
                     Engine.Reflection.Compute.RecordNote(propertyType.ToString() + " properties are not implemented in ETABS adapter. An empty section has been returned.");
-                constructSelector = "explicit";
+                    constructSelector = "explicit";
+                }
                 #endregion
 
 
