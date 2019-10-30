@@ -51,7 +51,7 @@ namespace BH.Adapter.ETABS
     {
 
         /***************************************************/
-        protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
+        protected override bool Create<T>(IEnumerable<T> objects)
         {
             bool success = true;
 
@@ -80,7 +80,7 @@ namespace BH.Adapter.ETABS
 
                 List<Diaphragm> diaphragms = panels.Select(x => x.Diaphragm()).Where(x => x != null).ToList();
 
-                this.Replace(diaphragms);
+                this.CRUD(diaphragms);
             }
 
             if (typeof(T) == typeof(oM.Geometry.SettingOut.Level))

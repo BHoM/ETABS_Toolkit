@@ -67,11 +67,6 @@ namespace BH.Adapter.ETABS
 
                 this.EtabsConfig = etabsConfig == null ? new EtabsConfig() : etabsConfig;
 
-                Config.SeparateProperties = true;
-                Config.MergeWithComparer = true;
-                Config.ProcessInMemory = false;
-                Config.CloneBeforePush = true;
-
                 //string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
                 //string pathToETABS = System.IO.Path.Combine("C:","Program Files", "Computers and Structures", "ETABS 2016", "ETABS.exe");
 #if Debug17 || Release17
