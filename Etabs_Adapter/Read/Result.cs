@@ -83,7 +83,7 @@ namespace BH.Adapter.ETABS
                 results = GetNodeResults(type, ids, cases);
             else if (typeof(BarResult).IsAssignableFrom(type))
                 results = GetBarResults(type, ids, cases, divisions);
-            else if (typeof(MeshResult).IsAssignableFrom(type))
+            else if (typeof(MeshElementResult).IsAssignableFrom(type))
                 results = GetMeshResults(type, ids, cases, divisions);
             //else
             //    return new List<IResult>();
@@ -133,7 +133,7 @@ namespace BH.Adapter.ETABS
 
         private IEnumerable<IResult> GetMeshResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
-            IEnumerable<MeshResult> results = new List<MeshResult>();
+            IEnumerable<MeshElementResult> results = new List<MeshElementResult>();
 
             if (type == typeof(MeshForce))
                 results = GetMeshForce(ids, cases, divisions);
