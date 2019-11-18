@@ -98,13 +98,13 @@ namespace BH.Adapter.ETABS
             IEnumerable<IResult> results = new List<NodeResult>();
 
             if (type == typeof(NodeAcceleration))
-                results = GetNodeAcceleration(ids, cases);
+                results = ReadNodeAcceleration(ids, cases);
             else if (type == typeof(NodeDisplacement))
-                results = GetNodeDisplacement(ids, cases);
+                results = ReadNodeDisplacement(ids, cases);
             else if (type == typeof(NodeReaction))
-                results = GetNodeReaction(ids, cases);
+                results = ReadNodeReaction(ids, cases);
             else if (type == typeof(NodeVelocity))
-                results = GetNodeVelocity(ids, cases);
+                results = ReadNodeVelocity(ids, cases);
 
             return results;
         }
@@ -145,164 +145,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<NodeResult> GetNodeAcceleration(IList ids = null, IList cases = null)
-        {
-
-            throw new NotImplementedException("Node Acceleration results is not supported yet!");
-        }
-
-        /***************************************************/
-
-        private List<NodeDisplacement> GetNodeDisplacement(IList ids = null, IList cases = null)
-        {
-
-            List<string> loadcaseIds = new List<string>();
-            List<string> nodeIds = new List<string>();
-            List<NodeDisplacement> nodeDisplacements = new List<NodeDisplacement>();
-
-            int resultCount = 0;
-            string[] loadcaseNames = null;
-            string[] objects = null;
-            string[] elm = null;
-            string[] stepType = null;
-            double[] stepNum = null;
-            double[] fx = null;
-            double[] fy = null;
-            double[] fz = null;
-            double[] mx = null;
-            double[] my = null;
-            double[] mz = null;
-
-            if (ids == null)
-            {
-                int nodes = 0;
-                string[] names = null;
-                m_model.PointObj.GetNameList(ref nodes, ref names);
-                nodeIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    nodeIds.Add(ids[i].ToString());
-                }
-            }
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
-            
-            for (int i = 0; i < nodeIds.Count; i++)
-            {
-                int ret = m_model.Results.JointDispl(nodeIds[i].ToString(), eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
-                ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
-                if (ret == 0)
-                {
-                    for (int j = 0; j < resultCount; j++)
-                    {
-                        //string step = stepType[j] != null ? stepType[j] == "Max" ? " Max" : stepType[j] == "Min" ? " Min" : "1" : "0";
-                        //nodeForces.Add(new NodeDisplacement<string, string, string>(objects[j], loadcaseNames[j], step, fx[j], fy[j], fz[j], mx[j], my[j], mz[j]));
-
-                        NodeDisplacement nd = new NodeDisplacement()
-                        {
-                            ResultCase = loadcaseNames[j],
-                            ObjectId = nodeIds[i],
-                            RX = mx[j],
-                            RY = my[j],
-                            RZ = mz[j],
-                            UX = fx[j],
-                            UY = fy[j],
-                            UZ = fz[j],
-                            TimeStep = stepNum[j]
-                        };
-                        nodeDisplacements.Add(nd);
-                    }
-                }
-            }
-
-            return nodeDisplacements;
-
-        }
-
-        /***************************************************/
-
-        private List<NodeReaction> GetNodeReaction(IList ids = null, IList cases = null)
-        {
-            List<string> loadcaseIds = new List<string>();
-            List<string> nodeIds = new List<string>();
-            List<NodeReaction> nodeReactions = new List<NodeReaction>();
-
-            if (ids == null)
-            {
-                int nodes = 0;
-                string[] names = null;
-                m_model.PointObj.GetNameList(ref nodes, ref names);
-                nodeIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    nodeIds.Add(ids[i].ToString());
-                }
-            }
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
-
-            int resultCount = 0;
-            string[] loadcaseNames = null;
-            string[] objects = null;
-            string[] elm = null;
-            string[] stepType = null;
-            double[] stepNum = null;
-
-            double[] fx = null;
-            double[] fy = null;
-            double[] fz = null;
-            double[] mx = null;
-            double[] my = null;
-            double[] mz = null;
-
-
-
-            //List<NodeReaction<string, string, string>> nodeForces = new List<NodeReaction<string, string, string>>();
-            for (int i = 0; i < nodeIds.Count; i++)
-            {
-                int ret = m_model.Results.JointReact(nodeIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
-                ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
-                if (ret == 0)
-                {
-                    for (int j = 0; j < resultCount; j++)
-                    {
-                        //string step = stepType[j] != null ? stepType[j] == "Max" ? " Max" : stepType[j] == "Min" ? " Min" : "1" : "0";
-                        //nodeForces.Add(new NodeReaction<string, string, string>(objects[j], loadcaseNames[j], step, fx[j], fy[j], fz[j], mx[j], my[j], mz[j]));
-                        NodeReaction nr = new NodeReaction()
-                        {
-                            ResultCase = loadcaseNames[j],
-                            ObjectId = nodeIds[i],
-                            MX = mx[j],
-                            MY = my[j],
-                            MZ = mz[j],
-                            FX = fx[j],
-                            FY = fy[j],
-                            FZ = fz[j],
-                            TimeStep = stepNum[j]
-                        };
-                        nodeReactions.Add(nr);
-                    }
-                }
-            }
-
-            return nodeReactions;
-        }
-
-        /***************************************************/
-
-        private List<NodeResult> GetNodeVelocity(IList ids = null, IList cases = null)
-        {
-            throw new NotImplementedException("Node Acceleration results is not supported yet!");
-
-        }
+       
 
         /***************************************************/
 
