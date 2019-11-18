@@ -159,7 +159,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<BarResult> GetBarDeformation(IList ids = null, IList cases = null, int divisions = 5)
+        private List<BarResult> ReadBarDeformation(IList ids = null, IList cases = null, int divisions = 5)
         {
 
             throw new NotImplementedException("Bar deformation results is not supported yet!");
@@ -168,7 +168,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<BarResult> GetBarStrain(IList ids = null, IList cases = null, int divisions = 5)
+        private List<BarResult> ReadBarStrain(IList ids = null, IList cases = null, int divisions = 5)
         {
 
             throw new NotImplementedException("Bar strain results is not supported yet!");
@@ -176,7 +176,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<BarResult> GetBarStress(IList ids = null, IList cases = null, int divisions = 5)
+        private List<BarResult> ReadBarStress(IList ids = null, IList cases = null, int divisions = 5)
         {
 
             throw new NotImplementedException("Bar stress results is not supported yet!");
