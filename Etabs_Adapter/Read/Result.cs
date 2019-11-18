@@ -118,7 +118,7 @@ namespace BH.Adapter.ETABS
             if (type == typeof(BarDeformation))
                 results = GetBarDeformation(ids, cases, divisions);
             else if (type == typeof(BarForce))
-                results = GetBarForce(ids, cases, divisions);
+                results = ReadBarForce(ids, cases, divisions);
             else if (type == typeof(BarStrain))
                 results = GetBarStrain(ids, cases, divisions);
             else if (type == typeof(BarStress))
@@ -306,95 +306,8 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<BarResult> GetBarDeformation(IList ids = null, IList cases = null, int divisions = 5)
-        {
-
-            throw new NotImplementedException("Bar deformation results is not supported yet!");
-        }
-
-        /***************************************************/
-
-        private List<BarForce> GetBarForce(IList ids = null, IList cases = null, int divisions = 5)
-        {
-
-            List<string> loadcaseIds = new List<string>();
-            List<string> barIds = new List<string>();
-            List<BarForce> barForces = new List<BarForce>();
-
-            if (ids == null || ids.Count == 0)
-            {
-                int bars = 0;
-                string[] names = null;
-                m_model.FrameObj.GetNameList(ref bars, ref names);
-                barIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    barIds.Add(ids[i].ToString());
-                }
-            }
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
-
-            int resultCount = 0;
-            string[] loadcaseNames = null;
-            string[] objects = null;
-            string[] elm = null;
-            double[] objStation = null;
-            double[] elmStation = null;
-            double[] stepNum = null;
-            string[] stepType = null;
-
-            double[] fx = null;
-            double[] fy = null;
-            double[] fz = null;
-            double[] mx = null;
-            double[] my = null;
-            double[] mz = null;
-
-            int type = 0;
-            double segSize = 0;
-            bool op1 = false;
-            bool op2 = false;
 
 
-            for (int i = 0; i < barIds.Count; i++)
-            {
-                m_model.FrameObj.GetOutputStations(barIds[i], ref type, ref segSize, ref divisions, ref op1, ref op2);
-                int ret = m_model.Results.FrameForce(barIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref objStation, ref elm, ref elmStation,
-                ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
-                if (ret == 0)
-                {
-                    for (int j = 0; j < resultCount; j++)
-                    {
-
-                        BarForce bf = new BarForce()
-                        {
-                            ResultCase = loadcaseNames[j],
-                            ObjectId = barIds[i],
-                            MX = mx[j],
-                            MY = my[j],
-                            MZ = mz[j],
-                            FX = fx[j],
-                            FY = fy[j],
-                            FZ = fz[j],
-                            Divisions = divisions,
-                            Position = objStation[j],
-                            TimeStep = stepNum[j]
-                        };
-
-                        barForces.Add(bf);
-                    }
-                }
-            }
-
-            return barForces;
-        }
-
-        /***************************************************/
 
         private List<PierForce> GetPierForce(IList ids = null, IList cases = null, int divisions = 5)
         {
@@ -452,23 +365,7 @@ namespace BH.Adapter.ETABS
             return pierForces;
         }
         
-        /***************************************************/
 
-        private List<BarResult> GetBarStrain(IList ids = null, IList cases = null, int divisions = 5)
-        {
-
-            throw new NotImplementedException("Bar strain results is not supported yet!");
-        }
-
-        /***************************************************/
-
-        private List<BarResult> GetBarStress(IList ids = null, IList cases = null, int divisions = 5)
-        {
-
-            throw new NotImplementedException("Bar stress results is not supported yet!");
-        }
-
-        /***************************************************/
 
         private List<MeshForce> GetMeshForce(IList ids = null, IList cases = null, int divisions = 5)
         {
