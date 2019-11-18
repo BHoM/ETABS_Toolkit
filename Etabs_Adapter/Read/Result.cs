@@ -116,13 +116,13 @@ namespace BH.Adapter.ETABS
             IEnumerable<BarResult> results = new List<BarResult>();
 
             if (type == typeof(BarDeformation))
-                results = GetBarDeformation(ids, cases, divisions);
+                results = ReadBarDeformation(ids, cases, divisions);
             else if (type == typeof(BarForce))
                 results = ReadBarForce(ids, cases, divisions);
             else if (type == typeof(BarStrain))
-                results = GetBarStrain(ids, cases, divisions);
+                results = ReadBarStrain(ids, cases, divisions);
             else if (type == typeof(BarStress))
-                results = GetBarStress(ids, cases, divisions);
+                results = ReadBarStress(ids, cases, divisions);
             else if (type == typeof(PierForce))
                 results = GetPierForce(ids, cases, divisions);
 

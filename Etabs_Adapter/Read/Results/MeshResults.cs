@@ -59,29 +59,16 @@ namespace BH.Adapter.ETABS
             switch (request.ResultType)
             {
                 case MeshResultType.Forces:
-                    return ReadMeshForce(request.ObjectIds, request.Cases)
-                    break;
+                    return ReadMeshForce(request.ObjectIds, request.Cases);
                 case MeshResultType.Stresses:
-                    break;
+                    return ReadMeshStress(request.ObjectIds, request.Cases);
                 case MeshResultType.Displacements:
-                    break;
                 case MeshResultType.VonMises:
-                    break;
-                default:
-                    break;
-            }
-
-            switch (request.ResultType)
-            {
-                case B:
-                    return ReadBarForce(request.ObjectIds, request.Cases, request.Divisions);
-                case BarResultType.BarDeformation:
-                case BarResultType.BarStress:
-                case BarResultType.BarStrain:
                 default:
                     Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
             }
+
         }
 
         /***************************************************/
@@ -222,7 +209,7 @@ namespace BH.Adapter.ETABS
                     {
                         MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], sMaxAvg[j]);
                         MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], sMaxAvg[j]);
-                        
+
                         meshStresses.Add(mStressBot);
                         meshStresses.Add(mStressTop);
                     }
@@ -236,4 +223,5 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
     }
+}
 
