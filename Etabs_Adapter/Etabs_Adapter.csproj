@@ -200,6 +200,7 @@
     <Compile Include="Create\_Create.cs" />
     <Compile Include="Delete\_Delete.cs" />
     <Compile Include="Read\Results\BarResults.cs" />
+    <Compile Include="Read\Results\MeshResults.cs" />
     <Compile Include="Types\NextIndex.cs" />
     <Compile Include="Read\Link.cs" />
     <Compile Include="Read\Material.cs" />
