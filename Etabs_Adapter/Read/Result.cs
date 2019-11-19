@@ -147,8 +147,6 @@ namespace BH.Adapter.ETABS
 
        
 
-        /***************************************************/
-
 
         private List<PierForce> GetPierForce(IList ids = null, IList cases = null, int divisions = 5)
         {
@@ -206,101 +204,6 @@ namespace BH.Adapter.ETABS
             return pierForces;
         }
         
-
-
-        
-        private List<GlobalReactions> GetGlobalReactions(IList cases = null)
-        {
-            List<string> loadcaseIds = new List<string>();
-            List<GlobalReactions> globalReactions = new List<GlobalReactions>();
-
-            int resultCount = 0;
-            string[] loadcaseNames = null;
-            string[] stepType = null; double[] stepNum = null;
-            double[] fx = null; double[] fy = null; double[] fz = null;
-            double[] mx = null; double[] my = null; double[] mz = null;
-            double gx = 0; double gy = 0; double gz = 0;
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
-
-            m_model.Results.BaseReact(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, ref gx, ref gy, ref gz);
-
-            for (int i = 0; i < resultCount; i++)
-            {
-                GlobalReactions g = new GlobalReactions()
-                {
-                    ResultCase = loadcaseNames[i],
-                    FX = fx[i],
-                    FY = fy[i],
-                    FZ = fz[i],
-                    MX = mx[i],
-                    MY = my[i],
-                    MZ = mz[i],
-                    TimeStep = stepNum[i]
-                };
-
-                globalReactions.Add(g);
-            }
-
-            return globalReactions;
-        }
-
-        /***************************************************/
-
-        private List<ModalDynamics> GetModalParticipationMassRatios(IList cases = null)
-        {
-            List<string> loadcaseIds = new List<string>();
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
-
-            List<ModalDynamics> partRatios = new List<ModalDynamics>();
-
-            int resultCount = 0;
-            string[] loadcaseNames = null;
-            string[] stepType = null; double[] stepNum = null;
-            double[] period = null;
-            double[] ux = null; double[] uy = null; double[] uz = null;
-            double[] sumUx = null; double[] sumUy = null; double[] sumUz = null;
-            double[] rx = null; double[] ry = null; double[] rz = null;
-            double[] sumRx = null; double[] sumRy = null; double[] sumRz = null;
-
-            int res = m_model.Results.ModalParticipatingMassRatios(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
-                ref period, ref ux, ref uy, ref uz, ref sumUx, ref sumUy, ref sumUz, ref rx, ref ry, ref rz, ref sumRx, ref sumRy, ref sumRz);
-
-            if (res != 0) Engine.Reflection.Compute.RecordError("Could not extract Modal information.");
-
-
-            // Although API documentation says that StepNumber should correspond to the Mode Number, testing shows that StepNumber is always 0.
-            string previousModalCase = "";
-            int modeNumber = 1; //makes up for stepnumber always = 0
-            for (int i = 0; i < resultCount; i++)
-            {
-                if (loadcaseNames[i] != previousModalCase)
-                    modeNumber = 1;
-
-                ModalDynamics mod = new ModalDynamics()
-                {
-                    ResultCase = loadcaseNames[i],
-                    ModeNumber = modeNumber,
-                    Frequency = 1 / period[i],
-                    MassRatioX = ux[i],
-                    MassRatioY = uy[i],
-                    MassRatioZ = uz[i],
-                    InertiaRatioX = rx[i],
-                    InertiaRatioY = ry[i],
-                    InertiaRatioZ = rz[i]
-                };
-
-                modeNumber += 1;
-                previousModalCase = loadcaseNames[i];
-
-                partRatios.Add(mod);
-            }
-
-            return partRatios;
-        }
         
         /***************************************************/
 
