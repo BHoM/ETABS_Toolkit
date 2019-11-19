@@ -107,12 +107,13 @@ namespace BH.Adapter.ETABS
             double[] stepNum = null;
             string[] stepType = null;
 
-            double[] fx = null;
-            double[] fy = null;
-            double[] fz = null;
-            double[] mx = null;
-            double[] my = null;
-            double[] mz = null;
+            double[] p = null;
+            double[] v2 = null;
+            double[] v3 = null;
+            double[] t = null;
+            double[] m2 = null;
+            double[] m3 = null;
+
 
             int type = 2; //Use minimum nb of division points
             double segSize = 0;
@@ -126,9 +127,13 @@ namespace BH.Adapter.ETABS
                 //Get element length
                 double length = GetBarLength(barIds[i], points);
 
-                m_model.FrameObj.GetOutputStations(barIds[i], ref type, ref segSize, ref divisions, ref op1, ref op2);
+                int divs = divisions;
+
+                m_model.FrameObj.SetOutputStations(barIds[i], type, 0, divs);
+                m_model.FrameObj.GetOutputStations(barIds[i], ref type, ref segSize, ref divs, ref op1, ref op2);
+
                 int ret = m_model.Results.FrameForce(barIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref objStation, ref elm, ref elmStation,
-                ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
+                ref loadcaseNames, ref stepType, ref stepNum, ref p, ref v2, ref v3, ref t, ref m2, ref m3);
                 if (ret == 0)
                 {
                     for (int j = 0; j < resultCount; j++)
@@ -138,13 +143,13 @@ namespace BH.Adapter.ETABS
                         {
                             ResultCase = loadcaseNames[j],
                             ObjectId = barIds[i],
-                            MX = mx[j],
-                            MY = my[j],
-                            MZ = mz[j],
-                            FX = fx[j],
-                            FY = fy[j],
-                            FZ = fz[j],
-                            Divisions = divisions,
+                            MX = t[j],
+                            MY = m3[j],
+                            MZ = m2[j],
+                            FX = p[j],
+                            FY = v3[j],
+                            FZ = v2[j],
+                            Divisions = divs,
                             Position = objStation[j] /length,
                             TimeStep = stepNum[j]
                         };
@@ -161,7 +166,6 @@ namespace BH.Adapter.ETABS
 
         private List<BarResult> ReadBarDeformation(IList ids = null, IList cases = null, int divisions = 5)
         {
-
             throw new NotImplementedException("Bar deformation results is not supported yet!");
         }
 
