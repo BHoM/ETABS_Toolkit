@@ -139,7 +139,7 @@ namespace BH.Adapter.ETABS
 
                 for (int j = 0; j < resultCount; j++)
                 {
-                    MeshForce pf = new MeshForce(panelIds[i], PointElm[j], Elm[i], LoadCase[j], StepNum[j], 0, 0, 0,
+                    MeshForce pf = new MeshForce(panelIds[i], PointElm[j], Elm[j], LoadCase[j], StepNum[j], 0, 0, 0,
                         oM.Geometry.Basis.XY, F11[j], F22[j], F12[j], M12[j], M22[j], M12[j], V13[j], V23[j]);
 
                     forces.Add(pf);
