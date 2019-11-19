@@ -133,7 +133,7 @@ namespace BH.Adapter.ETABS
 
         private IEnumerable<IResult> GetMeshResults(Type type, IList ids = null, IList cases = null)
         {
-            IEnumerable<MeshElementResult> results = new List<MeshElementResult>();
+            IEnumerable<MeshResult> results = new List<MeshResult>();
 
             if (type == typeof(MeshForce))
                 results = ReadMeshForce(ids, cases);
@@ -144,9 +144,6 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
-
-       
-
 
         private List<PierForce> GetPierForce(IList ids = null, IList cases = null, int divisions = 5)
         {
