@@ -82,7 +82,7 @@ namespace BH.Adapter.ETABS
             List<string> loadcaseIds = new List<string>();
             List<string> panelIds = new List<string>();
 
-            if (ids == null)
+            if (ids == null || ids.Count == 0)
             {
                 int panels = 0;
                 string[] names = null;
@@ -159,7 +159,7 @@ namespace BH.Adapter.ETABS
             List<string> panelIds = new List<string>();
             List<MeshStress> meshStresses = new List<MeshStress>();
 
-            if (ids == null)
+            if (ids == null || ids.Count == 0)
             {
                 int panels = 0;
                 string[] names = null;
@@ -239,7 +239,7 @@ namespace BH.Adapter.ETABS
             List<string> loadcaseIds = new List<string>();
             List<string> panelIds = new List<string>();
 
-            if (ids == null)
+            if (ids == null || ids.Count == 0)
             {
                 int panels = 0;
                 string[] names = null;
@@ -303,7 +303,7 @@ namespace BH.Adapter.ETABS
 
                     for (int j = 0; j < resultCount; j++)
                     {
-                        MeshDisplacement disp = new MeshDisplacement(panelIds[i], ptId, "", LoadCase[i], StepNum[i], MeshResultLayer.Middle, 0, MeshResultSmoothingType.None, Basis.XY, ux[i], uy[i], uz[i], rx[i], ry[i], rz[i]);
+                        MeshDisplacement disp = new MeshDisplacement(panelIds[i], ptId, "", LoadCase[j], StepNum[j], MeshResultLayer.Middle, 0, MeshResultSmoothingType.None, Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
                         displacements.Add(disp);
                     }
                 }
