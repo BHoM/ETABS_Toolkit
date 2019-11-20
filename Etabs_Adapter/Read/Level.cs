@@ -26,8 +26,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Architecture.Elements;
-#if (Debug2017)
+using BH.oM.Geometry.SettingOut;
+#if Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -35,7 +35,11 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-    public partial class ETABSAdapter
+#if Debug17 || Release17
+    public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABS2016Adapter : BHoMAdapter
+#endif
     {
         /***************************************************/
 

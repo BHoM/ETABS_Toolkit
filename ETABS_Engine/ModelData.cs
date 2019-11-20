@@ -28,7 +28,7 @@
 //using BH.oM.Structure.SectionProperties;
 //using BH.Engine.Structure;
 //using BH.oM.Structure.MaterialFragments;
-//#if (Debug2017)
+//#if Debug17 || Release17
 //using ETABSv17;
 //#else
 //using ETABS2016;

@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
-#if Debug2017
+#if Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -37,9 +37,12 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-    public partial class ETABSAdapter : BHoMAdapter
+#if Debug17 || Release17
+    public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABS2016Adapter : BHoMAdapter
+#endif
     {
-
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/
@@ -52,22 +55,21 @@ namespace BH.Adapter.ETABS
         /**** Constructors                              ****/
         /***************************************************/
 
-        public ETABSAdapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+#if Debug17 || Release17
+        public ETABS17Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+#else
+        public ETABS2016Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+#endif
         {
             if (active)
             {
                 AdapterId = ID;
 
                 this.EtabsConfig = etabsConfig == null ? new EtabsConfig() : etabsConfig;
-                
-                Config.SeparateProperties = true;
-                Config.MergeWithComparer = true;
-                Config.ProcessInMemory = false;
-                Config.CloneBeforePush = true;
 
                 //string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
                 //string pathToETABS = System.IO.Path.Combine("C:","Program Files", "Computers and Structures", "ETABS 2016", "ETABS.exe");
-#if Debug2017
+#if Debug17 || Release17
                 string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 17\ETABS.exe";
                 cHelper helper = new ETABSv17.Helper();
 #else

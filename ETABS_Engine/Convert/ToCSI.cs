@@ -21,21 +21,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.Constraints;
-#if (Debug2017)
-using ETABSv17;
-#else
-using ETABS2016;
-#endif
-using BH.oM;
-using BH.oM.Structure;
-using BH.oM.Structure.Elements;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry;
 
@@ -44,81 +31,6 @@ namespace BH.Engine.ETABS
 {
     public static partial class Convert
     {
-        /***************************************************/
-
-        public static eLoadPatternType ToCSI(this LoadNature loadNature)
-        {
-            eLoadPatternType loadType;
-            switch (loadNature)
-            {
-                case LoadNature.Dead:
-                    loadType = eLoadPatternType.Dead;
-                    break;
-                case LoadNature.SuperDead:
-                    loadType = eLoadPatternType.SuperDead;
-                    break;
-                case LoadNature.Live:
-                    loadType = eLoadPatternType.Live;
-                    break;
-                case LoadNature.Wind:
-                    loadType = eLoadPatternType.Dead;
-                    break;
-                case LoadNature.Seismic:
-                    loadType = eLoadPatternType.Quake;
-                    break;
-                case LoadNature.Temperature:
-                    loadType = eLoadPatternType.Temperature;
-                    break;
-                case LoadNature.Snow:
-                    loadType = eLoadPatternType.Snow;
-                    break;
-                case LoadNature.Accidental:
-                    loadType = eLoadPatternType.Braking;
-                    break;
-                case LoadNature.Prestress:
-                    loadType = eLoadPatternType.Prestress;
-                    break;
-                case LoadNature.Other:
-                    loadType = eLoadPatternType.Other;
-                    break;
-                default:
-                    loadType = eLoadPatternType.Other;
-                    break;
-            }
-
-            return loadType;
-
-        }
-
-        /***************************************************/
-        
-        public static eMatType ToCSI(this MaterialType materialType)
-        {
-            switch (materialType)
-            {
-                case MaterialType.Aluminium:
-                    return eMatType.Aluminum;
-                case MaterialType.Steel:
-                    return eMatType.Steel;
-                case MaterialType.Concrete:
-                    return eMatType.Concrete;
-                case MaterialType.Timber://no material of this type in ETABS !!! 
-                    return eMatType.Steel;
-                case MaterialType.Rebar:
-                    return eMatType.Rebar;
-                case MaterialType.Tendon:
-                    return eMatType.Tendon;
-                case MaterialType.Glass://no material of this type in ETABS !!!
-                    return eMatType.Steel;
-                case MaterialType.Cable://no material of this type in ETABS !!!
-                    return eMatType.Steel;
-                default:
-                    return eMatType.Steel;
-            }
-        }
-
-        /***************************************************/
-
         public static void ToCSI(this Constraint6DOF support, ref bool[] restraint, ref double[] spring)
         {
             restraint = new bool[6];

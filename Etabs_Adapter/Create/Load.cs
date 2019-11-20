@@ -26,7 +26,8 @@ using System;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.Engine.ETABS;
-#if Debug2017
+
+#if Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -34,7 +35,11 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-    public partial class ETABSAdapter
+#if Debug17 || Release17
+    public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABS2016Adapter : BHoMAdapter
+#endif
     {
         /***************************************************/
 
@@ -221,9 +226,9 @@ namespace BH.Adapter.ETABS
             m_model.LoadPatterns.SetSelfWTMultiplier(caseName, -gravityLoad.GravityDirection.Z);
 
             if (gravityLoad.GravityDirection.X != 0 || gravityLoad.GravityDirection.Y != 0)
-                Engine.Reflection.Compute.RecordError("Etabs can only handle gravity loads in global z direction");
+                Engine.Reflection.Compute.RecordError("ETABS can only handle gravity loads in global z direction");
 
-            BH.Engine.Reflection.Compute.RecordWarning("Etabs handles gravity loads via loadcases, why only one gravity load per loadcase can be used. THis gravity load will be applied to all objects");
+            BH.Engine.Reflection.Compute.RecordWarning("ETABS handles gravity loads via loadcases, why only one gravity load per loadcase can be used. THis gravity load will be applied to all objects");
         }
     }
 }

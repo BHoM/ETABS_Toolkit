@@ -33,7 +33,7 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
 using BH.oM.Geometry.ShapeProfiles;
-#if (Debug2017)
+#if Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -41,7 +41,11 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-    public partial class ETABSAdapter
+#if Debug17 || Release17
+    public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABS2016Adapter : BHoMAdapter
+#endif
     {
         /***************************************************/
 
@@ -79,7 +83,7 @@ namespace BH.Adapter.ETABS
                     double[] springEnd = new double[6];
 
                     m_model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
-                    bhBar.Release = Engine.ETABS.Convert.GetBarRelease(restraintStart, springStart, restraintEnd, springEnd);
+                    bhBar.Release = GetBarRelease(restraintStart, springStart, restraintEnd, springEnd);
                     
                     string propertyName = "";
                     string sAuto = "";
@@ -286,8 +290,10 @@ namespace BH.Adapter.ETABS
                         break;
                 }
                 if (dimensions == null)
+                {
                     Engine.Reflection.Compute.RecordNote(propertyType.ToString() + " properties are not implemented in ETABS adapter. An empty section has been returned.");
-                constructSelector = "explicit";
+                    constructSelector = "explicit";
+                }
                 #endregion
 
 
@@ -350,5 +356,45 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
+        public static BarRelease GetBarRelease(bool[] startRestraint, double[] startSpring, bool[] endRestraint, double[] endSpring)
+        {
+            Constraint6DOF startRelease = new Constraint6DOF();
+
+            startRelease.TranslationX = startRestraint[0] == true ? DOFType.Free : DOFType.Fixed;
+            startRelease.TranslationY = startRestraint[1] == true ? DOFType.Free : DOFType.Fixed;
+            startRelease.TranslationZ = startRestraint[2] == true ? DOFType.Free : DOFType.Fixed;
+            startRelease.RotationX = startRestraint[3] == true ? DOFType.Free : DOFType.Fixed;
+            startRelease.RotationY = startRestraint[4] == true ? DOFType.Free : DOFType.Fixed;
+            startRelease.RotationZ = startRestraint[5] == true ? DOFType.Free : DOFType.Fixed;
+
+            startRelease.TranslationalStiffnessX = startSpring[0];
+            startRelease.TranslationalStiffnessY = startSpring[1];
+            startRelease.TranslationalStiffnessZ = startSpring[2];
+            startRelease.RotationalStiffnessX = startSpring[3];
+            startRelease.RotationalStiffnessY = startSpring[4];
+            startRelease.RotationalStiffnessZ = startSpring[5];
+
+            Constraint6DOF endRelease = new Constraint6DOF();
+
+            endRelease.TranslationX = endRestraint[0] == true ? DOFType.Free : DOFType.Fixed;
+            endRelease.TranslationY = endRestraint[1] == true ? DOFType.Free : DOFType.Fixed;
+            endRelease.TranslationZ = endRestraint[2] == true ? DOFType.Free : DOFType.Fixed;
+            endRelease.RotationX = endRestraint[3] == true ? DOFType.Free : DOFType.Fixed;
+            endRelease.RotationY = endRestraint[4] == true ? DOFType.Free : DOFType.Fixed;
+            endRelease.RotationZ = endRestraint[5] == true ? DOFType.Free : DOFType.Fixed;
+
+            endRelease.TranslationalStiffnessX = endSpring[0];
+            endRelease.TranslationalStiffnessY = endSpring[1];
+            endRelease.TranslationalStiffnessZ = endSpring[2];
+            endRelease.RotationalStiffnessX = endSpring[3];
+            endRelease.RotationalStiffnessY = endSpring[4];
+            endRelease.RotationalStiffnessZ = endSpring[5];
+
+            BarRelease barRelease = new BarRelease() { StartRelease = startRelease, EndRelease = endRelease };
+
+            return barRelease;
+        }
+
     }
 }

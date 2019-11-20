@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Geometry.SettingOut;
 using BH.oM.Architecture.Elements;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SectionProperties;
@@ -34,7 +35,7 @@ using BH.Engine.Geometry;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
-#if Debug2017
+#if Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -42,11 +43,15 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-    public partial class ETABSAdapter
+#if Debug17 || Release17
+    public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABS2016Adapter : BHoMAdapter
+#endif
     {
 
         /***************************************************/
-        protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
+        protected override bool Create<T>(IEnumerable<T> objects)
         {
             bool success = true;
 
@@ -75,12 +80,18 @@ namespace BH.Adapter.ETABS
 
                 List<Diaphragm> diaphragms = panels.Select(x => x.Diaphragm()).Where(x => x != null).ToList();
 
-                this.Replace(diaphragms);
+                this.CRUD(diaphragms);
             }
 
-            if (typeof(T) == typeof(Level))
+            if (typeof(T) == typeof(oM.Geometry.SettingOut.Level))
             {
-                return CreateCollection(objects as IEnumerable<Level>);
+                return CreateCollection(objects as IEnumerable<oM.Geometry.SettingOut.Level>);
+            }
+            else if(typeof(T) == typeof(oM.Architecture.Elements.Level))
+            {
+                List<oM.Geometry.SettingOut.Level> levels = objects.Select(x => (x as oM.Architecture.Elements.Level).UpgradeVersion()).ToList();
+
+                return CreateCollection(levels as IEnumerable<oM.Geometry.SettingOut.Level>);
             }
             else
             {
@@ -93,5 +104,6 @@ namespace BH.Adapter.ETABS
         }
         
         /***************************************************/
+
     }
 }

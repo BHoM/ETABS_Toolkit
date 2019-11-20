@@ -22,7 +22,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Architecture.Elements;
+using BH.oM.Geometry.SettingOut;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.Constraints;
@@ -34,7 +34,7 @@ using BH.Engine.Geometry;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
-#if Debug2017
+#if Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -42,7 +42,11 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-    public partial class ETABSAdapter
+#if Debug17 || Release17
+    public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABS2016Adapter : BHoMAdapter
+#endif
     {
         /***************************************************/
 
@@ -76,7 +80,7 @@ namespace BH.Adapter.ETABS
 
         private static void RecordFlippingError(string sectionName)
         {
-            BH.Engine.Reflection.Compute.RecordWarning("Section with name " + sectionName + "has a flipping boolean. This is not currently supported in the Etabs_Toolkit. The section will be set to etabs unflipped");
+            BH.Engine.Reflection.Compute.RecordWarning("Section with name " + sectionName + "has a flipping boolean. This is not currently supported in the ETABS_Toolkit. The section will be set to etabs unflipped");
         }
 
         /***************************************************/

@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using BH.oM.Structure.Loads;
 
 
-namespace BH.Engine.Etabs.Structure
+namespace BH.Engine.ETABS.Structure
 {
     public static partial class Create
     {

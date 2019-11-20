@@ -22,7 +22,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Architecture.Elements;
+using BH.oM.Geometry.SettingOut;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.Constraints;
@@ -35,15 +35,19 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Geometry.ShapeProfiles;
-#if Debug2017
-using ETABSv17;
+#if Debug17 || Release17
+    using ETABSv17;
 #else
-using ETABS2016;
+    using ETABS2016;
 #endif
 
 namespace BH.Adapter.ETABS
 {
-    public partial class ETABSAdapter
+#if Debug17 || Release17
+    public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABS2016Adapter : BHoMAdapter
+#endif
     {
         /***************************************************/
 
@@ -196,6 +200,7 @@ namespace BH.Adapter.ETABS
         private void SetSection(CableSection section)
         {
             //no ISectionDimentions
+            CreateElementError("Section Profile", section.Name);
         }
 
         /***************************************************/
@@ -203,6 +208,7 @@ namespace BH.Adapter.ETABS
         private void SetSection(CompositeSection section)
         {
             //contains SteelSection and ConcreteScetion
+            CreateElementError("Section Profile", section.Name);
         }
 
         /***************************************************/
@@ -304,7 +310,7 @@ namespace BH.Adapter.ETABS
 
         private void SetProfile(ZSectionProfile profile, string sectionName, IMaterialFragment material)
         {
-            Engine.Reflection.Compute.RecordWarning("Z-Section currently not supported in the Etabs adapter. Section with name " + sectionName + " has not been pushed.");
+            Engine.Reflection.Compute.RecordWarning("Z-Section currently not supported in the ETABS adapter. Section with name " + sectionName + " has not been pushed.");
         }
 
         /***************************************************/
@@ -319,6 +325,13 @@ namespace BH.Adapter.ETABS
         private void SetProfile(CircleProfile profile, string sectionName, IMaterialFragment material)
         {
             m_model.PropFrame.SetCircle(sectionName, material.Name, profile.Diameter);
+        }
+
+        /***************************************************/
+
+        private void SetProfile(FreeFormProfile profile, string sectionName, IMaterialFragment material)
+        {
+            CreateElementError("Section Profile", sectionName);
         }
 
         /***************************************************/

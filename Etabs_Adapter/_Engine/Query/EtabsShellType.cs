@@ -22,11 +22,19 @@
 
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Adapters.ETABS;
-#if (Debug2017)
+#if Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
 #endif
+
+// ******************************************************
+// NOTE
+// These Engine methods are improperly put in the Adapter Project
+// as a temporary workaround to the different naming of ETABS dlls (2016, 2017).
+// Any Engine method that does not require a direct reference to the ETABS dlls
+// must be put in the Engine project.
+// ******************************************************
 
 namespace BH.Engine.ETABS
 {

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -25,11 +25,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Architecture.Elements;
+using BH.oM.Geometry.SettingOut;
 
 namespace BH.Engine.ETABS
 {
-    public partial class Convert
+    public static partial class Modify
     {
-        public const string AdapterId = "ETABS_id";
+
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
+        public static List<oM.Geometry.SettingOut.Level> UpgradeVersion(this List<BH.oM.Architecture.Elements.Level> levels)
+        {
+            List<oM.Geometry.SettingOut.Level> upgradedLevels = new List<oM.Geometry.SettingOut.Level>();
+
+            foreach (BH.oM.Architecture.Elements.Level level in levels)
+                upgradedLevels.Add(level.UpgradeVersion());
+
+            return upgradedLevels;
+        }
+
+        /***************************************************/
+
+        public static oM.Geometry.SettingOut.Level UpgradeVersion(this BH.oM.Architecture.Elements.Level level)
+        {
+            return new oM.Geometry.SettingOut.Level {
+                Name = level.Name,
+                Elevation = level.Elevation,
+                CustomData = level.CustomData,
+                Fragments = level.Fragments };
+        }
+
+        /***************************************************/
     }
 }
