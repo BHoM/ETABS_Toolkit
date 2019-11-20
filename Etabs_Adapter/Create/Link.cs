@@ -61,10 +61,7 @@ namespace BH.Adapter.ETABS
                 linkIds.Add(name);
             }
 
-            if (linkIds.Count == 0)
-                bhLink.CustomData[AdapterId] = null;
-            else
-                bhLink.CustomData[AdapterId] = linkIds;
+            bhLink.CustomData[AdapterId] = linkIds;
 
             return success;
         }
