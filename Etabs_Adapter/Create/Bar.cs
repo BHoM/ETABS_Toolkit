@@ -158,7 +158,14 @@ namespace BH.Adapter.ETABS
                 return true;
             }
 
-            SetSection(bhSection as dynamic);
+            try
+            {
+                SetSection(bhSection as dynamic);
+            }
+            catch
+            {
+                CreateElementError(bhSection.GetType().ToString(), bhSection.Name);
+            }
 
             double[] modifiers = bhSection.Modifiers();
 
