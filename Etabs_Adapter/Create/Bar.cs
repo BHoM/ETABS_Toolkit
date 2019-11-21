@@ -204,22 +204,6 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private void SetSection(CableSection section)
-        {
-            //no ISectionDimentions
-            CreateElementError("Section Profile", section.Name);
-        }
-
-        /***************************************************/
-
-        private void SetSection(CompositeSection section)
-        {
-            //contains SteelSection and ConcreteScetion
-            CreateElementError("Section Profile", section.Name);
-        }
-
-        /***************************************************/
-
         private void SetSection(ExplicitSection section)
         {
             m_model.PropFrame.SetGeneral(section.Name, section.Material.Name, section.CentreZ * 2, section.CentreY * 2, section.Area, section.Asy, section.Asz, section.J, section.Iy, section.Iz, section.Wply, section.Wplz, section.Wely, section.Wely, section.Rgy, section.Rgz);
@@ -322,20 +306,6 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private void SetProfile(ZSectionProfile profile, string sectionName, IMaterialFragment material)
-        {
-            Engine.Reflection.Compute.RecordWarning("Z-Section currently not supported in the ETABS adapter. Section with name " + sectionName + " has not been pushed.");
-        }
-
-        /***************************************************/
-
-        private void SetProfile(GeneralisedTSectionProfile profile, string sectionName, IMaterialFragment material)
-        {
-            Engine.Reflection.Compute.RecordWarning("GeneralisedTSectionProfile currently not supported in the ETABS adapter. Section with name " + sectionName + " has not been pushed.");
-        }
-
-        /***************************************************/
-
         private void SetProfile(RectangleProfile profile, string sectionName, IMaterialFragment material)
         {
             m_model.PropFrame.SetRectangle(sectionName, material.Name, profile.Height, profile.Width);
@@ -346,13 +316,6 @@ namespace BH.Adapter.ETABS
         private void SetProfile(CircleProfile profile, string sectionName, IMaterialFragment material)
         {
             m_model.PropFrame.SetCircle(sectionName, material.Name, profile.Diameter);
-        }
-
-        /***************************************************/
-
-        private void SetProfile(FreeFormProfile profile, string sectionName, IMaterialFragment material)
-        {
-            CreateElementError("Section Profile", sectionName);
         }
 
         /***************************************************/
