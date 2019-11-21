@@ -60,6 +60,7 @@ namespace BH.Adapter.ETABS
                 case BarResultType.BarForce:
                     return ReadBarForce(request.ObjectIds, request.Cases, request.Divisions);
                 case BarResultType.BarDeformation:
+                    return ReadBarDeformation(request.ObjectIds, request.Cases, request.Divisions);
                 case BarResultType.BarStress:
                 case BarResultType.BarStrain:
                 default:
@@ -164,9 +165,100 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<BarResult> ReadBarDeformation(IList ids = null, IList cases = null, int divisions = 5)
+        private List<BarDeformation> ReadBarDeformation(IList ids = null, IList cases = null, int divisions = 5)
         {
-            throw new NotImplementedException("Bar deformation results is not supported yet!");
+
+            List<string> loadcaseIds = new List<string>();
+            List<string> barIds = new List<string>();
+            List<BarDeformation> deformations = new List<BarDeformation>();
+
+            if (ids == null || ids.Count == 0)
+            {
+                int bars = 0;
+                string[] names = null;
+                m_model.FrameObj.GetNameList(ref bars, ref names);
+                barIds = names.ToList();
+            }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    barIds.Add(ids[i].ToString());
+                }
+            }
+
+            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
+            loadcaseIds = CheckAndSetUpCases(cases);
+
+            int resultCount = 0;
+            string[] Obj = null;
+            string[] Elm = null;
+            string[] LoadCase = null;
+            string[] StepType = null;
+            double[] StepNum = null;
+
+            double[] ux = null;
+            double[] uy = null;
+            double[] uz = null;
+            double[] rx = null;
+            double[] ry = null;
+            double[] rz = null;
+
+            Dictionary<string, Point> points = new Dictionary<string, Point>();
+
+            for (int i = 0; i < barIds.Count; i++)
+            {
+                int divs = divisions;
+                string[] intElem = null;
+                double[] di = null;
+                double[] dj = null;
+
+                m_model.FrameObj.GetElm(barIds[i], ref divs, ref intElem, ref di, ref dj);
+
+                Dictionary<string, double> nodeWithPos = new Dictionary<string, double>();
+
+                for (int j = 0; j < divs; j++)
+                {
+                    string p1Id = "";
+                    string p2Id = "";
+                    m_model.LineElm.GetPoints(intElem[j], ref p1Id, ref p2Id);
+
+                    nodeWithPos[p1Id] = di[j];
+                    nodeWithPos[p2Id] = dj[j];
+                }
+
+
+                foreach (var nodePos in nodeWithPos)
+                {
+                    int ret = m_model.Results.JointDispl(nodePos.Key, eItemTypeElm.Element, ref resultCount, ref Obj, ref Elm, ref LoadCase, ref StepType, ref StepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
+                    
+                    if (ret == 0)
+                    {
+                        for (int j = 0; j < resultCount; j++)
+                        {
+                            BarDeformation def = new BarDeformation
+                            {
+                                UX = ux[j],
+                                UY = uy[j],
+                                UZ = uz[j],
+                                RX = rx[j],
+                                RY = ry[j],
+                                RZ = rz[j],
+                                ObjectId = barIds[i],
+                                Divisions = divs + 1,
+                                Position = nodePos.Value,
+                                ResultCase = LoadCase[j],
+                                TimeStep = StepNum[j]
+                            };
+                            deformations.Add(def);
+                        }
+                    }
+
+                }
+
+            }
+
+            return deformations;
         }
 
 
