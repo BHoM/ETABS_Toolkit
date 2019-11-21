@@ -95,6 +95,9 @@
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Data_oM">
+      <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Geometry_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
@@ -142,6 +145,7 @@
   <ItemGroup>
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToCSI.cs" />
+    <Compile Include="Compute\ToResultRequest.cs" />
     <Compile Include="Create\Diaphragm.cs" />
     <Compile Include="Create\EtabsConfig.cs" />
     <Compile Include="Create\MassSource.cs" />
