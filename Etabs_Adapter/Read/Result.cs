@@ -37,6 +37,7 @@ using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.Engine.ETABS;
 using BH.oM.Structure.Loads;
+using BH.oM.Data.Requests;
 
 namespace BH.Adapter.ETABS
 {
@@ -50,97 +51,18 @@ namespace BH.Adapter.ETABS
         
         protected override IEnumerable<IResult> ReadResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
-            IEnumerable<IResult> results = new List<IResult>();
+            //Etabs special case forces.
+            //TODO: Add PierForceResultRequest
+            if (type == typeof(PierForce))
+                return GetPierForce(ids, cases, divisions);
 
-            if (typeof(StructuralGlobalResult).IsAssignableFrom(type))
-                results = GetGlobalResults(type, cases);
+                IResultRequest request = Engine.ETABS.Compute.ToResultRequest(type, ids, cases, divisions);
+
+            if (request != null)
+                return this.ReadResults(request as dynamic);
             else
-                results = GetObjectResults(type, ids, cases, divisions);
+                return new List<IResult>();
 
-            return results;
-        }
-
-        /***************************************************/
-
-        private IEnumerable<IResult> GetGlobalResults(Type type, IList cases)
-        {
-            if (typeof(GlobalReactions).IsAssignableFrom(type))
-                return GetGlobalReactions(cases);
-            if (typeof(ModalDynamics).IsAssignableFrom(type))
-                return GetModalParticipationMassRatios(cases);
-
-            return new List<IResult>();
-
-        }
-
-        /***************************************************/
-
-        private IEnumerable<IResult> GetObjectResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
-        {
-            IEnumerable<IResult> results = new List<IResult>();
-
-            if (typeof(NodeResult).IsAssignableFrom(type))
-                results = GetNodeResults(type, ids, cases);
-            else if (typeof(BarResult).IsAssignableFrom(type))
-                results = GetBarResults(type, ids, cases, divisions);
-            else if (typeof(MeshElementResult).IsAssignableFrom(type))
-                results = GetMeshResults(type, ids, cases);
-            //else
-            //    return new List<IResult>();
-
-            return results;
-        }
-
-        /***************************************************/
-
-        private IEnumerable<IResult> GetNodeResults(Type type, IList ids = null, IList cases = null)
-        {
-            IEnumerable<IResult> results = new List<NodeResult>();
-
-            if (type == typeof(NodeAcceleration))
-                results = ReadNodeAcceleration(ids, cases);
-            else if (type == typeof(NodeDisplacement))
-                results = ReadNodeDisplacement(ids, cases);
-            else if (type == typeof(NodeReaction))
-                results = ReadNodeReaction(ids, cases);
-            else if (type == typeof(NodeVelocity))
-                results = ReadNodeVelocity(ids, cases);
-
-            return results;
-        }
-
-        /***************************************************/
-
-        private IEnumerable<IResult> GetBarResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
-        {
-            IEnumerable<BarResult> results = new List<BarResult>();
-
-            if (type == typeof(BarDeformation))
-                results = ReadBarDeformation(ids, cases, divisions);
-            else if (type == typeof(BarForce))
-                results = ReadBarForce(ids, cases, divisions);
-            else if (type == typeof(BarStrain))
-                results = ReadBarStrain(ids, cases, divisions);
-            else if (type == typeof(BarStress))
-                results = ReadBarStress(ids, cases, divisions);
-            else if (type == typeof(PierForce))
-                results = GetPierForce(ids, cases, divisions);
-
-            return results;
-        }
-
-        /***************************************************/
-
-        private IEnumerable<IResult> GetMeshResults(Type type, IList ids = null, IList cases = null)
-        {
-            IEnumerable<MeshResult> results = new List<MeshResult>();
-
-            if (type == typeof(MeshForce))
-                results = ReadMeshForce(ids, cases);
-            else if (type == typeof(MeshStress))
-                results = ReadMeshStress(ids, cases);
-
-            return results;
         }
 
         /***************************************************/
