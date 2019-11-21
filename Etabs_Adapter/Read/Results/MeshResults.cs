@@ -55,15 +55,17 @@ namespace BH.Adapter.ETABS
 
         public IEnumerable<IResult> ReadResults(MeshResultRequest request)
         {
+            CheckAndSetUpCases(request);
+            List<string> panelIds = CheckGetPanelIds(request);
 
             switch (request.ResultType)
             {
                 case MeshResultType.Forces:
-                    return ReadMeshForce(request.ObjectIds, request.Cases);
+                    return ReadMeshForce(panelIds);
                 case MeshResultType.Stresses:
-                    return ReadMeshStress(request.ObjectIds, request.Cases);
+                    return ReadMeshStress(panelIds);
                 case MeshResultType.Displacements:
-                    return ReadMeshDisplacement(request.ObjectIds, request.Cases);
+                    return ReadMeshDisplacement(panelIds);
                 case MeshResultType.VonMises:
                 default:
                     Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
@@ -77,29 +79,8 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
 
-        private List<MeshResult> ReadMeshForce(IList ids = null, IList cases = null)
+        private List<MeshResult> ReadMeshForce(List<string> panelIds)
         {
-            List<string> loadcaseIds = new List<string>();
-            List<string> panelIds = new List<string>();
-
-            if (ids == null || ids.Count == 0)
-            {
-                int panels = 0;
-                string[] names = null;
-                m_model.AreaObj.GetNameList(ref panels, ref names);
-                panelIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    panelIds.Add(ids[i].ToString());
-                }
-            }
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
-
             eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
             int resultCount = 0;
             string[] Obj = null;
@@ -152,30 +133,8 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<MeshResult> ReadMeshStress(IList ids = null, IList cases = null)
+        private List<MeshResult> ReadMeshStress(List<string> panelIds)
         {
-
-            List<string> loadcaseIds = new List<string>();
-            List<string> panelIds = new List<string>();
-            List<MeshStress> meshStresses = new List<MeshStress>();
-
-            if (ids == null || ids.Count == 0)
-            {
-                int panels = 0;
-                string[] names = null;
-                m_model.AreaObj.GetNameList(ref panels, ref names);
-                panelIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    panelIds.Add(ids[i].ToString());
-                }
-            }
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
 
             eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
             int resultCount = 0;
@@ -234,28 +193,8 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<MeshResult> ReadMeshDisplacement(IList ids = null, IList cases = null)
+        private List<MeshResult> ReadMeshDisplacement(List<string> panelIds)
         {
-            List<string> loadcaseIds = new List<string>();
-            List<string> panelIds = new List<string>();
-
-            if (ids == null || ids.Count == 0)
-            {
-                int panels = 0;
-                string[] names = null;
-                m_model.AreaObj.GetNameList(ref panels, ref names);
-                panelIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    panelIds.Add(ids[i].ToString());
-                }
-            }
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
 
             int resultCount = 0;
             string[] Obj = null;
@@ -314,6 +253,8 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+        /**** Private method - Support methods          ****/
+        /***************************************************/
 
         private List<MeshResult> GroupMeshResults(IEnumerable<MeshElementResult> meshElementResults)
         {
@@ -325,6 +266,31 @@ namespace BH.Adapter.ETABS
             }
 
             return results;
+        }
+
+        /***************************************************/
+
+        private List<string> CheckGetPanelIds(MeshResultRequest request)
+        {
+            List<string> panelIds = new List<string>();
+            var ids = request.ObjectIds;
+
+            if (ids == null || ids.Count == 0)
+            {
+                int panels = 0;
+                string[] names = null;
+                m_model.AreaObj.GetNameList(ref panels, ref names);
+                panelIds = names.ToList();
+            }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    panelIds.Add(ids[i].ToString());
+                }
+            }
+
+            return panelIds;
         }
 
         /***************************************************/
