@@ -185,14 +185,14 @@ namespace BH.Adapter.ETABS
 
         private void SetSection(SteelSection section)
         {
-            SetProfile(section.SectionProfile, section.Name, section.Material);
+            ISetProfile(section.SectionProfile, section.Name, section.Material);
         }
 
         /***************************************************/
 
         private void SetSection(ConcreteSection section)
         {
-            SetProfile(section.SectionProfile, section.Name, section.Material);
+            ISetProfile(section.SectionProfile, section.Name, section.Material);
         }
 
         /***************************************************/
@@ -220,9 +220,16 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private void SetProfile(IProfile sectionProfile, string sectionName, IMaterialFragment material)
+        private void ISetProfile(IProfile sectionProfile, string sectionName, IMaterialFragment material)
         {
-            SetProfile(sectionProfile as dynamic, sectionName, material);
+            try
+            {
+                SetProfile(sectionProfile as dynamic, sectionName, material);
+            }
+            catch
+            {
+                CreateElementError(sectionProfile.GetType().ToString(), sectionName);
+            }
         }
 
         /***************************************************/
@@ -311,6 +318,13 @@ namespace BH.Adapter.ETABS
         private void SetProfile(ZSectionProfile profile, string sectionName, IMaterialFragment material)
         {
             Engine.Reflection.Compute.RecordWarning("Z-Section currently not supported in the ETABS adapter. Section with name " + sectionName + " has not been pushed.");
+        }
+
+        /***************************************************/
+
+        private void SetProfile(GeneralisedTSectionProfile profile, string sectionName, IMaterialFragment material)
+        {
+            Engine.Reflection.Compute.RecordWarning("GeneralisedTSectionProfile currently not supported in the ETABS adapter. Section with name " + sectionName + " has not been pushed.");
         }
 
         /***************************************************/
