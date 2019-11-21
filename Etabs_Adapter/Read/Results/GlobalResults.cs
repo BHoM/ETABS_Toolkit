@@ -55,12 +55,14 @@ namespace BH.Adapter.ETABS
 
         public IEnumerable<IResult> ReadResults(GlobalResultRequest request)
         {
+            CheckAndSetUpCases(request);
+
             switch (request.ResultType)
             {
                 case GlobalResultType.Reactions:
-                    return GetGlobalReactions(request.Cases);
+                    return GetGlobalReactions();
                 case GlobalResultType.ModalDynamics:
-                    return GetModalParticipationMassRatios(request.Cases);
+                    return GetModalParticipationMassRatios();
                 default:
                     Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
@@ -71,9 +73,8 @@ namespace BH.Adapter.ETABS
         /**** Private method - Extraction methods       ****/
         /***************************************************/
 
-        private List<GlobalReactions> GetGlobalReactions(IList cases = null)
+        private List<GlobalReactions> GetGlobalReactions()
         {
-            List<string> loadcaseIds = new List<string>();
             List<GlobalReactions> globalReactions = new List<GlobalReactions>();
 
             int resultCount = 0;
@@ -82,9 +83,6 @@ namespace BH.Adapter.ETABS
             double[] fx = null; double[] fy = null; double[] fz = null;
             double[] mx = null; double[] my = null; double[] mz = null;
             double gx = 0; double gy = 0; double gz = 0;
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
 
             m_model.Results.BaseReact(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, ref gx, ref gy, ref gz);
 
@@ -110,13 +108,8 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<ModalDynamics> GetModalParticipationMassRatios(IList cases = null)
+        private List<ModalDynamics> GetModalParticipationMassRatios()
         {
-            List<string> loadcaseIds = new List<string>();
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
-
             List<ModalDynamics> partRatios = new List<ModalDynamics>();
 
             int resultCount = 0;
