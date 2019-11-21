@@ -122,8 +122,15 @@ namespace BH.Adapter.ETABS
             }
             return pierForces;
         }
-        
-        
+
+
+        /***************************************************/
+
+        private List<string> CheckAndSetUpCases(IResultRequest request)
+        {
+            return CheckAndSetUpCases(request.Cases);
+        }
+
         /***************************************************/
 
         private List<string> CheckAndSetUpCases(IList cases)
