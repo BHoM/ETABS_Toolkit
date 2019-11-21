@@ -55,12 +55,15 @@ namespace BH.Adapter.ETABS
 
         public IEnumerable<IResult> ReadResults(BarResultRequest request)
         {
+            CheckAndSetUpCases(request);
+            List<string> barIds = CheckGetBarIds(request);
+
             switch (request.ResultType)
             {
                 case BarResultType.BarForce:
-                    return ReadBarForce(request.ObjectIds, request.Cases, request.Divisions);
+                    return ReadBarForce(barIds, request.Divisions);
                 case BarResultType.BarDeformation:
-                    return ReadBarDeformation(request.ObjectIds, request.Cases, request.Divisions);
+                    return ReadBarDeformation(barIds, request.Divisions);
                 case BarResultType.BarStress:
                 case BarResultType.BarStrain:
                 default:
@@ -74,30 +77,9 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
 
-        private List<BarForce> ReadBarForce(IList ids = null, IList cases = null, int divisions = 5)
+        private List<BarForce> ReadBarForce(List<string> barIds, int divisions)
         {
-
-            List<string> loadcaseIds = new List<string>();
-            List<string> barIds = new List<string>();
             List<BarForce> barForces = new List<BarForce>();
-
-            if (ids == null || ids.Count == 0)
-            {
-                int bars = 0;
-                string[] names = null;
-                m_model.FrameObj.GetNameList(ref bars, ref names);
-                barIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    barIds.Add(ids[i].ToString());
-                }
-            }
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -165,30 +147,9 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<BarDeformation> ReadBarDeformation(IList ids = null, IList cases = null, int divisions = 5)
+        private List<BarDeformation> ReadBarDeformation(List<string> barIds, int divisions)
         {
-
-            List<string> loadcaseIds = new List<string>();
-            List<string> barIds = new List<string>();
             List<BarDeformation> deformations = new List<BarDeformation>();
-
-            if (ids == null || ids.Count == 0)
-            {
-                int bars = 0;
-                string[] names = null;
-                m_model.FrameObj.GetNameList(ref bars, ref names);
-                barIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    barIds.Add(ids[i].ToString());
-                }
-            }
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
 
             int resultCount = 0;
             string[] Obj = null;
@@ -280,6 +241,31 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
         /**** Private method - Support methods          ****/
+        /***************************************************/
+
+        private List<string> CheckGetBarIds(BarResultRequest request)
+        {
+            List<string> barIds = new List<string>();
+            var ids = request.ObjectIds;
+
+            if (ids == null || ids.Count == 0)
+            {
+                int bars = 0;
+                string[] names = null;
+                m_model.FrameObj.GetNameList(ref bars, ref names);
+                barIds = names.ToList();
+            }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    barIds.Add(ids[i].ToString());
+                }
+            }
+
+            return barIds;
+        }
+
         /***************************************************/
 
         private double GetBarLength(string barId, Dictionary<string, Point> pts)
