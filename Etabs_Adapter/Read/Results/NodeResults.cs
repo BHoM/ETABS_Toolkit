@@ -55,12 +55,15 @@ namespace BH.Adapter.ETABS
 
         public IEnumerable<IResult> ReadResults(NodeResultRequest request)
         {
+            CheckAndSetUpCases(request);
+            List<string> nodeIds = CheckGetNodeIds(request);
+
             switch (request.ResultType)
             {
                 case NodeResultType.NodeReaction:
-                    return ReadNodeReaction(request.ObjectIds, request.Cases);
+                    return ReadNodeReaction(nodeIds);
                 case NodeResultType.NodeDisplacement:
-                    return ReadNodeDisplacement(request.ObjectIds, request.Cases);
+                    return ReadNodeDisplacement(nodeIds);
                 case NodeResultType.NodeVelocity:
                 case NodeResultType.NodeAcceleration:
                 default:
@@ -81,11 +84,8 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<NodeDisplacement> ReadNodeDisplacement(IList ids = null, IList cases = null)
+        private List<NodeDisplacement> ReadNodeDisplacement(List<string> nodeIds)
         {
-
-            List<string> loadcaseIds = new List<string>();
-            List<string> nodeIds = new List<string>();
             List<NodeDisplacement> nodeDisplacements = new List<NodeDisplacement>();
 
             int resultCount = 0;
@@ -101,24 +101,6 @@ namespace BH.Adapter.ETABS
             double[] my = null;
             double[] mz = null;
 
-            if (ids == null)
-            {
-                int nodes = 0;
-                string[] names = null;
-                m_model.PointObj.GetNameList(ref nodes, ref names);
-                nodeIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    nodeIds.Add(ids[i].ToString());
-                }
-            }
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
-
             for (int i = 0; i < nodeIds.Count; i++)
             {
                 int ret = m_model.Results.JointDispl(nodeIds[i].ToString(), eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
@@ -127,8 +109,6 @@ namespace BH.Adapter.ETABS
                 {
                     for (int j = 0; j < resultCount; j++)
                     {
-                        //string step = stepType[j] != null ? stepType[j] == "Max" ? " Max" : stepType[j] == "Min" ? " Min" : "1" : "0";
-                        //nodeForces.Add(new NodeDisplacement<string, string, string>(objects[j], loadcaseNames[j], step, fx[j], fy[j], fz[j], mx[j], my[j], mz[j]));
 
                         NodeDisplacement nd = new NodeDisplacement()
                         {
@@ -153,29 +133,10 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<NodeReaction> ReadNodeReaction(IList ids = null, IList cases = null)
+        private List<NodeReaction> ReadNodeReaction(List<string> nodeIds)
         {
-            List<string> loadcaseIds = new List<string>();
-            List<string> nodeIds = new List<string>();
+
             List<NodeReaction> nodeReactions = new List<NodeReaction>();
-
-            if (ids == null)
-            {
-                int nodes = 0;
-                string[] names = null;
-                m_model.PointObj.GetNameList(ref nodes, ref names);
-                nodeIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    nodeIds.Add(ids[i].ToString());
-                }
-            }
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -192,8 +153,6 @@ namespace BH.Adapter.ETABS
             double[] mz = null;
 
 
-
-            //List<NodeReaction<string, string, string>> nodeForces = new List<NodeReaction<string, string, string>>();
             for (int i = 0; i < nodeIds.Count; i++)
             {
                 int ret = m_model.Results.JointReact(nodeIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
@@ -203,7 +162,6 @@ namespace BH.Adapter.ETABS
                     for (int j = 0; j < resultCount; j++)
                     {
                         //string step = stepType[j] != null ? stepType[j] == "Max" ? " Max" : stepType[j] == "Min" ? " Min" : "1" : "0";
-                        //nodeForces.Add(new NodeReaction<string, string, string>(objects[j], loadcaseNames[j], step, fx[j], fy[j], fz[j], mx[j], my[j], mz[j]));
                         NodeReaction nr = new NodeReaction()
                         {
                             ResultCase = loadcaseNames[j],
@@ -231,6 +189,34 @@ namespace BH.Adapter.ETABS
             throw new NotImplementedException("Node Acceleration results is not supported yet!");
 
         }
+
+        /***************************************************/
+        /**** Private method - Support methods          ****/
+        /***************************************************/
+
+        private List<string> CheckGetNodeIds(NodeResultRequest request)
+        {
+            List<string> nodeIds = new List<string>();
+            var ids = request.ObjectIds;
+
+            if (ids == null || ids.Count == 0)
+            {
+                int nodes = 0;
+                string[] names = null;
+                m_model.PointObj.GetNameList(ref nodes, ref names);
+                nodeIds = names.ToList();
+            }
+            else
+            {
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    nodeIds.Add(ids[i].ToString());
+                }
+            }
+
+            return nodeIds;
+        }
+
         /***************************************************/
 
     }
