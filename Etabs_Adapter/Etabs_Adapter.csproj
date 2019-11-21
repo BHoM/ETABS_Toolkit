@@ -139,6 +139,9 @@
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Data_oM">
+      <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
+    </Reference>
     <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSI_ETABSv2016_x64.1.0.3\lib\ETABS2016.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -228,7 +231,6 @@
     <ProjectReference Include="..\ETABS_Engine\ETABS_Engine.csproj">
       <Project>{9552d636-d903-4492-944e-0cd392d7bfe3}</Project>
       <Name>ETABS_Engine</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ETABS_oM\ETABS_oM.csproj">
       <Project>{0f1b6828-633e-420d-bb61-00c16056ba8d}</Project>
