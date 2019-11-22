@@ -65,7 +65,7 @@ namespace BH.Adapter.ETABS
                 case BarResultType.BarDisplacement:
                     return ReadBarDisplacements(barIds, request.Divisions);
                 case BarResultType.BarDeformation:
-                    Engine.Reflection.Compute.RecordError("Etabs can not export localised BarDeformations. To get the displacement of the bars in global coordinates, try pulling BarDisplacements");
+                    Engine.Reflection.Compute.RecordError("Etabs can not export localised BarDeformations. To get the full displacement of the bars in global coordinates, try pulling BarDisplacements");
                     return new List<IResult>();
                 case BarResultType.BarStress:
                 case BarResultType.BarStrain:
