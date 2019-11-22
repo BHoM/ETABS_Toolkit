@@ -81,31 +81,31 @@ namespace BH.Adapter.ETABS
 
         private List<MeshResult> ReadMeshForce(List<string> panelIds)
         {
-            eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
+            eItemTypeElm itemTypeElm = eItemTypeElm.ObjectElm;
             int resultCount = 0;
-            string[] Obj = null;
-            string[] Elm = null;
-            string[] PointElm = null;
-            string[] LoadCase = null;
-            string[] StepType = null;
-            double[] StepNum = null;
-            double[] F11 = null;
-            double[] F22 = null;
-            double[] F12 = null;
-            double[] FMax = null;
-            double[] FMin = null;
-            double[] FAngle = null;
-            double[] FVM = null;
-            double[] M11 = null;
-            double[] M22 = null;
-            double[] M12 = null;
-            double[] MMax = null;
-            double[] MMin = null;
-            double[] MAngle = null;
-            double[] V13 = null;
-            double[] V23 = null;
-            double[] VMax = null;
-            double[] VAngle = null;
+            string[] obj = null;
+            string[] elm = null;
+            string[] pointElm = null;
+            string[] loadCase = null;
+            string[] stepType = null;
+            double[] stepNum = null;
+            double[] f11 = null;
+            double[] f22 = null;
+            double[] f12 = null;
+            double[] fMax = null;
+            double[] fMin = null;
+            double[] fAngle = null;
+            double[] fvm = null;
+            double[] m11 = null;
+            double[] m22 = null;
+            double[] m12 = null;
+            double[] mMax = null;
+            double[] mMin = null;
+            double[] mAngle = null;
+            double[] v13 = null;
+            double[] v23 = null;
+            double[] vMax = null;
+            double[] vAngle = null;
 
             List<MeshResult> results = new List<MeshResult>();
 
@@ -114,14 +114,14 @@ namespace BH.Adapter.ETABS
 
                 List<MeshForce> forces = new List<MeshForce>();
 
-                int ret = m_model.Results.AreaForceShell(panelIds[i], ItemTypeElm, ref resultCount, ref Obj, ref Elm,
-                    ref PointElm, ref LoadCase, ref StepType, ref StepNum, ref F11, ref F22, ref F12, ref FMax, ref FMin, ref FAngle, ref FVM,
-                    ref M11, ref M22, ref M12, ref MMax, ref MMin, ref MAngle, ref V13, ref V23, ref VMax, ref VAngle);
+                int ret = m_model.Results.AreaForceShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm,
+                    ref pointElm, ref loadCase, ref stepType, ref stepNum, ref f11, ref f22, ref f12, ref fMax, ref fMin, ref fAngle, ref fvm,
+                    ref m11, ref m22, ref m12, ref mMax, ref mMin, ref mAngle, ref v13, ref v23, ref vMax, ref vAngle);
 
                 for (int j = 0; j < resultCount; j++)
                 {
-                    MeshForce pf = new MeshForce(panelIds[i], PointElm[j], Elm[j], LoadCase[j], StepNum[j], 0, 0, 0,
-                        oM.Geometry.Basis.XY, F11[j], F22[j], F12[j], M12[j], M22[j], M12[j], V13[j], V23[j]);
+                    MeshForce pf = new MeshForce(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], 0, 0, 0,
+                        oM.Geometry.Basis.XY, f11[j], f22[j], f12[j], m12[j], m22[j], m12[j], v13[j], v23[j]);
 
                     forces.Add(pf);
                 }
@@ -136,7 +136,7 @@ namespace BH.Adapter.ETABS
         private List<MeshResult> ReadMeshStress(List<string> panelIds)
         {
 
-            eItemTypeElm ItemTypeElm = eItemTypeElm.ObjectElm;
+            eItemTypeElm itemTypeElm = eItemTypeElm.ObjectElm;
             int resultCount = 0;
             string[] obj = null;
             string[] elm = null;
@@ -169,7 +169,7 @@ namespace BH.Adapter.ETABS
             {
                 List<MeshStress> stressTop = new List<MeshStress>();
                 List<MeshStress> stressBot = new List<MeshStress>();
-                int ret = m_model.Results.AreaStressShell(panelIds[i], ItemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
+                int ret = m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
 
                 if (ret == 0)
                 {
@@ -197,11 +197,11 @@ namespace BH.Adapter.ETABS
         {
 
             int resultCount = 0;
-            string[] Obj = null;
-            string[] Elm = null;
-            string[] LoadCase = null;
-            string[] StepType = null;
-            double[] StepNum = null;
+            string[] obj = null;
+            string[] elm = null;
+            string[] loadCase = null;
+            string[] stepType = null;
+            double[] stepNum = null;
 
             double[] ux = null;
             double[] uy = null;
@@ -238,11 +238,11 @@ namespace BH.Adapter.ETABS
 
                 foreach (string ptId in ptNbs)
                 {
-                    int ret = m_model.Results.JointDispl(ptId, eItemTypeElm.Element, ref resultCount, ref Obj, ref Elm, ref LoadCase, ref StepType, ref StepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
+                    int ret = m_model.Results.JointDispl(ptId, eItemTypeElm.Element, ref resultCount, ref obj, ref elm, ref loadCase, ref stepType, ref stepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
 
                     for (int j = 0; j < resultCount; j++)
                     {
-                        MeshDisplacement disp = new MeshDisplacement(panelIds[i], ptId, "", LoadCase[j], StepNum[j], MeshResultLayer.Middle, 0, MeshResultSmoothingType.None, Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
+                        MeshDisplacement disp = new MeshDisplacement(panelIds[i], ptId, "", loadCase[j], stepNum[j], MeshResultLayer.Middle, 0, MeshResultSmoothingType.None, Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
                         displacements.Add(disp);
                     }
                 }
