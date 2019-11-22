@@ -158,14 +158,7 @@ namespace BH.Adapter.ETABS
                 return true;
             }
 
-            try
-            {
-                SetSection(bhSection as dynamic);
-            }
-            catch
-            {
-                CreateElementError(bhSection.GetType().ToString(), bhSection.Name);
-            }
+            SetSection(bhSection as dynamic);
 
             double[] modifiers = bhSection.Modifiers();
 
@@ -211,16 +204,16 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        private void SetSection(ISectionProperty section)
+        {
+            CreateElementError(section.GetType().ToString(), section.Name);
+        }
+
+        /***************************************************/
+
         private void ISetProfile(IProfile sectionProfile, string sectionName, IMaterialFragment material)
         {
-            try
-            {
-                SetProfile(sectionProfile as dynamic, sectionName, material);
-            }
-            catch
-            {
-                CreateElementError(sectionProfile.GetType().ToString(), sectionName);
-            }
+            SetProfile(sectionProfile as dynamic, sectionName, material);
         }
 
         /***************************************************/
@@ -316,6 +309,13 @@ namespace BH.Adapter.ETABS
         private void SetProfile(CircleProfile profile, string sectionName, IMaterialFragment material)
         {
             m_model.PropFrame.SetCircle(sectionName, material.Name, profile.Diameter);
+        }
+
+        /***************************************************/
+
+        private void SetProfile(IProfile profile, string sectionName, IMaterialFragment material)
+        {
+            CreateElementError(profile.GetType().ToString(), sectionName);
         }
 
         /***************************************************/
