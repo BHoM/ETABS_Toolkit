@@ -62,8 +62,11 @@ namespace BH.Adapter.ETABS
             {
                 case BarResultType.BarForce:
                     return ReadBarForce(barIds, request.Divisions);
+                case BarResultType.BarDisplacement:
+                    return ReadBarDisplacements(barIds, request.Divisions);
                 case BarResultType.BarDeformation:
-                    return ReadBarDeformation(barIds, request.Divisions);
+                    Engine.Reflection.Compute.RecordError("Etabs can not export localised BarDeformations. To get the displacement of the bars in global coordinates, try pulling BarDisplacements");
+                    return new List<IResult>();
                 case BarResultType.BarStress:
                 case BarResultType.BarStrain:
                 default:
@@ -147,9 +150,9 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<BarDeformation> ReadBarDeformation(List<string> barIds, int divisions)
+        private List<BarDisplacement> ReadBarDisplacements(List<string> barIds, int divisions)
         {
-            List<BarDeformation> deformations = new List<BarDeformation>();
+            List<BarDisplacement> displacements = new List<BarDisplacement>();
 
             int resultCount = 0;
             string[] Obj = null;
@@ -197,7 +200,7 @@ namespace BH.Adapter.ETABS
                     {
                         for (int j = 0; j < resultCount; j++)
                         {
-                            BarDeformation def = new BarDeformation
+                            BarDisplacement disp = new BarDisplacement
                             {
                                 UX = ux[j],
                                 UY = uy[j],
@@ -211,7 +214,7 @@ namespace BH.Adapter.ETABS
                                 ResultCase = LoadCase[j],
                                 TimeStep = StepNum[j]
                             };
-                            deformations.Add(def);
+                            displacements.Add(disp);
                         }
                     }
 
@@ -219,7 +222,7 @@ namespace BH.Adapter.ETABS
 
             }
 
-            return deformations;
+            return displacements;
         }
 
 
