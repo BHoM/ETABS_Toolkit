@@ -48,7 +48,7 @@ namespace BH.Adapter.ETABS
 #endif
     {
         /***************************************************/
-        
+
         protected override IEnumerable<IResult> ReadResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
         {
             //Etabs special case forces.
@@ -56,7 +56,7 @@ namespace BH.Adapter.ETABS
             if (type == typeof(PierForce))
                 return GetPierForce(ids, cases, divisions);
 
-                IResultRequest request = Engine.ETABS.Compute.ToResultRequest(type, ids, cases, divisions);
+            IResultRequest request = Engine.Structure.Create.IResultRequest(type, ids?.Cast<object>(), cases?.Cast<object>(), divisions);
 
             if (request != null)
                 return this.ReadResults(request as dynamic);

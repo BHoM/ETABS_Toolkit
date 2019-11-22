@@ -135,7 +135,6 @@ namespace BH.Adapter.ETABS
 
         private List<NodeReaction> ReadNodeReaction(List<string> nodeIds)
         {
-
             List<NodeReaction> nodeReactions = new List<NodeReaction>();
 
             int resultCount = 0;

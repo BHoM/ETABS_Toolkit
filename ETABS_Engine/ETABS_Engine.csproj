@@ -145,7 +145,6 @@
   <ItemGroup>
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToCSI.cs" />
-    <Compile Include="Compute\ToResultRequest.cs" />
     <Compile Include="Create\Diaphragm.cs" />
     <Compile Include="Create\EtabsConfig.cs" />
     <Compile Include="Create\MassSource.cs" />
@@ -177,6 +176,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
