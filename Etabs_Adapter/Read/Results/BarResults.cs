@@ -130,7 +130,7 @@ namespace BH.Adapter.ETABS
                             ResultCase = loadcaseNames[j],
                             ObjectId = barIds[i],
                             MX = t[j],
-                            MY = m3[j],
+                            MY = -m3[j],
                             MZ = m2[j],
                             FX = p[j],
                             FY = v3[j],
