@@ -135,6 +135,24 @@ namespace BH.Adapter.ETABS
 
         private List<string> CheckAndSetUpCases(IList cases)
         {
+            List<string> loadcaseIds = GetAllCases(cases);
+
+            //Clear any previous case setup
+            m_model.Results.Setup.DeselectAllCasesAndCombosForOutput();
+
+            //Loop through and setup all the cases
+            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
+            {
+                SetUpCaseOrCombo(loadcaseIds[loadcase]);
+            }
+
+            return loadcaseIds;
+        }
+
+        /***************************************************/
+
+        private List<string> GetAllCases(IList cases)
+        {
             List<string> loadcaseIds = new List<string>();
 
             if (cases == null || cases.Count == 0)
@@ -167,24 +185,25 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            //Clear any previous case setup
-            m_model.Results.Setup.DeselectAllCasesAndCombosForOutput();
+            return loadcaseIds;
+        }
 
-            //Loop through and setup all the cases
-            for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
+
+        /***************************************************/
+
+        private bool SetUpCaseOrCombo(string caseName)
+        {
+            // Try setting it as a Load Case
+            if (m_model.Results.Setup.SetCaseSelectedForOutput(caseName) != 0)
             {
-                // Try setting it as a Load Case
-                if (m_model.Results.Setup.SetCaseSelectedForOutput(loadcaseIds[loadcase]) != 0)
+                // If that fails, try setting it as a Load Combination
+                if (m_model.Results.Setup.SetComboSelectedForOutput(caseName) != 0)
                 {
-                    // If that fails, try setting it as a Load Combination
-                    if (m_model.Results.Setup.SetComboSelectedForOutput(loadcaseIds[loadcase]) != 0)
-                    {
-                        Engine.Reflection.Compute.RecordWarning("Failed to setup result extraction for case " + loadcaseIds[loadcase]);
-                    }
+                    Engine.Reflection.Compute.RecordWarning("Failed to setup result extraction for case " + caseName);
+                    return false;
                 }
             }
-
-            return loadcaseIds;
+            return true;
         }
 
         /***************************************************/
