@@ -331,7 +331,7 @@ namespace BH.Adapter.ETABS
                 double vx = group.Sum(x => x.VX);
                 double vy = group.Sum(x => x.VY);
 
-                smoothenedForces.Add(new MeshForce(first.ObjectId, first.NodeId, "-", first.ResultCase, first.TimeStep, first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, nxx, nyy, nxy, mxx, myy, mxy, vx, vy));
+                smoothenedForces.Add(new MeshForce(first.ObjectId, first.NodeId, "", first.ResultCase, first.TimeStep, first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, nxx, nyy, nxy, mxx, myy, mxy, vx, vy));
             }
 
             return smoothenedForces;
