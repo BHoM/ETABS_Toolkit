@@ -59,14 +59,13 @@ namespace BH.Adapter.ETABS
             CheckAndSetUpCases(request);
             List<string> panelIds = CheckGetPanelIds(request);
 
-            Engine.Reflection.Compute.RecordWarning("The Etabs API currently does not allow you to control Smoothing, Layer and LayerPosition");
             
             switch (request.ResultType)
             {
                 case MeshResultType.Forces:
                     return ReadMeshForce(panelIds, request.Smoothing);
                 case MeshResultType.Displacements:
-                    return ReadMeshDisplacement(panelIds);
+                    return ReadMeshDisplacement(panelIds, request.Smoothing);
                 case MeshResultType.Stresses:
                     return ReadMeshStress(panelIds, cases, request.Smoothing, request.Layer);
                 case MeshResultType.VonMises:
@@ -166,7 +165,7 @@ namespace BH.Adapter.ETABS
                 case MeshResultSmoothingType.BySelection:
                 case MeshResultSmoothingType.Global:
                 case MeshResultSmoothingType.ByFiniteElementCentres:
-                    Engine.Reflection.Compute.RecordWarning("Smoothing type not supported for MeshForce. No results extracted");
+                    Engine.Reflection.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted");
                     return new List<MeshResult>();
             }
 
@@ -270,7 +269,7 @@ namespace BH.Adapter.ETABS
                 case MeshResultSmoothingType.BySelection:
                 case MeshResultSmoothingType.Global:
                 case MeshResultSmoothingType.ByFiniteElementCentres:
-                    Engine.Reflection.Compute.RecordWarning("Smoothing type not supported for MeshForce. No results extracted");
+                    Engine.Reflection.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted");
                     return new List<MeshResult>();
             }
 
@@ -350,7 +349,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<MeshResult> ReadMeshDisplacement(List<string> panelIds)
+        private List<MeshResult> ReadMeshDisplacement(List<string> panelIds, MeshResultSmoothingType smoothing)
         {
 
             int resultCount = 0;
