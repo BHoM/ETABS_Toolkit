@@ -67,7 +67,7 @@ namespace BH.Adapter.ETABS
                 case MeshResultType.Displacements:
                     return ReadMeshDisplacement(panelIds);
                 case MeshResultType.Stresses:
-                    return ReadMeshStress(panelIds);
+                    return ReadMeshStress(panelIds, request.Smoothing);
                 case MeshResultType.VonMises:
                 default:
                     Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
@@ -135,7 +135,13 @@ namespace BH.Adapter.ETABS
 
                 for (int j = 0; j < resultCount; j++)
                 {
-                    MeshForce pf = new MeshForce(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], 0, 0, 0,
+                    double step = 0;
+                    if (stepType[j] == "Single Value" || stepNum.Length < j)
+                        step = 0;
+                    else
+                        step = stepNum[j];
+
+                    MeshForce pf = new MeshForce(panelIds[i], pointElm[j], elm[j], loadCase[j], step, 0, 0, 0,
                         oM.Geometry.Basis.XY, f11[j], f22[j], f12[j], m11[j], m22[j], m12[j], v13[j], v23[j]);
 
                     forces.Add(pf);
@@ -152,8 +158,18 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<MeshResult> ReadMeshStress(List<string> panelIds)
+        private List<MeshResult> ReadMeshStress(List<string> panelIds, MeshResultSmoothingType smoothing)
         {
+
+
+            switch (smoothing)
+            {
+                case MeshResultSmoothingType.BySelection:
+                case MeshResultSmoothingType.Global:
+                case MeshResultSmoothingType.ByFiniteElementCentres:
+                    Engine.Reflection.Compute.RecordWarning("Smoothing type not supported for MeshForce. No results extracted");
+                    return new List<MeshResult>();
+            }
 
             eItemTypeElm itemTypeElm = eItemTypeElm.ObjectElm;
             int resultCount = 0;
