@@ -83,6 +83,16 @@ namespace BH.Adapter.ETABS
 
         private List<MeshResult> ReadMeshForce(List<string> panelIds, MeshResultSmoothingType smoothing)
         {
+
+            switch (smoothing)
+            {
+                case MeshResultSmoothingType.BySelection:
+                case MeshResultSmoothingType.Global:
+                case MeshResultSmoothingType.ByFiniteElementCentres:
+                    Engine.Reflection.Compute.RecordWarning("Smoothing type not supported for MeshForce. No results extracted");
+                    return new List<MeshResult>();
+            }
+
             eItemTypeElm itemTypeElm = eItemTypeElm.ObjectElm;
             int resultCount = 0;
             string[] obj = null;
