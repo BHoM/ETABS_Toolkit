@@ -58,14 +58,16 @@ namespace BH.Adapter.ETABS
             CheckAndSetUpCases(request);
             List<string> panelIds = CheckGetPanelIds(request);
 
+            Engine.Reflection.Compute.RecordWarning("The Etabs API currently does not allow you to control Smoothing, Layer and LayerPosition");
+            
             switch (request.ResultType)
             {
                 case MeshResultType.Forces:
-                    return ReadMeshForce(panelIds);
-                case MeshResultType.Stresses:
-                    return ReadMeshStress(panelIds);
+                    return ReadMeshForce(panelIds, request.Smoothing);
                 case MeshResultType.Displacements:
                     return ReadMeshDisplacement(panelIds);
+                case MeshResultType.Stresses:
+                    return ReadMeshStress(panelIds);
                 case MeshResultType.VonMises:
                 default:
                     Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
@@ -79,7 +81,7 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
 
-        private List<MeshResult> ReadMeshForce(List<string> panelIds)
+        private List<MeshResult> ReadMeshForce(List<string> panelIds, MeshResultSmoothingType smoothing)
         {
             eItemTypeElm itemTypeElm = eItemTypeElm.ObjectElm;
             int resultCount = 0;
@@ -109,11 +111,14 @@ namespace BH.Adapter.ETABS
 
             List<MeshResult> results = new List<MeshResult>();
 
+            if (smoothing == MeshResultSmoothingType.ByPanel)
+                Engine.Reflection.Compute.RecordWarning("Force values have been smoothened outside the API by summing up all force values in each node");
+
             for (int i = 0; i < panelIds.Count; i++)
             {
 
                 List<MeshForce> forces = new List<MeshForce>();
-
+                
                 int ret = m_model.Results.AreaForceShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm,
                     ref pointElm, ref loadCase, ref stepType, ref stepNum, ref f11, ref f22, ref f12, ref fMax, ref fMin, ref fAngle, ref fvm,
                     ref m11, ref m22, ref m12, ref mMax, ref mMin, ref mAngle, ref v13, ref v23, ref vMax, ref vAngle);
@@ -121,10 +126,14 @@ namespace BH.Adapter.ETABS
                 for (int j = 0; j < resultCount; j++)
                 {
                     MeshForce pf = new MeshForce(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], 0, 0, 0,
-                        oM.Geometry.Basis.XY, f11[j], f22[j], f12[j], m12[j], m22[j], m12[j], v13[j], v23[j]);
+                        oM.Geometry.Basis.XY, f11[j], f22[j], f12[j], m11[j], m22[j], m12[j], v13[j], v23[j]);
 
                     forces.Add(pf);
                 }
+
+                if (smoothing == MeshResultSmoothingType.ByPanel)
+                    forces = SmoothenForces(forces);
+
                 results.AddRange(GroupMeshResults(forces));
             }
 
@@ -171,21 +180,19 @@ namespace BH.Adapter.ETABS
                 List<MeshStress> stressBot = new List<MeshStress>();
                 int ret = m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
 
-                if (ret == 0)
+                for (int j = 0; j < resultCount - 1; j++)
                 {
-                    for (int j = 0; j < resultCount; j++)
-                    {
-                        MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], sMaxAvg[j]);
-                        MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], sMaxAvg[j]);
+                    MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], sMaxAvg[j]);
+                    MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], sMaxAvg[j]);
 
-                        stressBot.Add(mStressBot);
-                        stressTop.Add(mStressTop);
-                    }
-
-                    results.AddRange(GroupMeshResults(stressBot));
-                    results.AddRange(GroupMeshResults(stressTop));
+                    stressBot.Add(mStressBot);
+                    stressTop.Add(mStressTop);
                 }
-                
+
+                results.AddRange(GroupMeshResults(stressBot));
+                results.AddRange(GroupMeshResults(stressTop));
+
+
             }
 
             return results;
@@ -291,6 +298,33 @@ namespace BH.Adapter.ETABS
             }
 
             return panelIds;
+        }
+
+        /***************************************************/
+
+        private List<MeshForce> SmoothenForces(List<MeshForce> forces)
+        {
+            List<MeshForce> smoothenedForces = new List<MeshForce>();
+
+            foreach (IEnumerable<MeshForce> group in forces.GroupBy(x => new { x.ResultCase, x.TimeStep, x.NodeId }))
+            {
+                MeshForce first = group.First();
+
+                double nxx = group.Sum(x => x.NXX);
+                double nyy = group.Sum(x => x.NYY);
+                double nxy = group.Sum(x => x.NXY);
+
+                double mxx = group.Sum(x => x.MXX);
+                double myy = group.Sum(x => x.MYY);
+                double mxy = group.Sum(x => x.MXY);
+
+                double vx = group.Sum(x => x.VX);
+                double vy = group.Sum(x => x.VY);
+
+                smoothenedForces.Add(new MeshForce(first.ObjectId, first.NodeId, "-", first.ResultCase, first.TimeStep, first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, nxx, nyy, nxy, mxx, myy, mxy, vx, vy));
+            }
+
+            return smoothenedForces;
         }
 
         /***************************************************/

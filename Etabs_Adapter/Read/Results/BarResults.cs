@@ -154,6 +154,8 @@ namespace BH.Adapter.ETABS
         {
             List<BarDisplacement> displacements = new List<BarDisplacement>();
 
+            Engine.Reflection.Compute.RecordWarning("Displacements will only be extracted at calculation node. Divisions will not be considered in result extraction");
+
             int resultCount = 0;
             string[] Obj = null;
             string[] Elm = null;
