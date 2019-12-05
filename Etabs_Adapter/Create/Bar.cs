@@ -185,30 +185,14 @@ namespace BH.Adapter.ETABS
 
         private void SetSection(SteelSection section)
         {
-            SetProfile(section.SectionProfile, section.Name, section.Material);
+            ISetProfile(section.SectionProfile, section.Name, section.Material);
         }
 
         /***************************************************/
 
         private void SetSection(ConcreteSection section)
         {
-            SetProfile(section.SectionProfile, section.Name, section.Material);
-        }
-
-        /***************************************************/
-
-        private void SetSection(CableSection section)
-        {
-            //no ISectionDimentions
-            CreateElementError("Section Profile", section.Name);
-        }
-
-        /***************************************************/
-
-        private void SetSection(CompositeSection section)
-        {
-            //contains SteelSection and ConcreteScetion
-            CreateElementError("Section Profile", section.Name);
+            ISetProfile(section.SectionProfile, section.Name, section.Material);
         }
 
         /***************************************************/
@@ -220,7 +204,14 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private void SetProfile(IProfile sectionProfile, string sectionName, IMaterialFragment material)
+        private void SetSection(ISectionProperty section)
+        {
+            CreateElementError(section.GetType().ToString(), section.Name);
+        }
+
+        /***************************************************/
+
+        private void ISetProfile(IProfile sectionProfile, string sectionName, IMaterialFragment material)
         {
             SetProfile(sectionProfile as dynamic, sectionName, material);
         }
@@ -308,13 +299,6 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private void SetProfile(ZSectionProfile profile, string sectionName, IMaterialFragment material)
-        {
-            Engine.Reflection.Compute.RecordWarning("Z-Section currently not supported in the ETABS adapter. Section with name " + sectionName + " has not been pushed.");
-        }
-
-        /***************************************************/
-
         private void SetProfile(RectangleProfile profile, string sectionName, IMaterialFragment material)
         {
             m_model.PropFrame.SetRectangle(sectionName, material.Name, profile.Height, profile.Width);
@@ -329,9 +313,9 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private void SetProfile(FreeFormProfile profile, string sectionName, IMaterialFragment material)
+        private void SetProfile(IProfile profile, string sectionName, IMaterialFragment material)
         {
-            CreateElementError("Section Profile", sectionName);
+            CreateElementError(profile.GetType().ToString(), sectionName);
         }
 
         /***************************************************/
