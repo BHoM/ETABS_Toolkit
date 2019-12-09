@@ -94,7 +94,7 @@ namespace BH.Adapter.ETABS
                     string endId = "";
                     m_model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
 
-                    List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
+                    List<Node> endNodes = ReadNode(new List<string> { startId, endId });
                     bhLink.MasterNode = endNodes[0];
                     bhLink.SlaveNodes = new List<Node>() { endNodes[1] };
                 }
@@ -117,7 +117,7 @@ namespace BH.Adapter.ETABS
                         nodeIdsToRead.Add(endId);
                     }
 
-                    List<Node> endNodes = ReadNodes(nodeIdsToRead);
+                    List<Node> endNodes = ReadNode(nodeIdsToRead);
                     bhLink.MasterNode = endNodes[0];
                     endNodes.RemoveAt(0);
                     bhLink.SlaveNodes = endNodes;
