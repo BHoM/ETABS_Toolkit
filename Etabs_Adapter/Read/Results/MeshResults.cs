@@ -398,7 +398,7 @@ namespace BH.Adapter.ETABS
 
                     for (int j = 0; j < resultCount; j++)
                     {
-                        MeshDisplacement disp = new MeshDisplacement(panelIds[i], ptId, "", loadCase[j], stepNum[j], MeshResultLayer.Middle, 0, MeshResultSmoothingType.None, Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
+                        MeshDisplacement disp = new MeshDisplacement(panelIds[i], ptId, "", loadCase[j], stepNum[j], MeshResultLayer.Middle, 0, MeshResultSmoothingType.Global, Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
                         displacements.Add(disp);
                     }
                 }
