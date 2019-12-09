@@ -61,11 +61,11 @@ namespace BH.Adapter.ETABS
         protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
             if (type == typeof(Node))
-                return ReadNodes(ids as dynamic);
+                return ReadNode(ids as dynamic);
             else if (type == typeof(Bar))
-                return ReadBars(ids as dynamic);
+                return ReadBar(ids as dynamic);
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
-                return ReadSectionProperties(ids as dynamic);
+                return ReadSectionProperty(ids as dynamic);
             else if (type == typeof(IMaterialFragment))
                 return ReadMaterial(ids as dynamic);
             else if (type == typeof(Panel))

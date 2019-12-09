@@ -55,7 +55,7 @@ namespace BH.Adapter.ETABS
     {
         /***************************************************/
 
-        private List<Node> ReadNodes(List<string> ids = null)
+        private List<Node> ReadNode(List<string> ids = null)
         {
             List<Node> nodeList = new List<Node>();
 
