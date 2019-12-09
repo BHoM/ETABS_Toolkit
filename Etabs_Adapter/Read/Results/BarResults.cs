@@ -65,7 +65,7 @@ namespace BH.Adapter.ETABS
                 case BarResultType.BarDisplacement:
                     return ReadBarDisplacements(barIds, request.Divisions);
                 case BarResultType.BarDeformation:
-                    Engine.Reflection.Compute.RecordError("Etabs can not export localised BarDeformations. To get the full displacement of the bars in global coordinates, try pulling BarDisplacements");
+                    Engine.Reflection.Compute.RecordError("Etabs cannot export localised BarDeformations. To get the full displacement of the bars in global coordinates, try pulling BarDisplacements");
                     return new List<IResult>();
                 case BarResultType.BarStress:
                 case BarResultType.BarStrain:
@@ -99,7 +99,6 @@ namespace BH.Adapter.ETABS
             double[] t = null;
             double[] m2 = null;
             double[] m3 = null;
-
 
             int type = 2; //Use minimum nb of division points
             double segSize = 0;
@@ -154,7 +153,7 @@ namespace BH.Adapter.ETABS
         {
             List<BarDisplacement> displacements = new List<BarDisplacement>();
 
-            Engine.Reflection.Compute.RecordWarning("Displacements will only be extracted at calculation node. Divisions will not be considered in result extraction");
+            Engine.Reflection.Compute.RecordWarning("Displacements will only be extracted at ETABS calculation nodes. 'Divisions' parameter will not be considered in result extraction");
 
             int resultCount = 0;
             string[] Obj = null;
@@ -233,7 +232,7 @@ namespace BH.Adapter.ETABS
         private List<BarResult> ReadBarStrain(IList ids = null, IList cases = null, int divisions = 5)
         {
 
-            throw new NotImplementedException("Bar strain results is not supported yet!");
+            throw new NotImplementedException("Bar strain results are not supported yet!");
         }
 
         /***************************************************/
@@ -241,7 +240,7 @@ namespace BH.Adapter.ETABS
         private List<BarResult> ReadBarStress(IList ids = null, IList cases = null, int divisions = 5)
         {
 
-            throw new NotImplementedException("Bar stress results is not supported yet!");
+            throw new NotImplementedException("Bar stress results are not supported yet!");
         }
 
         /***************************************************/
