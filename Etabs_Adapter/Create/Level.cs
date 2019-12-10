@@ -48,10 +48,10 @@ namespace BH.Adapter.ETABS
 
             List<Level> levelList = levels.OrderBy(x => x.Elevation).ToList();
 
-            if (levelList.Any(x => x.Name.Length == 0))
+            if (levelList.Any(x => string.IsNullOrWhiteSpace(x.Name)))
                 Engine.Reflection.Compute.RecordWarning("Unnamed levels have been given name according to their height index: Level 'i'");
 
-            string[] names = levelList.Select((x,i) => x.Name.Length == 0 ? "Level " + i.ToString() : x.Name).ToArray();
+            string[] names = levelList.Select((x,i) => string.IsNullOrWhiteSpace(x.Name) ? "Level " + i.ToString() : x.Name).ToArray();
             double[] elevations = new double[count + 1];
 
             for (int i = 0; i < count; i++)
