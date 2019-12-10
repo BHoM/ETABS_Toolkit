@@ -68,7 +68,7 @@ namespace BH.Adapter.ETABS
 
             for (int i = 0; i < count; i++)
             {
-                cases[i] = massSource.FactoredAdditionalCases[i].Item1.CustomData[AdapterId].ToString();
+                cases[i] = massSource.FactoredAdditionalCases[i].Item1.Name;
                 factors[i] = massSource.FactoredAdditionalCases[i].Item2;
             }
 
