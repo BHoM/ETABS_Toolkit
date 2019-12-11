@@ -109,11 +109,12 @@ namespace BH.Adapter.ETABS
                         bhBar = bhBar.SetAutoLengthOffset(autoOffset, rz);
                     }
 
+                    // OrientationAngle
                     double angle = 0;
                     bool advanced = false;
                     m_model.FrameObj.GetLocalAxes(id, ref angle, ref advanced);
                     if (!advanced)
-                        bhBar.OrientationAngle = angle;
+                        bhBar.OrientationAngle = angle * Math.PI / 180;
                     else
                         BH.Engine.Reflection.Compute.RecordWarning("advanced local axis for bars are not supported");
 
