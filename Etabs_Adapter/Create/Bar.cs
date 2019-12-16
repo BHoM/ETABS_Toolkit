@@ -96,7 +96,12 @@ namespace BH.Adapter.ETABS
                 offset2[2] = offset.End.Y;
             }
 
-            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, true, ref offset1, ref offset2) != 0)
+            // WIP
+            object modifyStiffness;
+            bhBar.CustomData.TryGetValue("EtabsInsertionPointModifyStiffness", out modifyStiffness);
+            modifyStiffness = modifyStiffness == null ? true : modifyStiffness;
+
+            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, (bool)modifyStiffness, ref offset1, ref offset2) != 0)
             {
                 CreatePropertyWarning("insertion point and perpendicular offset", "Bar", name);
                 ret++;

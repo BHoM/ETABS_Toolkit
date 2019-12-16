@@ -47,5 +47,17 @@ namespace BH.Engine.ETABS
         }
 
         /***************************************************/
+
+        public static Bar SetInsertionPoint(this Bar bar, BarInsertionPoint barInsertionPoint = BarInsertionPoint.Centroid, bool modifyStiffness = true)
+        {
+            Bar clone = (Bar)bar.GetShallowClone();
+
+            clone.CustomData["EtabsInsertionPoint"] = barInsertionPoint;
+            clone.CustomData["EtabsInsertionPointModifyStiffness"] = modifyStiffness;
+
+            return clone;
+        }
+
+        /***************************************************/
     }
 }
