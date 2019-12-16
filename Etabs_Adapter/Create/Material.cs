@@ -67,7 +67,7 @@ namespace BH.Adapter.ETABS
                     double[] g = orthoTropic.ShearModulus.ToDoubleArray();
                     m_model.PropMaterial.SetMPOrthotropic(material.Name, ref e, ref v, ref a, ref g);
                 }
-                m_model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
+                m_model.PropMaterial.SetWeightAndMass(material.Name, 2, material.Density);
             }
 
             return true;
