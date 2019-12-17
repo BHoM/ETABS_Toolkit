@@ -50,5 +50,18 @@ namespace BH.Engine.ETABS
 
         /***************************************************/
 
+        public static bool ModifyStiffnessInsertionPoint(this Bar bar)
+        {
+            object obj;
+
+            if (bar.CustomData.TryGetValue("EtabsInsertionPointModifyStiffness", out obj) && obj is bool)
+            {
+                return (bool)obj;
+            }
+            return true;
+        }
+
+        /***************************************************/
+
     }
 }
