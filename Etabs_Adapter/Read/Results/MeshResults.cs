@@ -20,30 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BH.oM.Structure.Results;
 using BH.oM.Common;
-#if Debug17 || Release17
+#if Debug18 || Release18
+using ETABSv1;
+#elif Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
 #endif
-using BH.oM.Structure.Elements;
-using BH.oM.Adapters.ETABS.Elements;
-using BH.Engine.ETABS;
-using BH.oM.Structure.Loads;
 using BH.oM.Structure.Requests;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
@@ -59,7 +55,7 @@ namespace BH.Adapter.ETABS
             CheckAndSetUpCases(request);
             List<string> panelIds = CheckGetPanelIds(request);
 
-            
+
             switch (request.ResultType)
             {
                 case MeshResultType.Forces:
@@ -128,7 +124,7 @@ namespace BH.Adapter.ETABS
             {
 
                 List<MeshForce> forces = new List<MeshForce>();
-                
+
                 int ret = m_model.Results.AreaForceShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm,
                     ref pointElm, ref loadCase, ref stepType, ref stepNum, ref f11, ref f22, ref f12, ref fMax, ref fMin, ref fAngle, ref fvm,
                     ref m11, ref m22, ref m12, ref mMax, ref mMin, ref mAngle, ref v13, ref v23, ref vMax, ref vAngle);
@@ -317,7 +313,7 @@ namespace BH.Adapter.ETABS
 
                     List<MeshStress> stresses = new List<MeshStress>();
                     int ret = m_model.Results.AreaStressShellLayered(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref layer, ref intPtNb, ref layerPos, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11, ref s22, ref s12, ref sMax, ref sMin, ref sAng, ref svm, ref s13, ref s23, ref sMaxAvg, ref sAngAvg);
-                    
+
                     if (ret == 0)
                     {
 

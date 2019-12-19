@@ -20,11 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Geometry.SettingOut;
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Geometry.SettingOut;
-using BH.Engine.ETABS;
-#if Debug17 || Release17
+#if Debug18 || Release18
+#elif Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -32,7 +32,9 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
@@ -51,7 +53,7 @@ namespace BH.Adapter.ETABS
             if (levelList.Any(x => string.IsNullOrWhiteSpace(x.Name)))
                 Engine.Reflection.Compute.RecordWarning("Unnamed levels have been given name according to their height index: Level 'i'");
 
-            string[] names = levelList.Select((x,i) => string.IsNullOrWhiteSpace(x.Name) ? "Level " + i.ToString() : x.Name).ToArray();
+            string[] names = levelList.Select((x, i) => string.IsNullOrWhiteSpace(x.Name) ? "Level " + i.ToString() : x.Name).ToArray();
             double[] elevations = new double[count + 1];
 
             for (int i = 0; i < count; i++)
@@ -71,7 +73,7 @@ namespace BH.Adapter.ETABS
             bool[] spliceAbove = new bool[count];   //No splice
             double[] spliceHeight = new double[count];  //No splice
 
-            if(m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight) == 0) { }
+            if (m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight) == 0) { }
             else
             {
 

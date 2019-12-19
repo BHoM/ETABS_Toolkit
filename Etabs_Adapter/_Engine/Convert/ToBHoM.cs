@@ -21,15 +21,12 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.MaterialFragments;
-using BH.oM.Structure.Constraints;
-using BH.Adapter.ETABS;
 
-#if Debug17 || Release17
+#if Debug18 || Release18
+using ETABSv1;
+#elif Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -47,7 +44,7 @@ namespace BH.Engine.ETABS
 {
     public static partial class Convert
     {
-        
+
         /***************************************************/
 
         public static LoadNature ToBHoM(this eLoadPatternType loadPatternType)

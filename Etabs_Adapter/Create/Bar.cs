@@ -20,30 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-using BH.oM.Geometry.SettingOut;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.SectionProperties;
-using BH.oM.Structure.Constraints;
-using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.Loads;
-using BH.oM.Structure.Offsets;
-using BH.Engine.Structure;
-using BH.Engine.Geometry;
-using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
+using BH.Engine.Structure;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Geometry.ShapeProfiles;
-#if Debug17 || Release17
-    using ETABSv17;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.MaterialFragments;
+using BH.oM.Structure.Offsets;
+using BH.oM.Structure.SectionProperties;
+#if Debug18 || Release18
+#elif Debug17 || Release17
+using ETABSv17;
 #else
-    using ETABS2016;
+using ETABS2016;
 #endif
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
@@ -55,9 +51,8 @@ namespace BH.Adapter.ETABS
         {
             int ret = 0;
 
-
             string name = "";
-            
+
             ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
 
             bhBar.CustomData[AdapterId] = name;
@@ -101,7 +96,7 @@ namespace BH.Adapter.ETABS
                 CreatePropertyWarning("insertion point and perpendicular offset", "Bar", name);
                 ret++;
             }
-            
+
             if (bhBar.Release != null)
             {
                 bool[] restraintStart = null;
@@ -110,7 +105,7 @@ namespace BH.Adapter.ETABS
                 double[] springEnd = null;
 
                 bhBar.Release.ToCSI(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd);
-                
+
                 if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
                 {
                     CreatePropertyWarning("Release", "Bar", name);

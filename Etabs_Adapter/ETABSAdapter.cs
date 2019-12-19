@@ -20,16 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Base;
-using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
-#if Debug17 || Release17
+#if Debug18 || Release18
+using ETABSv1;
+#elif Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -37,7 +31,9 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
@@ -55,7 +51,9 @@ namespace BH.Adapter.ETABS
         /**** Constructors                              ****/
         /***************************************************/
 
-#if Debug17 || Release17
+#if Debug18 || Release18
+        public ETABS18Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+#elif Debug17 || Release17
         public ETABS17Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
 #else
         public ETABS2016Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
@@ -69,7 +67,10 @@ namespace BH.Adapter.ETABS
 
                 //string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
                 //string pathToETABS = System.IO.Path.Combine("C:","Program Files", "Computers and Structures", "ETABS 2016", "ETABS.exe");
-#if Debug17 || Release17
+#if Debug18 || Release18
+                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 18\ETABS.exe";
+                cHelper helper = new ETABSv1.Helper();
+#elif Debug17 || Release17
                 string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 17\ETABS.exe";
                 cHelper helper = new ETABSv17.Helper();
 #else

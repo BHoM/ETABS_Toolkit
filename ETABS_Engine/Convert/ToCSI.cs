@@ -21,10 +21,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Structure.Loads;
-using BH.oM.Structure.Constraints;
-using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry;
+using BH.oM.Structure.Constraints;
 
 
 namespace BH.Engine.ETABS
@@ -85,8 +83,8 @@ namespace BH.Engine.ETABS
             endSpring[3] = release.EndRelease.RotationalStiffnessX;
             endSpring[4] = release.EndRelease.RotationalStiffnessY;
             endSpring[5] = release.EndRelease.RotationalStiffnessZ;
-        }        
-        
+        }
+
         /***************************************************/
 
         public static double[] ToDoubleArray(this Vector v)
@@ -96,5 +94,5 @@ namespace BH.Engine.ETABS
 
         /***************************************************/
     }
-    
+
 }

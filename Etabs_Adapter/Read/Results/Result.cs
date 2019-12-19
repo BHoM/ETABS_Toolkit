@@ -24,24 +24,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Structure.Results;
 using BH.oM.Common;
-#if Debug17 || Release17
+#if Debug18 || Release18
+#elif Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
 #endif
-using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
-using BH.Engine.ETABS;
 using BH.oM.Structure.Loads;
 using BH.oM.Data.Requests;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter

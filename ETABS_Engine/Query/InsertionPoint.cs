@@ -20,13 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
+using BH.oM.Structure.Elements;
 
 namespace BH.Engine.ETABS
 {

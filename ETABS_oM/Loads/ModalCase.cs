@@ -20,12 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Base;
 
 namespace BH.oM.Structure.Loads
 {
@@ -38,6 +38,6 @@ namespace BH.oM.Structure.Loads
         public int StartMode { get; set; } = 1;
 
         public MassSource Mass { get; set; } = new MassSource();
-        
+
     }
 }

@@ -20,13 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Architecture.Elements;
-using BH.oM.Geometry.SettingOut;
 
 namespace BH.Engine.ETABS
 {
@@ -51,11 +45,13 @@ namespace BH.Engine.ETABS
 
         public static oM.Geometry.SettingOut.Level UpgradeVersion(this BH.oM.Architecture.Elements.Level level)
         {
-            return new oM.Geometry.SettingOut.Level {
+            return new oM.Geometry.SettingOut.Level
+            {
                 Name = level.Name,
                 Elevation = level.Elevation,
                 CustomData = level.CustomData,
-                Fragments = level.Fragments };
+                Fragments = level.Fragments
+            };
         }
 
         /***************************************************/

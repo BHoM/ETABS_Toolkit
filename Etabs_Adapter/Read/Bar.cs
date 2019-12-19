@@ -21,11 +21,8 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.Constraints;
@@ -33,7 +30,9 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
 using BH.oM.Geometry.ShapeProfiles;
-#if Debug17 || Release17
+#if Debug18 || Release18
+using ETABSv1;
+#elif Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -41,7 +40,9 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
@@ -62,7 +63,7 @@ namespace BH.Adapter.ETABS
             if (ids == null)
             {
                 ids = names.ToList();
-            }            
+            }
 
             foreach (string id in ids)
             {
@@ -84,7 +85,7 @@ namespace BH.Adapter.ETABS
 
                     m_model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
                     bhBar.Release = GetBarRelease(restraintStart, springStart, restraintEnd, springEnd);
-                    
+
                     string propertyName = "";
                     string sAuto = "";
                     m_model.FrameObj.GetSection(id, ref propertyName, ref sAuto);

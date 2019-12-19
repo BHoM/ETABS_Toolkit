@@ -24,26 +24,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BH.oM.Structure.Results;
 using BH.oM.Common;
-#if Debug17 || Release17
+#if Debug18 || Release18
+using ETABSv1;
+#elif Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
 #endif
-using BH.oM.Structure.Elements;
-using BH.oM.Adapters.ETABS.Elements;
-using BH.Engine.ETABS;
-using BH.oM.Structure.Loads;
 using BH.oM.Structure.Requests;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
@@ -135,7 +133,7 @@ namespace BH.Adapter.ETABS
                             FY = v3[j],
                             FZ = v2[j],
                             Divisions = divs,
-                            Position = objStation[j] /length,
+                            Position = objStation[j] / length,
                             TimeStep = stepNum[j]
                         };
 
@@ -196,7 +194,7 @@ namespace BH.Adapter.ETABS
                 foreach (var nodePos in nodeWithPos)
                 {
                     int ret = m_model.Results.JointDispl(nodePos.Key, eItemTypeElm.Element, ref resultCount, ref Obj, ref Elm, ref LoadCase, ref StepType, ref StepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
-                    
+
                     if (ret == 0)
                     {
                         for (int j = 0; j < resultCount; j++)

@@ -20,25 +20,16 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-using BH.oM.Geometry.SettingOut;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.SectionProperties;
-using BH.oM.Structure.Constraints;
-using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.Loads;
-using BH.oM.Structure.Offsets;
-using BH.Engine.Structure;
-using BH.Engine.Geometry;
-using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
-using BH.oM.Adapters.ETABS.Elements;
+using BH.Engine.Structure;
+using BH.oM.Structure.Elements;
 
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter

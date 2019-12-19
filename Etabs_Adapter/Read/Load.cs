@@ -21,17 +21,16 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
-#if Debug17 || Release17
+#if Debug18 || Release18
+using ETABSv1;
+#elif Debug17 || Release17
 using ETABSv17;
 #else
 using ETABS2016;
@@ -39,7 +38,9 @@ using ETABS2016;
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
+#if Debug18 || Release18
+    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
@@ -95,7 +96,7 @@ namespace BH.Adapter.ETABS
                 m_model.RespCombo.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
-            
+
             foreach (string id in ids)
             {
                 LoadCombination combination = new LoadCombination();
@@ -132,7 +133,7 @@ namespace BH.Adapter.ETABS
         private List<ILoad> ReadLoad(Type type, List<string> ids = null)
         {
             List<ILoad> loadList = new List<ILoad>();
-            
+
             List<Loadcase> loadcaseList = ReadLoadcase();
 
             if (type == typeof(PointLoad))
@@ -200,7 +201,7 @@ namespace BH.Adapter.ETABS
         private List<ILoad> ReadBarLoad(List<Loadcase> loadcases)
         {
             List<ILoad> bhLoads = new List<ILoad>();
-            
+
             Dictionary<string, Bar> bhomBars = ReadBar().ToDictionary(x => x.CustomData[AdapterId].ToString());
 
             string[] names = null;
