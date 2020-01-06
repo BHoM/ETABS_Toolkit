@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.Engine.Base;
 
 namespace BH.Engine.ETABS
 {
@@ -51,12 +52,8 @@ namespace BH.Engine.ETABS
                 rigidZoneFactor = Math.Min(Math.Max(0, rigidZoneFactor), 1);
                 Engine.Reflection.Compute.RecordWarning("Rigid zone factor needs to be between 0 and 1. The value has been updated to fit in this interval");
             }
-
-            Bar clone = (Bar)bar.GetShallowClone();
-
-            clone.CustomData["EtabsAutoLengthOffset"] = new AutoLengthOffset { AutoOffset = autoLengthOffset, RigidZoneFactor = rigidZoneFactor };
-
-            return clone;
+            
+            return (Bar)bar.AddFragment(new AutoLengthOffset { AutoOffset = autoLengthOffset, RigidZoneFactor = rigidZoneFactor }, true);
         }
 
         /***************************************************/
