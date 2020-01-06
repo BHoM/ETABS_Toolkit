@@ -26,6 +26,7 @@ using System;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.Engine.ETABS;
+using BH.Engine.Common;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -201,7 +202,7 @@ namespace BH.Adapter.ETABS
                     double val1 = barLoad.ForceA.Z; //note: etabs acts different then stated in API documentstion
                     double val2 = barLoad.ForceB.Z;
                     double dist1 = barLoad.DistanceFromA;
-                    double dist2 = barLoad.DistanceFromB;
+                    double dist2 = bar.Length() - barLoad.DistanceFromB;
                     string caseName = barLoad.Loadcase.CustomData[AdapterId].ToString();
                     string nodeName = bar.CustomData[AdapterId].ToString();
                     int direction = 6; // we're doing this for Z axis only right now.
