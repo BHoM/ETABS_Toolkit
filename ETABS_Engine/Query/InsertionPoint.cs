@@ -25,8 +25,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.Engine.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
+using BH.oM.Adapters.ETABS.Elements;
 
 namespace BH.Engine.ETABS
 {
@@ -39,26 +41,18 @@ namespace BH.Engine.ETABS
 
         public static BarInsertionPoint InsertionPoint(this Bar bar)
         {
-            object obj;
-
-            if (bar.CustomData.TryGetValue("EtabsInsertionPoint", out obj) && obj is BarInsertionPoint)
-            {
-                return (BarInsertionPoint)obj;
-            }
-            return BarInsertionPoint.Centroid;
+            InsertionPoint o = bar.FindFragment<InsertionPoint>();
+            
+            return o == null ? BarInsertionPoint.Centroid : o.BarInsertionPoint;
         }
 
         /***************************************************/
 
         public static bool ModifyStiffnessInsertionPoint(this Bar bar)
         {
-            object obj;
+            InsertionPoint o = bar.FindFragment<InsertionPoint>();
 
-            if (bar.CustomData.TryGetValue("EtabsInsertionPointModifyStiffness", out obj) && obj is bool)
-            {
-                return (bool)obj;
-            }
-            return true;
+            return o == null ? true : o.ModifyStiffness;
         }
 
         /***************************************************/
