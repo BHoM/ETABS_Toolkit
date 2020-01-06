@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.Engine.Base;
 
 namespace BH.Engine.ETABS
 {
@@ -39,13 +40,7 @@ namespace BH.Engine.ETABS
 
         public static AutoLengthOffset AutoLengthOffset(this Bar bar)
         {
-            object obj;
-
-            if (bar.CustomData.TryGetValue("EtabsAutoLengthOffset", out obj) && obj is AutoLengthOffset)
-            {
-                return (AutoLengthOffset)obj;
-            }
-            return null;
+            return bar.FindFragment<AutoLengthOffset>();
         }
 
         /***************************************************/
