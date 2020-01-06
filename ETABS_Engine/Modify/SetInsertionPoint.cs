@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
+using BH.oM.Adapters.ETABS.Elements;
 
 namespace BH.Engine.ETABS
 {
@@ -39,11 +40,7 @@ namespace BH.Engine.ETABS
 
         public static Bar SetInsertionPoint(this Bar bar, BarInsertionPoint barInsertionPoint = BarInsertionPoint.Centroid)
         {
-            Bar clone = (Bar)bar.GetShallowClone();
-
-            clone.CustomData["EtabsInsertionPoint"] = barInsertionPoint;
-
-            return clone;
+            return bar.SetInsertionPoint(barInsertionPoint);
         }
 
         /***************************************************/
@@ -52,8 +49,7 @@ namespace BH.Engine.ETABS
         {
             Bar clone = (Bar)bar.GetShallowClone();
 
-            clone.CustomData["EtabsInsertionPoint"] = barInsertionPoint;
-            clone.CustomData["EtabsInsertionPointModifyStiffness"] = modifyStiffness;
+            clone.Fragments.AddOrReplace(new InsertionPoint() { barInsertionPoint = barInsertionPoint, modifyStiffness = modifyStiffness });
 
             return clone;
         }
