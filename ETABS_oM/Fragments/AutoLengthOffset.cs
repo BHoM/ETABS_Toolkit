@@ -26,7 +26,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.ETABS.Elements
 {
-    public class AutoLengthOffset : BHoMObject
+    public class AutoLengthOffset : IBHoMFragment
     {
         /***************************************************/
         /**** Public Properties                         ****/

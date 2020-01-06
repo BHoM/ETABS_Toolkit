@@ -111,7 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\EtabsConfig.cs" />
-    <Compile Include="Elements\AutoLengthOffset.cs" />
+    <Compile Include="Fragments\AutoLengthOffset.cs" />
     <Compile Include="Elements\Diaphragm.cs" />
     <Compile Include="Elements\Pier.cs" />
     <Compile Include="Elements\PierForce.cs" />
