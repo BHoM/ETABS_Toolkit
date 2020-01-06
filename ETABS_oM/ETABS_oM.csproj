@@ -119,6 +119,7 @@
     <Compile Include="Enums\BarInsertionPoint.cs" />
     <Compile Include="Enums\Diaphragm.cs" />
     <Compile Include="Enums\ShellType.cs" />
+    <Compile Include="Fragments\InsertionPoint.cs" />
     <Compile Include="Loads\MassSource.cs" />
     <Compile Include="Loads\ModalCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
