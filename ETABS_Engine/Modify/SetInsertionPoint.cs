@@ -41,7 +41,7 @@ namespace BH.Engine.ETABS
 
         public static Bar SetInsertionPoint(this Bar bar, BarInsertionPoint barInsertionPoint = BarInsertionPoint.Centroid)
         {
-            return bar.SetInsertionPoint(barInsertionPoint);
+            return bar.SetInsertionPoint(barInsertionPoint, true);
         }
 
         /***************************************************/
