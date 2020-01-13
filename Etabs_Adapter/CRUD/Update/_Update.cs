@@ -31,6 +31,7 @@ using BH.Engine.Geometry;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Adapter;
 
 namespace BH.Adapter.ETABS
 {
@@ -44,7 +45,7 @@ namespace BH.Adapter.ETABS
         /**** Adapter override methods                  ****/
         /***************************************************/
 
-        protected override bool UpdateObjects<T>(IEnumerable<T> objects)
+        protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
         {
             if (typeof(T) == typeof(Node))
             {
@@ -55,7 +56,7 @@ namespace BH.Adapter.ETABS
                 return UpdateObjects(objects as IEnumerable<Panel>);
             }
             else
-                return base.UpdateObjects<T>(objects);
+                return base.IUpdate<T>(objects, actionConfig);
         }
 
         /***************************************************/
