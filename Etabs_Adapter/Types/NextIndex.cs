@@ -36,7 +36,7 @@ namespace BH.Adapter.ETABS
     {
         private Dictionary<Type, string> idDictionary = new Dictionary<Type, string>();
 
-        protected override object NextId(Type objectType, bool refresh)
+        protected override object NextFreeId(Type objectType, bool refresh)
         {
             return -1;
         }
