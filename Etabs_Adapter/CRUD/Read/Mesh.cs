@@ -80,7 +80,7 @@ namespace BH.Adapter.ETABS
                 ISurfaceProperty panelProperty = ReadSurfaceProperty(new List<string>() { propertyName })[0];
 
                 FEMesh mesh = new FEMesh() { Property = panelProperty };
-                mesh.CustomData[AdapterId] = id;
+                mesh.CustomData[AdapterIdName] = id;
 
                 //Get out the "Element" ids, i.e. the mesh faces
                 int nbELem = 0;
@@ -95,7 +95,7 @@ namespace BH.Adapter.ETABS
                     m_model.AreaElm.GetPoints(elemNames[j], ref nbPts, ref ptsNames);
 
                     FEMeshFace face = new FEMeshFace();
-                    face.CustomData[AdapterId] = elemNames[j];
+                    face.CustomData[AdapterIdName] = elemNames[j];
 
                     for (int k = 0; k < nbPts; k++)
                     {
@@ -111,7 +111,7 @@ namespace BH.Adapter.ETABS
                             double z = 0;
                             m_model.PointElm.GetCoordCartesian(nodeId, ref x, ref y, ref z);
                             node = new Node() { Position = new Point { X = x, Y = y, Z = z } };
-                            node.CustomData[AdapterId] = nodeId;
+                            node.CustomData[AdapterIdName] = nodeId;
                             nodes[ptsNames[k]] = node;
                         }
 

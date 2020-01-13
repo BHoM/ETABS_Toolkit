@@ -52,7 +52,7 @@ namespace BH.Adapter.ETABS
             oM.Geometry.Point position = bhNode.Position();
             if (m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name) == 0)
             {
-                bhNode.CustomData[AdapterId] = name;
+                bhNode.CustomData[AdapterIdName] = name;
 
                 if (bhNode.Support != null)
                 {

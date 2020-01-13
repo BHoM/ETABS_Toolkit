@@ -59,7 +59,7 @@ namespace BH.Adapter.ETABS
             double mergeTol = 1e-3; //Merging panel points to the mm, same behaviour as the default node comparer
 
             string name = "";
-            string propertyName = bhPanel.Property.CustomData[AdapterId].ToString();
+            string propertyName = bhPanel.Property.CustomData[AdapterIdName].ToString();
             List<BH.oM.Geometry.Point> boundaryPoints = bhPanel.ControlPoints(true).CullDuplicates(mergeTol);
 
             int segmentCount = boundaryPoints.Count();
@@ -75,7 +75,7 @@ namespace BH.Adapter.ETABS
 
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
 
-            bhPanel.CustomData[AdapterId] = name;
+            bhPanel.CustomData[AdapterIdName] = name;
 
             if (retA != 0)
                 return false;
@@ -125,12 +125,12 @@ namespace BH.Adapter.ETABS
             string propertyName = "None";
             if (property2d.Name != "")
             {
-                property2d.CustomData[AdapterId] = propertyName = property2d.Name;
+                property2d.CustomData[AdapterIdName] = propertyName = property2d.Name;
             }
             else
             {
                 BH.Engine.Reflection.Compute.RecordWarning("Surface properties with no name will be converted to the null property 'None'.");
-                property2d.CustomData[AdapterId] = "None";
+                property2d.CustomData[AdapterIdName] = "None";
                 return true;
             }
 

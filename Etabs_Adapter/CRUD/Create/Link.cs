@@ -56,12 +56,12 @@ namespace BH.Adapter.ETABS
             {
                 string name = "";
 
-                retA = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref name, false, constraint.Name);
+                retA = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterIdName].ToString(), slaveNodes[i].CustomData[AdapterIdName].ToString(), ref name, false, constraint.Name);
 
                 linkIds.Add(name);
             }
 
-            bhLink.CustomData[AdapterId] = linkIds;
+            bhLink.CustomData[AdapterIdName] = linkIds;
 
             return success;
         }

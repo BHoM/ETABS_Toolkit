@@ -128,7 +128,7 @@ namespace BH.Adapter.ETABS
                         m = Engine.Structure.Create.Concrete(id + "_replacement");
                     }
 
-                    m.CustomData[AdapterId] = id;
+                    m.CustomData[AdapterIdName] = id;
 
                     materialList.Add(m);
                 }

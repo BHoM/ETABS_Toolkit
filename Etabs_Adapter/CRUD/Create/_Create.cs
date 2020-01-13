@@ -83,7 +83,7 @@ namespace BH.Adapter.ETABS
 
                 List<Diaphragm> diaphragms = panels.Select(x => x.Diaphragm()).Where(x => x != null).ToList();
 
-                this.CRUD(diaphragms);
+                this.CRUD(diaphragms, PushType.FullCRUD);
             }
 
             if (typeof(T) == typeof(oM.Geometry.SettingOut.Level))
