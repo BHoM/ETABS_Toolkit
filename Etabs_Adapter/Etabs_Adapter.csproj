@@ -182,8 +182,8 @@
       <HintPath>..\..\BHoM\Build\Reflection_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Structure_AdapterModule">
-      <HintPath>..\..\BHoM_Adapter\Build\Structure_AdapterModule.dll</HintPath>
+    <Reference Include="Structure_AdapterModules">
+      <HintPath>..\..\BHoM_Adapter\Build\Structure_AdapterModules.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Structure_Engine">
