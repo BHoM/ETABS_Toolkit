@@ -62,7 +62,7 @@ namespace BH.Adapter.ETABS
 #endif
         {
 
-            BH.Adapter.Modules.ModuleLoader.LoadStructuralModules(this);
+            BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
             SetupDependencies();
             SetupComparers();
 
