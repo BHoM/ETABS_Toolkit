@@ -45,6 +45,7 @@ using BH.Engine.Reflection;
 using BH.oM.Geometry.SettingOut;
 using BH.oM.Architecture.Elements;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Adapter;
 
 namespace BH.Adapter.ETABS
 {
@@ -58,7 +59,7 @@ namespace BH.Adapter.ETABS
         /*** Private methods - Read                      ***/
         /***************************************************/
 
-        protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
+        protected override IEnumerable<IBHoMObject> IRead(Type type, IList ids, ActionConfig actionConfig = null)
         {
             if (type == typeof(Node))
                 return ReadNode(ids as dynamic);

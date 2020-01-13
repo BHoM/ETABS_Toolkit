@@ -61,6 +61,9 @@ namespace BH.Adapter.ETABS
         public ETABS2016Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
 #endif
         {
+
+            BH.Adapter.Modules.ModuleLoader.LoadStructuralModules(this);
+
             if (active)
             {
                 AdapterId = ID;

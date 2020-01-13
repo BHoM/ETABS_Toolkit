@@ -35,6 +35,9 @@ using BH.Engine.Geometry;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Adapter;
+
+
 #if Debug17 || Release17
 using ETABSv17;
 #else
@@ -51,7 +54,7 @@ namespace BH.Adapter.ETABS
     {
 
         /***************************************************/
-        protected override bool Create<T>(IEnumerable<T> objects)
+        protected override bool ICreate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
         {
             bool success = true;
 
