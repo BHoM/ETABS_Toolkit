@@ -58,9 +58,9 @@ namespace BH.Adapter.ETABS
 
             string name = "";
             
-            ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
+            ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterIdName].ToString(), bhBar.EndNode.CustomData[AdapterIdName].ToString(), ref name);
 
-            bhBar.CustomData[AdapterId] = name;
+            bhBar.CustomData[AdapterIdName] = name;
 
             if (ret != 0)
             {
@@ -70,7 +70,7 @@ namespace BH.Adapter.ETABS
 
             if (bhBar.SectionProperty != null)
             {
-                if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.CustomData[AdapterId].ToString()) != 0)
+                if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.CustomData[AdapterIdName].ToString()) != 0)
                 {
                     CreatePropertyWarning("SectionProperty", "Bar", name);
                     ret++;
@@ -149,12 +149,12 @@ namespace BH.Adapter.ETABS
             string propertyName = "None";
             if (bhSection.Name != "")
             {
-                bhSection.CustomData[AdapterId] = propertyName = bhSection.Name;
+                bhSection.CustomData[AdapterIdName] = propertyName = bhSection.Name;
             }
             else
             {
                 BH.Engine.Reflection.Compute.RecordWarning("Section properties with no name will be converted to the null property 'None'.");
-                bhSection.CustomData[AdapterId] = "None";
+                bhSection.CustomData[AdapterIdName] = "None";
                 return true;
             }
 

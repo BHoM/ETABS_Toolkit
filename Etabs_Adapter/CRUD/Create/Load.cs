@@ -50,7 +50,7 @@ namespace BH.Adapter.ETABS
             double selfWeight = 0;
 
             int ret = m_model.LoadPatterns.Add(loadcase.Name, patternType, selfWeight, true);
-            loadcase.CustomData[AdapterId] = loadcase.Name;
+            loadcase.CustomData[AdapterIdName] = loadcase.Name;
 
             return true;
         }
@@ -109,7 +109,7 @@ namespace BH.Adapter.ETABS
 
                     m_model.RespCombo.SetCaseList(loadCombination.Name, ref cTypeName, lcName, factor);
                 }
-                loadCombination.CustomData[AdapterId] = loadCombination.Name;
+                loadCombination.CustomData[AdapterIdName] = loadCombination.Name;
             }
             else
             {
@@ -136,8 +136,8 @@ namespace BH.Adapter.ETABS
             int ret = 0;
             foreach (Node node in pointLoad.Objects.Elements)
             {
-                string caseName = pointLoad.Loadcase.CustomData[AdapterId].ToString();
-                string nodeName = node.CustomData[AdapterId].ToString();
+                string caseName = pointLoad.Loadcase.CustomData[AdapterIdName].ToString();
+                string nodeName = node.CustomData[AdapterIdName].ToString();
                 ret = m_model.PointObj.SetLoadForce(nodeName, caseName, ref pfValues, replace);
             }
         }
@@ -151,8 +151,8 @@ namespace BH.Adapter.ETABS
             {
                 bool stepReplace = replace;
 
-                string caseName = barUniformLoad.Loadcase.CustomData[AdapterId].ToString();
-                string barName = bar.CustomData[AdapterId].ToString();
+                string caseName = barUniformLoad.Loadcase.CustomData[AdapterIdName].ToString();
+                string barName = bar.CustomData[AdapterIdName].ToString();
 
                 for (int direction = 1; direction <= 3; direction++)
                 {
@@ -175,7 +175,7 @@ namespace BH.Adapter.ETABS
         public void SetLoad(AreaUniformlyDistributedLoad areaUniformLoad, bool replace)
         {
             int ret = 0;
-            string caseName = areaUniformLoad.Loadcase.CustomData[AdapterId].ToString();
+            string caseName = areaUniformLoad.Loadcase.CustomData[AdapterIdName].ToString();
             foreach (IAreaElement area in areaUniformLoad.Objects.Elements)
             {
                 for (int direction = 1; direction <= 3; direction++)
@@ -184,7 +184,7 @@ namespace BH.Adapter.ETABS
                     if (val != 0)
                     {
                         //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
-                        ret = m_model.AreaObj.SetLoadUniform(area.CustomData[AdapterId].ToString(), caseName, val, direction + 3, replace);
+                        ret = m_model.AreaObj.SetLoadUniform(area.CustomData[AdapterIdName].ToString(), caseName, val, direction + 3, replace);
                     }
                 }
             }
@@ -203,10 +203,10 @@ namespace BH.Adapter.ETABS
                     double val2 = barLoad.ForceB.Z;
                     double dist1 = barLoad.DistanceFromA;
                     double dist2 = bar.Length() - barLoad.DistanceFromB;
-                    string caseName = barLoad.Loadcase.CustomData[AdapterId].ToString();
-                    string nodeName = bar.CustomData[AdapterId].ToString();
+                    string caseName = barLoad.Loadcase.CustomData[AdapterIdName].ToString();
+                    string nodeName = bar.CustomData[AdapterIdName].ToString();
                     int direction = 6; // we're doing this for Z axis only right now.
-                    ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterId].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
+                    ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
                 }
             }
         }
@@ -217,7 +217,7 @@ namespace BH.Adapter.ETABS
         {
             double selfWeightMultiplier = 0;
 
-            string caseName = gravityLoad.Loadcase.CustomData[AdapterId].ToString();
+            string caseName = gravityLoad.Loadcase.CustomData[AdapterIdName].ToString();
 
             m_model.LoadPatterns.GetSelfWTMultiplier(caseName, ref selfWeightMultiplier);
 

@@ -68,7 +68,7 @@ namespace BH.Adapter.ETABS
             {
                 if (bhNode.Support != null)
                 {
-                    string name = bhNode.CustomData[AdapterId].ToString();
+                    string name = bhNode.CustomData[AdapterIdName].ToString();
 
                     bool[] restraint = new bool[6];
                     restraint[0] = bhNode.Support.TranslationX == DOFType.Fixed;
@@ -103,7 +103,7 @@ namespace BH.Adapter.ETABS
                 Pier pier = bhPanel.Pier();
                 Spandrel spandrel = bhPanel.Spandrel();
                 List<string> pl = new List<string>();
-                string name = bhPanel.CustomData[AdapterId].ToString();
+                string name = bhPanel.CustomData[AdapterIdName].ToString();
 
                 if (pier != null)
                 {

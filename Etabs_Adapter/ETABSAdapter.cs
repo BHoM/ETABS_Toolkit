@@ -63,10 +63,12 @@ namespace BH.Adapter.ETABS
         {
 
             BH.Adapter.Modules.ModuleLoader.LoadStructuralModules(this);
+            SetupDependencies();
+            SetupComparers();
 
             if (active)
             {
-                AdapterId = ID;
+                AdapterIdName = ID;
 
                 this.EtabsConfig = etabsConfig == null ? new EtabsConfig() : etabsConfig;
 

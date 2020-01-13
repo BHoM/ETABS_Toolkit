@@ -52,8 +52,8 @@ namespace BH.Adapter.ETABS
         private List<Bar> ReadBar(List<string> ids = null)
         {
             List<Bar> barList = new List<Bar>();
-            Dictionary<string, Node> bhomNodes = ReadNode().ToDictionary(x => x.CustomData[AdapterId].ToString());
-            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperty().ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, Node> bhomNodes = ReadNode().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperty().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
 
             int nameCount = 0;
             string[] names = { };
@@ -69,7 +69,7 @@ namespace BH.Adapter.ETABS
                 try
                 {
                     Bar bhBar = new Bar();
-                    bhBar.CustomData.Add(AdapterId, id);
+                    bhBar.CustomData.Add(AdapterIdName, id);
                     string startId = "";
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);
@@ -356,7 +356,7 @@ namespace BH.Adapter.ETABS
 
                 bhSectionProperty.Material = material;
                 bhSectionProperty.Name = id;
-                bhSectionProperty.CustomData[AdapterId] = id;
+                bhSectionProperty.CustomData[AdapterIdName] = id;
 
                 propList.Add(bhSectionProperty);
             }

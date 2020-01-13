@@ -89,7 +89,7 @@ namespace BH.Adapter.ETABS
 
                 if (kvp.Value == null)
                 {
-                    bhLink.CustomData.Add(AdapterId, kvp.Key);
+                    bhLink.CustomData.Add(AdapterIdName, kvp.Key);
                     string startId = "";
                     string endId = "";
                     m_model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
@@ -101,7 +101,7 @@ namespace BH.Adapter.ETABS
                 else
                 {
 
-                    bhLink.CustomData.Add(AdapterId, kvp.Key);
+                    bhLink.CustomData.Add(AdapterIdName, kvp.Key);
                     string startId = "";
                     string endId = "";
                     string multiLinkId = kvp.Key + ":::0";
@@ -212,7 +212,7 @@ namespace BH.Adapter.ETABS
             LinkConstraint constraint = new LinkConstraint();
 
             constraint.Name = name;
-            constraint.CustomData[AdapterId] = name;
+            constraint.CustomData[AdapterIdName] = name;
 
             constraint.XtoX = fix[0];
             constraint.ZtoZ = fix[1];

@@ -84,7 +84,7 @@ namespace BH.Adapter.ETABS
                 Constraint6DOF support = GetConstraint6DOF(restraint, spring);
 
                 Node bhNode = Engine.Structure.Create.Node(new oM.Geometry.Point() { X = x, Y = y, Z = z }, "", support);
-                bhNode.CustomData.Add(AdapterId, id);
+                bhNode.CustomData.Add(AdapterIdName, id);
 
                 nodeList.Add(bhNode);
             }
