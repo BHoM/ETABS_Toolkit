@@ -36,50 +36,23 @@ namespace BH.Adapter.ETABS
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif
-    { 
+    {
         /***************************************************/
-        /**** BHoM Adapter Interface                    ****/
+        /**** Protected methods                         ****/
         /***************************************************/
 
-        protected override List<Type> DependencyTypes<T>()
+        protected void SetupDependencies()
         {
-            Type type = typeof(T);
-
-            if (m_DependencyTypes.ContainsKey(type))
-                return m_DependencyTypes[type];
-
-            else if (type.BaseType != null && m_DependencyTypes.ContainsKey(type.BaseType))
-                return m_DependencyTypes[type.BaseType];
-
-            else
+            DependencyTypes = new Dictionary<Type, List<Type>>
             {
-                foreach (Type interType in type.GetInterfaces())
-                {
-                    if (m_DependencyTypes.ContainsKey(interType))
-                        return m_DependencyTypes[interType];
-                }
-            }
-
-
-            return new List<Type>();
+                {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
+                {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
+                {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } },
+                {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
+                {typeof(RigidLink), new List<Type> { typeof(Node), typeof(LinkConstraint) } },
+                {typeof(ILoad), new List<Type> {typeof(Loadcase) } }
+            };
         }
-
-
-        /***************************************************/
-        /**** Private Fields                            ****/
-        /***************************************************/
-
-        private static Dictionary<Type, List<Type>> m_DependencyTypes = new Dictionary<Type, List<Type>>
-        {
-            {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
-            {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
-            {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } },
-            {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
-            {typeof(RigidLink), new List<Type> { typeof(Node), typeof(LinkConstraint) } },
-            {typeof(ILoad), new List<Type> {typeof(Loadcase) } }
-
-        };
-
 
         /***************************************************/
     }

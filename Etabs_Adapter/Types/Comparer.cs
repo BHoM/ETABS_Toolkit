@@ -39,42 +39,24 @@ namespace BH.Adapter.ETABS
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif
-    { 
+    {
 
-    /***************************************************/
-    /**** BHoM Adapter Interface                    ****/
-    /***************************************************/
+        /***************************************************/
+        /**** BHoM Adapter Interface                    ****/
+        /***************************************************/
 
-        protected override IEqualityComparer<T> Comparer<T>()
+        protected void SetupComparers()
         {
-            Type type = typeof(T);
-
-            if (m_Comparers.ContainsKey(type))
+            AdapterComparers = new Dictionary<Type, object>
             {
-                return m_Comparers[type] as IEqualityComparer<T>;
-            }
-            else
-            {
-                return EqualityComparer<T>.Default;
-            }
-
+                {typeof(Node), new BH.Engine.Structure.NodeDistanceComparer(3) },
+                {typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
+                {typeof(IMaterialFragment), new BHoMObjectNameComparer() },
+                {typeof(ISurfaceProperty), new BHoMObjectNameComparer() },
+                {typeof(BH.oM.Adapters.ETABS.Elements.Diaphragm), new BHoMObjectNameComparer() },
+            };
         }
-
-
-        /***************************************************/
-        /**** Private Fields                            ****/
-        /***************************************************/
-
-        private static Dictionary<Type, object> m_Comparers = new Dictionary<Type, object>
-        {
-            {typeof(Node), new BH.Engine.Structure.NodeDistanceComparer(3) },
-            {typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
-            {typeof(IMaterialFragment), new BHoMObjectNameComparer() },
-            {typeof(ISurfaceProperty), new BHoMObjectNameComparer() },
-            {typeof(BH.oM.Adapters.ETABS.Elements.Diaphragm), new BHoMObjectNameComparer() },
-        };
-
-
+        
         /***************************************************/
     }
 }
