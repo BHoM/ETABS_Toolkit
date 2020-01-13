@@ -61,7 +61,7 @@ namespace BH.Adapter.ETABS
         public ETABS2016Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
 #endif
         {
-
+            //Initialisation
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
             SetupDependencies();
             SetupComparers();
