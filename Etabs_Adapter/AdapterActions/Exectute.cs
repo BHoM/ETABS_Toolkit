@@ -56,6 +56,8 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+        /**** Commands                                  ****/
+        /***************************************************/
 
         public bool RunCommand(NewModel command)
         {
