@@ -138,7 +138,7 @@ namespace BH.Adapter.ETABS
                         continue;
                     }
 
-                    bool caseSuccess = m_model.Analyze.SetRunCaseFlag("", false, true) == 0;
+                    bool caseSuccess = m_model.Analyze.SetRunCaseFlag(name, true, false) == 0;
                     success &= caseSuccess;
 
                     if (!caseSuccess)
