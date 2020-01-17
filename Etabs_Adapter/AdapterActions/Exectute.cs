@@ -162,7 +162,7 @@ namespace BH.Adapter.ETABS
 
         public bool RunCommand(IExecuteCommand command)
         {
-            Engine.Reflection.Compute.RecordWarning($"The command {command.GetType().Name} is not supported by this Adapter.");
+            Engine.Reflection.Compute.RecordWarning($"The command {command.GetType().Name} is not supported by this Adapter.");
             return false;
         }
 
