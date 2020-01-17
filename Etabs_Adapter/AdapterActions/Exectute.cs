@@ -61,8 +61,8 @@ namespace BH.Adapter.ETABS
 
         public bool RunCommand(NewModel command)
         {
-            bool success = m_model.File.NewBlank() == 0;
-            success &= m_model.SetPresentUnits(eUnits.N_m_C) == 0;
+            bool success = m_model.InitializeNewModel(eUnits.N_m_C) == 0;
+            success &= m_model.File.NewBlank() == 0;
             return success;
         }
 
