@@ -204,6 +204,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdapterActions\Exectute.cs" />
     <Compile Include="CRUD\Create\Panel.cs" />
     <Compile Include="CRUD\Create\Material.cs" />
     <Compile Include="CRUD\Create\Load.cs" />
@@ -250,9 +251,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Execute\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

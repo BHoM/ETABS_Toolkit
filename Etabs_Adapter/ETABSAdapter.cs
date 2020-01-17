@@ -65,7 +65,7 @@ namespace BH.Adapter.ETABS
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
             SetupDependencies();
             SetupComparers();
-
+            
             if (active)
             {
                 AdapterIdName = ID;
@@ -108,7 +108,6 @@ namespace BH.Adapter.ETABS
                 }
 
             }
-
         }
 
         /***************************************************/
