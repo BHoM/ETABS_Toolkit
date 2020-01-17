@@ -58,18 +58,20 @@ namespace BH.Adapter.ETABS
             CheckAndSetUpCases(request);
             List<string> nodeIds = CheckGetNodeIds(request);
 
+            string groupName = CreateNodeGroup(nodeIds);
+
             switch (request.ResultType)
             {
                 case NodeResultType.NodeReaction:
                     return ReadNodeReaction(nodeIds);
                 case NodeResultType.NodeDisplacement:
-                    return ReadNodeDisplacement(nodeIds);
+                    return ReadNodeDisplacement(groupName);
                 case NodeResultType.NodeVelocity:
                 case NodeResultType.NodeAcceleration:
                 default:
                     Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
-            }
+            }            
         }
 
         /***************************************************/
@@ -188,6 +190,54 @@ namespace BH.Adapter.ETABS
 
         }
 
+        private List<NodeDisplacement> ReadNodeDisplacement(string groupName)
+        {
+            List<NodeDisplacement> nodeDisplacements = new List<NodeDisplacement>();
+
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] objects = null;
+            string[] elm = null;
+            string[] stepType = null;
+            double[] stepNum = null;
+            double[] fx = null;
+            double[] fy = null;
+            double[] fz = null;
+            double[] mx = null;
+            double[] my = null;
+            double[] mz = null;
+            
+            int ret = m_model.Results.JointDispl(groupName, eItemTypeElm.GroupElm, ref resultCount, ref objects, ref elm,
+            ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
+            if (ret == 0)
+            {
+                for (int j = 0; j < resultCount; j++)
+                {
+
+                    NodeDisplacement nd = new NodeDisplacement()
+                    {
+                        ResultCase = loadcaseNames[j],
+                        ObjectId = elm.ToString(),
+                        RX = mx[j],
+                        RY = my[j],
+                        RZ = mz[j],
+                        UX = fx[j],
+                        UY = fy[j],
+                        UZ = fz[j],
+                        TimeStep = stepNum[j]
+                    };
+                    nodeDisplacements.Add(nd);
+                }
+            }
+
+            DeleteNodeGroup(groupName);
+
+            return nodeDisplacements;
+
+        }
+
+        /***************************************************/
+
         /***************************************************/
         /**** Private method - Support methods          ****/
         /***************************************************/
@@ -216,6 +266,24 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
+        private string CreateNodeGroup(List<string> nodeIds)
+        {
+            string groupName = "BHoM_Temp_Group_definitely_unique_1239234";
+
+            m_model.GroupDef.SetGroup_1(groupName);
+            foreach (string nodeId in nodeIds)
+            {
+                m_model.PointObj.SetGroupAssign(nodeId, groupName);
+            }
+
+            return groupName;
+        }
+
+        private bool DeleteNodeGroup(string groupName)
+        {
+            return m_model.GroupDef.Delete(groupName) == 0;
+        }
 
     }
 }
