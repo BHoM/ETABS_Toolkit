@@ -86,7 +86,9 @@ namespace BH.Adapter.ETABS
 
         private bool CreateObject(ModalCase modalCase)
         {
-            return false;
+            m_model.Analyze.SetRunCaseFlag("Modal", true);
+
+            return true;
         }
 
         /***************************************************/

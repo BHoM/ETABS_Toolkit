@@ -202,6 +202,7 @@
     <Compile Include="Create\Bar.cs" />
     <Compile Include="Create\_Create.cs" />
     <Compile Include="Delete\_Delete.cs" />
+    <Compile Include="Execute\_Execute.cs" />
     <Compile Include="Read\Results\BarResults.cs" />
     <Compile Include="Read\Results\GlobalResults.cs" />
     <Compile Include="Read\Results\NodeResults.cs" />
@@ -238,9 +239,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Execute\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
