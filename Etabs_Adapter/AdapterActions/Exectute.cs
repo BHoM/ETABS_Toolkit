@@ -77,14 +77,14 @@ namespace BH.Adapter.ETABS
 
         public bool RunCommand(SaveAs command)
         {
-            return m_model.File.Save("@" + command.FileName) == 0;
+            return m_model.File.Save(command.FileName) == 0;
         }
 
         /***************************************************/
 
         public bool RunCommand(Open command)
         {
-            bool success = m_model.File.OpenFile("@" + command.FileName) == 0;
+            bool success = m_model.File.OpenFile(command.FileName) == 0;
             success &= m_model.SetPresentUnits(eUnits.N_m_C) == 0;
             return success;
         }
