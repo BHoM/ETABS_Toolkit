@@ -19,8 +19,7 @@ namespace BH.Adapter.ETABS
 
         protected override int IDelete(Type type, IEnumerable<object> ids, ActionConfig actionConfig = null)
         {
-            return 0;
-            throw new NotImplementedException();
+            return base.IDelete(type, ids, actionConfig);
         }
 
         /***************************************************/

@@ -50,6 +50,7 @@ namespace BH.Adapter.ETABS
             AdapterComparers = new Dictionary<Type, object>
             {
                 {typeof(Node), new BH.Engine.Structure.NodeDistanceComparer(3) },
+                {typeof(Bar), new BH.Engine.Structure.BarEndNodesDistanceComparer(3) },
                 {typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
                 {typeof(IMaterialFragment), new BHoMObjectNameComparer() },
                 {typeof(ISurfaceProperty), new BHoMObjectNameComparer() },
