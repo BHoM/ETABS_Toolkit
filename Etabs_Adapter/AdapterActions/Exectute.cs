@@ -21,7 +21,7 @@
  */
 
 using System.Collections.Generic;
-using System.Collections;
+using System.Linq;
 using BH.oM.Adapter;
 using BH.oM.Reflection;
 using BH.oM.Adapter.Commands;
@@ -93,35 +93,64 @@ namespace BH.Adapter.ETABS
 
         public bool RunCommand(Analyse command)
         {
-            bool success = m_model.Analyze.SetRunCaseFlag("", true, true) == 0;
-
-            if (!success)
-            {
-                Engine.Reflection.Compute.RecordWarning("Failed to set up cases to run. Model has not been analysed");
-                return false;
-            }
-
-            success &= m_model.Analyze.RunAnalysis() == 0;
-            return success;
+            return Analyse();
         }
 
         /***************************************************/
 
         public bool RunCommand(AnalyseLoadCases command)
         {
-            bool success;
-            var cases = command.LoadCases;
-
-            if (cases == null)
-            {
+            if(command.LoadCases == null || command.LoadCases.Count() == 0)
                 Engine.Reflection.Compute.RecordNote("No cases provided, all cases will be run");
+
+            return Analyse(command.LoadCases);
+        }
+
+        /***************************************************/
+
+        public bool RunCommand(ClearResults command)
+        {
+            return m_model.Analyze.DeleteResults("", true) == 0;
+        }
+
+        /***************************************************/
+
+        public bool RunCommand(IExecuteCommand command)
+        {
+            Engine.Reflection.Compute.RecordWarning($"The command {command.GetType().Name} is not supported by this Adapter.");
+            return false;
+        }
+
+        /***************************************************/
+        /**** Private helper methods                    ****/
+        /***************************************************/
+
+        private bool Analyse(IEnumerable<object> cases = null)
+        {
+            bool success;
+
+            //Check if the model has been saved
+            if (m_model.GetModelFilename(true) == "(Untitled)")
+            {
+                Engine.Reflection.Compute.RecordWarning("ETABS requires the model to be saved before being analysed. Please save the model and try running again.");
+                return false;
+            }
+
+            if (cases == null || cases.Count() == 0)
+            {
                 success = m_model.Analyze.SetRunCaseFlag("", true, true) == 0;
+
+                if (!success)
+                {
+                    Engine.Reflection.Compute.RecordWarning("Failed to set up cases to run. Model has not been analysed");
+                    return false;
+                }
             }
             else
             {
                 //Unselect all cases
                 success = m_model.Analyze.SetRunCaseFlag("", false, true) == 0;
-                
+
                 //Select provided cases
                 foreach (object item in cases)
                 {
@@ -151,21 +180,6 @@ namespace BH.Adapter.ETABS
 
             success &= m_model.Analyze.RunAnalysis() == 0;
             return success;
-        }
-
-        /***************************************************/
-
-        public bool RunCommand(ClearResults command)
-        {
-            return m_model.Analyze.DeleteResults("", true) == 0;
-        }
-
-        /***************************************************/
-
-        public bool RunCommand(IExecuteCommand command)
-        {
-            Engine.Reflection.Compute.RecordWarning($"The command {command.GetType().Name} is not supported by this Adapter.");
-            return false;
         }
 
         /***************************************************/
