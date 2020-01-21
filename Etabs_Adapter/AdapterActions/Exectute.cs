@@ -84,9 +84,17 @@ namespace BH.Adapter.ETABS
 
         public bool RunCommand(Open command)
         {
-            bool success = m_model.File.OpenFile(command.FileName) == 0;
-            success &= m_model.SetPresentUnits(eUnits.N_m_C) == 0;
-            return success;
+            if (System.IO.File.Exists(command.FileName))
+            {
+                bool success = m_model.File.OpenFile(command.FileName) == 0;
+                success &= m_model.SetPresentUnits(eUnits.N_m_C) == 0;
+                return success;
+            }
+            else
+            {
+                Engine.Reflection.Compute.RecordError("File does not exist");
+                return false;
+            }
         }
 
         /***************************************************/
