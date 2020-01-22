@@ -233,5 +233,19 @@ namespace BH.Adapter.ETABS
 
             BH.Engine.Reflection.Compute.RecordWarning("ETABS handles gravity loads via loadcases, why only one gravity load per loadcase can be used. THis gravity load will be applied to all objects");
         }
+
+        public void SetLoad(BarTemperatureLoad barTemperatureLoad, bool replace)
+        {
+            double tempChange = barTemperatureLoad.TemperatureChange;
+
+            int ret = 0;
+            foreach (Bar bar in barTemperatureLoad.Objects.Elements)
+            {
+                string caseName = barTemperatureLoad.Loadcase.CustomData[AdapterId].ToString();
+                string barName = bar.CustomData[AdapterId].ToString();
+                ret = m_model.FrameObj.SetLoadTemperature(barName, caseName, 1, tempChange);
+            }
+        }
+
     }
 }
