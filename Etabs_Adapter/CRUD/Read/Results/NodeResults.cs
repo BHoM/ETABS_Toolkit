@@ -40,6 +40,7 @@ using BH.oM.Structure.Loads;
 using BH.oM.Structure.Requests;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
+using BH.oM.Adapter;
 
 namespace BH.Adapter.ETABS
 {
@@ -53,7 +54,7 @@ namespace BH.Adapter.ETABS
         /**** Public method - Read override             ****/
         /***************************************************/
 
-        public IEnumerable<IResult> ReadResults(NodeResultRequest request)
+        public IEnumerable<IResult> ReadResults(NodeResultRequest request, ActionConfig actionConfig = null)
         {
             CheckAndSetUpCases(request);
             List<string> nodeIds = CheckGetNodeIds(request);
