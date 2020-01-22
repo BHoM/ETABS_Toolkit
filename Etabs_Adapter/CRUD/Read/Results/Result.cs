@@ -38,6 +38,7 @@ using BH.oM.Adapters.ETABS.Elements;
 using BH.Engine.ETABS;
 using BH.oM.Structure.Loads;
 using BH.oM.Data.Requests;
+using BH.oM.Adapter;
 
 namespace BH.Adapter.ETABS
 {
@@ -49,7 +50,7 @@ namespace BH.Adapter.ETABS
     {
         /***************************************************/
 
-        protected override IEnumerable<IResult> ReadResults(Type type, IList ids = null, IList cases = null, int divisions = 5)
+        protected override IEnumerable<IResult> ReadResults(Type type, IList ids = null, IList cases = null, int divisions = 5, ActionConfig actionConfig = null)
         {
             //Etabs special case forces.
             //TODO: Add PierForceResultRequest
