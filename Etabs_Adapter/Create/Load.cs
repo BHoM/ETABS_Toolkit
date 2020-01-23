@@ -27,6 +27,8 @@ using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.Engine.ETABS;
 using BH.Engine.Common;
+using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -234,6 +236,8 @@ namespace BH.Adapter.ETABS
             BH.Engine.Reflection.Compute.RecordWarning("ETABS handles gravity loads via loadcases, why only one gravity load per loadcase can be used. THis gravity load will be applied to all objects");
         }
 
+        /***************************************************/
+
         public void SetLoad(BarTemperatureLoad barTemperatureLoad, bool replace)
         {
             double tempChange = barTemperatureLoad.TemperatureChange;
@@ -247,5 +251,146 @@ namespace BH.Adapter.ETABS
             }
         }
 
+        /***************************************************/
+
+        public bool CreateObject(ConstructionStage constructionStage)
+        {
+            eLoadPatternType patternType = eLoadPatternType.Construction;
+            double selfWeight = 0;
+
+            //Create Case and Change to a Construction Stage Case
+            int ret = m_model.LoadPatterns.Add(constructionStage.Name, patternType, selfWeight, true);
+            ret = m_model.LoadCases.StaticNonlinearStaged.SetCase(constructionStage.Name);
+
+            //Create Stage Definitions
+            int[] duration = new int [] { constructionStage.time, constructionStage.time, constructionStage.time };
+            string[] comment = new string[] { "a", "b", "c"};
+            ret = m_model.LoadCases.StaticNonlinearStaged.SetStageDefinitions(constructionStage.Name, 3, ref duration, ref comment);
+
+            //Populate Stages
+             csaAddFrames(constructionStage);
+              csaRemoveFrames(constructionStage);
+            csaGravityLoadFrames(constructionStage);
+
+            return true;
+        }
+
+        /***************************************************/
+
+        public bool CreateObject(ErectionSequence erectionSequence)
+        {
+            List<ConstructionStage> stages = erectionSequence.Stages;
+
+            for(int i = 0; i< stages.Count(); i++)
+            {
+                CreateObject(stages[i]);
+            }
+
+            for (int i = 0; i < stages.Count(); i++)
+            {
+                if (i != 0)
+                {
+                    string currentCase = stages[i].Name;
+                    string previousCase = stages[i - 1].Name;
+                    int ret = m_model.LoadCases.StaticNonlinear.SetInitialCase(currentCase, previousCase);
+                    ret = m_model.LoadCases.StaticNonlinearStaged.SetInitialCase(currentCase, previousCase);
+                }
+            }
+
+            return true;
+        }
+
+        private void csaAddFrames(ConstructionStage constructionStage)
+        {
+            //Add Operations
+            int size = constructionStage.addedMembers.Count();
+            int[] operation = new int[size];
+            string[] objectype = new string[size];
+            string[] objectname = new string[size];
+            double[] age = new double[size];
+            string[] loadType = new string[size];
+            string[] loadName = new string[size];
+            double[] SF = new double[size];
+
+            for (int i = 0; i < size; i++)
+            {
+                operation[i] = 1;
+                objectype[i] = "Frame";
+                objectname[i] = constructionStage.addedMembers[i].CustomData[AdapterId].ToString();
+                age[i] = constructionStage.time;
+                loadType[i] = "";
+                loadName[i] = "";
+                SF[i] = 1;
+            }
+
+             int  ret = m_model.LoadCases.StaticNonlinearStaged.SetStageData_2(constructionStage.Name, 1, size, ref operation, ref objectype, ref objectname, ref age, ref loadType, ref loadName, ref SF);
+        }
+
+        private void csaRemoveFrames(ConstructionStage constructionStage)
+        {
+            //Add Operations
+            int size = constructionStage.deletedMembers.Count();
+            int[] operation = new int[size];
+            string[] objectype = new string[size];
+            string[] objectname = new string[size];
+            double[] age = new double[size];
+            string[] loadType = new string[size];
+            string[] loadName = new string[size];
+            double[] SF = new double[size];
+
+            for (int i = 0; i < size; i++)
+            {
+                operation[i] = 2;
+                objectype[i] = "Frame";
+                objectname[i] = constructionStage.deletedMembers[i].CustomData[AdapterId].ToString();
+                age[i] = constructionStage.time;
+                loadType[i] = "";
+                loadName[i] = "";
+                SF[i] = 1;
+            }
+
+            int ret = m_model.LoadCases.StaticNonlinearStaged.SetStageData_2(constructionStage.Name, 2, size, ref operation, ref objectype, ref objectname, ref age, ref loadType, ref loadName, ref SF);
+        }
+
+        private void csaGravityLoadFrames(ConstructionStage constructionStage)
+        {
+            //Add Operations
+            int sizeLC = constructionStage.addedLoads.Count;
+            int size = 0;
+
+            for (int i = 0; i < sizeLC; i++)
+            {
+                GravityLoad load = (GravityLoad)constructionStage.addedLoads[i];
+                size += load.Objects.Elements.Count;
+            }
+
+            int[] operation = new int[size];
+            string[] objectype = new string[size];
+            string[] objectname = new string[size];
+            double[] age = new double[size];
+            string[] loadType = new string[size];
+            string[] loadName = new string[size];
+            double[] SF = new double[size];
+            int kounta = 0;
+
+            for (int i = 0; i < sizeLC; i++)
+            {
+                GravityLoad load = (GravityLoad) constructionStage.addedLoads[i];
+
+                for (int j = 0; j< load.Objects.Elements.Count; j++)
+                {
+                    operation[kounta] = 4;
+                    objectype[kounta] = "Frame";
+                    objectname[kounta] = load.Objects.Elements[j].CustomData[AdapterId].ToString();
+                    age[kounta] = constructionStage.time;
+                    loadType[kounta] = "Load";
+                    loadName[kounta] = load.Loadcase.Name;
+                    SF[kounta] =  1;
+                    kounta++;
+                }
+            }
+
+            int ret = m_model.LoadCases.StaticNonlinearStaged.SetStageData_2(constructionStage.Name, 3, size, ref operation, ref objectype, ref objectname, ref age, ref loadType, ref loadName, ref SF);
+        }
     }
 }
