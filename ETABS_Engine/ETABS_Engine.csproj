@@ -154,6 +154,7 @@
     <Compile Include="Create\Pier.cs" />
     <Compile Include="Create\Spandrel.cs" />
     <Compile Include="ModelData.cs" />
+    <Compile Include="Modify\FlipEndPoints.cs" />
     <Compile Include="Modify\Upgrade.cs" />
     <Compile Include="Modify\SetAutoLengthOffset.cs" />
     <Compile Include="Modify\SetDiaphragm.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Query\Diaphragm.cs" />
     <Compile Include="Query\DiaphragmType.cs" />
     <Compile Include="Query\InsertionPoint.cs" />
+    <Compile Include="Query\FlipBar.cs" />
     <Compile Include="Query\Pier.cs" />
     <Compile Include="Query\Spandrel.cs" />
   </ItemGroup>
