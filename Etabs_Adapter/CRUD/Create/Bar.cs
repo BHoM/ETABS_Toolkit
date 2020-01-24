@@ -140,7 +140,7 @@ namespace BH.Adapter.ETABS
             }
             else if (bhBar.Offset != null)
             {
-                if (m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1) != 0)
+                if (m_model.FrameObj.SetEndLengthOffset(name, false, bhBar.Offset.Start.X, -1 * (bhBar.Offset.End.X), 1) != 0)
                 {
                     CreatePropertyWarning("Length offset", "Bar", name);
                     ret++;
