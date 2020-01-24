@@ -166,7 +166,19 @@ namespace BH.Adapter.ETABS
 
                     stepReplace = false;
                 }
-                //moments ? does not exist in old toolkit either! 
+                // Moment
+                for (int direction = 1; direction <= 3; direction++)
+                {
+                    int ret = 1;
+                    double val = direction == 1 ? barUniformLoad.Moment.X : direction == 2 ? barUniformLoad.Moment.Y : barUniformLoad.Moment.Z; //note: etabs acts different then stated in API documentstion
+
+                    if (val != 0)
+                    {
+                        ret = m_model.FrameObj.SetLoadDistributed(barName, caseName, 2, direction + 3, 0, 1, val, val, "Global", true, stepReplace);
+                    }
+
+                    stepReplace = false;
+                }
             }
         }
 
