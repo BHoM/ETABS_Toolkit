@@ -57,7 +57,14 @@ namespace BH.Adapter.ETABS
 
 
             string name = "";
-            
+
+            // Evaluate if the bar is alinged as Etabs wants it
+            if (bhBar.FlipBar())
+            {
+                bhBar = bhBar.FlipEndPoints();      //CloneBeforePush means this is fine(?)
+                bhBar = bhBar.FlipInsertionPoint(); //ETABS specific operation
+                Engine.Reflection.Compute.RecordNote("Some bars has been flipped to comply with ETABS API, asymmetric sections will suffer");
+            }
             ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterIdName].ToString(), bhBar.EndNode.CustomData[AdapterIdName].ToString(), ref name);
 
             bhBar.CustomData[AdapterIdName] = name;
