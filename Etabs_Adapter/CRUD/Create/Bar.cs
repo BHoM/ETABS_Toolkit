@@ -116,12 +116,13 @@ namespace BH.Adapter.ETABS
                 bool[] restraintEnd = null;
                 double[] springEnd = null;
 
-                bhBar.Release.ToCSI(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd);
-                
-                if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
+                if (bhBar.Release.ToCSI(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd))
                 {
-                    CreatePropertyWarning("Release", "Bar", name);
-                    ret++;
+                    if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
+                    {
+                        CreatePropertyWarning("Release", "Bar", name);
+                        ret++;
+                    }
                 }
             }
 
