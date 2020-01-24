@@ -82,5 +82,27 @@ namespace BH.Engine.ETABS
         }
 
         /***************************************************/
+
+        public static Bar FlipInsertionPoint(this Bar bar)
+        {
+            int insertionPoint = (int)bar.InsertionPoint();
+
+            switch (insertionPoint)
+            {
+                case 1:
+                case 4:
+                case 7:
+                    return bar.SetInsertionPoint((BarInsertionPoint)insertionPoint + 2);
+                case 3:
+                case 6:
+                case 9:
+                    return bar.SetInsertionPoint((BarInsertionPoint)insertionPoint - 2);
+                default:
+                    return bar;
+            }
+        }
+
+        /***************************************************/
+
     }
 }
