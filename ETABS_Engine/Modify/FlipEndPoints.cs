@@ -48,8 +48,7 @@ namespace BH.Engine.ETABS
             Bar clone = bar.Flip();
 
             // Flip orientationAngle
-            if (!bar.IsVertical())
-                clone.OrientationAngle = -clone.OrientationAngle;
+            clone.OrientationAngle = -clone.OrientationAngle;
 
             // Flip Offsets
             if (clone.Offset != null)
