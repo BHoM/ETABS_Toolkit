@@ -210,16 +210,27 @@ namespace BH.Adapter.ETABS
 
             foreach (Bar bar in barLoad.Objects.Elements)
             {
+                double val1, val2, dist1, dist2;
+                if (bar.FlipBar())
                 {
-                    double val1 = barLoad.ForceA.Z; //note: etabs acts different then stated in API documentstion
-                    double val2 = barLoad.ForceB.Z;
-                    double dist1 = barLoad.DistanceFromA;
-                    double dist2 = bar.Length() - barLoad.DistanceFromB;
-                    string caseName = barLoad.Loadcase.CustomData[AdapterIdName].ToString();
-                    string nodeName = bar.CustomData[AdapterIdName].ToString();
-                    int direction = 6; // we're doing this for Z axis only right now.
-                    ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
+                    val1 = barLoad.ForceB.Z; //note: etabs acts different then stated in API documentstion
+                    val2 = barLoad.ForceA.Z;
+                    dist1 = barLoad.DistanceFromB;
+                    dist2 = bar.Length() - barLoad.DistanceFromA;
                 }
+                else
+                {
+                    val1 = barLoad.ForceA.Z; //note: etabs acts different then stated in API documentstion
+                    val2 = barLoad.ForceB.Z;
+                    dist1 = barLoad.DistanceFromA;
+                    dist2 = bar.Length() - barLoad.DistanceFromB;
+                }
+
+                string caseName = barLoad.Loadcase.CustomData[AdapterIdName].ToString();
+                string nodeName = bar.CustomData[AdapterIdName].ToString();
+                int direction = 6; // we're doing this for Z axis only right now.
+                ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
+
             }
         }
 
