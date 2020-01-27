@@ -147,6 +147,18 @@ namespace BH.Adapter.ETABS
                 }
             }
 
+            switch (bhBar.FEAType)
+            {
+                case BarFEAType.CompressionOnly:
+                    m_model.FrameObj.SetTCLimits(name, false, 0, true, 0);
+                    break;
+                case BarFEAType.TensionOnly:
+                    m_model.FrameObj.SetTCLimits(name, true, 0, false, 0);
+                    break;
+                default:
+                    break;
+            }
+
             return true;
         }
 
@@ -208,6 +220,14 @@ namespace BH.Adapter.ETABS
         private void SetSection(ExplicitSection section)
         {
             m_model.PropFrame.SetGeneral(section.Name, section.Material.Name, section.Vz + section.Vpz, section.Vy + section.Vpy, section.Area, section.Asy, section.Asz, section.J, section.Iy, section.Iz, section.Wply, section.Wplz, section.Wely, section.Wely, section.Rgy, section.Rgz);
+        }
+
+        /***************************************************/
+
+        private void SetSection(CableSection section)
+        {
+            double diameter = (section as CableSection).CableDiameter;
+            m_model.PropFrame.SetGeneral(section.Name, section.Material.Name, diameter, diameter, section.Area, section.Asy, section.Asz, section.J, section.Iy, section.Iz, section.Wply, section.Wplz, section.Wely, section.Wely, section.Rgy, section.Rgz);
         }
 
         /***************************************************/
