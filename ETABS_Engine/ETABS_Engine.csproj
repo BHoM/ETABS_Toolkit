@@ -167,7 +167,7 @@
     <Compile Include="Query\Diaphragm.cs" />
     <Compile Include="Query\DiaphragmType.cs" />
     <Compile Include="Query\InsertionPoint.cs" />
-    <Compile Include="Query\FlipBar.cs" />
+    <Compile Include="Query\CheckFlipBar.cs" />
     <Compile Include="Query\Pier.cs" />
     <Compile Include="Query\Spandrel.cs" />
   </ItemGroup>
