@@ -38,7 +38,7 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static bool FlipBar(this Bar bar)
+        public static bool CheckFlipBar(this Bar bar)
         {
             Point start = bar.StartNode.Position;
             Point end = bar.EndNode.Position;

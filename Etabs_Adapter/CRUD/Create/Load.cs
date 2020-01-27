@@ -211,7 +211,7 @@ namespace BH.Adapter.ETABS
             foreach (Bar bar in barLoad.Objects.Elements)
             {
                 double val1, val2, dist1, dist2;
-                if (bar.FlipBar())
+                if (bar.CheckFlipBar())
                 {
                     val1 = barLoad.ForceB.Z; //note: etabs acts different then stated in API documentstion
                     val2 = barLoad.ForceA.Z;
