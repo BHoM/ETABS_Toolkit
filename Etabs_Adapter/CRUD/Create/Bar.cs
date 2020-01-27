@@ -59,7 +59,7 @@ namespace BH.Adapter.ETABS
             string name = "";
 
             // Evaluate if the bar is alinged as Etabs wants it
-            if (bhBar.FlipBar())
+            if (bhBar.CheckFlipBar())
             {
                 bhBar = bhBar.FlipEndPoints();      //CloneBeforePush means this is fine(?)
                 bhBar = bhBar.FlipInsertionPoint(); //ETABS specific operation
