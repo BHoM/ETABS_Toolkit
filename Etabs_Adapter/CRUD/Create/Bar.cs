@@ -207,7 +207,12 @@ namespace BH.Adapter.ETABS
 
         private void SetSection(ExplicitSection section)
         {
-            m_model.PropFrame.SetGeneral(section.Name, section.Material.Name, section.Vz + section.Vpz, section.Vy + section.Vpy, section.Area, section.Asy, section.Asz, section.J, section.Iy, section.Iz, section.Wply, section.Wplz, section.Wely, section.Wely, section.Rgy, section.Rgz);
+            m_model.PropFrame.SetGeneral(section.Name, section.Material.Name, section.Vz + section.Vpz, section.Vy + section.Vpy, 
+                section.Area, section.Asz, section.Asy, section.J, 
+                section.Iz, section.Iy,     // I22, I33
+                section.Welz, section.Wely, // S22, S33
+                section.Wplz, section.Wply, // Z22, Z33
+                section.Rgz, section.Rgy);  // R22, R33
         }
 
         /***************************************************/
