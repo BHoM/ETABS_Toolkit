@@ -56,35 +56,35 @@ namespace BH.Engine.ETABS
         {
             startRestraint = new bool[6];
             startRestraint[0] = release.StartRelease.TranslationX == DOFType.Free;
-            startRestraint[1] = release.StartRelease.TranslationY == DOFType.Free;
-            startRestraint[2] = release.StartRelease.TranslationZ == DOFType.Free;
+            startRestraint[1] = release.StartRelease.TranslationZ == DOFType.Free;
+            startRestraint[2] = release.StartRelease.TranslationY == DOFType.Free;
             startRestraint[3] = release.StartRelease.RotationX == DOFType.Free;
-            startRestraint[4] = release.StartRelease.RotationY == DOFType.Free;
-            startRestraint[5] = release.StartRelease.RotationZ == DOFType.Free;
+            startRestraint[4] = release.StartRelease.RotationZ == DOFType.Free;
+            startRestraint[5] = release.StartRelease.RotationY == DOFType.Free;
 
             startSpring = new double[6];
             startSpring[0] = release.StartRelease.TranslationalStiffnessX;
-            startSpring[1] = release.StartRelease.TranslationalStiffnessY;
-            startSpring[2] = release.StartRelease.TranslationalStiffnessZ;
+            startSpring[1] = release.StartRelease.TranslationalStiffnessZ;
+            startSpring[2] = release.StartRelease.TranslationalStiffnessY;
             startSpring[3] = release.StartRelease.RotationalStiffnessX;
-            startSpring[4] = release.StartRelease.RotationalStiffnessY;
-            startSpring[5] = release.StartRelease.RotationalStiffnessZ;
+            startSpring[4] = release.StartRelease.RotationalStiffnessZ;
+            startSpring[5] = release.StartRelease.RotationalStiffnessY;
 
             endRestraint = new bool[6];
             endRestraint[0] = release.EndRelease.TranslationX == DOFType.Free;
-            endRestraint[1] = release.EndRelease.TranslationY == DOFType.Free;
-            endRestraint[2] = release.EndRelease.TranslationZ == DOFType.Free;
+            endRestraint[1] = release.EndRelease.TranslationZ == DOFType.Free;
+            endRestraint[2] = release.EndRelease.TranslationY == DOFType.Free;
             endRestraint[3] = release.EndRelease.RotationX == DOFType.Free;
-            endRestraint[4] = release.EndRelease.RotationY == DOFType.Free;
-            endRestraint[5] = release.EndRelease.RotationZ == DOFType.Free;
+            endRestraint[4] = release.EndRelease.RotationZ == DOFType.Free;
+            endRestraint[5] = release.EndRelease.RotationY == DOFType.Free;
 
             endSpring = new double[6];
             endSpring[0] = release.EndRelease.TranslationalStiffnessX;
-            endSpring[1] = release.EndRelease.TranslationalStiffnessY;
-            endSpring[2] = release.EndRelease.TranslationalStiffnessZ;
+            endSpring[1] = release.EndRelease.TranslationalStiffnessZ;
+            endSpring[2] = release.EndRelease.TranslationalStiffnessY;
             endSpring[3] = release.EndRelease.RotationalStiffnessX;
-            endSpring[4] = release.EndRelease.RotationalStiffnessY;
-            endSpring[5] = release.EndRelease.RotationalStiffnessZ;
+            endSpring[4] = release.EndRelease.RotationalStiffnessZ;
+            endSpring[5] = release.EndRelease.RotationalStiffnessY;
 
             bool[] startReleased = startRestraint.Zip(startSpring, (x, y) => x && y == 0).ToArray();
             bool[] endReleased = endRestraint.Zip(endSpring, (x, y) => x && y == 0).ToArray();
@@ -93,15 +93,15 @@ namespace BH.Engine.ETABS
             if (startReleased[0] && endReleased[0])
             { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationX for both ends"); success = false; }
             if (startReleased[1] && endReleased[1])
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY for both ends"); success = false; }
-            if (startReleased[2] && endReleased[2])
             { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ for both ends"); success = false; }
+            if (startReleased[2] && endReleased[2])
+            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY for both ends"); success = false; }
             if (startReleased[3] && endReleased[3])
             { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release RotationX for both ends"); success = false; }
             if (startReleased[4] && endReleased[4] && (startReleased[2] || endReleased[2]))
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ when RotationY is released for both ends"); success = false; }
-            if (startReleased[5] && endReleased[5] && (startReleased[1] || endReleased[1]))
             { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY when RotationZ is released for both ends"); success = false; }
+            if (startReleased[5] && endReleased[5] && (startReleased[1] || endReleased[1]))
+            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ when RotationY is released for both ends"); success = false; }
 
             return success;
         }        
