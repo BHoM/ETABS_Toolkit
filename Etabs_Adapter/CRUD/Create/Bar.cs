@@ -65,8 +65,8 @@ namespace BH.Adapter.ETABS
             // Evaluate if the bar is alinged as Etabs wants it
             if (bhBar.CheckFlipBar())
             {
-                bhBar = FlipEndPoints(bhBar);      //CloneBeforePush means this is fine
-                bhBar = FlipInsertionPoint(bhBar); //ETABS specific operation
+                FlipEndPoints(bhBar);      //CloneBeforePush means this is fine
+                FlipInsertionPoint(bhBar); //ETABS specific operation
                 Engine.Reflection.Compute.RecordNote("Some bars has been flipped to comply with ETABS API, asymmetric sections will suffer");
             }
             ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterIdName].ToString(), bhBar.EndNode.CustomData[AdapterIdName].ToString(), ref name);
@@ -157,7 +157,7 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
         [Description("Returns a bar where the endpoints have been flipped without cloning the object")]
-        private static Bar FlipEndPoints(Bar bar)
+        private static void FlipEndPoints(Bar bar)
         {
             // Flip the endpoints
             Node tempNode = bar.StartNode;
@@ -194,36 +194,42 @@ namespace BH.Adapter.ETABS
                 bar.Release.StartRelease = bar.Release.EndRelease;
                 bar.Release.EndRelease = tempC;
             }
-
-            return bar;
         }
 
         /***************************************************/
 
-        private static Bar FlipInsertionPoint(Bar bar)
+        private static void FlipInsertionPoint(Bar bar)
         {
             InsertionPoint fragment = bar.FindFragment<InsertionPoint>();
-            if (fragment == null)
-                return bar;
-            int insertionPoint = (int)fragment.BarInsertionPoint;
-
-            switch (insertionPoint)
+            if (fragment != null)
             {
-                case 1:
-                case 4:
-                case 7:
-                    fragment.BarInsertionPoint = (BarInsertionPoint)insertionPoint + 2;
-                    break;
-                case 3:
-                case 6:
-                case 9:
-                    fragment.BarInsertionPoint = (BarInsertionPoint)insertionPoint - 2;
-                    break;
-                default:
-                    break;
+                BarInsertionPoint insertionPoint = fragment.BarInsertionPoint;
+
+                switch (insertionPoint)
+                {
+                    case BarInsertionPoint.BottomLeft:
+                        fragment.BarInsertionPoint = BarInsertionPoint.BottomRight;
+                        break;
+                    case BarInsertionPoint.BottomRight:
+                        fragment.BarInsertionPoint = BarInsertionPoint.BottomLeft;
+                        break;
+                    case BarInsertionPoint.MiddleLeft:
+                        fragment.BarInsertionPoint = BarInsertionPoint.MiddleRight;
+                        break;
+                    case BarInsertionPoint.MiddleRight:
+                        fragment.BarInsertionPoint = BarInsertionPoint.MiddleLeft;
+                        break;
+                    case BarInsertionPoint.TopLeft:
+                        fragment.BarInsertionPoint = BarInsertionPoint.TopRight;
+                        break;
+                    case BarInsertionPoint.TopRight:
+                        fragment.BarInsertionPoint = BarInsertionPoint.TopLeft;
+                        break;
+                    default:
+                        break;
+                }
+                bar.Fragments.AddOrReplace(fragment);
             }
-            bar.Fragments.AddOrReplace(fragment);
-            return bar;
         }
 
         /***************************************************/
