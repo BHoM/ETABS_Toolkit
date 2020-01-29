@@ -35,6 +35,10 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.Geometry;
+using System.ComponentModel;
+using BH.oM.Adapters.ETABS;
+using BH.Engine.Base;
 #if Debug17 || Release17
     using ETABSv17;
 #else
@@ -61,8 +65,8 @@ namespace BH.Adapter.ETABS
             // Evaluate if the bar is alinged as Etabs wants it
             if (bhBar.CheckFlipBar())
             {
-                bhBar = bhBar.FlipEndPoints();      //CloneBeforePush means this is fine(?)
-                bhBar = bhBar.FlipInsertionPoint(); //ETABS specific operation
+                bhBar = FlipEndPoints(bhBar);      //CloneBeforePush means this is fine
+                bhBar = FlipInsertionPoint(bhBar); //ETABS specific operation
                 Engine.Reflection.Compute.RecordNote("Some bars has been flipped to comply with ETABS API, asymmetric sections will suffer");
             }
             ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterIdName].ToString(), bhBar.EndNode.CustomData[AdapterIdName].ToString(), ref name);
@@ -150,6 +154,80 @@ namespace BH.Adapter.ETABS
             return true;
         }
 
+        /***************************************************/
+
+        [Description("Returns a bar where the endpoints have been flipped without cloning the object")]
+        private static Bar FlipEndPoints(Bar bar)
+        {
+            // Flip the endpoints
+            Node tempNode = bar.StartNode;
+            bar.StartNode = bar.EndNode;
+            bar.EndNode = tempNode;
+
+            // Flip orientationAngle
+            bar.OrientationAngle = -bar.OrientationAngle;
+
+            // Flip Offsets
+            if (bar.Offset != null)
+            {
+                Vector tempV = bar.Offset.Start;
+                bar.Offset.Start = bar.Offset.End;
+                bar.Offset.End = tempV;
+
+                bar.Offset.Start.X *= -1;
+                bar.Offset.End.X *= -1;
+
+                if (!bar.IsVertical())
+                {
+                    bar.Offset.Start.Y *= -1;
+                    bar.Offset.End.Y *= -1;
+                }
+            }
+            // mirror the section 
+            // not possible to push to ETABS afterwards if we did
+            // warning for asymetric sections?
+
+            // Flip Release
+            if (bar.Release != null)
+            {
+                Constraint6DOF tempC = bar.Release.StartRelease;
+                bar.Release.StartRelease = bar.Release.EndRelease;
+                bar.Release.EndRelease = tempC;
+            }
+
+            return bar;
+        }
+
+        /***************************************************/
+
+        private static Bar FlipInsertionPoint(Bar bar)
+        {
+            InsertionPoint fragment = bar.FindFragment<InsertionPoint>();
+            if (fragment == null)
+                return bar;
+            int insertionPoint = (int)fragment.BarInsertionPoint;
+
+            switch (insertionPoint)
+            {
+                case 1:
+                case 4:
+                case 7:
+                    fragment.BarInsertionPoint = (BarInsertionPoint)insertionPoint + 2;
+                    break;
+                case 3:
+                case 6:
+                case 9:
+                    fragment.BarInsertionPoint = (BarInsertionPoint)insertionPoint - 2;
+                    break;
+                default:
+                    break;
+            }
+            bar.Fragments.AddOrReplace(fragment);
+            return bar;
+        }
+
+        /***************************************************/
+        /******     SectionProperty                  *******/
         /***************************************************/
 
         private bool CreateObject(ISectionProperty bhSection)
