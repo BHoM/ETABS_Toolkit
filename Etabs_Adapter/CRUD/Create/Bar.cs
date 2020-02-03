@@ -166,6 +166,8 @@ namespace BH.Adapter.ETABS
 
             // Flip orientationAngle
             bar.OrientationAngle = -bar.OrientationAngle;
+            if (bar.IsVertical())
+                bar.OrientationAngle += Math.PI;
 
             // Flip Offsets
             if (bar.Offset != null)
