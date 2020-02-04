@@ -44,6 +44,7 @@ using BH.Engine.Geometry;
 using BH.Engine.Reflection;
 using BH.oM.Geometry.SettingOut;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Adapters.ETABS.Fragments;
 
 namespace BH.Adapter.ETABS
 {
@@ -85,6 +86,15 @@ namespace BH.Adapter.ETABS
 
                 Node bhNode = Engine.Structure.Create.Node(new oM.Geometry.Point() { X = x, Y = y, Z = z }, "", support);
                 bhNode.CustomData.Add(AdapterIdName, id);
+
+                //Label and story
+                string label = "";
+                string story = "";
+                if (m_model.PointObj.GetLabelFromName(id, ref label, ref story) == 0)
+                {
+                    EtabsLabel eLabel = new EtabsLabel { Label = label, Story = story };
+                    bhNode.Fragments.Add(eLabel);
+                }
 
                 nodeList.Add(bhNode);
             }
