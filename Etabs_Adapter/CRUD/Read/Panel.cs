@@ -39,6 +39,7 @@ using BH.Engine.Geometry;
 using BH.Engine.Reflection;
 using BH.oM.Geometry.SettingOut;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Adapters.ETABS.Fragments;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -122,6 +123,16 @@ namespace BH.Adapter.ETABS
                 m_model.AreaObj.GetSpandrel(id, ref SpandrelName);
                 panel = panel.SetSpandrel(new Spandrel { Name = SpandrelName });
                 panel = panel.SetPier(new Pier { Name = PierName });
+
+
+                //Label and story
+                string label = "";
+                string story = "";
+                if (m_model.AreaObj.GetLabelFromName(id, ref label, ref story) == 0)
+                {
+                    EtabsLabel eLabel = new EtabsLabel { Label = label, Story = story };
+                    panel.Fragments.Add(eLabel);
+                }
 
                 panelList.Add(panel);
             }
