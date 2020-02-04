@@ -33,6 +33,7 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Geometry;
 using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.Adapters.ETABS.Fragments;
 #if Debug17 || Release17
 using ETABSv17;
 #else
@@ -117,6 +118,15 @@ namespace BH.Adapter.ETABS
                         bhBar.OrientationAngle = angle * Math.PI / 180;
                     else
                         BH.Engine.Reflection.Compute.RecordWarning("advanced local axis for bars are not supported");
+
+                    //Label and story
+                    string label = "";
+                    string story = "";
+                    if (m_model.FrameObj.GetLabelFromName(id, ref label, ref story) == 0)
+                    {
+                        EtabsLabel eLabel = new EtabsLabel { Label = label, Story = story };
+                        bhBar.Fragments.Add(eLabel);
+                    }
 
                     barList.Add(bhBar);
                 }
