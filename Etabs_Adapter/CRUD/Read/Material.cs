@@ -96,8 +96,11 @@ namespace BH.Adapter.ETABS
                             Engine.Reflection.Compute.RecordWarning(msg);
                             m = Engine.Structure.Create.Concrete(id + "_replacement");
                         }
-                        // Should probobly be an generic OrthotropicMaterial, but no create method was avalible
-                        m = Engine.Structure.Create.Timber(id, eArr.ToVector(), vArr.ToVector(), gArr.ToVector(), aArr.ToVector(), mass, 0);
+                        else
+                        {
+                            // Should probobly be an generic OrthotropicMaterial, but no create method was avalible
+                            m = Engine.Structure.Create.Timber(id, eArr.ToVector(), vArr.ToVector(), gArr.ToVector(), aArr.ToVector(), mass, 0);
+                        }
                     }
                     else
                     {
