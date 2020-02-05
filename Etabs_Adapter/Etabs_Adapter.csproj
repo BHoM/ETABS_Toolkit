@@ -205,6 +205,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterActions\Exectute.cs" />
+    <Compile Include="CRUD\Create\SectionProperty.cs" />
     <Compile Include="CRUD\Create\Panel.cs" />
     <Compile Include="CRUD\Create\Material.cs" />
     <Compile Include="CRUD\Create\Load.cs" />
