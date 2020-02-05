@@ -241,16 +241,16 @@ namespace BH.Adapter.ETABS
                 switch (constructSelector)
                 {
                     case "fromDimensions":
-                        if (material is Steel || material is Aluminium)
-
+                        if (material is Steel)
                             bhSectionProperty = Engine.Structure.Create.SteelSectionFromProfile(dimensions);
+                        else if (material is Aluminium)
+                            bhSectionProperty = Engine.Structure.Create.AluminiumSectionFromProfile(dimensions);
                         else if (material is Concrete)
                             bhSectionProperty = Engine.Structure.Create.ConcreteSectionFromProfile(dimensions);
+                        else if (material is Timber)
+                            bhSectionProperty = Engine.Structure.Create.TimberSectionFromProfile(dimensions);
                         else
-                        {
-                            Engine.Reflection.Compute.RecordWarning("Could not create " + propertyType.ToString() + ". Nothing was returned.");
-                            return null;
-                        }
+                            bhSectionProperty = Engine.Structure.Create.GenericSectionFromProfile(dimensions);
 
                         break;
                     case "explicit":
