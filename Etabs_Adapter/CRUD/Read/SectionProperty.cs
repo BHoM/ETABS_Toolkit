@@ -242,15 +242,15 @@ namespace BH.Adapter.ETABS
                 {
                     case "fromDimensions":
                         if (material is Steel)
-                            bhSectionProperty = Engine.Structure.Create.SteelSectionFromProfile(dimensions);
+                            bhSectionProperty = Engine.Structure.Create.SteelSectionFromProfile(dimensions, material as Steel, id);
                         else if (material is Aluminium)
-                            bhSectionProperty = Engine.Structure.Create.AluminiumSectionFromProfile(dimensions);
+                            bhSectionProperty = Engine.Structure.Create.AluminiumSectionFromProfile(dimensions, material as Aluminium, id);
                         else if (material is Concrete)
-                            bhSectionProperty = Engine.Structure.Create.ConcreteSectionFromProfile(dimensions);
+                            bhSectionProperty = Engine.Structure.Create.ConcreteSectionFromProfile(dimensions, material as Concrete, id);
                         else if (material is Timber)
-                            bhSectionProperty = Engine.Structure.Create.TimberSectionFromProfile(dimensions);
+                            bhSectionProperty = Engine.Structure.Create.TimberSectionFromProfile(dimensions, material as Timber, id);
                         else
-                            bhSectionProperty = Engine.Structure.Create.GenericSectionFromProfile(dimensions);
+                            bhSectionProperty = Engine.Structure.Create.GenericSectionFromProfile(dimensions, material, id);
 
                         break;
                     case "explicit":
@@ -269,13 +269,14 @@ namespace BH.Adapter.ETABS
                             Wely = Z22,//capacity elastic
                             Welz = Z33
                         };
+                        bhSectionProperty.Material = material;
+                        bhSectionProperty.Name = id;
                         break;
                     default:
-                        break;
+                        continue;
                 }
 
-                bhSectionProperty.Material = material;
-                bhSectionProperty.Name = id;
+                
                 bhSectionProperty.CustomData[AdapterIdName] = id;
 
                 propList.Add(bhSectionProperty);
