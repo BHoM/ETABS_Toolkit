@@ -216,6 +216,7 @@
     <Compile Include="CRUD\Create\Bar.cs" />
     <Compile Include="CRUD\Create\_Create.cs" />
     <Compile Include="CRUD\Delete\_Delete.cs" />
+    <Compile Include="CRUD\Read\SectionProperty.cs" />
     <Compile Include="CRUD\Read\Results\BarResults.cs" />
     <Compile Include="CRUD\Read\Results\GlobalResults.cs" />
     <Compile Include="CRUD\Read\Results\NodeResults.cs" />
