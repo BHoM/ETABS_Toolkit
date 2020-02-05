@@ -97,15 +97,10 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
-
-        private void SetSection(SteelSection section)
-        {
-            ISetProfile(section.SectionProfile, section.Name, section.Material);
-        }
-
+        /******     SetSection                       *******/
         /***************************************************/
 
-        private void SetSection(ConcreteSection section)
+        private void SetSection(IGeometricalSection section)
         {
             ISetProfile(section.SectionProfile, section.Name, section.Material);
         }
@@ -129,6 +124,8 @@ namespace BH.Adapter.ETABS
             CreateElementError(section.GetType().ToString(), section.Name);
         }
 
+        /***************************************************/
+        /******     SetProfile                       *******/
         /***************************************************/
 
         private void ISetProfile(IProfile sectionProfile, string sectionName, IMaterialFragment material)
