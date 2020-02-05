@@ -44,6 +44,7 @@ namespace BH.Adapter.ETABS
 
         private bool CreateObject(IMaterialFragment material)
         {
+            bool success = true;
             eMatType matType = eMatType.NoDesign;
             int colour = 0;
             string guid = "";
@@ -56,7 +57,7 @@ namespace BH.Adapter.ETABS
                 if (material is IIsotropic)
                 {
                     IIsotropic isotropic = material as IIsotropic;
-                    m_model.PropMaterial.SetMPIsotropic(material.Name, isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff);
+                    success &= m_model.PropMaterial.SetMPIsotropic(material.Name, isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff) == 0;
                 }
                 else if (material is IOrthotropic)
                 {
@@ -65,12 +66,13 @@ namespace BH.Adapter.ETABS
                     double[] v = orthoTropic.PoissonsRatio.ToDoubleArray();
                     double[] a = orthoTropic.ThermalExpansionCoeff.ToDoubleArray();
                     double[] g = orthoTropic.ShearModulus.ToDoubleArray();
-                    m_model.PropMaterial.SetMPOrthotropic(material.Name, ref e, ref v, ref a, ref g);
+                    success &= m_model.PropMaterial.SetMPOrthotropic(material.Name, ref e, ref v, ref a, ref g) == 0;
                 }
-                m_model.PropMaterial.SetWeightAndMass(material.Name, 2, material.Density);
+                success &= m_model.PropMaterial.SetWeightAndMass(material.Name, 2, material.Density) == 0;
             }
-
-            return true;
+            if (!success)
+                Engine.Reflection.Compute.RecordWarning($"Failed to assign material: {material.Name}, ETABS may have overwritten some properties with default values");
+            return success;
         }
 
         /***************************************************/
