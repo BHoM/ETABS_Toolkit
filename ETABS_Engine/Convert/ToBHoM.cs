@@ -27,12 +27,23 @@ using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Constraints;
+using BH.oM.Geometry;
 
 namespace BH.Engine.ETABS
 {
     public static partial class Convert
     {
-      
+        /***************************************************/
+
+        public static Vector ToVector(this double[] v)
+        {
+            if (v.Length == 3)
+                return new Vector { X = v[0], Y = v[1], Z = v[2] };
+            else
+                return null;
+        }
+
+        /***************************************************/
     }
 }
 

@@ -75,59 +75,75 @@ namespace BH.Adapter.ETABS
                 string notes = "";
                 if (m_model.PropMaterial.GetMaterial(id, ref matType, ref colour, ref notes, ref guid) == 0)
                 {
+                    IMaterialFragment m = null;
+
                     double e = 0;
                     double v = 0;
                     double thermCo = 0;
                     double g = 0;
                     double mass = 0;
                     double weight = 0;
-                    m_model.PropMaterial.GetMPIsotropic(id, ref e, ref v, ref thermCo, ref g);
                     m_model.PropMaterial.GetWeightAndMass(id, ref weight, ref mass);
-                    double compStr = 0;
-                    double tensStr = 0;
-                    double fy = 0;//expected yield stress
-                    double fu = 0;//expected tensile stress
-                    double efy = 0;//expected yield stress
-                    double efu = 0;//expected tensile stress
-                    double v3 = 0;//strain at hardening
-                    double v4 = 0;//strain at max stress
-                    double v5 = 0;//strain at rupture
-                    double strainAtFc = 0;
-                    double strainUlt = 0;
-                    int i1 = 0;//stress-strain curvetype
-                    int i2 = 0;
-
-                    bool b1 = false;
-
-                    IMaterialFragment m = null;
-
-                    if (m_model.PropMaterial.GetOSteel(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref v5) == 0 || matType == eMatType.Steel || matType == eMatType.ColdFormed)
+                    if (m_model.PropMaterial.GetMPIsotropic(id, ref e, ref v, ref thermCo, ref g) != 0)
                     {
-                        m = Engine.Structure.Create.Steel(id, e, v, thermCo, mass, 0, fy, fu);
-                    }
-                    else if (m_model.PropMaterial.GetOConcrete(id, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref strainAtFc, ref strainUlt, ref v3, ref v4) == 0 || matType == eMatType.Concrete)
-                    {
-                        m = Engine.Structure.Create.Concrete(id, e, v, thermCo, mass, 0, 0, compStr);
-                    }
-                    else if (m_model.PropMaterial.GetORebar(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref b1) == 0 || matType == eMatType.Rebar)
-                    {
-                        m = Engine.Structure.Create.Steel(id, e, v, thermCo, mass, 0, fy, fu);
-                    }
-                    else if (m_model.PropMaterial.GetOTendon(id, ref fy, ref fu, ref i1, ref i2) == 0 || matType == eMatType.Tendon)
-                    {
-                        m = Engine.Structure.Create.Steel(id, e, v, thermCo, mass, 0, fy, fu);
-                    }
-                    else if (matType == eMatType.Aluminum)
-                    {
-                        m = Engine.Structure.Create.Aluminium(id, e, v, thermCo, mass, 0);
+                        double[] eArr = new double[3];
+                        double[] vArr = new double[3];
+                        double[] aArr = new double[3];
+                        double[] gArr = new double[3];
+                        if (m_model.PropMaterial.GetMPOrthotropic(id, ref eArr, ref vArr, ref aArr, ref gArr) != 0)
+                        {
+                            string msg = string.Format("Could not extract structural properties for material {0}, this has been replaced with a concrete material with no properties.", id);
+                            Engine.Reflection.Compute.RecordWarning(msg);
+                            m = Engine.Structure.Create.Concrete(id + "_replacement");
+                        }
+                        // Should probobly be an generic OrthotropicMaterial, but no create method was avalible
+                        m = Engine.Structure.Create.Timber(id, eArr.ToVector(), vArr.ToVector(), gArr.ToVector(), aArr.ToVector(), mass, 0);
                     }
                     else
                     {
-                        string msg = string.Format("Could not extract structural properties for material {0}, this has been replaced with a concrete material with no properties.", id);
-                        Engine.Reflection.Compute.RecordWarning(msg);
-                        m = Engine.Structure.Create.Concrete(id + "_replacement");
-                    }
+                        double compStr = 0;
+                        double tensStr = 0;
+                        double fy = 0;//expected yield stress
+                        double fu = 0;//expected tensile stress
+                        double efy = 0;//expected yield stress
+                        double efu = 0;//expected tensile stress
+                        double v3 = 0;//strain at hardening
+                        double v4 = 0;//strain at max stress
+                        double v5 = 0;//strain at rupture
+                        double strainAtFc = 0;
+                        double strainUlt = 0;
+                        int i1 = 0;//stress-strain curvetype
+                        int i2 = 0;
 
+                        bool b1 = false;
+
+                        if (m_model.PropMaterial.GetOSteel(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref v5) == 0 || matType == eMatType.Steel || matType == eMatType.ColdFormed)
+                        {
+                            m = Engine.Structure.Create.Steel(id, e, v, thermCo, mass, 0, fy, fu);
+                        }
+                        else if (m_model.PropMaterial.GetOConcrete(id, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref strainAtFc, ref strainUlt, ref v3, ref v4) == 0 || matType == eMatType.Concrete)
+                        {
+                            m = Engine.Structure.Create.Concrete(id, e, v, thermCo, mass, 0, 0, compStr);
+                        }
+                        else if (m_model.PropMaterial.GetORebar(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref b1) == 0 || matType == eMatType.Rebar)
+                        {
+                            m = Engine.Structure.Create.Steel(id, e, v, thermCo, mass, 0, fy, fu);
+                        }
+                        else if (m_model.PropMaterial.GetOTendon(id, ref fy, ref fu, ref i1, ref i2) == 0 || matType == eMatType.Tendon)
+                        {
+                            m = Engine.Structure.Create.Steel(id, e, v, thermCo, mass, 0, fy, fu);
+                        }
+                        else if (matType == eMatType.Aluminum)
+                        {
+                            m = Engine.Structure.Create.Aluminium(id, e, v, thermCo, mass, 0);
+                        }
+                        else
+                        {
+                            string msg = string.Format("Could not extract structural properties for material {0}, this has been replaced with a concrete material with no properties.", id);
+                            Engine.Reflection.Compute.RecordWarning(msg);
+                            m = Engine.Structure.Create.Concrete(id + "_replacement");
+                        }
+                    }
                     m.CustomData[AdapterIdName] = id;
 
                     materialList.Add(m);
