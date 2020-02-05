@@ -102,17 +102,21 @@ namespace BH.Engine.ETABS
                     return eMatType.Steel;
                 case MaterialType.Concrete:
                     return eMatType.Concrete;
-                case MaterialType.Timber://no material of this type in ETABS !!! 
+                case MaterialType.Timber:
+                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Timber materials, it has been set as an equivilant orthotropic steel material instead");
                     return eMatType.Steel;
                 case MaterialType.Rebar:
                     return eMatType.Rebar;
                 case MaterialType.Tendon:
                     return eMatType.Tendon;
-                case MaterialType.Glass://no material of this type in ETABS !!!
+                case MaterialType.Glass:
+                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Glass materials, it has been set as an steel material instead");
                     return eMatType.Steel;
-                case MaterialType.Cable://no material of this type in ETABS !!!
+                case MaterialType.Cable:
+                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Cable materials, it has been set as an steel material instead");
                     return eMatType.Steel;
                 default:
+                    Engine.Reflection.Compute.RecordWarning("BHoM material type not found, it has been set as an steel material instead");
                     return eMatType.Steel;
             }
         }
