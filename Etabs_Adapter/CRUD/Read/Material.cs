@@ -129,23 +129,65 @@ namespace BH.Adapter.ETABS
 
                         if (m_model.PropMaterial.GetOSteel(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref v5) == 0 || matType == eMatType.Steel || matType == eMatType.ColdFormed)
                         {
-                            m = Engine.Structure.Create.Steel(id, e, v, thermCo, mass, 0, fy, fu);
+                            m = new Steel()
+                            {
+                                Name = id,
+                                YoungsModulus = e,
+                                PoissonsRatio = v,
+                                ThermalExpansionCoeff = thermCo,
+                                Density = mass,
+                                YieldStress = fy,
+                                UltimateStress = fu
+                            };
                         }
                         else if (m_model.PropMaterial.GetOConcrete(id, ref compStr, ref b1, ref tensStr, ref i1, ref i2, ref strainAtFc, ref strainUlt, ref v3, ref v4) == 0 || matType == eMatType.Concrete)
                         {
-                            m = Engine.Structure.Create.Concrete(id, e, v, thermCo, mass, 0, 0, compStr);
+                            m = new Concrete()
+                            {
+                                Name = id,
+                                YoungsModulus = e,
+                                PoissonsRatio = v,
+                                ThermalExpansionCoeff = thermCo,
+                                Density = mass,
+                                CylinderStrength = compStr
+                            };
                         }
                         else if (m_model.PropMaterial.GetORebar(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref b1) == 0 || matType == eMatType.Rebar)
                         {
-                            m = Engine.Structure.Create.Steel(id, e, v, thermCo, mass, 0, fy, fu);
+                            m = new Steel()
+                            {
+                                Name = id,
+                                YoungsModulus = e,
+                                PoissonsRatio = v,
+                                ThermalExpansionCoeff = thermCo,
+                                Density = mass,
+                                YieldStress = fy,
+                                UltimateStress = fu
+                            };
                         }
                         else if (m_model.PropMaterial.GetOTendon(id, ref fy, ref fu, ref i1, ref i2) == 0 || matType == eMatType.Tendon)
                         {
-                            m = Engine.Structure.Create.Steel(id, e, v, thermCo, mass, 0, fy, fu);
+                            m = new Steel()
+                            {
+                                Name = id,
+                                YoungsModulus = e,
+                                PoissonsRatio = v,
+                                ThermalExpansionCoeff = thermCo,
+                                Density = mass,
+                                YieldStress = fy,
+                                UltimateStress = fu
+                            };
                         }
                         else if (matType == eMatType.Aluminum)
                         {
-                            m = Engine.Structure.Create.Aluminium(id, e, v, thermCo, mass, 0);
+                            m = new Aluminium()
+                            {
+                                Name = id,
+                                YoungsModulus = e,
+                                PoissonsRatio = v,
+                                ThermalExpansionCoeff = thermCo,
+                                Density = mass
+                            };
                         }
                         else
                         {
