@@ -92,14 +92,21 @@ namespace BH.Adapter.ETABS
                         double[] gArr = new double[3];
                         if (m_model.PropMaterial.GetMPOrthotropic(id, ref eArr, ref vArr, ref aArr, ref gArr) != 0)
                         {
-                            string msg = string.Format("Could not extract structural properties for material {0}, this has been replaced with a concrete material with no properties.", id);
+                            string msg = string.Format("Could not extract structural properties for material {0}, this has been replaced with a GenericIsotropicMaterial with no properties.", id);
                             Engine.Reflection.Compute.RecordWarning(msg);
-                            m = Engine.Structure.Create.Concrete(id + "_replacement");
+                            m = new GenericIsotropicMaterial() { Name = id + "_replacment" };
                         }
                         else
                         {
-                            // Should probobly be an generic OrthotropicMaterial, but no create method was avalible
-                            m = Engine.Structure.Create.Timber(id, eArr.ToVector(), vArr.ToVector(), gArr.ToVector(), aArr.ToVector(), mass, 0);
+                            m = new GenericOrthotropicMaterial()
+                            {
+                                Name = id,
+                                YoungsModulus = eArr.ToVector(),
+                                PoissonsRatio = vArr.ToVector(),
+                                ShearModulus = gArr.ToVector(),
+                                ThermalExpansionCoeff = aArr.ToVector(),
+                                Density = mass
+                            };
                         }
                     }
                     else
@@ -142,9 +149,9 @@ namespace BH.Adapter.ETABS
                         }
                         else
                         {
-                            string msg = string.Format("Could not extract structural properties for material {0}, this has been replaced with a concrete material with no properties.", id);
+                            string msg = string.Format("Could not extract structural properties for material {0}, this has been replaced with a GenericIsotropicMaterial with no properties.", id);
                             Engine.Reflection.Compute.RecordWarning(msg);
-                            m = Engine.Structure.Create.Concrete(id + "_replacement");
+                            m = new GenericIsotropicMaterial() { Name = id + "_replacment" };
                         }
                     }
                     m.CustomData[AdapterIdName] = id;
