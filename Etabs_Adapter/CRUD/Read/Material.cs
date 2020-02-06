@@ -127,7 +127,9 @@ namespace BH.Adapter.ETABS
 
                         bool b1 = false;
 
-                        if (m_model.PropMaterial.GetOSteel(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref v5) == 0 || matType == eMatType.Steel || matType == eMatType.ColdFormed)
+                        if (m_model.PropMaterial.GetOSteel(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref v5) == 0 || matType == eMatType.Steel || matType == eMatType.ColdFormed ||
+                            m_model.PropMaterial.GetORebar(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref b1) == 0 || matType == eMatType.Rebar ||
+                            m_model.PropMaterial.GetOTendon(id, ref fy, ref fu, ref i1, ref i2) == 0 || matType == eMatType.Tendon)
                         {
                             m = new Steel()
                             {
@@ -150,32 +152,6 @@ namespace BH.Adapter.ETABS
                                 ThermalExpansionCoeff = thermCo,
                                 Density = mass,
                                 CylinderStrength = compStr
-                            };
-                        }
-                        else if (m_model.PropMaterial.GetORebar(id, ref fy, ref fu, ref efy, ref efu, ref i1, ref i2, ref v3, ref v4, ref b1) == 0 || matType == eMatType.Rebar)
-                        {
-                            m = new Steel()
-                            {
-                                Name = id,
-                                YoungsModulus = e,
-                                PoissonsRatio = v,
-                                ThermalExpansionCoeff = thermCo,
-                                Density = mass,
-                                YieldStress = fy,
-                                UltimateStress = fu
-                            };
-                        }
-                        else if (m_model.PropMaterial.GetOTendon(id, ref fy, ref fu, ref i1, ref i2) == 0 || matType == eMatType.Tendon)
-                        {
-                            m = new Steel()
-                            {
-                                Name = id,
-                                YoungsModulus = e,
-                                PoissonsRatio = v,
-                                ThermalExpansionCoeff = thermCo,
-                                Density = mass,
-                                YieldStress = fy,
-                                UltimateStress = fu
                             };
                         }
                         else if (matType == eMatType.Aluminum)
