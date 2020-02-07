@@ -56,6 +56,8 @@ namespace BH.Adapter.ETABS
 #endif
     {
         /***************************************************/
+        /***    Read Methods                             ***/
+        /***************************************************/
 
         private List<Panel> ReadPanel(List<string> ids = null)
         {
@@ -208,7 +210,7 @@ namespace BH.Adapter.ETABS
                     panelConstant.Material = bhMaterial;
                     panelConstant.Thickness = thickness;
                     panelConstant.PanelType = PanelType.Wall;
-                    panelConstant.CustomData["ShellType"] = shellType.ToBHoM();
+                    panelConstant.CustomData["ShellType"] = ShellTypeToBHoM(shellType);
                     if (hasModifiers)
                         panelConstant.CustomData.Add("Modifiers", modifiers);
 
@@ -231,7 +233,7 @@ namespace BH.Adapter.ETABS
                             panelRibbed.Spacing = ribSpacing;
                             panelRibbed.StemWidth = stemWidthTop;
                             panelRibbed.TotalDepth = depth;
-                            panelRibbed.CustomData["ShellType"] = shellType.ToBHoM();
+                            panelRibbed.CustomData["ShellType"] = ShellTypeToBHoM(shellType);
                             if (hasModifiers)
                                 panelRibbed.CustomData.Add("Modifiers", modifiers);
 
@@ -252,7 +254,7 @@ namespace BH.Adapter.ETABS
                             panelWaffle.TotalDepthX = depth;
                             panelWaffle.TotalDepthY = depth; // ETABS does not appear to to support direction dependent depth
                             panelWaffle.PanelType = PanelType.Slab;
-                            panelWaffle.CustomData["ShellType"] = shellType.ToBHoM();
+                            panelWaffle.CustomData["ShellType"] = ShellTypeToBHoM(shellType);
                             if (hasModifiers)
                                 panelWaffle.CustomData.Add("Modifiers", modifiers);
 
@@ -269,7 +271,7 @@ namespace BH.Adapter.ETABS
                             panelConstant.Thickness = thickness;
                             panelConstant.Name = id;
                             panelConstant.PanelType = PanelType.Slab;
-                            panelConstant.CustomData["ShellType"] = shellType.ToBHoM();
+                            panelConstant.CustomData["ShellType"] = ShellTypeToBHoM(shellType);
                             if (hasModifiers)
                                 panelConstant.CustomData.Add("Modifiers", modifiers);
 
@@ -306,6 +308,26 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+        /***    Helper Methods                           ***/
+        /***************************************************/
+
+        public static string ShellTypeToBHoM(eShellType shellType)
+        {
+            switch (shellType)
+            {
+                case eShellType.ShellThin:
+                    return oM.Adapters.ETABS.ShellType.ShellThin.ToString();
+                case eShellType.ShellThick:
+                    return oM.Adapters.ETABS.ShellType.ShellThick.ToString();
+                case eShellType.Membrane:
+                    return oM.Adapters.ETABS.ShellType.Membrane.ToString();
+                default:
+                    return "None";
+            }
+        }
+
+        /***************************************************/
+
     }
 }
 

@@ -205,6 +205,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterActions\Exectute.cs" />
+    <Compile Include="CRUD\Create\LoadCombinations.cs" />
     <Compile Include="CRUD\Create\SectionProperty.cs" />
     <Compile Include="CRUD\Create\Panel.cs" />
     <Compile Include="CRUD\Create\Material.cs" />
@@ -216,6 +217,7 @@
     <Compile Include="CRUD\Create\Bar.cs" />
     <Compile Include="CRUD\Create\_Create.cs" />
     <Compile Include="CRUD\Delete\_Delete.cs" />
+    <Compile Include="CRUD\Read\LoadCombinations.cs" />
     <Compile Include="CRUD\Read\SectionProperty.cs" />
     <Compile Include="CRUD\Read\Results\BarResults.cs" />
     <Compile Include="CRUD\Read\Results\GlobalResults.cs" />
@@ -238,9 +240,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Comparer.cs" />
     <Compile Include="Types\DependencyTypes.cs" />
-    <Compile Include="_Engine\Convert\ToBHoM.cs" />
-    <Compile Include="_Engine\Convert\ToCSI.cs" />
-    <Compile Include="_Engine\Query\EtabsShellType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ETABS_Engine\ETABS_Engine.csproj">

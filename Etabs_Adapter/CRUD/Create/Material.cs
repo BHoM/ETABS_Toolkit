@@ -41,6 +41,8 @@ namespace BH.Adapter.ETABS
 #endif
     {
         /***************************************************/
+        /***    Create Methods                           ***/
+        /***************************************************/
 
         private bool CreateObject(IMaterialFragment material)
         {
@@ -52,7 +54,7 @@ namespace BH.Adapter.ETABS
             string name = "";
             if (m_model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
             {
-                m_model.PropMaterial.AddMaterial(ref name, material.IMaterialType().ToCSI(), "", "", "");
+                m_model.PropMaterial.AddMaterial(ref name, MaterialTypeToCSI(material.IMaterialType()), "", "", "");
                 m_model.PropMaterial.ChangeName(name, material.Name);
                 if (material is IIsotropic)
                 {
@@ -76,6 +78,40 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+        /***    Helper Methods                           ***/
+        /***************************************************/
+
+        public static eMatType MaterialTypeToCSI(MaterialType materialType)
+        {
+            switch (materialType)
+            {
+                case MaterialType.Aluminium:
+                    return eMatType.Aluminum;
+                case MaterialType.Steel:
+                    return eMatType.Steel;
+                case MaterialType.Concrete:
+                    return eMatType.Concrete;
+                case MaterialType.Timber:
+                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Timber materials, the material has been set to type 'Other' with 'Orthotropic' directional symmetry");
+                    return eMatType.NoDesign;
+                case MaterialType.Rebar:
+                    return eMatType.Rebar;
+                case MaterialType.Tendon:
+                    return eMatType.Tendon;
+                case MaterialType.Glass:
+                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Glass materials, the material has been set to type 'Other'");
+                    return eMatType.NoDesign;
+                case MaterialType.Cable:
+                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Cable materials, the material has been set to type 'Steel'");
+                    return eMatType.Steel;
+                default:
+                    Engine.Reflection.Compute.RecordWarning("BHoM material type not found, the material has been set to type 'Other'");
+                    return eMatType.NoDesign;
+            }
+        }
+
+        /***************************************************/
+
     }
 }
 
