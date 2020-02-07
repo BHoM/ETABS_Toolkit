@@ -110,13 +110,13 @@ namespace BH.Engine.ETABS
                 case MaterialType.Tendon:
                     return eMatType.Tendon;
                 case MaterialType.Glass:
-                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Glass materials, it has been set as an equivilant orthotropic material instead");
+                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Glass materials, the material has been set to type 'Other'");
                     return eMatType.NoDesign;
                 case MaterialType.Cable:
-                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Cable materials, it has been set as an steel material instead");
+                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Cable materials, the material has been set to type 'Steel'");
                     return eMatType.Steel;
                 default:
-                    Engine.Reflection.Compute.RecordWarning("BHoM material type not found, it has been set as an equivilant orthotropic material instead");
+                    Engine.Reflection.Compute.RecordWarning("BHoM material type not found, the material has been set to type 'Other'");
                     return eMatType.NoDesign;
             }
         }
