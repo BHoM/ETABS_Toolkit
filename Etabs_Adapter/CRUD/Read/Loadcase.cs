@@ -134,7 +134,7 @@ namespace BH.Adapter.ETABS
         /***    Helper Methods                           ***/
         /***************************************************/
 
-        public static LoadNature LoadPatternTypeToBHoM(eLoadPatternType loadPatternType)
+        private LoadNature LoadPatternTypeToBHoM(eLoadPatternType loadPatternType)
         {
             switch (loadPatternType)
             {

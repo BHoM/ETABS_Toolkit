@@ -205,7 +205,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterActions\Exectute.cs" />
-    <Compile Include="CRUD\Create\LoadCombinations.cs" />
+    <Compile Include="CRUD\Create\Loadcase.cs" />
     <Compile Include="CRUD\Create\SectionProperty.cs" />
     <Compile Include="CRUD\Create\Panel.cs" />
     <Compile Include="CRUD\Create\Material.cs" />
@@ -217,7 +217,7 @@
     <Compile Include="CRUD\Create\Bar.cs" />
     <Compile Include="CRUD\Create\_Create.cs" />
     <Compile Include="CRUD\Delete\_Delete.cs" />
-    <Compile Include="CRUD\Read\LoadCombinations.cs" />
+    <Compile Include="CRUD\Read\Loadcase.cs" />
     <Compile Include="CRUD\Read\SectionProperty.cs" />
     <Compile Include="CRUD\Read\Results\BarResults.cs" />
     <Compile Include="CRUD\Read\Results\GlobalResults.cs" />

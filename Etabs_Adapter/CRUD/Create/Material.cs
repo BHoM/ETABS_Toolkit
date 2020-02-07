@@ -81,7 +81,7 @@ namespace BH.Adapter.ETABS
         /***    Helper Methods                           ***/
         /***************************************************/
 
-        public static eMatType MaterialTypeToCSI(MaterialType materialType)
+        private eMatType MaterialTypeToCSI(MaterialType materialType)
         {
             switch (materialType)
             {

@@ -311,7 +311,7 @@ namespace BH.Adapter.ETABS
         /***    Helper Methods                           ***/
         /***************************************************/
 
-        public static string ShellTypeToBHoM(eShellType shellType)
+        private string ShellTypeToBHoM(eShellType shellType)
         {
             switch (shellType)
             {

@@ -192,7 +192,7 @@ namespace BH.Adapter.ETABS
         /***    Helper Methods                           ***/
         /***************************************************/
 
-        public static eShellType ShellTypeToCSI(ISurfaceProperty panel)
+        private eShellType ShellTypeToCSI(ISurfaceProperty panel)
         {
             object obj;
 
