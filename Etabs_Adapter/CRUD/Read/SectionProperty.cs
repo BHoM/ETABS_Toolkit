@@ -241,7 +241,7 @@ namespace BH.Adapter.ETABS
                 switch (constructSelector)
                 {
                     case "fromDimensions":
-                        bhSectionProperty = Engine.Structure.Create.SectionPropertyFromProfile(dimensions, material as Steel, id);
+                        bhSectionProperty = Engine.Structure.Create.SectionPropertyFromProfile(dimensions, material, id);
                         break;
                     case "explicit":
                         bhSectionProperty = new ExplicitSection()
