@@ -125,7 +125,7 @@ namespace BH.Adapter.ETABS
         /***    Helper Methods                           ***/
         /***************************************************/
 
-        public static eLoadPatternType LoadNatureToCSI(LoadNature loadNature)
+        private eLoadPatternType LoadNatureToCSI(LoadNature loadNature)
         {
             eLoadPatternType loadType;
             switch (loadNature)
