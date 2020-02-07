@@ -103,7 +103,7 @@ namespace BH.Engine.ETABS
                 case MaterialType.Concrete:
                     return eMatType.Concrete;
                 case MaterialType.Timber:
-                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Timber materials, it has been set as an equivilant orthotropic material instead");
+                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Timber materials, the material has been set to type 'Other' with 'Orthotropic' directional symmetry");
                     return eMatType.NoDesign;
                 case MaterialType.Rebar:
                     return eMatType.Rebar;
