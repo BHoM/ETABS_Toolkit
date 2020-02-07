@@ -34,6 +34,7 @@ using BH.Engine.Geometry;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Adapters.ETABS;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -49,6 +50,8 @@ namespace BH.Adapter.ETABS
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif
     {
+        /***************************************************/
+        /***    Create Methods                           ***/
         /***************************************************/
 
         private bool CreateObject(Panel bhPanel)
@@ -134,7 +137,7 @@ namespace BH.Adapter.ETABS
                 return true;
             }
 
-            eShellType shellType = property2d.EtabsShellType();
+            eShellType shellType = ShellTypeToCSI(property2d);
 
             if (property2d.GetType() == typeof(Waffle))
             {
@@ -183,6 +186,29 @@ namespace BH.Adapter.ETABS
             sucess &= m_model.Diaphragm.SetDiaphragm(diaphragm.Name, diaphragm.Rigidity == oM.Adapters.ETABS.DiaphragmType.SemiRigidDiaphragm) == 0;
 
             return sucess;
+        }
+
+        /***************************************************/
+        /***    Helper Methods                           ***/
+        /***************************************************/
+
+        public static eShellType ShellTypeToCSI(ISurfaceProperty panel)
+        {
+            object obj;
+
+            if (panel.CustomData.TryGetValue("ShellType", out obj) && obj is ShellType)
+            {
+                switch ((ShellType)obj)
+                {
+                    case ShellType.ShellThin:
+                        return eShellType.ShellThin;
+                    case ShellType.ShellThick:
+                        return eShellType.ShellThick;
+                    case ShellType.Membrane:
+                        return eShellType.Membrane;
+                }
+            }
+            return eShellType.ShellThin;
         }
 
         /***************************************************/
