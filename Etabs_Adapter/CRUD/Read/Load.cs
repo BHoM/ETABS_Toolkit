@@ -56,8 +56,10 @@ namespace BH.Adapter.ETABS
 
             if (type == typeof(PointLoad))
                 return ReadPointLoad(loadcaseList);
-            else if (type == typeof(BarUniformlyDistributedLoad) || type == typeof(BarVaryingDistributedLoad))
+            else if (type == typeof(BarUniformlyDistributedLoad))
                 return ReadBarLoad(loadcaseList);
+            else if (type == typeof(BarVaryingDistributedLoad))
+                return ReadBarVaryingLoad(loadcaseList);
             else if (type == typeof(AreaUniformlyDistributedLoad))
                 return ReadAreaLoad(loadcaseList);
             else if (type == typeof(AreaTemperatureLoad))
@@ -75,7 +77,7 @@ namespace BH.Adapter.ETABS
                 return loads;
             }
         }
-
+        
         /***************************************************/
 
         private List<ILoad> ReadPointLoad(List<Loadcase> loadcases)
@@ -150,6 +152,78 @@ namespace BH.Adapter.ETABS
                 {
                     if (bhLoadcase.Name != loadcase[i])
                         continue;
+                    if (dist1[i] != 0 || rd2[i] != 1 || Math.Abs(val1[i] - val2[1]) > Tolerance.Distance)   //Is Varying
+                        continue;
+
+                    Vector force = new Vector();
+
+                    switch (dir[i])
+                    {
+                        case 4:
+                            force.X = val1[i];
+                            break;
+                        case 5:
+                            force.Y = val1[i];
+                            break;
+                        case 6:
+                            force.Z = val1[i];
+                            break;
+                        default:
+                            BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                            break;
+                    }
+                    BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhomBars[names[i]] } };
+                    
+                    switch (myType[i])
+                    {
+                        case 1:
+                            bhLoads.Add(new BarUniformlyDistributedLoad() { Force = force, Loadcase = bhLoadcase, Objects = barObjects });
+                            break;
+                        case 2:
+                            bhLoads.Add(new BarUniformlyDistributedLoad() { Moment = force, Loadcase = bhLoadcase, Objects = barObjects });
+                            break;
+                        default:
+                            BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
+                            break;
+                    }
+                }
+            }
+            return bhLoads;
+
+        }
+
+        /***************************************************/
+
+        private List<ILoad> ReadBarVaryingLoad(List<Loadcase> loadcases)
+        {
+            List<ILoad> bhLoads = new List<ILoad>();
+
+            Dictionary<string, Bar> bhomBars = ReadBar().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+
+            string[] names = null;
+            string[] loadcase = null;
+            string[] CSys = null;
+            int[] myType = null;
+            int[] dir = null;
+            int nameCount = 0;
+            double[] rd1 = null;
+            double[] rd2 = null;
+            double[] dist1 = null;
+            double[] dist2 = null;
+            double[] val1 = null;
+            double[] val2 = null;
+
+            foreach (Loadcase bhLoadcase in loadcases)
+            {
+                if (m_model.FrameObj.GetLoadDistributed("All", ref nameCount, ref names, ref loadcase, ref myType, ref CSys, ref dir, ref rd1, ref rd2, ref dist1, ref dist2, ref val1, ref val2, eItemType.Group) != 0)
+                    continue;
+
+                for (int i = 0; i < nameCount; i++)
+                {
+                    if (bhLoadcase.Name != loadcase[i])
+                        continue;
+                    if (dist1[i] == 0 && rd2[i] == 1 && Math.Abs(val1[i] - val2[1]) < Tolerance.Distance)   //Is uniform
+                        continue;
 
                     Vector forceA = new Vector();
                     Vector forceB = new Vector();
@@ -174,10 +248,7 @@ namespace BH.Adapter.ETABS
                     }
                     Bar bhBar = bhomBars[names[i]];
                     BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhBar } };
-
-                    if (dist1[i] == 0 && rd2[i] == 1 && Math.Abs(val1[i] - val2[1]) < Tolerance.Distance)   //Is uniform
-                        myType[i] += 100;
-
+                    
                     switch (myType[i])
                     {
                         case 1:
@@ -201,12 +272,6 @@ namespace BH.Adapter.ETABS
                                 Loadcase = bhLoadcase,
                                 Objects = barObjects
                             });
-                            break;
-                        case 101:
-                            bhLoads.Add(new BarUniformlyDistributedLoad() { Force = forceA, Loadcase = bhLoadcase, Objects = barObjects });
-                            break;
-                        case 102:
-                            bhLoads.Add(new BarUniformlyDistributedLoad() { Moment = forceA, Loadcase = bhLoadcase, Objects = barObjects });
                             break;
                         default:
                             BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
