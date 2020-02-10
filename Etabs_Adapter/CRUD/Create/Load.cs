@@ -113,13 +113,14 @@ namespace BH.Adapter.ETABS
             string caseName = areaUniformLoad.Loadcase.CustomData[AdapterIdName].ToString();
             foreach (IAreaElement area in areaUniformLoad.Objects.Elements)
             {
+                bool tempReplace = replace;
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     double val = direction == 1 ? areaUniformLoad.Pressure.X : direction == 2 ? areaUniformLoad.Pressure.Y : areaUniformLoad.Pressure.Z;
                     if (val != 0)
                     {
-                        //NOTE: Replace=false has been set to allow setting x,y,z-load directions !!! this should be user controled and allowed as default
-                        ret = m_model.AreaObj.SetLoadUniform(area.CustomData[AdapterIdName].ToString(), caseName, val, direction + 3, replace);
+                        ret = m_model.AreaObj.SetLoadUniform(area.CustomData[AdapterIdName].ToString(), caseName, val, direction + 3, tempReplace);
+                        tempReplace = false;
                     }
                 }
             }
@@ -153,6 +154,70 @@ namespace BH.Adapter.ETABS
                 string nodeName = bar.CustomData[AdapterIdName].ToString();
                 int direction = 6; // we're doing this for Z axis only right now.
                 ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
+
+            }
+        }
+
+        /***************************************************/
+
+        public void SetLoad(BarPointLoad barUniformLoad, bool replace)
+        {
+            foreach (Bar bar in barUniformLoad.Objects.Elements)
+            {
+                bool stepReplace = replace;
+
+                string caseName = barUniformLoad.Loadcase.CustomData[AdapterIdName].ToString();
+                string barName = bar.CustomData[AdapterIdName].ToString();
+
+                for (int direction = 1; direction <= 3; direction++)
+                {
+                    int ret = 1;
+                    double val = direction == 1 ? barUniformLoad.Force.X : direction == 2 ? barUniformLoad.Force.Y : barUniformLoad.Force.Z; //note: etabs acts different then stated in API documentstion
+
+                    if (val != 0)
+                        ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 1, direction + 3, barUniformLoad.DistanceFromA, val, "Global", true, stepReplace);
+
+                    stepReplace = false;
+                }
+                // Moment
+                for (int direction = 1; direction <= 3; direction++)
+                {
+                    int ret = 1;
+                    double val = direction == 1 ? barUniformLoad.Moment.X : direction == 2 ? barUniformLoad.Moment.Y : barUniformLoad.Moment.Z; //note: etabs acts different then stated in API documentstion
+
+                    if (val != 0)
+                        ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 2, direction + 3, barUniformLoad.DistanceFromA, val, "Global", true, stepReplace);
+
+                    stepReplace = false;
+                }
+            }
+        }
+
+        /***************************************************/
+
+        public void SetLoad(AreaTemperatureLoad areaTempratureLoad, bool replace)
+        {
+            int ret = 0;
+            string caseName = areaTempratureLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            foreach (IAreaElement area in areaTempratureLoad.Objects.Elements)
+            {
+                double val = areaTempratureLoad.TemperatureChange;
+                if (val != 0)
+                    ret = m_model.AreaObj.SetLoadTemperature(area.CustomData[AdapterIdName].ToString(), caseName, 1, val, "", replace);
+            }
+        }
+
+        /***************************************************/
+
+        public void SetLoad(BarTemperatureLoad barTempratureLoad, bool replace)
+        {
+            int ret = 0;
+            string caseName = barTempratureLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            foreach (IAreaElement area in barTempratureLoad.Objects.Elements)
+            {
+                double val = barTempratureLoad.TemperatureChange;
+                if (val != 0)
+                    ret = m_model.FrameObj.SetLoadTemperature(area.CustomData[AdapterIdName].ToString(), caseName, 1, val, "", replace);
 
             }
         }
