@@ -235,7 +235,6 @@
     <Compile Include="CRUD\Read\_Read.cs" />
     <Compile Include="CRUD\Update\_Update.cs" />
     <Compile Include="ETABSAdapter.cs" />
-    <Compile Include="ETABSEnums.cs" />
     <Compile Include="CRUD\Read\Results\Result.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Comparer.cs" />
