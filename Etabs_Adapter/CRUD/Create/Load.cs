@@ -153,29 +153,43 @@ namespace BH.Adapter.ETABS
                 string caseName = barLoad.Loadcase.CustomData[AdapterIdName].ToString();
                 string nodeName = bar.CustomData[AdapterIdName].ToString();
                 int direction = 6; // we're doing this for Z axis only right now.
-                ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
+                if (!(val1 == 0 && val2 == 0))
+                    ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
 
+                if (bar.CheckFlipBar())
+                {
+                    val1 = barLoad.MomentB.Z; //note: etabs acts different then stated in API documentstion
+                    val2 = barLoad.MomentA.Z;
+                }
+                else
+                {
+                    val1 = barLoad.MomentA.Z; //note: etabs acts different then stated in API documentstion
+                    val2 = barLoad.MomentB.Z;
+                }
+
+                if (!(val1 == 0 && val2 == 0))
+                    ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 2, direction, dist1, dist2, val1, val2, "Global", false, replace);
             }
         }
 
         /***************************************************/
 
-        public void SetLoad(BarPointLoad barUniformLoad, bool replace)
+        public void SetLoad(BarPointLoad barPointLoad, bool replace)
         {
-            foreach (Bar bar in barUniformLoad.Objects.Elements)
+            foreach (Bar bar in barPointLoad.Objects.Elements)
             {
                 bool stepReplace = replace;
 
-                string caseName = barUniformLoad.Loadcase.CustomData[AdapterIdName].ToString();
+                string caseName = barPointLoad.Loadcase.CustomData[AdapterIdName].ToString();
                 string barName = bar.CustomData[AdapterIdName].ToString();
 
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     int ret = 1;
-                    double val = direction == 1 ? barUniformLoad.Force.X : direction == 2 ? barUniformLoad.Force.Y : barUniformLoad.Force.Z; //note: etabs acts different then stated in API documentstion
+                    double val = direction == 1 ? barPointLoad.Force.X : direction == 2 ? barPointLoad.Force.Y : barPointLoad.Force.Z; //note: etabs acts different then stated in API documentstion
 
                     if (val != 0)
-                        ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 1, direction + 3, barUniformLoad.DistanceFromA, val, "Global", true, stepReplace);
+                        ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 1, direction + 3, barPointLoad.DistanceFromA, val, "Global", false, stepReplace);
 
                     stepReplace = false;
                 }
@@ -183,10 +197,10 @@ namespace BH.Adapter.ETABS
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     int ret = 1;
-                    double val = direction == 1 ? barUniformLoad.Moment.X : direction == 2 ? barUniformLoad.Moment.Y : barUniformLoad.Moment.Z; //note: etabs acts different then stated in API documentstion
+                    double val = direction == 1 ? barPointLoad.Moment.X : direction == 2 ? barPointLoad.Moment.Y : barPointLoad.Moment.Z; //note: etabs acts different then stated in API documentstion
 
                     if (val != 0)
-                        ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 2, direction + 3, barUniformLoad.DistanceFromA, val, "Global", true, stepReplace);
+                        ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 2, direction + 3, barPointLoad.DistanceFromA, val, "Global", false, stepReplace);
 
                     stepReplace = false;
                 }
@@ -213,11 +227,11 @@ namespace BH.Adapter.ETABS
         {
             int ret = 0;
             string caseName = barTempratureLoad.Loadcase.CustomData[AdapterIdName].ToString();
-            foreach (IAreaElement area in barTempratureLoad.Objects.Elements)
+            foreach (Bar bar in barTempratureLoad.Objects.Elements)
             {
                 double val = barTempratureLoad.TemperatureChange;
                 if (val != 0)
-                    ret = m_model.FrameObj.SetLoadTemperature(area.CustomData[AdapterIdName].ToString(), caseName, 1, val, "", replace);
+                    ret = m_model.FrameObj.SetLoadTemperature(bar.CustomData[AdapterIdName].ToString(), caseName, 1, val, "", replace);
 
             }
         }
