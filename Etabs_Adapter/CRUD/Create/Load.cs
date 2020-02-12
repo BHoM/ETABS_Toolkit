@@ -85,9 +85,9 @@ namespace BH.Adapter.ETABS
                     if (val != 0)
                     {
                         ret = m_model.FrameObj.SetLoadDistributed(barName, caseName, 1, direction + 3, 0, 1, val, val, "Global", true, stepReplace);
+                        stepReplace = false;
                     }
 
-                    stepReplace = false;
                 }
                 // Moment
                 for (int direction = 1; direction <= 3; direction++)
@@ -98,9 +98,9 @@ namespace BH.Adapter.ETABS
                     if (val != 0)
                     {
                         ret = m_model.FrameObj.SetLoadDistributed(barName, caseName, 2, direction + 3, 0, 1, val, val, "Global", true, stepReplace);
+                        stepReplace = false;
                     }
 
-                    stepReplace = false;
                 }
             }
         }
@@ -132,43 +132,66 @@ namespace BH.Adapter.ETABS
         {
             int ret = 0;
 
+            string caseName = barLoad.Loadcase.CustomData[AdapterIdName].ToString();
+
             foreach (Bar bar in barLoad.Objects.Elements)
             {
+                bool stepReplace = replace;
                 double val1, val2, dist1, dist2;
-                if (bar.CheckFlipBar())
+                string barName = bar.CustomData[AdapterIdName].ToString();
+                for (int direction = 1; direction <= 3; direction++)
                 {
-                    val1 = barLoad.ForceB.Z; //note: etabs acts different then stated in API documentstion
-                    val2 = barLoad.ForceA.Z;
-                    dist1 = barLoad.DistanceFromB;
-                    dist2 = bar.Length() - barLoad.DistanceFromA;
-                }
-                else
-                {
-                    val1 = barLoad.ForceA.Z; //note: etabs acts different then stated in API documentstion
-                    val2 = barLoad.ForceB.Z;
-                    dist1 = barLoad.DistanceFromA;
-                    dist2 = bar.Length() - barLoad.DistanceFromB;
-                }
+                    double valA = direction == 1 ? barLoad.ForceA.X : direction == 2 ? barLoad.ForceA.Y : barLoad.ForceA.Z; //note: etabs acts different then stated in API documentstion
+                    double valB = direction == 1 ? barLoad.ForceB.X : direction == 2 ? barLoad.ForceB.Y : barLoad.ForceB.Z; //note: etabs acts different then stated in API documentstion
 
-                string caseName = barLoad.Loadcase.CustomData[AdapterIdName].ToString();
-                string nodeName = bar.CustomData[AdapterIdName].ToString();
-                int direction = 6; // we're doing this for Z axis only right now.
-                if (!(val1 == 0 && val2 == 0))
-                    ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, replace);
+                    if (bar.CheckFlipBar())
+                    {
+                        val1 = valB; //note: etabs acts different then stated in API documentstion
+                        val2 = valA;
+                        dist1 = barLoad.DistanceFromB;
+                        dist2 = bar.Length() - barLoad.DistanceFromA;
+                    }
+                    else
+                    {
+                        val1 = valA; //note: etabs acts different then stated in API documentstion
+                        val2 = valB;
+                        dist1 = barLoad.DistanceFromA;
+                        dist2 = bar.Length() - barLoad.DistanceFromB;
+                    }
 
-                if (bar.CheckFlipBar())
-                {
-                    val1 = barLoad.MomentB.Z; //note: etabs acts different then stated in API documentstion
-                    val2 = barLoad.MomentA.Z;
+                    if (!(val1 == 0 && val2 == 0))
+                    {
+                        ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, stepReplace);
+                        stepReplace = false;
+                    }
                 }
-                else
+                // Moment
+                for (int direction = 1; direction <= 3; direction++)
                 {
-                    val1 = barLoad.MomentA.Z; //note: etabs acts different then stated in API documentstion
-                    val2 = barLoad.MomentB.Z;
-                }
+                    double valA = direction == 1 ? barLoad.MomentA.X : direction == 2 ? barLoad.MomentA.Y : barLoad.MomentA.Z; //note: etabs acts different then stated in API documentstion
+                    double valB = direction == 1 ? barLoad.MomentB.X : direction == 2 ? barLoad.MomentB.Y : barLoad.MomentB.Z; //note: etabs acts different then stated in API documentstion
 
-                if (!(val1 == 0 && val2 == 0))
-                    ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 2, direction, dist1, dist2, val1, val2, "Global", false, replace);
+                    if (bar.CheckFlipBar())
+                    {
+                        val1 = valB; //note: etabs acts different then stated in API documentstion
+                        val2 = valA;
+                        dist1 = barLoad.DistanceFromB;
+                        dist2 = bar.Length() - barLoad.DistanceFromA;
+                    }
+                    else
+                    {
+                        val1 = valA; //note: etabs acts different then stated in API documentstion
+                        val2 = valB;
+                        dist1 = barLoad.DistanceFromA;
+                        dist2 = bar.Length() - barLoad.DistanceFromB;
+                    }
+
+                    if (!(val1 == 0 && val2 == 0))
+                    {
+                        ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 2, direction, dist1, dist2, val1, val2, "Global", false, stepReplace);
+                        stepReplace = false;
+                    }
+                }
             }
         }
 
@@ -189,9 +212,10 @@ namespace BH.Adapter.ETABS
                     double val = direction == 1 ? barPointLoad.Force.X : direction == 2 ? barPointLoad.Force.Y : barPointLoad.Force.Z; //note: etabs acts different then stated in API documentstion
 
                     if (val != 0)
+                    {
                         ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 1, direction + 3, barPointLoad.DistanceFromA, val, "Global", false, stepReplace);
-
-                    stepReplace = false;
+                        stepReplace = false;
+                    }
                 }
                 // Moment
                 for (int direction = 1; direction <= 3; direction++)
@@ -200,9 +224,10 @@ namespace BH.Adapter.ETABS
                     double val = direction == 1 ? barPointLoad.Moment.X : direction == 2 ? barPointLoad.Moment.Y : barPointLoad.Moment.Z; //note: etabs acts different then stated in API documentstion
 
                     if (val != 0)
+                    {
                         ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 2, direction + 3, barPointLoad.DistanceFromA, val, "Global", false, stepReplace);
-
-                    stepReplace = false;
+                        stepReplace = false;
+                    }
                 }
             }
         }
@@ -232,7 +257,6 @@ namespace BH.Adapter.ETABS
                 double val = barTempratureLoad.TemperatureChange;
                 if (val != 0)
                     ret = m_model.FrameObj.SetLoadTemperature(bar.CustomData[AdapterIdName].ToString(), caseName, 1, val, "", replace);
-
             }
         }
 
