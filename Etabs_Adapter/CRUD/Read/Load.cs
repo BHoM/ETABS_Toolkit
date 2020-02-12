@@ -118,7 +118,6 @@ namespace BH.Adapter.ETABS
                 bhLoads.Add(bhLoad);
             }
 
-
             return bhLoads;
 
         }
@@ -147,7 +146,6 @@ namespace BH.Adapter.ETABS
             if (m_model.FrameObj.GetLoadDistributed("All", ref nameCount, ref names, ref loadcase, ref myType, ref CSys, ref dir, ref rd1, ref rd2, ref dist1, ref dist2, ref val1, ref val2, eItemType.Group) != 0)
                 return bhLoads;
 
-
             for (int i = 0; i < nameCount; i++)
             {
                 Loadcase bhLoadcase = loadcases.FirstOrDefault(x => x.Name == loadcase[i]);
@@ -171,7 +169,7 @@ namespace BH.Adapter.ETABS
                         force.Z = val1[i];
                         break;
                     default:
-                        BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                        BH.Engine.Reflection.Compute.RecordWarning("The load direction is not supported. Dir = " + dir[i].ToString());
                         break;
                 }
                 BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhomBars[names[i]] } };
@@ -218,16 +216,13 @@ namespace BH.Adapter.ETABS
             if (m_model.FrameObj.GetLoadDistributed("All", ref nameCount, ref names, ref loadcase, ref myType, ref CSys, ref dir, ref rd1, ref rd2, ref dist1, ref dist2, ref val1, ref val2, eItemType.Group) != 0)
                 return bhLoads;
 
-
             for (int i = 0; i < nameCount; i++)
             {
                 Loadcase bhLoadcase = loadcases.FirstOrDefault(x => x.Name == loadcase[i]);
 
                 if (bhLoadcase == null)
                     continue;
-
-                if (bhLoadcase.Name != loadcase[i])
-                    continue;
+                
                 if (dist1[i] == 0 && rd2[i] == 1 && Math.Abs(val1[i] - val2[i]) < Tolerance.Distance)   //Is uniform
                     continue;
 
@@ -249,7 +244,7 @@ namespace BH.Adapter.ETABS
                         forceB.Z = val2[i];
                         break;
                     default:
-                        BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                        BH.Engine.Reflection.Compute.RecordWarning("The load direction is not supported. Dir = " + dir[i].ToString());
                         break;
                 }
                 Bar bhBar = bhomBars[names[i]];
@@ -284,8 +279,8 @@ namespace BH.Adapter.ETABS
                         break;
                 }
             }
-            return bhLoads;
 
+            return bhLoads;
         }
 
         /***************************************************/
@@ -328,7 +323,7 @@ namespace BH.Adapter.ETABS
                         pressure.Z = f[i];
                         break;
                     default:
-                        BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                        BH.Engine.Reflection.Compute.RecordWarning("The load direction is not supported. Dir = " + dir[i].ToString());
                         break;
                 }
 
@@ -336,7 +331,6 @@ namespace BH.Adapter.ETABS
             }
 
             return bhLoads;
-
         }
 
         /***************************************************/
@@ -356,7 +350,6 @@ namespace BH.Adapter.ETABS
 
             if (m_model.AreaObj.GetLoadTemperature("All", ref nameCount, ref names, ref loadcase, ref myType, ref value, ref patternName, eItemType.Group) != 0)
                 return bhLoads;
-
 
             for (int i = 0; i < nameCount; i++)
             {
@@ -408,8 +401,8 @@ namespace BH.Adapter.ETABS
                     bhLoads.Add(new BarTemperatureLoad() { TemperatureChange = value[i], Loadcase = bhLoadcase, Objects = barObjects });
                 }
             }
-            return bhLoads;
 
+            return bhLoads;
         }
 
         /***************************************************/
@@ -433,7 +426,6 @@ namespace BH.Adapter.ETABS
             if (m_model.FrameObj.GetLoadPoint("All", ref nameCount, ref names, ref loadcase, ref myType, ref CSys, ref dir, ref relDist, ref dist, ref value, eItemType.Group) != 0)
                 return bhLoads;
 
-
             for (int i = 0; i < nameCount; i++)
             {
                 Loadcase bhLoadcase = loadcases.FirstOrDefault(x => x.Name == loadcase[i]);
@@ -454,7 +446,7 @@ namespace BH.Adapter.ETABS
                         force.Z = value[i];
                         break;
                     default:
-                        BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                        BH.Engine.Reflection.Compute.RecordWarning("The load direction is not supported. Dir = " + dir[i].ToString());
                         break;
                 }
                 BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhomBars[names[i]] } };
