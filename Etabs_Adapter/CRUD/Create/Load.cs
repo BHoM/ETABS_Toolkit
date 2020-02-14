@@ -161,8 +161,13 @@ namespace BH.Adapter.ETABS
 
                     if (!(val1 == 0 && val2 == 0))
                     {
-                        ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction, dist1, dist2, val1, val2, "Global", false, stepReplace);
-                        stepReplace = false;
+                        if (val1 * val2 < 0)
+                            Engine.Reflection.Compute.RecordWarning("BarVaryingLoad can not be in opposite directions for the two end values");
+                        else
+                        {
+                            ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction + 3, dist1, dist2, val1, val2, "Global", false, stepReplace);
+                            stepReplace = false;
+                        }
                     }
                 }
                 // Moment
@@ -188,7 +193,7 @@ namespace BH.Adapter.ETABS
 
                     if (!(val1 == 0 && val2 == 0))
                     {
-                        ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 2, direction, dist1, dist2, val1, val2, "Global", false, stepReplace);
+                        ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 2, direction + 3, dist1, dist2, val1, val2, "Global", false, stepReplace);
                         stepReplace = false;
                     }
                 }
