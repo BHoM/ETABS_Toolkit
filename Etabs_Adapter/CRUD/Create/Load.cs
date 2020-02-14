@@ -43,7 +43,9 @@ namespace BH.Adapter.ETABS
 #endif
     {
         /***************************************************/
-        
+        /****       Create Methods                      ****/
+        /***************************************************/
+
         private bool CreateObject(ILoad bhLoad)
         {
             SetLoad(bhLoad as dynamic, this.EtabsConfig.ReplaceLoads);
@@ -55,6 +57,9 @@ namespace BH.Adapter.ETABS
 
         public void SetLoad(PointLoad pointLoad, bool replace)
         {
+            if (pointLoad.Axis != LoadAxis.Global)
+                Engine.Reflection.Compute.RecordWarning("The local coordinate system of BHoM nodes are not pushed to ETABS, Local Axis PointLoads are set on the Global Axis");
+
             double[] pfValues = new double[] { pointLoad.Force.X, pointLoad.Force.Y, pointLoad.Force.Z, pointLoad.Moment.X, pointLoad.Moment.Y, pointLoad.Moment.Z };
             int ret = 0;
             foreach (Node node in pointLoad.Objects.Elements)
@@ -69,7 +74,9 @@ namespace BH.Adapter.ETABS
 
         public void SetLoad(BarUniformlyDistributedLoad barUniformLoad, bool replace)
         {
-
+            string axis;
+            int shift;
+            GetDirectionData(barUniformLoad, out axis, out shift);
             foreach (Bar bar in barUniformLoad.Objects.Elements)
             {
                 bool stepReplace = replace;
@@ -84,7 +91,7 @@ namespace BH.Adapter.ETABS
 
                     if (val != 0)
                     {
-                        ret = m_model.FrameObj.SetLoadDistributed(barName, caseName, 1, direction + 3, 0, 1, val, val, "Global", true, stepReplace);
+                        ret = m_model.FrameObj.SetLoadDistributed(barName, caseName, 1, direction + shift, 0, 1, val, val, axis, true, stepReplace);
                         stepReplace = false;
                     }
 
@@ -97,7 +104,7 @@ namespace BH.Adapter.ETABS
 
                     if (val != 0)
                     {
-                        ret = m_model.FrameObj.SetLoadDistributed(barName, caseName, 2, direction + 3, 0, 1, val, val, "Global", true, stepReplace);
+                        ret = m_model.FrameObj.SetLoadDistributed(barName, caseName, 2, direction + shift, 0, 1, val, val, axis, true, stepReplace);
                         stepReplace = false;
                     }
 
@@ -109,6 +116,9 @@ namespace BH.Adapter.ETABS
 
         public void SetLoad(AreaUniformlyDistributedLoad areaUniformLoad, bool replace)
         {
+            string axis;
+            int shift;
+            GetDirectionData(areaUniformLoad, out axis, out shift);
             int ret = 0;
             string caseName = areaUniformLoad.Loadcase.CustomData[AdapterIdName].ToString();
             foreach (IAreaElement area in areaUniformLoad.Objects.Elements)
@@ -119,7 +129,7 @@ namespace BH.Adapter.ETABS
                     double val = direction == 1 ? areaUniformLoad.Pressure.X : direction == 2 ? areaUniformLoad.Pressure.Y : areaUniformLoad.Pressure.Z;
                     if (val != 0)
                     {
-                        ret = m_model.AreaObj.SetLoadUniform(area.CustomData[AdapterIdName].ToString(), caseName, val, direction + 3, tempReplace);
+                        ret = m_model.AreaObj.SetLoadUniform(area.CustomData[AdapterIdName].ToString(), caseName, val, direction + shift, tempReplace, axis);
                         tempReplace = false;
                     }
                 }
@@ -130,8 +140,10 @@ namespace BH.Adapter.ETABS
 
         public void SetLoad(BarVaryingDistributedLoad barLoad, bool replace)
         {
+            string axis;
+            int shift;
+            GetDirectionData(barLoad, out axis, out shift);
             int ret = 0;
-
             string caseName = barLoad.Loadcase.CustomData[AdapterIdName].ToString();
 
             foreach (Bar bar in barLoad.Objects.Elements)
@@ -165,7 +177,7 @@ namespace BH.Adapter.ETABS
                             Engine.Reflection.Compute.RecordWarning("BarVaryingLoad can not be in opposite directions for the two end values");
                         else
                         {
-                            ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction + 3, dist1, dist2, val1, val2, "Global", false, stepReplace);
+                            ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction + shift, dist1, dist2, val1, val2, axis, false, stepReplace);
                             stepReplace = false;
                         }
                     }
@@ -193,7 +205,7 @@ namespace BH.Adapter.ETABS
 
                     if (!(val1 == 0 && val2 == 0))
                     {
-                        ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 2, direction + 3, dist1, dist2, val1, val2, "Global", false, stepReplace);
+                        ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 2, direction + shift, dist1, dist2, val1, val2, axis, false, stepReplace);
                         stepReplace = false;
                     }
                 }
@@ -204,6 +216,9 @@ namespace BH.Adapter.ETABS
 
         public void SetLoad(BarPointLoad barPointLoad, bool replace)
         {
+            string axis;
+            int shift;
+            GetDirectionData(barPointLoad, out axis, out shift);
             foreach (Bar bar in barPointLoad.Objects.Elements)
             {
                 bool stepReplace = replace;
@@ -218,7 +233,7 @@ namespace BH.Adapter.ETABS
 
                     if (val != 0)
                     {
-                        ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 1, direction + 3, barPointLoad.DistanceFromA, val, "Global", false, stepReplace);
+                        ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 1, direction + shift, barPointLoad.DistanceFromA, val, axis, false, stepReplace);
                         stepReplace = false;
                     }
                 }
@@ -230,7 +245,7 @@ namespace BH.Adapter.ETABS
 
                     if (val != 0)
                     {
-                        ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 2, direction + 3, barPointLoad.DistanceFromA, val, "Global", false, stepReplace);
+                        ret = m_model.FrameObj.SetLoadPoint(barName, caseName, 2, direction + shift, barPointLoad.DistanceFromA, val, axis, false, stepReplace);
                         stepReplace = false;
                     }
                 }
@@ -285,6 +300,27 @@ namespace BH.Adapter.ETABS
 
             BH.Engine.Reflection.Compute.RecordWarning("ETABS handles gravity loads via loadcases, why only one gravity load per loadcase can be used. THis gravity load will be applied to all objects");
         }
+
+        /***************************************************/
+        /****       Helper Methods                      ****/
+        /***************************************************/
+
+        private void GetDirectionData(ILoad load, out string axis, out int shift)
+        {
+            if (load.Axis == LoadAxis.Local)
+            {
+                axis = "Local";
+                shift = 0;
+            }
+            else
+            {
+                axis = "Global";
+                shift = load.Projected ? 6 : 3;
+            }
+        }
+
+        /***************************************************/
+
     }
 }
 
