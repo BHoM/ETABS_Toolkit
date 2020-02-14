@@ -47,7 +47,9 @@ namespace BH.Adapter.ETABS
 #endif
     {
         /***************************************************/
-        
+        /****       Read Methods                        ****/
+        /***************************************************/
+
         private List<ILoad> ReadLoad(Type type, List<string> ids = null)
         {
             List<ILoad> loadList = new List<ILoad>();
@@ -103,6 +105,9 @@ namespace BH.Adapter.ETABS
 
             for (int i = 0; i < nameCount; i++)
             {
+                if (CSys[i] == "Local" || CSys[i] != "Global")
+                    Engine.Reflection.Compute.RecordWarning($"The coordinate system: {CSys[i]} was not read. The PointLoads defined in the coordinate system: {CSys[i]} were set as Global");
+
                 Loadcase bhLoadcase = loadcases.FirstOrDefault(x => x.Name == loadcase[i]);
 
                 if (bhLoadcase == null)
@@ -155,38 +160,32 @@ namespace BH.Adapter.ETABS
                 if (dist1[i] != 0 || rd2[i] != 1 || Math.Abs(val1[i] - val2[i]) > Tolerance.Distance)   //Is Varying
                     continue;
 
-                Vector force = new Vector();
-
-                switch (dir[i])
-                {
-                    case 4:
-                        force.X = val1[i];
-                        break;
-                    case 5:
-                        force.Y = val1[i];
-                        break;
-                    case 6:
-                        force.Z = val1[i];
-                        break;
-                    default:
-                        BH.Engine.Reflection.Compute.RecordWarning("The load direction is not supported. Dir = " + dir[i].ToString());
-                        break;
-                }
+                Vector force = Direction(dir[i], val1[i]);
+                
                 BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhomBars[names[i]] } };
+
+                BarUniformlyDistributedLoad bhLoad = new BarUniformlyDistributedLoad()
+                {
+                    Loadcase = bhLoadcase,
+                    Objects = barObjects
+                };
 
                 switch (myType[i])
                 {
                     case 1:
-                        bhLoads.Add(new BarUniformlyDistributedLoad() { Force = force, Loadcase = bhLoadcase, Objects = barObjects });
+                        bhLoad.Force = force;
                         break;
                     case 2:
-                        bhLoads.Add(new BarUniformlyDistributedLoad() { Moment = force, Loadcase = bhLoadcase, Objects = barObjects });
+                        bhLoad.Moment = force;
                         break;
                     default:
                         BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
                         break;
                 }
 
+                SetDirection(bhLoad, dir[i], CSys[i]);
+
+                bhLoads.Add(bhLoad);
             }
             return bhLoads;
 
@@ -222,62 +221,42 @@ namespace BH.Adapter.ETABS
 
                 if (bhLoadcase == null)
                     continue;
-                
+
                 if (dist1[i] == 0 && rd2[i] == 1 && Math.Abs(val1[i] - val2[i]) < Tolerance.Distance)   //Is uniform
                     continue;
 
-                Vector forceA = new Vector();
-                Vector forceB = new Vector();
+                Vector forceA = Direction(dir[i], val1[i]);
+                Vector forceB = Direction(dir[i], val2[i]);
 
-                switch (dir[i])
-                {
-                    case 4:
-                        forceA.X = val1[i];
-                        forceB.X = val2[i];
-                        break;
-                    case 5:
-                        forceA.Y = val1[i];
-                        forceB.Y = val2[i];
-                        break;
-                    case 6:
-                        forceA.Z = val1[i];
-                        forceB.Z = val2[i];
-                        break;
-                    default:
-                        BH.Engine.Reflection.Compute.RecordWarning("The load direction is not supported. Dir = " + dir[i].ToString());
-                        break;
-                }
                 Bar bhBar = bhomBars[names[i]];
                 BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhBar } };
+
+                BarVaryingDistributedLoad bhLoad = new BarVaryingDistributedLoad()
+                {
+                    DistanceFromA = dist1[i],
+                    DistanceFromB = bhBar.Length() - dist2[i],
+                    Loadcase = bhLoadcase,
+                    Objects = barObjects
+                };
 
                 switch (myType[i])
                 {
                     case 1:
-                        bhLoads.Add(new BarVaryingDistributedLoad()
-                        {
-                            ForceA = forceA,
-                            ForceB = forceB,
-                            DistanceFromA = dist1[i],
-                            DistanceFromB = bhBar.Length() - dist2[i],
-                            Loadcase = bhLoadcase,
-                            Objects = barObjects
-                        });
+                        bhLoad.ForceA = forceA;
+                        bhLoad.ForceB = forceB;
                         break;
                     case 2:
-                        bhLoads.Add(new BarVaryingDistributedLoad()
-                        {
-                            MomentA = forceA,
-                            MomentB = forceB,
-                            DistanceFromA = dist1[i],
-                            DistanceFromB = bhBar.Length() - dist2[i],
-                            Loadcase = bhLoadcase,
-                            Objects = barObjects
-                        });
+                        bhLoad.MomentA = forceA;
+                        bhLoad.MomentB = forceB;
                         break;
                     default:
                         BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
                         break;
                 }
+
+                SetDirection(bhLoad, dir[i], CSys[i]);
+
+                bhLoads.Add(bhLoad);
             }
 
             return bhLoads;
@@ -301,7 +280,6 @@ namespace BH.Adapter.ETABS
             if (m_model.AreaObj.GetLoadUniform("All", ref nameCount, ref names, ref loadcase, ref CSys, ref dir, ref f, eItemType.Group) != 0)
                 return bhLoads;
 
-            Vector pressure = new Vector();
             for (int i = 0; i < nameCount; i++)
             {
                 Loadcase bhLoadcase = loadcases.FirstOrDefault(x => x.Name == loadcase[i]);
@@ -311,23 +289,18 @@ namespace BH.Adapter.ETABS
 
                 BHoMGroup<IAreaElement> panelObjects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanels[names[i]] } };
 
-                switch (dir[i])
-                {
-                    case 4:
-                        pressure.X = f[i];
-                        break;
-                    case 5:
-                        pressure.Y = f[i];
-                        break;
-                    case 6:
-                        pressure.Z = f[i];
-                        break;
-                    default:
-                        BH.Engine.Reflection.Compute.RecordWarning("The load direction is not supported. Dir = " + dir[i].ToString());
-                        break;
-                }
+                Vector pressure = Direction(dir[i], f[i]);
 
-                bhLoads.Add(new AreaUniformlyDistributedLoad() { Loadcase = bhLoadcase, Pressure = pressure, Objects = panelObjects });
+                AreaUniformlyDistributedLoad bhAreaUniLoad = new AreaUniformlyDistributedLoad()
+                {
+                    Pressure = pressure,
+                    Loadcase = bhLoadcase,
+                    Objects = panelObjects
+                };
+
+                SetDirection(bhAreaUniLoad, dir[i], CSys[i]);
+
+                bhLoads.Add(bhAreaUniLoad);
             }
 
             return bhLoads;
@@ -433,39 +406,97 @@ namespace BH.Adapter.ETABS
                 if (bhLoadcase == null)
                     continue;
 
-                Vector force = new Vector();
-                switch (dir[i])
-                {
-                    case 4:
-                        force.X = value[i];
-                        break;
-                    case 5:
-                        force.Y = value[i];
-                        break;
-                    case 6:
-                        force.Z = value[i];
-                        break;
-                    default:
-                        BH.Engine.Reflection.Compute.RecordWarning("The load direction is not supported. Dir = " + dir[i].ToString());
-                        break;
-                }
+                Vector force = Direction(dir[i], value[i]);
+                
                 BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhomBars[names[i]] } };
+
+                BarPointLoad bhBarPointLoad = new BarPointLoad()
+                {
+                    DistanceFromA = dist[i],
+                    Loadcase = bhLoadcase,
+                    Objects = barObjects
+                };
 
                 switch (myType[i])
                 {
                     case 1:
-                        bhLoads.Add(new BarPointLoad() { Force = force, DistanceFromA = dist[i], Loadcase = bhLoadcase, Objects = barObjects });
+                        bhBarPointLoad.Force = force;
                         break;
                     case 2:
-                        bhLoads.Add(new BarPointLoad() { Moment = force, DistanceFromA = dist[i], Loadcase = bhLoadcase, Objects = barObjects });
+                        bhBarPointLoad.Moment = force;
                         break;
                     default:
                         BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
-                        break;
+                        continue;
                 }
+
+                SetDirection(bhBarPointLoad, dir[i], CSys[i]);
+
+                bhLoads.Add(bhBarPointLoad);
             }
             
             return bhLoads;
+        }
+
+        /***************************************************/
+        /****       Helper Methods                      ****/
+        /***************************************************/
+
+        private void SetDirection(ILoad load, int dir, string cSys)
+        {
+            if (cSys != "Global" && cSys != "Local")
+                Engine.Reflection.Compute.RecordWarning($"Custom coordinatesystem {cSys} for loads have been set as Global");
+            
+            int type = (int)Math.Floor((double)(dir - 1 / 3));
+            switch (type)
+            {
+                case 0:
+                    load.Axis = LoadAxis.Local;
+                    load.Projected = false;
+                    break;
+                case 1:
+                    load.Axis = LoadAxis.Global;
+                    load.Projected = false;
+                    break;
+                case 2:
+                    load.Axis = LoadAxis.Global;
+                    load.Projected = true;
+                    break;
+                case 3:     // Gravity
+                    load.Axis = LoadAxis.Global;
+                    load.Projected = dir == 11;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /***************************************************/
+
+        private Vector Direction(int dir, double val)
+        {
+            Vector vector = new Vector();
+            if (dir == 10 || dir == 11)
+            {   // Gravity
+                vector.Z = -val;
+                return vector;
+            }
+
+            switch ((dir - 1) % 3)
+            {
+                case 0:
+                    vector.X = val;
+                    break;
+                case 1:
+                    vector.Y = val;
+                    break;
+                case 2:
+                    vector.Z = val;
+                    break;
+                default:
+                    break;
+            }
+            return vector;
         }
 
         /***************************************************/
