@@ -105,7 +105,7 @@ namespace BH.Adapter.ETABS
 
             for (int i = 0; i < nameCount; i++)
             {
-                if (CSys[i] == "Local" || CSys[i] != "Global")
+                if (CSys[i] != "Global")
                     Engine.Reflection.Compute.RecordWarning($"The coordinate system: {CSys[i]} was not read. The PointLoads defined in the coordinate system: {CSys[i]} were set as Global");
 
                 Loadcase bhLoadcase = loadcases.FirstOrDefault(x => x.Name == loadcase[i]);
