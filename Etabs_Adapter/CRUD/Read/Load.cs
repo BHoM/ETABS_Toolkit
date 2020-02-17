@@ -290,6 +290,12 @@ namespace BH.Adapter.ETABS
                 BHoMGroup<IAreaElement> panelObjects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanels[names[i]] } };
 
                 Vector pressure = Direction(dir[i], f[i]);
+                if (CSys[i] == "Local")
+                {
+                    double temp = -pressure.Y;
+                    pressure.Y = pressure.Z;
+                    pressure.Z = temp;
+                }
 
                 AreaUniformlyDistributedLoad bhAreaUniLoad = new AreaUniformlyDistributedLoad()
                 {
@@ -407,8 +413,8 @@ namespace BH.Adapter.ETABS
                     continue;
 
                 Vector force = Direction(dir[i], value[i]);
-                
-                BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhomBars[names[i]] } };
+
+                BHoMGroup < Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhomBars[names[i]] } };
 
                 BarPointLoad bhBarPointLoad = new BarPointLoad()
                 {
@@ -447,7 +453,7 @@ namespace BH.Adapter.ETABS
             if (cSys != "Global" && cSys != "Local")
                 Engine.Reflection.Compute.RecordWarning($"Custom coordinatesystem {cSys} for loads have been set as Global");
             
-            int type = (int)Math.Floor((double)(dir - 1 / 3));
+            int type = (int)Math.Floor((double)((dir - 1) / 3));
             switch (type)
             {
                 case 0:
@@ -476,22 +482,41 @@ namespace BH.Adapter.ETABS
         private Vector Direction(int dir, double val)
         {
             Vector vector = new Vector();
-            if (dir == 10 || dir == 11)
-            {   // Gravity
-                vector.Z = -val;
-                return vector;
-            }
 
-            switch ((dir - 1) % 3)
+            switch (dir)
             {
-                case 0:
-                    vector.X = val;
-                    break;
                 case 1:
-                    vector.Y = val;
+                    vector.X = val;
                     break;
                 case 2:
                     vector.Z = val;
+                    break;
+                case 3:
+                    vector.Y = -val;
+                    break;
+                case 4:
+                    vector.X = val;
+                    break;
+                case 5:
+                    vector.Y = val;
+                    break;
+                case 6:
+                    vector.Z = val;
+                    break;
+                case 7:
+                    vector.X = val;
+                    break;
+                case 8:
+                    vector.Y = val;
+                    break;
+                case 9:
+                    vector.Z = -val;
+                    break;
+                case 10:
+                    vector.Z = -val;
+                    break;
+                case 11:
+                    vector.Z = -val;
                     break;
                 default:
                     break;
