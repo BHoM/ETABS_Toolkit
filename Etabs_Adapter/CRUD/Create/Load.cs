@@ -87,7 +87,9 @@ namespace BH.Adapter.ETABS
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     int ret = 1;
-                    double val = direction == 1 ? barUniformLoad.Force.X : direction == 2 ? barUniformLoad.Force.Y : barUniformLoad.Force.Z; //note: etabs acts different then stated in API documentstion
+                    double val = direction == 1 ? barUniformLoad.Force.X : barUniformLoad.Axis == LoadAxis.Global ? 
+                        direction == 2 ? barUniformLoad.Force.Y : (shift == 6 ? -barUniformLoad.Force.Z : barUniformLoad.Force.Z) :
+                        direction == 2 ? barUniformLoad.Force.Z : -barUniformLoad.Force.Y; //note: etabs acts different then stated in API documentstion
 
                     if (val != 0)
                     {
@@ -100,7 +102,9 @@ namespace BH.Adapter.ETABS
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     int ret = 1;
-                    double val = direction == 1 ? barUniformLoad.Moment.X : direction == 2 ? barUniformLoad.Moment.Y : barUniformLoad.Moment.Z; //note: etabs acts different then stated in API documentstion
+                    double val = direction == 1 ? barUniformLoad.Moment.X : barUniformLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barUniformLoad.Moment.Y : (shift == 6 ? -barUniformLoad.Moment.Z : barUniformLoad.Moment.Z) :
+                        direction == 2 ? barUniformLoad.Moment.Z : -barUniformLoad.Moment.Y; //note: etabs acts different then stated in API documentstion
 
                     if (val != 0)
                     {
@@ -126,7 +130,10 @@ namespace BH.Adapter.ETABS
                 bool tempReplace = replace;
                 for (int direction = 1; direction <= 3; direction++)
                 {
-                    double val = direction == 1 ? areaUniformLoad.Pressure.X : direction == 2 ? areaUniformLoad.Pressure.Y : areaUniformLoad.Pressure.Z;
+                    double val = direction == 1 ? areaUniformLoad.Pressure.X : areaUniformLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? areaUniformLoad.Pressure.Y : (shift == 6 ? -areaUniformLoad.Pressure.Z : areaUniformLoad.Pressure.Z) :
+                        direction == 2 ? -areaUniformLoad.Pressure.Y : areaUniformLoad.Pressure.Z; //note: etabs acts different then stated in API documentstion
+
                     if (val != 0)
                     {
                         ret = m_model.AreaObj.SetLoadUniform(area.CustomData[AdapterIdName].ToString(), caseName, val, direction + shift, tempReplace, axis);
@@ -153,8 +160,12 @@ namespace BH.Adapter.ETABS
                 string barName = bar.CustomData[AdapterIdName].ToString();
                 for (int direction = 1; direction <= 3; direction++)
                 {
-                    double valA = direction == 1 ? barLoad.ForceA.X : direction == 2 ? barLoad.ForceA.Y : barLoad.ForceA.Z; //note: etabs acts different then stated in API documentstion
-                    double valB = direction == 1 ? barLoad.ForceB.X : direction == 2 ? barLoad.ForceB.Y : barLoad.ForceB.Z; //note: etabs acts different then stated in API documentstion
+                    double valA = direction == 1 ? barLoad.ForceA.X : barLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barLoad.ForceA.Y : (shift == 6 ? -barLoad.ForceA.Z : barLoad.ForceA.Z) :
+                        direction == 2 ? barLoad.ForceA.Z : -barLoad.ForceA.Y; //note: etabs acts different then stated in API documentstion
+                    double valB = direction == 1 ? barLoad.ForceB.X : barLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barLoad.ForceB.Y : (shift == 6 ? -barLoad.ForceB.Z : barLoad.ForceB.Z) :
+                        direction == 2 ? barLoad.ForceB.Z : -barLoad.ForceB.Y; //note: etabs acts different then stated in API documentstion
 
                     if (bar.CheckFlipBar())
                     {
@@ -185,8 +196,12 @@ namespace BH.Adapter.ETABS
                 // Moment
                 for (int direction = 1; direction <= 3; direction++)
                 {
-                    double valA = direction == 1 ? barLoad.MomentA.X : direction == 2 ? barLoad.MomentA.Y : barLoad.MomentA.Z; //note: etabs acts different then stated in API documentstion
-                    double valB = direction == 1 ? barLoad.MomentB.X : direction == 2 ? barLoad.MomentB.Y : barLoad.MomentB.Z; //note: etabs acts different then stated in API documentstion
+                    double valA = direction == 1 ? barLoad.MomentA.X : barLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barLoad.MomentA.Y : (shift == 6 ? -barLoad.MomentA.Z : barLoad.MomentA.Z) :
+                        direction == 2 ? barLoad.MomentA.Z : -barLoad.MomentA.Y; //note: etabs acts different then stated in API documentstion
+                    double valB = direction == 1 ? barLoad.MomentB.X : barLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barLoad.MomentB.Y : (shift == 6 ? -barLoad.MomentB.Z : barLoad.MomentB.Z) :
+                        direction == 2 ? barLoad.MomentB.Z : -barLoad.MomentB.Y; //note: etabs acts different then stated in API documentstion
 
                     if (bar.CheckFlipBar())
                     {
@@ -229,7 +244,9 @@ namespace BH.Adapter.ETABS
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     int ret = 1;
-                    double val = direction == 1 ? barPointLoad.Force.X : direction == 2 ? barPointLoad.Force.Y : barPointLoad.Force.Z; //note: etabs acts different then stated in API documentstion
+                    double val = direction == 1 ? barPointLoad.Force.X : barPointLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barPointLoad.Force.Y : barPointLoad.Force.Z :
+                        direction == 2 ? barPointLoad.Force.Z : -barPointLoad.Force.Y; //note: etabs acts different then stated in API documentstion
 
                     if (val != 0)
                     {
@@ -241,7 +258,9 @@ namespace BH.Adapter.ETABS
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     int ret = 1;
-                    double val = direction == 1 ? barPointLoad.Moment.X : direction == 2 ? barPointLoad.Moment.Y : barPointLoad.Moment.Z; //note: etabs acts different then stated in API documentstion
+                    double val = direction == 1 ? barPointLoad.Moment.X : barPointLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barPointLoad.Moment.Y : barPointLoad.Moment.Z :
+                        direction == 2 ? barPointLoad.Moment.Z : -barPointLoad.Moment.Y; //note: etabs acts different then stated in API documentstion
 
                     if (val != 0)
                     {
