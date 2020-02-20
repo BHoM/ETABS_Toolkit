@@ -152,6 +152,7 @@
     </Reference>
     <Reference Include="Dimensional_oM">
       <HintPath>..\..\BHoM\Build\Dimensional_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSI_ETABSv2016_x64.1.0.3\lib\ETABS2016.dll</HintPath>
