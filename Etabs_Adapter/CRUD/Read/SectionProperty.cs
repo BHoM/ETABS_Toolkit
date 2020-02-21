@@ -192,7 +192,7 @@ namespace BH.Adapter.ETABS
                         break;
                     case eFramePropType.ConcreteTee:
                         m_model.PropFrame.GetConcreteTee(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref twt, ref verticalFlip, ref colour, ref notes, ref guid);
-                        dimensions = Engine.Geometry.Create.TSectionProfile(t2, t2, tw, tf, 0, 0, verticalFlip);
+                        dimensions = Engine.Geometry.Create.TSectionProfile(t3, t2, tw, tf, 0, 0, verticalFlip);
                         break;
                     case eFramePropType.ConcreteBox:
                         m_model.PropFrame.GetTube(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
