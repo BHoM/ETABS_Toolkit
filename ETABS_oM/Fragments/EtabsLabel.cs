@@ -31,7 +31,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.ETABS.Fragments
 {
-    public class EtabsLabel : IBHoMFragment
+    public class EtabsLabel : IFragment
     {
         /***************************************************/
         /**** Public Properties                         ****/
