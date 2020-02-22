@@ -31,7 +31,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.ETABS.Elements
 {
-    public class InsertionPoint : IBHoMFragment
+    public class InsertionPoint : IFragment
     {
         /***************************************************/
         /**** Public Properties                         ****/
