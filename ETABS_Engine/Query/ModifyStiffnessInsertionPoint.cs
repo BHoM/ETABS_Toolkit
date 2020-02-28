@@ -39,11 +39,11 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static BarInsertionPoint InsertionPoint(this Bar bar)
+        public static bool ModifyStiffnessInsertionPoint(this Bar bar)
         {
             InsertionPoint o = bar.FindFragment<InsertionPoint>();
-            
-            return o == null ? BarInsertionPoint.Centroid : o.BarInsertionPoint;
+
+            return o == null ? true : o.ModifyStiffness;
         }
 
         /***************************************************/
