@@ -158,6 +158,7 @@
     <Compile Include="Create\Pier.cs" />
     <Compile Include="Create\Spandrel.cs" />
     <Compile Include="ModelData.cs" />
+    <Compile Include="Modify\Upgrade.cs" />
     <Compile Include="Modify\SetAutoLengthOffset.cs" />
     <Compile Include="Modify\SetDiaphragm.cs" />
     <Compile Include="Modify\SetInsertionPoint.cs" />
