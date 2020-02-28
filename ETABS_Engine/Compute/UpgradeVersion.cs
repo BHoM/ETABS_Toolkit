@@ -27,16 +27,18 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Architecture.Elements;
 using BH.oM.Geometry.SettingOut;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.ETABS
 {
-    public static partial class Modify
+    public static partial class Compute
     {
 
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Deprecated("3.1", "BH.oM.Architecture.Elements.Level replaced by BH.oM.Geometry.SettingOut.Level")]
         public static List<oM.Geometry.SettingOut.Level> UpgradeVersion(this List<BH.oM.Architecture.Elements.Level> levels)
         {
             List<oM.Geometry.SettingOut.Level> upgradedLevels = new List<oM.Geometry.SettingOut.Level>();
@@ -49,6 +51,7 @@ namespace BH.Engine.ETABS
 
         /***************************************************/
 
+        [Deprecated("3.1", "BH.oM.Architecture.Elements.Level replaced by BH.oM.Geometry.SettingOut.Level")]
         public static oM.Geometry.SettingOut.Level UpgradeVersion(this BH.oM.Architecture.Elements.Level level)
         {
             return new oM.Geometry.SettingOut.Level {
