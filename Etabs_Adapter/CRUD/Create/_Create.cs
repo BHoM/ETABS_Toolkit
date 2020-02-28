@@ -90,6 +90,12 @@ namespace BH.Adapter.ETABS
             {
                 return CreateCollection(objects as IEnumerable<oM.Geometry.SettingOut.Level>);
             }
+            else if(typeof(T) == typeof(oM.Architecture.Elements.Level))
+            {
+                List<oM.Geometry.SettingOut.Level> levels = objects.Select(x => (x as oM.Architecture.Elements.Level).UpgradeVersion()).ToList();
+
+                return CreateCollection(levels as IEnumerable<oM.Geometry.SettingOut.Level>);
+            }
             else
             {
                 foreach (T obj in objects)
