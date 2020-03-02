@@ -61,6 +61,10 @@ namespace BH.Adapter.ETABS
 
         protected override IEnumerable<IBHoMObject> IRead(Type type, IList ids, ActionConfig actionConfig = null)
         {
+            List<string> listIds = null;
+            if (ids != null)
+                listIds = ids.Cast<string>().ToList();
+
             if (type == typeof(Node))
                 return ReadNode(ids as dynamic);
             else if (type == typeof(Bar))
@@ -85,6 +89,8 @@ namespace BH.Adapter.ETABS
                 return ReadLinkConstraints(ids as dynamic);
             else if (type == typeof(oM.Geometry.SettingOut.Level) || type == typeof(oM.Architecture.Elements.Level))
                 return ReadLevel(ids as dynamic);
+            else if (type == typeof(oM.Geometry.SettingOut.Grid))
+                return ReadGrid(listIds);
             else if (type == typeof(FEMesh))
                 return ReadMesh(ids as dynamic);
 
