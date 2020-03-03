@@ -109,6 +109,8 @@ namespace BH.Adapter.ETABS
             {
                 ordinateX = ordinateX.Where((value, i) => ids.Contains(gridLineIDX[i])).ToArray();
                 ordinateY = ordinateY.Where((value, i) => ids.Contains(gridLineIDY[i])).ToArray();
+                gridLineIDX = gridLineIDX.Where(x => ids.Contains(x)).ToArray();
+                gridLineIDY = gridLineIDY.Where(x => ids.Contains(x)).ToArray();
             }
 
             // Create Lines in each orientation
@@ -124,13 +126,15 @@ namespace BH.Adapter.ETABS
                     End = new Point() { X = maxX, Y = y }
                 }
             ));
+            // Format the names like the Lines
+            List<string> names = gridLineIDX.Concat(gridLineIDY).ToList();
 
             // Place at gridsystem origin and orientation
             result = result.Select(x => Engine.Geometry.Modify.Rotate(x, Point.Origin, Vector.ZAxis, rZ * Math.PI / 180)).ToList();
             Vector origin = new Vector() { X = xO, Y = yO };
             result = result.Select(x => Engine.Geometry.Modify.Translate(x, origin)).ToList();
 
-            return result.Select(x => new Grid() { Curve = x }).ToList();
+            return result.Zip(names, (x, name) => new Grid() { Curve = x, Name = name }).ToList();
         }
 
         /***************************************************/
