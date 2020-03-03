@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using BH.oM.Geometry.SettingOut;
 using BH.oM.Geometry;
 using System.ComponentModel;
+using BH.Engine.Geometry;
 #if Debug17 || Release17
 using ETABSv17;
 #else
@@ -53,7 +54,7 @@ namespace BH.Adapter.ETABS
 
             m_model.GridSys.GetNameList(ref NumberNames, ref Names);
             List<string> gridSystemId = Names.ToList();
-            
+
             foreach (string id in gridSystemId)
             {
                 // Each GridSystem has an Id in ETABS
@@ -90,10 +91,7 @@ namespace BH.Adapter.ETABS
                 ref ordinateX, ref ordinateY,
                 ref visibleX, ref visibleY,
                 ref bubbleLocX, ref bubbleLocY) == 1)
-                return new List<Grid>();
-            if (gridSysType != "Cartesian")
             {
-                Engine.Reflection.Compute.RecordWarning("Can only pull Cartesian Grid systems from ETABS, offender: " + id);
                 return new List<Grid>();
             }
 
@@ -104,37 +102,81 @@ namespace BH.Adapter.ETABS
             double minX = ordinateX.Min();
             double maxX = ordinateX.Max();
 
-            // Cull based on ids if present
-            if (ids != null)
-            {
-                ordinateX = ordinateX.Where((value, i) => ids.Contains(gridLineIDX[i])).ToArray();
-                ordinateY = ordinateY.Where((value, i) => ids.Contains(gridLineIDY[i])).ToArray();
-                gridLineIDX = gridLineIDX.Where(x => ids.Contains(x)).ToArray();
-                gridLineIDY = gridLineIDY.Where(x => ids.Contains(x)).ToArray();
-            }
+            // Format the names like the Lines
+            List<string> names = gridLineIDX.Concat(gridLineIDY).ToList();
 
-            // Create Lines in each orientation
-            List<Line> result = ordinateX.Select(x => new Line()
+            if (gridSysType == "Cartesian")
+            {
+                // Cull based on ids if present
+                if (ids != null)
+                {
+                    ordinateX = ordinateX.Where((value, i) => ids.Contains(gridLineIDX[i])).ToArray();
+                    ordinateY = ordinateY.Where((value, i) => ids.Contains(gridLineIDY[i])).ToArray();
+                    gridLineIDX = gridLineIDX.Where(x => ids.Contains(x)).ToArray();
+                    gridLineIDY = gridLineIDY.Where(x => ids.Contains(x)).ToArray();
+                }
+
+                // Create Lines in each orientation
+                List<Line> result = ordinateX.Select(x => new Line()
                 {
                     Start = new Point() { X = x, Y = minY },
                     End = new Point() { X = x, Y = maxY }
                 }
-            ).ToList();
-            result.AddRange(ordinateY.Select(y => new Line()
+                ).ToList();
+                result.AddRange(ordinateY.Select(y => new Line()
                 {
                     Start = new Point() { X = minX, Y = y },
                     End = new Point() { X = maxX, Y = y }
                 }
-            ));
-            // Format the names like the Lines
-            List<string> names = gridLineIDX.Concat(gridLineIDY).ToList();
+                ));
 
-            // Place at gridsystem origin and orientation
-            result = result.Select(x => Engine.Geometry.Modify.Rotate(x, Point.Origin, Vector.ZAxis, rZ * Math.PI / 180)).ToList();
-            Vector origin = new Vector() { X = xO, Y = yO };
-            result = result.Select(x => Engine.Geometry.Modify.Translate(x, origin)).ToList();
+                // Place at gridsystem origin and orientation
+                result = result.Select(x => Engine.Geometry.Modify.Rotate(x, Point.Origin, Vector.ZAxis, rZ * Math.PI / 180)).ToList();
+                Vector origin = new Vector() { X = xO, Y = yO };
+                result = result.Select(x => Engine.Geometry.Modify.Translate(x, origin)).ToList();
 
-            return result.Zip(names, (x, name) => new Grid() { Curve = x, Name = name }).ToList();
+                return result.Zip(names, (x, name) => new Grid() { Curve = x, Name = name }).ToList();
+
+            } else if (gridSysType == "Cylindrical")
+            {
+                double radianFactor = Math.PI / (180 * 0.0254); // This works for whatever reason
+                List<ICurve> result = ordinateX.Select(r =>
+                {
+                    List<Point> cPoints = new List<Point>();
+                    foreach (double radians in ordinateY)
+                    {
+                        Point dir = (new Point() { X = 1 }).Rotate(Point.Origin, Vector.ZAxis, radians * radianFactor);
+                        cPoints.Add(dir * r);
+                    }
+                    return new Polyline() { ControlPoints = cPoints };
+                }
+                ).ToList<ICurve>();
+                result.AddRange(ordinateY.Select(radians =>
+                {
+                    Point dir = (new Point() { X = 1 }).Rotate(Point.Origin, Vector.ZAxis, radians * radianFactor);
+                    return new Line()
+                    {
+                        Start = dir * minX,
+                        End = dir * maxX
+                    };
+                }
+                ));
+
+                // Place at gridsystem origin and orientation
+                result = result.Select(x => Engine.Geometry.Modify.IRotate(x, Point.Origin, Vector.ZAxis, rZ * Math.PI / 180)).ToList();
+                Vector origin = new Vector() { X = xO, Y = yO };
+                result = result.Select(x => Engine.Geometry.Modify.ITranslate(x, origin)).ToList();
+
+                if (ids != null)
+                    return result.Zip(names, (x, name) => new Grid() { Curve = x, Name = name }).Where(grid => ids.Contains(grid.Name)).ToList();
+                else
+                    return result.Zip(names, (x, name) => new Grid() { Curve = x, Name = name }).ToList();
+
+            } else
+            {
+                Engine.Reflection.Compute.RecordWarning("Can not pull " + gridSysType + " Grid systems from ETABS, offender: " + id);
+                return new List<Grid>();
+            }
         }
 
         /***************************************************/
