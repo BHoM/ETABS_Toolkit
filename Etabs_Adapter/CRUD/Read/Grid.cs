@@ -139,7 +139,14 @@ namespace BH.Adapter.ETABS
 
             } else if (gridSysType == "Cylindrical")
             {
-                double radianFactor = Math.PI / (180 * 0.0254); // This works for whatever reason
+                Engine.Reflection.Compute.RecordWarning("Can not pull " + gridSysType + " Grid systems from ETABS due to API limitations, offender: " + id);
+                return new List<Grid>();
+                // ETABS scales the angle of the grids in the gridsystem by length convertion units, and until such a time as they stop doing that
+                // Cylindrical grids will not be implemented
+
+                double radianFactor = Math.PI / (180 * 0.0254); // This works for ETABS models in inches, but not for others...
+                // this is the only thing that would need change once ETABS API actually returns angles in radians or degrees consistently (or at all)
+
                 List<ICurve> result = ordinateX.Select(r =>
                 {
                     List<Point> cPoints = new List<Point>();
