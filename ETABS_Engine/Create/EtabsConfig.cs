@@ -26,7 +26,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Adapters.ETABS;
-
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.ETABS
 {
@@ -36,6 +36,7 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Deprecated("3.1", "Now called EtabsSettings and created through the default auto-generated methods")]
         public static EtabsConfig EtabsConfig(bool replaceLoads = false)
         {
             return new EtabsConfig
