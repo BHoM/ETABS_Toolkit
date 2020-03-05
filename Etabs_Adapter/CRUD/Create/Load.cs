@@ -52,7 +52,7 @@ namespace BH.Adapter.ETABS
 
         private bool CreateObject(ILoad bhLoad)
         {
-            SetLoad(bhLoad as dynamic, this.EtabsConfig.ReplaceLoads);
+            SetLoad(bhLoad as dynamic, this.EtabsSettings.ReplaceLoads);
 
             return true;
         }
