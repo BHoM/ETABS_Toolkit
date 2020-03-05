@@ -62,7 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\EtabsConfig.cs" />
+    <Compile Include="Settings\EtabsConfig.cs" />
     <Compile Include="Fragments\AutoLengthOffset.cs" />
     <Compile Include="Elements\Diaphragm.cs" />
     <Compile Include="Elements\Pier.cs" />

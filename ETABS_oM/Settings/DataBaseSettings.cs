@@ -31,14 +31,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.ETABS
 {
-    public class EtabsConfig : BHoMObject
+    public class DatabaseSettings : BHoMObject
     {
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/
 
-        [Description("Sets whether the loads being pushed should overwrite existing loads on the same object within the same loadcase")]
-        public bool ReplaceLoads { get; set; } = false;
+        [Description("")]
+        public SectionDatabase SectionDatabase { get; set; } = SectionDatabase.ArcelorMittal_BritishHISTAR;
 
         /***************************************************/
     }
