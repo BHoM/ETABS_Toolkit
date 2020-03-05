@@ -116,7 +116,7 @@ namespace BH.Adapter.ETABS
                         m_model.File.NewBlank();
                 }
 
-                ReadSectionDatabase(etabsSetting.DatabaseSettings.SectionDatabase);
+                ReadSectionDatabase();
             }
         }
 
@@ -127,7 +127,6 @@ namespace BH.Adapter.ETABS
         private cOAPI m_app;
         private cSapModel m_model;
         private string[] m_DBSectionsNames;
-        private eFramePropType[] m_DBSectionsTypes;
 
         /***************************************************/
 
