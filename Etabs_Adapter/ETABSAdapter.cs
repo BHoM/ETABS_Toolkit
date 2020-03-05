@@ -53,18 +53,18 @@ namespace BH.Adapter.ETABS
 
         public const string ID = "ETABS_id";
 
-        public EtabsConfig EtabsConfig { get; set; } = new EtabsConfig();
+        public EtabsSettings EtabsSettings { get; set; } = new EtabsSettings();
 
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
 
 #if Debug17 || Release17
-        public ETABS17Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+        public ETABS17Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #elif Debug18 || Release18
-        public ETABS18Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
-    #else
-        public ETABS2016Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+        public ETABS18Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
+#else
+        public ETABS2016Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #endif
         {
             //Initialisation
@@ -76,7 +76,7 @@ namespace BH.Adapter.ETABS
             {
                 AdapterIdName = ID;
 
-                this.EtabsConfig = etabsConfig == null ? new EtabsConfig() : etabsConfig;
+                this.EtabsSettings = etabsSetting == null ? new EtabsSettings() : etabsSetting;
 
                 //string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
                 //string pathToETABS = System.IO.Path.Combine("C:","Program Files", "Computers and Structures", "ETABS 2016", "ETABS.exe");
@@ -116,6 +116,7 @@ namespace BH.Adapter.ETABS
                         m_model.File.NewBlank();
                 }
 
+                ReadSectionDatabase(etabsSetting.DatabaseSettings.SectionDatabase);
             }
         }
 
@@ -125,6 +126,8 @@ namespace BH.Adapter.ETABS
 
         private cOAPI m_app;
         private cSapModel m_model;
+        private string[] m_DBSectionsNames;
+        private eFramePropType[] m_DBSectionsTypes;
 
         /***************************************************/
 

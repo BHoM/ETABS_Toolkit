@@ -238,5 +238,70 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
+        private string EnumToString(SectionDatabase sectionDB)
+        {
+            switch (sectionDB)
+            {
+                case SectionDatabase.AISC14:
+                     return "AISC14.xml";
+                case SectionDatabase.AISC14M:
+                     return "AISC14.xml";
+                case SectionDatabase.AISC15:
+                     return "AISC15.xml";
+                case SectionDatabase.AISC15M:
+                     return "AISC15M.xml";
+                case SectionDatabase.ArcelorMittal_British:
+                     return "ArcelorMittal_British.xml";
+                case SectionDatabase.ArcelorMittal_BritishHISTAR:
+                     return "ArcelorMittal_BritishHISTAR.xml";
+                case SectionDatabase.ArcelorMittal_Europe:
+                     return "ArcelorMittal_Europe.xml";
+                case SectionDatabase.ArcelorMittal_EuropeHISTAR:
+                     return "ArcelorMittal_EuropeHISTAR.xml";
+                case SectionDatabase.ArcelorMittal_Japan:
+                     return "ArcelorMittal_Japan.xml";
+                case SectionDatabase.ArcelorMittal_Russia:
+                     return "ArcelorMittal_Russia.xml";
+                case SectionDatabase.ArcelorMittal_US_ASTM_A913:
+                     return "ArcelorMittal_US_ASTM-A913.xml";
+                case SectionDatabase.ArcelorMittal_US_ASTM_A913M:
+                     return "ArcelorMittal_US_ASTM-A913M.xml";
+                case SectionDatabase.ArcelorMittal_US_ASTM_A992:
+                     return "ArcelorMittal_US_ASTM-A992.xml";
+                case SectionDatabase.ArcelorMittal_US_ASTM_A992M:
+                     return "ArcelorMittal_US_ASTM-A992M.xml";
+                case SectionDatabase.Australia_NewZealand:
+                     return "Australia-NewZealand.xml";
+                case SectionDatabase.BSShapes2006:
+                     return "BSShapes2006.xml";
+                case SectionDatabase.ChineseGB08:
+                     return "ChineseGB08.xml";
+                case SectionDatabase.CISC9:
+                     return "CISC9.xml";
+                case SectionDatabase.CISC10:
+                     return "CISC10.xml";
+                case SectionDatabase.CoreBraceBRB_2016:
+                     return "CoreBraceBRB_2016.xml";
+                case SectionDatabase.Euro:
+                     return "Euro.xml";
+                case SectionDatabase.Indian:
+                     return "Indian.xml";
+                case SectionDatabase.JIS_G_3192_2014:
+                     return "JIS-G-3192-2014.xml";
+                case SectionDatabase.Nordic:
+                     return "Nordic.xml";
+                case SectionDatabase.Russian:
+                     return "Russian.xml";
+                case SectionDatabase.SJIJoists:
+                     return "SJIJoists.xml";
+                case SectionDatabase.StarSeismicBRB:
+                     return "StarSeismicBRB.xml";
+                default:
+                     return "";
+            }
+        }
+
+        /***************************************************/
     }
 }
