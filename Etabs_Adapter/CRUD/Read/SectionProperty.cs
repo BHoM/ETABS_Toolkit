@@ -34,6 +34,7 @@ using BH.Engine.ETABS;
 using BH.oM.Geometry;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Adapters.ETABS.Fragments;
+using BH.oM.Adapters.ETABS;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -275,6 +276,15 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
+        private void ReadSectionDatabase()
+        {
+            int num = 0;
+            eFramePropType[] types = null;
+            m_model.PropFrame.GetPropFileNameList(
+                EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase), 
+                ref num, ref m_DBSectionsNames, ref types);
+        }
 
     }
 }
