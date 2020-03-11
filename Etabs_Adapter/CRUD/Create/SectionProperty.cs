@@ -80,6 +80,9 @@ namespace BH.Adapter.ETABS
                 EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase), bhSection.Name))
             {
                 SetSection(bhSection as dynamic);
+            } else
+            {
+                Engine.Reflection.Compute.RecordNote(bhSection.Name + " properties has been assigned from the database.");
             }
 
             double[] modifiers = bhSection.Modifiers();
