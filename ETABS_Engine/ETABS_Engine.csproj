@@ -108,7 +108,6 @@
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToCSI.cs" />
     <Compile Include="Create\Diaphragm.cs" />
-    <Compile Include="Create\EtabsConfig.cs" />
     <Compile Include="Create\MassSource.cs" />
     <Compile Include="Create\Pier.cs" />
     <Compile Include="Create\Spandrel.cs" />
