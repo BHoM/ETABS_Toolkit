@@ -227,16 +227,12 @@ namespace BH.Adapter.ETABS
 
 
                 IMaterialFragment material;
-                try
-                {
-                    material = bhomMaterials[materialName];
-                }
-                catch (Exception)
-                {
-                    material = bhomMaterials.FirstOrDefault().Value;
-                    Engine.Reflection.Compute.RecordNote("Could not get material from ETABS. Using a default material");
-                }
 
+                if (!bhomMaterials.TryGetValue(materialName, out material))
+                {
+                    material = new GenericIsotropicMaterial() { Name = materialName };
+                    Engine.Reflection.Compute.RecordNote("Could not get material from ETABS. GenericIsotropic material with 0 values have been extracted in its place.");
+                }
 
                 switch (constructSelector)
                 {
