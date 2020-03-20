@@ -75,15 +75,9 @@ namespace BH.Adapter.ETABS
                 return true;
             }
 
-            if (!m_DBSectionsNames.Contains(bhSection.Name) ||  // Does the name not exist in the database or
-                1 == m_model.PropFrame.ImportProp(bhSection.Name, bhSection.Material.Name,  // Did it fail to assign it
-                EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase), bhSection.Name))
+            if (!GetFromDatabase(bhSection))
             {
                 SetSection(bhSection as dynamic);
-            }
-            else
-            {
-                Engine.Reflection.Compute.RecordNote(bhSection.Name + " properties has been assigned from the database.");
             }
 
             double[] modifiers = bhSection.Modifiers();
