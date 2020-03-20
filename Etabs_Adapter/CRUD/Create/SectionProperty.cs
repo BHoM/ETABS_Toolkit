@@ -242,6 +242,107 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+
+        private bool GetFromDatabase(ISectionProperty bhSection)
+        {
+            if (EtabsSettings.DatabaseSettings.SectionDatabase == SectionDatabase.None)
+                return false;
+
+            string bhName = bhSection.Name;
+
+            bhName = bhName.ToUpper();
+            bhName = bhName.Replace(" ", "");
+
+            string[] sub = bhName.Split('X');
+
+            for (int i = 0; i < sub.Length; i++)
+            {
+                if (sub[i].EndsWith(".0"))
+                    sub[i] = string.Join("", sub[i].Take(sub[i].Length - 2).ToArray());
+            }
+
+            bhName = string.Join("X", sub);
+
+            foreach (KeyValuePair<string, string> exch in GetDictionary(EtabsSettings.DatabaseSettings.SectionDatabase))
+            {
+                if (bhName.StartsWith(exch.Key))
+                {
+                    bhName = bhName.Replace(exch.Key, exch.Value);
+                    break;
+                }
+            }
+
+
+            if (!m_DBSectionsNames.Contains(bhName))
+                return false;
+
+            if (1 == m_model.PropFrame.ImportProp(
+                                                bhName,
+                                                bhSection.Material.Name,
+                                                EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase),
+                                                bhName))
+            {
+                return false;
+            }
+
+            Engine.Reflection.Compute.RecordNote(bhSection.Name + " properties has been assigned from the database as " + bhName + ".");
+            return true;
+        }
+
+        /***************************************************/
+
+        private Dictionary<string, string> GetDictionary(SectionDatabase sectionDatabase)
+        {
+            switch (sectionDatabase)
+            {
+                case SectionDatabase.BSShapes2006:
+                    return new Dictionary<string, string>()
+                    {
+                        { "UB",  "UKB" },
+                        { "UC",  "UKC" },
+                        { "UPB", "UKPB" },
+                        { "L",   "UKA" },
+                        { "PFC", "UKPFC" },
+                        { "CHS", "CHHF" },
+                        { "RHS", "RHHF" },
+                        { "SHS", "SHHF" },
+                        { "TUB", "UKT" },
+                        { "TUC", "UKT" }
+                    };
+                case SectionDatabase.None:
+                case SectionDatabase.AISC14:
+                case SectionDatabase.AISC14M:
+                case SectionDatabase.AISC15:
+                case SectionDatabase.AISC15M:
+                case SectionDatabase.ArcelorMittal_British:
+                case SectionDatabase.ArcelorMittal_BritishHISTAR:
+                case SectionDatabase.ArcelorMittal_Europe:
+                case SectionDatabase.ArcelorMittal_EuropeHISTAR:
+                case SectionDatabase.ArcelorMittal_Japan:
+                case SectionDatabase.ArcelorMittal_Russia:
+                case SectionDatabase.ArcelorMittal_US_ASTM_A913:
+                case SectionDatabase.ArcelorMittal_US_ASTM_A913M:
+                case SectionDatabase.ArcelorMittal_US_ASTM_A992:
+                case SectionDatabase.ArcelorMittal_US_ASTM_A992M:
+                case SectionDatabase.Australia_NewZealand:
+                case SectionDatabase.ChineseGB08:
+                case SectionDatabase.CISC9:
+                case SectionDatabase.CISC10:
+                case SectionDatabase.CoreBraceBRB_2016:
+                case SectionDatabase.Euro:
+                case SectionDatabase.Indian:
+                case SectionDatabase.JIS_G_3192_2014:
+                case SectionDatabase.Nordic:
+                case SectionDatabase.Russian:
+                case SectionDatabase.SJIJoists:
+                case SectionDatabase.StarSeismicBRB:
+                default:
+                    return new Dictionary<string, string>();
+            }
+        }
+
+        /***************************************************/
+
         private string EnumToString(SectionDatabase sectionDB)
         {
             switch (sectionDB)
