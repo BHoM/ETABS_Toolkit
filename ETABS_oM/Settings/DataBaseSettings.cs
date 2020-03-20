@@ -37,8 +37,8 @@ namespace BH.oM.Adapters.ETABS
         /**** Public Properties                         ****/
         /***************************************************/
 
-        [Description("")]
-        public SectionDatabase SectionDatabase { get; set; } = SectionDatabase.ArcelorMittal_BritishHISTAR;
+        [Description("The ETABS defined section database to read sections from if the name of the sections you push share a name with one avalible in the database")]
+        public SectionDatabase SectionDatabase { get; set; } = SectionDatabase.None;
 
         /***************************************************/
     }
