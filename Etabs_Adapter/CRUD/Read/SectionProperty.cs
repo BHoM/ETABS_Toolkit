@@ -277,20 +277,6 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private void ReadSectionDatabase()
-        {
-            int num = 0;
-            eFramePropType[] types = null;
-            if (EtabsSettings.DatabaseSettings.SectionDatabase != SectionDatabase.None)
-            {
-                m_model.PropFrame.GetPropFileNameList(
-                    EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase),
-                    ref num, ref m_DBSectionsNames, ref types);
-            }
-        }
-
-        /***************************************************/
-
     }
 }
 
