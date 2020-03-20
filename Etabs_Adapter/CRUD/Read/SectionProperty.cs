@@ -281,13 +281,76 @@ namespace BH.Adapter.ETABS
         {
             int num = 0;
             eFramePropType[] types = null;
-            if (EtabsSettings.DatabaseSettings.SectionDatabase != 0)
+            if (EtabsSettings.DatabaseSettings.SectionDatabase != SectionDatabase.None)
             {
                 m_model.PropFrame.GetPropFileNameList(
                     EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase),
                     ref num, ref m_DBSectionsNames, ref types);
             }
         }
+
+        /***************************************************/
+
+        private bool GetFromDatabase(ISectionProperty bhSection)
+        {
+            if (EtabsSettings.DatabaseSettings.SectionDatabase == SectionDatabase.None)
+                return false;
+
+            string bhName = bhSection.Name;
+
+            bhName = bhName.ToUpper();
+            bhName = bhName.Replace(" ", "");
+
+            string[] sub = bhName.Split('X');
+
+            for (int i = 0; i < sub.Length; i++)
+            {
+                if (sub[i].EndsWith(".0"))
+                    sub[i] = (string)sub[i].Take(sub[i].Length - 2);
+            }
+
+            bhName = string.Join("X", sub);
+
+            foreach (KeyValuePair<string, string> exch in specificExchanges)
+            {
+                if (bhName.StartsWith(exch.Key))
+                {
+                    bhName = bhName.Replace(exch.Key, exch.Value);
+                    break;
+                }
+            }
+
+            if (!m_DBSectionsNames.Contains(bhName))
+                return false;
+
+            if (1 == m_model.PropFrame.ImportProp(
+                                                bhName,
+                                                bhSection.Material.Name,
+                                                EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase),
+                                                bhName))
+            {
+                return false;
+            }
+
+            Engine.Reflection.Compute.RecordNote(bhSection.Name + " properties has been assigned from the database as " + bhName + ".");
+            return true;
+        }
+
+        /***************************************************/
+
+        private Dictionary<string, string> specificExchanges = new Dictionary<string, string>()
+        {
+            { "UB",  "UKB" },
+            { "UC",  "UKC" },
+            { "UPB", "UKPB" },
+            { "L",   "UKA" },
+            { "PFC", "UKPFC" },
+            { "CHS", "CHHF" },
+            { "RHS", "RHHF" },
+            { "SHS", "SHHF" },
+            { "TUB", "UKT" },
+            { "TUC", "UKT" }
+        };
 
         /***************************************************/
 
