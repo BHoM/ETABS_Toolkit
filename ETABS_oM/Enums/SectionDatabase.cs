@@ -22,14 +22,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BH.oM.Adapters.ETABS
 {
+    [Description("The ETABS defined section databases to read sections from if the name of the sections you push share a name with one avalible in the database")]
     public enum SectionDatabase
     {
+        None = 0,
         AISC14 = 1,
         AISC14M = 2,
         AISC15 = 3,
