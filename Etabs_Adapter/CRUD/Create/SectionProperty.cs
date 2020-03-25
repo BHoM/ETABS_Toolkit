@@ -273,10 +273,10 @@ namespace BH.Adapter.ETABS
                 return false;
 
             if (1 == m_model.PropFrame.ImportProp(
-                                                m_DBSectionsNames[index],
+                                                bhSection.Name,
                                                 bhSection.Material.Name,
                                                 EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase),
-                                                bhSection.Name))
+                                                m_DBSectionsNames[index]))
             {
                 return false;
             }
