@@ -300,7 +300,7 @@ namespace BH.Adapter.ETABS
                     {
                         { "UB",  "UKB" },
                         { "UC",  "UKC" },
-                        { "UPB", "UKPB" },
+                        { "UBP", "UKBP" },
                         { "L",   "UKA" },
                         { "PFC", "UKPFC" },
                         { "CHS", "CHHF" },
