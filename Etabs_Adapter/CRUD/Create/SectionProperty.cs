@@ -263,15 +263,10 @@ namespace BH.Adapter.ETABS
 
             bhName = string.Join("X", sub);
 
-            foreach (KeyValuePair<string, string> exch in GetDictionary(EtabsSettings.DatabaseSettings.SectionDatabase))
-            {
-                if (bhName.StartsWith(exch.Key))
-                {
-                    bhName = bhName.Replace(exch.Key, exch.Value);
-                    break;
-                }
-            }
-
+            string startOfName = string.Concat(bhName.TakeWhile(c => c < '0' || c > '9'));
+            string replace;
+            if (GetDictionary(EtabsSettings.DatabaseSettings.SectionDatabase).TryGetValue(startOfName, out replace))
+                bhName = bhName.Replace(startOfName, replace);
 
             if (!m_DBSectionsNames.Contains(bhName))
                 return false;
