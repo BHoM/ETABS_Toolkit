@@ -268,19 +268,20 @@ namespace BH.Adapter.ETABS
             if (GetDictionary(EtabsSettings.DatabaseSettings.SectionDatabase).TryGetValue(startOfName, out replace))
                 bhName = bhName.Replace(startOfName, replace);
 
-            if (!m_DBSectionsNames.Contains(bhName))
+            int index = m_DBSectionsNames.Select(x => x.ToUpper().Replace(" ", "")).ToList().IndexOf(bhName);
+            if (index == -1)
                 return false;
 
             if (1 == m_model.PropFrame.ImportProp(
-                                                bhName,
+                                                m_DBSectionsNames[index],
                                                 bhSection.Material.Name,
                                                 EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase),
-                                                bhName))
+                                                bhSection.Name))
             {
                 return false;
             }
 
-            Engine.Reflection.Compute.RecordNote(bhSection.Name + " properties has been assigned from the database as " + bhName + ".");
+            Engine.Reflection.Compute.RecordNote(bhSection.Name + " properties has been assigned from the database section " + bhName + ".");
             return true;
         }
 
