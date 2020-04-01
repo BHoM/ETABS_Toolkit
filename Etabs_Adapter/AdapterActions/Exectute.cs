@@ -29,6 +29,8 @@ using BH.oM.Structure.Loads;
 
 #if Debug17 || Release17
 using ETABSv17;
+#elif Debug18 || Release18
+using ETABSv1;
 #else
 using ETABS2016;
 #endif
@@ -38,6 +40,8 @@ namespace BH.Adapter.ETABS
 {
 #if Debug17 || Release17
     public partial class ETABS17Adapter
+#elif Debug18 || Release18
+    public partial class ETABS18Adapter
 #else
     public partial class ETABS2016Adapter
 #endif

@@ -24,6 +24,17 @@
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug18</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{895E2AB0-E349-4C1A-9098-51A46CD3A955}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BH.Adapter.ETABS</RootNamespace>
+    <AssemblyName>ETABS18_Adapter</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release16</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{895E2AB0-E349-4C1A-9098-51A46CD3A955}</ProjectGuid>
@@ -42,6 +53,17 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BH.Adapter.ETABS</RootNamespace>
     <AssemblyName>ETABS17_Adapter</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release18</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{895E2AB0-E349-4C1A-9098-51A46CD3A955}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BH.Adapter.ETABS</RootNamespace>
+    <AssemblyName>ETABS18_Adapter</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -107,6 +129,28 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>Etabs2016_Adapter</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug18|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;Debug18</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AssemblyName>ETABS17_Adapter</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release18|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;Release18</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AssemblyName>ETABS18_Adapter</AssemblyName>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Adapter_Engine">
       <HintPath>..\..\BHoM_Adapter\Build\Adapter_Engine.dll</HintPath>
@@ -156,6 +200,11 @@
     </Reference>
     <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSI_ETABSv2016_x64.1.0.3\lib\ETABS2016.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ETABSv1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=453d728ef24c6f5e, processorArchitecture=MSIL">
+      <HintPath>..\packages\CSI_ETABSv18_x64.1.0.0\lib\ETABSv1.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
