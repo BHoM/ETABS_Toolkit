@@ -30,6 +30,8 @@ namespace BH.Adapter.ETABS
 {
 #if Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
+#elif Debug18 || Release18
+   public partial class ETABS18Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif

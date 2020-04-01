@@ -31,6 +31,8 @@ using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
 #if Debug17 || Release17
 using ETABSv17;
+#elif Debug18 || Release18
+using ETABSv1;
 #else
 using ETABS2016;
 #endif
@@ -39,6 +41,8 @@ namespace BH.Adapter.ETABS
 {
 #if Debug17 || Release17
     public partial class ETABS17Adapter : BHoMAdapter
+#elif Debug18 || Release18
+   public partial class ETABS18Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif
@@ -52,12 +56,14 @@ namespace BH.Adapter.ETABS
         public EtabsConfig EtabsConfig { get; set; } = new EtabsConfig();
 
         /***************************************************/
-        /**** Constructors                              ****/
-        /***************************************************/
+/**** Constructors                              ****/
+/***************************************************/
 
 #if Debug17 || Release17
         public ETABS17Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
-#else
+#elif Debug18 || Release18
+        public ETABS18Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
+    #else
         public ETABS2016Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
 #endif
         {
@@ -77,6 +83,9 @@ namespace BH.Adapter.ETABS
 #if Debug17 || Release17
                 string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 17\ETABS.exe";
                 cHelper helper = new ETABSv17.Helper();
+#elif Debug18 || Release18
+                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 18\ETABS.exe";
+                cHelper helper = new ETABSv1.Helper();
 #else
                 string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 2016\ETABS.exe";
                 cHelper helper = new ETABS2016.Helper();
