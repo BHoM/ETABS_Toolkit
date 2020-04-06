@@ -42,8 +42,10 @@ using BH.Engine.Base;
 using System;
 #if Debug17 || Release17
     using ETABSv17;
+#elif Debug18 || Release18
+using ETABSv1;
 #else
-    using ETABS2016;
+using ETABS2016;
 #endif
 
 namespace BH.Adapter.ETABS
