@@ -56,8 +56,8 @@ namespace BH.Adapter.ETABS
         public EtabsConfig EtabsConfig { get; set; } = new EtabsConfig();
 
         /***************************************************/
-/**** Constructors                              ****/
-/***************************************************/
+        /**** Constructors                              ****/
+        /***************************************************/
 
 #if Debug17 || Release17
         public ETABS17Adapter(string filePath = "", EtabsConfig etabsConfig = null, bool active = false)
