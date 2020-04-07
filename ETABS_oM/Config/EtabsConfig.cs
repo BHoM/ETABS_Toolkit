@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.ETABS
         /***************************************************/
 
         [Description("Sets whether the loads being pushed should overwrite existing loads on the same object within the same loadcase")]
-        public bool ReplaceLoads { get; set; } = false;
+        public virtual bool ReplaceLoads { get; set; } = false;
 
         /***************************************************/
     }

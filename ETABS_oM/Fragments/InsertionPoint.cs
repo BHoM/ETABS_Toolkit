@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -37,10 +37,10 @@ namespace BH.oM.Adapters.ETABS.Elements
         /**** Public Properties                         ****/
         /***************************************************/
 
-        public BarInsertionPoint BarInsertionPoint { get; set; } = BarInsertionPoint.Centroid;
+        public virtual BarInsertionPoint BarInsertionPoint { get; set; } = BarInsertionPoint.Centroid;
 
         [Description("Transform frame stiffness for offsets from centroid for non-P/T floors")]
-        public bool ModifyStiffness { get; set; } = true;
+        public virtual bool ModifyStiffness { get; set; } = true;
 
         /***************************************************/
     }
