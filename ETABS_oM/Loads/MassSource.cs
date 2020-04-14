@@ -36,13 +36,11 @@ namespace BH.oM.Structure.Loads
         /**** Properties                                ****/
         /***************************************************/
 
-        public bool ElementSelfMass { get; set; } = true;
+        public virtual bool ElementSelfMass { get; set; } = true;
 
-        public bool AdditionalMass { get; set; } = true;
+        public virtual bool AdditionalMass { get; set; } = true;
 
-        public List<Tuple<Loadcase, double>> FactoredAdditionalCases { get; set; } = new List<Tuple<Loadcase, double>>();
-
-
+        public virtual List<Tuple<Loadcase, double>> FactoredAdditionalCases { get; set; } = new List<Tuple<Loadcase, double>>();
 
         /***************************************************/
     }

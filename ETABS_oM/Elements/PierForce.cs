@@ -33,8 +33,14 @@ namespace BH.oM.Adapters.ETABS.Elements
 {
     public class PierForce : BH.oM.Structure.Results.BarForce
     {
+        /***************************************************/
+        /**** Public Properties                         ****/
+        /***************************************************/
+
         //Just using this for the name
-        public string Location { get; set; } = "";
+        public virtual string Location { get; set; } = "";
+
+        /***************************************************/
     }
 }
 

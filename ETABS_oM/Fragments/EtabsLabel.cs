@@ -38,10 +38,10 @@ namespace BH.oM.Adapters.ETABS.Fragments
         /***************************************************/
 
         [Description("Label of the element in Etabs")]
-        public string Label { get; set; } = "";
+        public virtual string Label { get; set; } = "";
 
         [Description("Name of the story of the element in Etabs")]
-        public string Story { get; set; } = "";
+        public virtual string Story { get; set; } = "";
 
         /***************************************************/
     }
