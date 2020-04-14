@@ -32,10 +32,10 @@ namespace BH.oM.Adapters.ETABS.Elements
         /**** Public Properties                         ****/
         /***************************************************/
 
-        public bool AutoOffset { get; set; } = false;
+        public virtual bool AutoOffset { get; set; } = false;
 
         [Description("Value descibing the factor of the rigid zone. Needs to be between 0 and 1")]
-        public double RigidZoneFactor { get; set; } = 1.0;
+        public virtual double RigidZoneFactor { get; set; } = 1.0;
 
         /***************************************************/
     }

@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.ETABS
         /***************************************************/
 
         [Description("The ETABS defined section database to read sections from if the name of the sections you push share a name with one avalible in the database")]
-        public SectionDatabase SectionDatabase { get; set; } = SectionDatabase.None;
+        public virtual SectionDatabase SectionDatabase { get; set; } = SectionDatabase.None;
 
         /***************************************************/
     }

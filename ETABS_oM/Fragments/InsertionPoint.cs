@@ -37,10 +37,10 @@ namespace BH.oM.Adapters.ETABS.Elements
         /**** Public Properties                         ****/
         /***************************************************/
 
-        public BarInsertionPoint BarInsertionPoint { get; set; } = BarInsertionPoint.Centroid;
+        public virtual BarInsertionPoint BarInsertionPoint { get; set; } = BarInsertionPoint.Centroid;
 
         [Description("Transform frame stiffness for offsets from centroid for non-P/T floors")]
-        public bool ModifyStiffness { get; set; } = true;
+        public virtual bool ModifyStiffness { get; set; } = true;
 
         /***************************************************/
     }

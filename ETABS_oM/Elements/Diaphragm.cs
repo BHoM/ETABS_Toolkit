@@ -36,7 +36,7 @@ namespace BH.oM.Adapters.ETABS.Elements
         /**** Public Properties                         ****/
         /***************************************************/
 
-        public DiaphragmType Rigidity { get; set; } = DiaphragmType.RigidDiaphragm;
+        public virtual DiaphragmType Rigidity { get; set; } = DiaphragmType.RigidDiaphragm;
 
         /***************************************************/
     }

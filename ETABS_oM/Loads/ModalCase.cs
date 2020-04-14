@@ -31,14 +31,20 @@ namespace BH.oM.Structure.Loads
 {
     public class ModalCase : BHoMObject, ICase
     {
-        public int Number { get; set; } = 0;
 
-        public int NumberOfModes { get; set; } = 20;
+        /***************************************************/
+        /**** Properties                                ****/
+        /***************************************************/
 
-        public int StartMode { get; set; } = 1;
+        public virtual int Number { get; set; } = 0;
 
-        public MassSource Mass { get; set; } = new MassSource();
-        
+        public virtual int NumberOfModes { get; set; } = 20;
+
+        public virtual int StartMode { get; set; } = 1;
+
+        public virtual MassSource Mass { get; set; } = new MassSource();
+
+        /***************************************************/
     }
 }
 
