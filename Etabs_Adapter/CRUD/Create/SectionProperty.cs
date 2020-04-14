@@ -75,7 +75,7 @@ namespace BH.Adapter.ETABS
                 return true;
             }
 
-            if (!GetFromDatabase(bhSection))
+            if (!LoadFromDatabase(bhSection))
             {
                 SetSection(bhSection as dynamic);
             }
@@ -243,16 +243,18 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
 
-        private bool GetFromDatabase(ISectionProperty bhSection)
+        private bool LoadFromDatabase(ISectionProperty bhSection)
         {
             if (EtabsSettings.DatabaseSettings.SectionDatabase == SectionDatabase.None)
                 return false;
 
             string bhName = bhSection.Name;
 
+            // Formatt as uppercase and no spaces
             bhName = bhName.ToUpper();
             bhName = bhName.Replace(" ", "");
 
+            // remove trailing zeros
             string[] sub = bhName.Split('X');
 
             for (int i = 0; i < sub.Length; i++)
@@ -263,31 +265,36 @@ namespace BH.Adapter.ETABS
 
             bhName = string.Join("X", sub);
 
+            // Get char up intill first number
             string startOfName = string.Concat(bhName.TakeWhile(c => c < '0' || c > '9'));
+            // look in dictionary if there's any discrepencies between etabs and BHoMs naming conventions (if so, replace)
             string replace;
-            if (GetDictionary(EtabsSettings.DatabaseSettings.SectionDatabase).TryGetValue(startOfName, out replace))
+            if (BHoMToEtabsNamingConventions(EtabsSettings.DatabaseSettings.SectionDatabase).TryGetValue(startOfName, out replace))
                 bhName = bhName.Replace(startOfName, replace);
 
+            // Look through a uppercase formatted list of avalible sectionnames, and return the index of the one who matches bhName
             int index = m_DBSectionsNames.Select(x => x.ToUpper().Replace(" ", "")).ToList().IndexOf(bhName);
             if (index == -1)
                 return false;
 
+            // Try to get it from the database, return false on faliure
             if (1 == m_model.PropFrame.ImportProp(
                                                 bhSection.Name,
                                                 bhSection.Material.Name,
-                                                EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase),
+                                                ToEtabsFileName(EtabsSettings.DatabaseSettings.SectionDatabase),
                                                 m_DBSectionsNames[index]))
             {
                 return false;
             }
 
+            // Notify user and return true to stop the adapter from creating a new Section
             Engine.Reflection.Compute.RecordNote(bhSection.Name + " properties has been assigned from the database section " + bhName + ".");
             return true;
         }
 
         /***************************************************/
 
-        private Dictionary<string, string> GetDictionary(SectionDatabase sectionDatabase)
+        private Dictionary<string, string> BHoMToEtabsNamingConventions(SectionDatabase sectionDatabase)
         {
             switch (sectionDatabase)
             {
@@ -339,7 +346,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private string EnumToString(SectionDatabase sectionDB)
+        private string ToEtabsFileName(SectionDatabase sectionDB)
         {
             switch (sectionDB)
             {
