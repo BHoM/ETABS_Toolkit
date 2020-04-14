@@ -116,7 +116,7 @@ namespace BH.Adapter.ETABS
                         m_model.File.NewBlank();
                 }
 
-                ReadSectionDatabase();
+                LoadSectionDatabaseNames();
             }
         }
 
@@ -133,14 +133,14 @@ namespace BH.Adapter.ETABS
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private void ReadSectionDatabase()
+        private void LoadSectionDatabaseNames()
         {
             int num = 0;
             eFramePropType[] types = null;
             if (EtabsSettings.DatabaseSettings.SectionDatabase != SectionDatabase.None)
             {
                 m_model.PropFrame.GetPropFileNameList(
-                    EnumToString(EtabsSettings.DatabaseSettings.SectionDatabase),
+                    ToEtabsFileName(EtabsSettings.DatabaseSettings.SectionDatabase),
                     ref num, ref m_DBSectionsNames, ref types);
             }
         }
