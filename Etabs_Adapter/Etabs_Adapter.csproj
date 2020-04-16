@@ -259,11 +259,6 @@
       <HintPath>..\..\BHoM_Engine\Build\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Common_Engine">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\BHoM_Engine\Build\Common_Engine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Common_oM">
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
       <Private>False</Private>
@@ -311,6 +306,10 @@
     </Reference>
     <Reference Include="Reflection_oM">
       <HintPath>..\..\BHoM\Build\Reflection_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Spatial_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Spatial_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Structure_AdapterModules">
