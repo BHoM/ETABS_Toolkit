@@ -140,6 +140,40 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        private void SetProfile(TaperedProfile profile, string sectionName, IMaterialFragment material)
+        {
+            // Create a section for each sub profile
+            IProfile[] profiles = profile.Profiles.Values.ToArray();
+            for (int i = 0; i < profiles.Length; i++)
+                ISetProfile(profiles[i], sectionName + "_SubSection" + i.ToString(), material);
+
+            // Declare some variables
+            int num = profile.Profiles.Count - 1;
+            string[] segmentStartProfile = new string[num];
+            string[] segmentEndProfile = new string[num];
+            double[] length = new double[num];
+
+            // Formatt section names and positions to ETABS standard
+            decimal[] positions = profile.Profiles.Keys.ToArray();
+            for (int i = 0; i < num; i++)
+            {
+                segmentStartProfile[i] = sectionName + "_SubSection" + (i).ToString();
+
+                // Etabs reads this in mm, and multiplying strictly does not matter (since they're relative values), but is easier on the eyes in ETBAS later
+                length[i] = System.Convert.ToDouble(positions[i + 1] - positions[i]) * 1000;    
+                segmentEndProfile[i] = sectionName + "_SubSection" + (i + 1).ToString();
+            }
+
+            // Some array settings
+            int[] type = length.Select(x => 1).ToArray<int>(); // Relative Length values, (No idea what happens or why someone would mix thease)
+            int[] eI33 = length.Select(x => 2).ToArray<int>(); // Parabolic variation of EI33
+            int[] eI22 = length.Select(x => 1).ToArray<int>(); // Linear variation of EI22      Default when opening ETABS
+
+            int rA = m_model.PropFrame.SetNonPrismatic(sectionName, num, ref segmentStartProfile, ref segmentEndProfile, ref length, ref type, ref eI33, ref eI22);
+        }
+
+        /***************************************************/
+
         private void SetProfile(TubeProfile profile, string sectionName, IMaterialFragment material)
         {
             m_model.PropFrame.SetPipe(sectionName, material.Name, profile.Diameter, profile.Thickness);
