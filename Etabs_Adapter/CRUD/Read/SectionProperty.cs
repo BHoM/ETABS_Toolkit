@@ -224,7 +224,7 @@ namespace BH.Adapter.ETABS
                                 else if (materialName != sec.Material.Name)
                                 {
                                     materialName = "";
-                                    Engine.Reflection.Compute.RecordWarning("All sub sections must have the same meterial.");
+                                    Engine.Reflection.Compute.RecordWarning("All sub-sections must have the same material.");
                                     break;
                                 }
                             }
