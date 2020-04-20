@@ -166,8 +166,9 @@ namespace BH.Adapter.ETABS
 
             // Some array settings
             int[] type = length.Select(x => 1).ToArray<int>(); // Relative Length values, (No idea what happens or why someone would mix thease)
-            int[] eI33 = length.Select(x => 2).ToArray<int>(); // Parabolic variation of EI33
-            int[] eI22 = length.Select(x => 1).ToArray<int>(); // Linear variation of EI22      Default when opening ETABS
+            int[] eI33 = length.Select(x => 1).ToArray<int>(); // Linear variation of EI33
+            int[] eI22 = length.Select(x => 1).ToArray<int>(); // Linear variation of EI22
+            Engine.Reflection.Compute.RecordNote("Tapered Sections Properties are set to vary linearly along the element in ETABS.");
 
             int rA = m_model.PropFrame.SetNonPrismatic(sectionName, num, ref segmentStartProfile, ref segmentEndProfile, ref length, ref type, ref eI33, ref eI22);
         }
