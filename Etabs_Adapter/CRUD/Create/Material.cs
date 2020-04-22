@@ -56,14 +56,14 @@ namespace BH.Adapter.ETABS
             string guid = "";
             string notes = "";
             string name = "";
-            if (m_model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
+            if (m_model.PropMaterial.GetMaterial(material.DescriptionOrName(), ref matType, ref colour, ref notes, ref guid) != 0)
             {
                 m_model.PropMaterial.AddMaterial(ref name, MaterialTypeToCSI(material.IMaterialType()), "", "", "");
-                m_model.PropMaterial.ChangeName(name, material.Name);
+                m_model.PropMaterial.ChangeName(name, material.DescriptionOrName());
                 if (material is IIsotropic)
                 {
                     IIsotropic isotropic = material as IIsotropic;
-                    success &= m_model.PropMaterial.SetMPIsotropic(material.Name, isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff) == 0;
+                    success &= m_model.PropMaterial.SetMPIsotropic(material.DescriptionOrName(), isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff) == 0;
                 }
                 else if (material is IOrthotropic)
                 {
@@ -72,12 +72,12 @@ namespace BH.Adapter.ETABS
                     double[] v = orthoTropic.PoissonsRatio.ToDoubleArray();
                     double[] a = orthoTropic.ThermalExpansionCoeff.ToDoubleArray();
                     double[] g = orthoTropic.ShearModulus.ToDoubleArray();
-                    success &= m_model.PropMaterial.SetMPOrthotropic(material.Name, ref e, ref v, ref a, ref g) == 0;
+                    success &= m_model.PropMaterial.SetMPOrthotropic(material.DescriptionOrName(), ref e, ref v, ref a, ref g) == 0;
                 }
-                success &= m_model.PropMaterial.SetWeightAndMass(material.Name, 2, material.Density) == 0;
+                success &= m_model.PropMaterial.SetWeightAndMass(material.DescriptionOrName(), 2, material.Density) == 0;
             }
             if (!success)
-                Engine.Reflection.Compute.RecordWarning($"Failed to assign material: {material.Name}, ETABS may have overwritten some properties with default values");
+                Engine.Reflection.Compute.RecordWarning($"Failed to assign material: {material.DescriptionOrName()}, ETABS may have overwritten some properties with default values");
             return success;
         }
 

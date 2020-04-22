@@ -31,6 +31,7 @@ using BH.oM.Structure.Constraints;
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Base.Objects;
+using BH.Engine.Structure;
 
 namespace BH.Adapter.ETABS
 {
@@ -53,9 +54,9 @@ namespace BH.Adapter.ETABS
             {
                 {typeof(Node), new BH.Engine.Structure.NodeDistanceComparer(3) },
                 {typeof(Bar), new BH.Engine.Structure.BarEndNodesDistanceComparer(3) },
-                {typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
-                {typeof(IMaterialFragment), new BHoMObjectNameComparer() },
-                {typeof(ISurfaceProperty), new BHoMObjectNameComparer() },
+                {typeof(ISectionProperty), new NameOrDescriptionComparer() },
+                {typeof(IMaterialFragment), new NameOrDescriptionComparer() },
+                {typeof(ISurfaceProperty), new NameOrDescriptionComparer() },
                 {typeof(BH.oM.Adapters.ETABS.Elements.Diaphragm), new BHoMObjectNameComparer() },
             };
         }
