@@ -35,6 +35,7 @@ using BH.oM.Geometry;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Adapters.ETABS.Fragments;
 using BH.oM.Adapters.ETABS;
+using BH.Engine.Structure;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -58,7 +59,7 @@ namespace BH.Adapter.ETABS
         private List<ISectionProperty> ReadSectionProperty(List<string> ids = null)
         {
             List<ISectionProperty> propList = new List<ISectionProperty>();
-            Dictionary<String, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.Name);
+            Dictionary<String, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.DescriptionOrName());
 
             int nameCount = 0;
             string[] names = { };
@@ -193,7 +194,7 @@ namespace BH.Adapter.ETABS
                             // Getting a Profile from a name in the propList
                             Func<string, IProfile> getProfile = sectionName =>
                             {
-                                ISectionProperty sec = propList.First(x => x.Name == sectionName);
+                                ISectionProperty sec = propList.First(x => x.DescriptionOrName() == sectionName);
                                 if (sec is IGeometricalSection)
                                     return (sec as IGeometricalSection).SectionProfile;
                                 else
@@ -218,10 +219,10 @@ namespace BH.Adapter.ETABS
                             // Find the material of all elements and create a singel one (or have warning)
                             foreach (string subSectionName in startSec.Concat(endSec))
                             {
-                                ISectionProperty sec = propList.First(x => x.Name == subSectionName);
+                                ISectionProperty sec = propList.First(x => x.DescriptionOrName() == subSectionName);
                                 if (materialName == "")
-                                    materialName = sec.Material.Name;
-                                else if (materialName != sec.Material.Name)
+                                    materialName = sec.Material.DescriptionOrName();
+                                else if (materialName != sec.Material.DescriptionOrName())
                                 {
                                     materialName = "";
                                     Engine.Reflection.Compute.RecordWarning("All sub-sections must have the same material.");
