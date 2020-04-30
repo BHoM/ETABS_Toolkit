@@ -66,37 +66,37 @@ namespace BH.Adapter.ETABS
         protected override IEnumerable<IBHoMObject> IRead(Type type, IList ids, ActionConfig actionConfig = null)
         {
             List<string> listIds = null;
-            if (ids != null)
+            if (ids != null && ids.Count != 0)
                 listIds = ids.Cast<string>().ToList();
 
             if (type == typeof(Node))
-                return ReadNode(ids as dynamic);
+                return ReadNode(listIds);
             else if (type == typeof(Bar))
-                return ReadBar(ids as dynamic);
+                return ReadBar(listIds);
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
-                return ReadSectionProperty(ids as dynamic);
+                return ReadSectionProperty(listIds);
             else if (type == typeof(IMaterialFragment))
-                return ReadMaterial(ids as dynamic);
+                return ReadMaterial(listIds);
             else if (type == typeof(Panel))
-                return ReadPanel(ids as dynamic);
+                return ReadPanel(listIds);
             else if (type == typeof(ISurfaceProperty))
-                return ReadSurfaceProperty(ids as dynamic);
+                return ReadSurfaceProperty(listIds);
             else if (type == typeof(LoadCombination))
-                return ReadLoadCombination(ids as dynamic);
+                return ReadLoadCombination(listIds);
             else if (type == typeof(Loadcase))
-                return ReadLoadcase(ids as dynamic);
+                return ReadLoadcase(listIds);
             else if (type == typeof(ILoad) || type.GetInterfaces().Contains(typeof(ILoad)))
-                return ReadLoad(type, ids as dynamic);
+                return ReadLoad(type, listIds);
             else if (type == typeof(RigidLink))
-                return ReadRigidLink(ids as dynamic);
+                return ReadRigidLink(listIds);
             else if (type == typeof(LinkConstraint))
-                return ReadLinkConstraints(ids as dynamic);
+                return ReadLinkConstraints(listIds);
             else if (type == typeof(oM.Geometry.SettingOut.Level) || type == typeof(oM.Architecture.Elements.Level))
-                return ReadLevel(ids as dynamic);
+                return ReadLevel(listIds);
             else if (type == typeof(oM.Geometry.SettingOut.Grid))
                 return ReadGrid(listIds);
             else if (type == typeof(FEMesh))
-                return ReadMesh(ids as dynamic);
+                return ReadMesh(listIds);
 
             return new List<IBHoMObject>();//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }

@@ -64,11 +64,14 @@ namespace BH.Adapter.ETABS
             int nameCount = 0;
             string[] names = { };
             List<IMaterialFragment> materialList = new List<IMaterialFragment>();
+            m_model.PropMaterial.GetNameList(ref nameCount, ref names);
 
             if (ids == null)
             {
-                m_model.PropMaterial.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
+            } else
+            {
+                ids = ids.Intersect(names).ToList();
             }
 
             foreach (string id in ids)

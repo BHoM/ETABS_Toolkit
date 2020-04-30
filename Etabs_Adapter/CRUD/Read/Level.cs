@@ -50,13 +50,16 @@ namespace BH.Adapter.ETABS
         private List<Level> ReadLevel(List<string> ids = null)
         {
             List<Level> levellist = new List<Level>();
-            int NumberNames = 0;
-            string[] Names = null;
+            int numberNames = 0;
+            string[] names = null;
+            m_model.Story.GetNameList(ref numberNames, ref names);
 
             if (ids == null)
             {
-                m_model.Story.GetNameList(ref NumberNames, ref Names);
-                ids = Names.ToList();
+                ids = names.ToList();
+            } else
+            {
+                ids = ids.Intersect(names).ToList();
             }
 
             foreach (string id in ids)

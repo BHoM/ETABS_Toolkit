@@ -70,11 +70,15 @@ namespace BH.Adapter.ETABS
             Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
             int nameCount = 0;
             string[] nameArr = { };
+            m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
 
             if (ids == null)
             {
-                m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
+            }
+            else
+            {
+                ids = ids.Intersect(nameArr).ToList();
             }
 
             //get openings, if any
@@ -156,11 +160,15 @@ namespace BH.Adapter.ETABS
 
             int nameCount = 0;
             string[] nameArr = { };
+            m_model.PropArea.GetNameList(ref nameCount, ref nameArr);
 
             if (ids == null)
             {
-                m_model.PropArea.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
+            }
+            else
+            {
+                ids = ids.Intersect(nameArr).ToList();
             }
 
             foreach (string id in ids)

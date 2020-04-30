@@ -55,11 +55,15 @@ namespace BH.Adapter.ETABS
 
             int nameCount = 0;
             string[] names = { };
+            m_model.LinkObj.GetNameList(ref nameCount, ref names);
 
             if (ids == null)
             {
-                m_model.LinkObj.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
+            }
+            else
+            {
+                ids = ids.Intersect(names).ToList();
             }
 
             //read master-multiSlave nodes if these were initially created from (non-etabs)BHoM side
@@ -150,11 +154,15 @@ namespace BH.Adapter.ETABS
             List<LinkConstraint> propList = new List<LinkConstraint>();
             int nameCount = 0;
             string[] names = { };
+            m_model.PropLink.GetNameList(ref nameCount, ref names);
 
             if (ids == null)
             {
-                m_model.PropLink.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
+            }
+            else
+            {
+                ids = ids.Intersect(names).ToList();
             }
 
             foreach (string id in ids)

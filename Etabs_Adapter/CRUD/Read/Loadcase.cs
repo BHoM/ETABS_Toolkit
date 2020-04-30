@@ -59,11 +59,14 @@ namespace BH.Adapter.ETABS
             string[] nameArr = { };
 
             List<Loadcase> loadcaseList = new List<Loadcase>();
+            m_model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
 
             if (ids == null)
             {
-                m_model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
+            } else
+            {
+                ids = ids.Intersect(nameArr).ToList();
             }
 
             foreach (string id in ids)
@@ -95,11 +98,15 @@ namespace BH.Adapter.ETABS
 
             int nameCount = 0;
             string[] nameArr = { };
+            m_model.RespCombo.GetNameList(ref nameCount, ref nameArr);
 
             if (ids == null)
             {
-                m_model.RespCombo.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
+            }
+            else
+            {
+                ids = ids.Intersect(nameArr).ToList();
             }
             
             foreach (string id in ids)

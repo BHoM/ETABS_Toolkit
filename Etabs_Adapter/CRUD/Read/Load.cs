@@ -60,6 +60,11 @@ namespace BH.Adapter.ETABS
             
             List<Loadcase> loadcaseList = ReadLoadcase();
 
+            if (ids != null)
+            {
+                Engine.Reflection.Compute.RecordWarning("Id filtering is not implemented for Loads, all Loads will be returned.");
+            }
+
             if (type == typeof(PointLoad))
                 return ReadPointLoad(loadcaseList);
             else if (type == typeof(BarUniformlyDistributedLoad))
