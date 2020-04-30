@@ -68,6 +68,10 @@ namespace BH.Adapter.ETABS
             {
                 ids = names.ToList();
             }            
+            else
+            {
+                ids = ids.Intersect(names).ToList();
+            }
 
             foreach (string id in ids)
             {

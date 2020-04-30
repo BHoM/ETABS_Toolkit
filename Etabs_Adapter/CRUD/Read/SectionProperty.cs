@@ -69,6 +69,10 @@ namespace BH.Adapter.ETABS
             {
                 ids = names.ToList();
             }
+            else
+            {
+                ids = ids.Intersect(names).ToList();
+            }
 
             eFramePropType propertyType = eFramePropType.General;
 
