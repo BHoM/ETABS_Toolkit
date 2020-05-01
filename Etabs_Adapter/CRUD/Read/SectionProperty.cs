@@ -65,14 +65,7 @@ namespace BH.Adapter.ETABS
             string[] names = { };
             m_model.PropFrame.GetNameList(ref nameCount, ref names);
 
-            if (ids == null)
-            {
-                ids = names.ToList();
-            }
-            else
-            {
-                ids = ids.Intersect(names).ToList();
-            }
+            ids = FilterIds(ids, names);
 
             eFramePropType propertyType = eFramePropType.General;
 

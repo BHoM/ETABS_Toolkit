@@ -72,14 +72,7 @@ namespace BH.Adapter.ETABS
             string[] nameArr = { };
             m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
 
-            if (ids == null)
-            {
-                ids = nameArr.ToList();
-            }
-            else
-            {
-                ids = ids.Intersect(nameArr).ToList();
-            }
+            ids = FilterIds(ids, nameArr);
 
             //get openings, if any
             m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
@@ -162,14 +155,7 @@ namespace BH.Adapter.ETABS
             string[] nameArr = { };
             m_model.PropArea.GetNameList(ref nameCount, ref nameArr);
 
-            if (ids == null)
-            {
-                ids = nameArr.ToList();
-            }
-            else
-            {
-                ids = ids.Intersect(nameArr).ToList();
-            }
+            ids = FilterIds(ids, nameArr);
 
             foreach (string id in ids)
             {

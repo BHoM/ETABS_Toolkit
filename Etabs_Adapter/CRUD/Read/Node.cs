@@ -68,15 +68,8 @@ namespace BH.Adapter.ETABS
             string[] nameArr = { };
             m_model.PointObj.GetNameList(ref nameCount, ref nameArr);
 
-            if (ids == null)
-            {
-                ids = nameArr.ToList();
-            }
-            else
-            {
-                ids = ids.Intersect(nameArr).ToList();
-            }
-            
+            ids = FilterIds(ids, nameArr);
+
             foreach (string id in ids)
             {
 

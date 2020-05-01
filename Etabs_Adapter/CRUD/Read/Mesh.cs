@@ -66,14 +66,7 @@ namespace BH.Adapter.ETABS
             string[] nameArr = { };
             m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
 
-            if (ids == null)
-            {
-                ids = nameArr.ToList();
-            }
-            else
-            {
-                ids = ids.Intersect(nameArr).ToList();
-            }
+            ids = FilterIds(ids, nameArr);
 
             List<FEMesh> meshes = new List<FEMesh>();
             Dictionary<string, Node> nodes = new Dictionary<string, Node>();

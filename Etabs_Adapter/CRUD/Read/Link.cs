@@ -57,14 +57,7 @@ namespace BH.Adapter.ETABS
             string[] names = { };
             m_model.LinkObj.GetNameList(ref nameCount, ref names);
 
-            if (ids == null)
-            {
-                ids = names.ToList();
-            }
-            else
-            {
-                ids = ids.Intersect(names).ToList();
-            }
+            ids = FilterIds(ids, names);
 
             //read master-multiSlave nodes if these were initially created from (non-etabs)BHoM side
             Dictionary<string, List<string>> idDict = new Dictionary<string, List<string>>();
@@ -156,14 +149,7 @@ namespace BH.Adapter.ETABS
             string[] names = { };
             m_model.PropLink.GetNameList(ref nameCount, ref names);
 
-            if (ids == null)
-            {
-                ids = names.ToList();
-            }
-            else
-            {
-                ids = ids.Intersect(names).ToList();
-            }
+            ids = FilterIds(ids, names);
 
             foreach (string id in ids)
             {

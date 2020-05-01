@@ -48,6 +48,7 @@ using BH.oM.Geometry.SettingOut;
 using BH.oM.Architecture.Elements;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Adapter;
+using System.ComponentModel;
 
 namespace BH.Adapter.ETABS
 {
@@ -102,6 +103,25 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
+        [Description("Ensures that all elements in the first list are present in the second list, warning if not, and returns the second list if the first list is empty.")]
+        private static List<string> FilterIds(IEnumerable<string> ids, IEnumerable<string> etabsIds)
+        {
+            if (ids == null || ids.Count() == 0)
+            {
+                return etabsIds.ToList();
+            }
+            else
+            {
+                List<string> result = ids.Intersect(etabsIds).ToList();
+                if (result.Count() != ids.Count())
+                    Engine.Reflection.Compute.RecordWarning("Some requested ETABS ids were not present in the model.");
+                return result;
+            }
+        }
+
+        /***************************************************/
+
     }
 }
 
