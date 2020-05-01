@@ -54,13 +54,7 @@ namespace BH.Adapter.ETABS
             string[] names = null;
             m_model.Story.GetNameList(ref numberNames, ref names);
 
-            if (ids == null)
-            {
-                ids = names.ToList();
-            } else
-            {
-                ids = ids.Intersect(names).ToList();
-            }
+            ids = FilterIds(ids, names);
 
             foreach (string id in ids)
             {
