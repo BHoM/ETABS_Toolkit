@@ -22,16 +22,27 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Geometry.SettingOut;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.Constraints;
+using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.Loads;
+using BH.oM.Structure.Offsets;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
-using BH.oM.Adapter;
+using BH.oM.Adapters.ETABS;
+
+#if Debug17 || Release17
+using ETABSv17;
+#elif Debug18 || Release18
+using ETABSv1;
+#else
+using ETABS2016;
+#endif
 
 namespace BH.Adapter.ETABS
 {
@@ -44,23 +55,17 @@ namespace BH.Adapter.ETABS
 #endif
     {
         /***************************************************/
-        /**** Adapter override methods                  ****/
+        /***    Create Methods                           ***/
         /***************************************************/
 
-        protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
+        private bool CreateObject(Diaphragm diaphragm)
         {
-            if (typeof(T) == typeof(Node))
-            {
-                return UpdateObjects(objects as IEnumerable<Node>);
-            }
-            if (typeof(T) == typeof(Panel))
-            {
-                return UpdateObjects(objects as IEnumerable<Panel>);
-            }
-            else
-                return base.IUpdate<T>(objects, actionConfig);
-        }
+            bool sucess = true;
+            sucess &= m_model.Diaphragm.SetDiaphragm(diaphragm.Name, diaphragm.Rigidity == oM.Adapters.ETABS.DiaphragmType.SemiRigidDiaphragm) == 0;
 
+            return sucess;
+        }
+        
         /***************************************************/
     }
 }
