@@ -49,6 +49,15 @@ namespace BH.Adapter.ETABS
 
         protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
         {
+            if (typeof(T) == typeof(Panel))
+            {
+                List<Panel> panels = objects.Cast<Panel>().ToList();
+
+                List<Diaphragm> diaphragms = panels.Select(x => x.Diaphragm()).Where(x => x != null).ToList();
+
+                this.FullCRUD(diaphragms, PushType.FullPush);
+            }
+
             if (typeof(T) == typeof(Node))
             {
                 return UpdateObjects(objects as IEnumerable<Node>);
