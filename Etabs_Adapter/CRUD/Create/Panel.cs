@@ -114,8 +114,20 @@ namespace BH.Adapter.ETABS
             }
 
 
+            Pier pier = bhPanel.Pier();
+            Spandrel spandrel = bhPanel.Spandrel();
             Diaphragm diaphragm = bhPanel.Diaphragm();
 
+            if (pier != null)
+            {
+                int ret = m_model.PierLabel.SetPier(pier.Name);
+                ret = m_model.AreaObj.SetPier(name, pier.Name);
+            }
+            if (spandrel != null)
+            {
+                int ret = m_model.SpandrelLabel.SetSpandrel(spandrel.Name, false);
+                ret = m_model.AreaObj.SetSpandrel(name, spandrel.Name);
+            }
             if (diaphragm != null)
             {
                 m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
