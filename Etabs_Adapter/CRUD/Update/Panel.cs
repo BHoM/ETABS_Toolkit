@@ -32,6 +32,7 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Adapter;
+using BH.oM.Geometry;
 
 namespace BH.Adapter.ETABS
 {
@@ -44,24 +45,48 @@ namespace BH.Adapter.ETABS
 #endif
     {
         /***************************************************/
-        /**** Adapter override methods                  ****/
+        /**** Update Panel                              ****/
         /***************************************************/
-
-        protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
+        
+        private bool UpdateObjects(IEnumerable<Panel> bhPanels)
         {
-            if (typeof(T) == typeof(Node))
+            bool success = true;
+            m_model.SelectObj.ClearSelection();
+
+            foreach (Panel bhPanel in bhPanels)
             {
-                return UpdateObjects(objects as IEnumerable<Node>);
+                string name = bhPanel.CustomData[AdapterIdName].ToString();
+                string propertyName = bhPanel.Property.CustomData[AdapterIdName].ToString();
+
+                Engine.Reflection.Compute.RecordWarning("Update Panel does not affect the geometry of the panel. Openings are geometrical.");
+
+                m_model.AreaObj.SetProperty(name, propertyName);
+
+                Pier pier = bhPanel.Pier();
+                Spandrel spandrel = bhPanel.Spandrel();
+                Diaphragm diaphragm = bhPanel.Diaphragm();
+
+                if (pier != null)
+                {
+                    int ret = m_model.PierLabel.SetPier(pier.Name);
+                    ret = m_model.AreaObj.SetPier(name, pier.Name);
+                }
+                if (spandrel != null)
+                {
+                    int ret = m_model.SpandrelLabel.SetSpandrel(spandrel.Name, false);
+                    ret = m_model.AreaObj.SetSpandrel(name, spandrel.Name);
+                }
+                if (diaphragm != null)
+                {
+                    m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
+                }
             }
-            if (typeof(T) == typeof(Panel))
-            {
-                return UpdateObjects(objects as IEnumerable<Panel>);
-            }
-            else
-                return base.IUpdate<T>(objects, actionConfig);
+
+            return success;
         }
 
         /***************************************************/
+
     }
 }
 

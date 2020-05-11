@@ -44,21 +44,40 @@ namespace BH.Adapter.ETABS
 #endif
     {
         /***************************************************/
-        /**** Adapter override methods                  ****/
+        /**** Update Node                               ****/
         /***************************************************/
-
-        protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
+        
+        private bool UpdateObjects(IEnumerable<Node> nodes)
         {
-            if (typeof(T) == typeof(Node))
+            bool success = true;
+            foreach (Node bhNode in nodes)
             {
-                return UpdateObjects(objects as IEnumerable<Node>);
+                if (bhNode.Support != null)
+                {
+                    string name = bhNode.CustomData[AdapterIdName].ToString();
+
+                    bool[] restraint = new bool[6];
+                    restraint[0] = bhNode.Support.TranslationX == DOFType.Fixed;
+                    restraint[1] = bhNode.Support.TranslationY == DOFType.Fixed;
+                    restraint[2] = bhNode.Support.TranslationZ == DOFType.Fixed;
+                    restraint[3] = bhNode.Support.RotationX == DOFType.Fixed;
+                    restraint[4] = bhNode.Support.RotationY == DOFType.Fixed;
+                    restraint[5] = bhNode.Support.RotationZ == DOFType.Fixed;
+
+                    double[] spring = new double[6];
+                    spring[0] = bhNode.Support.TranslationalStiffnessX;
+                    spring[1] = bhNode.Support.TranslationalStiffnessY;
+                    spring[2] = bhNode.Support.TranslationalStiffnessZ;
+                    spring[3] = bhNode.Support.RotationalStiffnessX;
+                    spring[4] = bhNode.Support.RotationalStiffnessY;
+                    spring[5] = bhNode.Support.RotationalStiffnessZ;
+
+                    success &= m_model.PointObj.SetRestraint(name, ref restraint) == 0;
+                    success &= m_model.PointObj.SetSpring(name, ref spring) == 0;
+                }
             }
-            if (typeof(T) == typeof(Panel))
-            {
-                return UpdateObjects(objects as IEnumerable<Panel>);
-            }
-            else
-                return base.IUpdate<T>(objects, actionConfig);
+
+            return success;
         }
 
         /***************************************************/

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -336,6 +336,8 @@
   <ItemGroup>
     <Compile Include="AdapterActions\Exectute.cs" />
     <Compile Include="CRUD\Create\Loadcase.cs" />
+    <Compile Include="CRUD\Create\Diaphragm.cs" />
+    <Compile Include="CRUD\Create\SurfaceProperty.cs" />
     <Compile Include="CRUD\Create\SectionProperty.cs" />
     <Compile Include="CRUD\Create\Panel.cs" />
     <Compile Include="CRUD\Create\Material.cs" />
@@ -354,6 +356,8 @@
     <Compile Include="CRUD\Read\Results\GlobalResults.cs" />
     <Compile Include="CRUD\Read\Results\NodeResults.cs" />
     <Compile Include="CRUD\Read\Results\MeshResults.cs" />
+    <Compile Include="CRUD\Update\Node.cs" />
+    <Compile Include="CRUD\Update\Panel.cs" />
     <Compile Include="Types\NextIndex.cs" />
     <Compile Include="CRUD\Read\Link.cs" />
     <Compile Include="CRUD\Read\Material.cs" />

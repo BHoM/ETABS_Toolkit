@@ -108,6 +108,8 @@ namespace BH.Adapter.ETABS
                     string openingName = name + "_Opening_" + i;
                     m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "");//<-- setting panel property to empty string, verify that this is correct
                     m_model.AreaObj.SetOpening(openingName, true);
+
+                    bhPanel.Openings[i].CustomData[AdapterIdName] = openingName;
                 }
             }
 
@@ -121,92 +123,9 @@ namespace BH.Adapter.ETABS
 
             return success;
         }
-
+        
         /***************************************************/
-
-        private bool CreateObject(ISurfaceProperty property2d)
-        {
-            bool success = true;
-            int retA = 0;
-
-            string propertyName = property2d.DescriptionOrName();
-            property2d.CustomData[AdapterIdName] = propertyName;
-
-            eShellType shellType = ShellTypeToCSI(property2d);
-
-            if (property2d.GetType() == typeof(Waffle))
-            {
-                Waffle waffleProperty = (Waffle)property2d;
-                m_model.PropArea.SetSlab(propertyName, eSlabType.Waffle, shellType, property2d.Material.DescriptionOrName(), waffleProperty.Thickness);
-                retA = m_model.PropArea.SetSlabWaffle(propertyName, waffleProperty.TotalDepthX, waffleProperty.Thickness, waffleProperty.StemWidthX, waffleProperty.StemWidthX, waffleProperty.SpacingX, waffleProperty.SpacingY);
-            }
-            else if (property2d.GetType() == typeof(Ribbed))
-            {
-                Ribbed ribbedProperty = (Ribbed)property2d;
-                m_model.PropArea.SetSlab(propertyName, eSlabType.Ribbed, shellType, property2d.Material.DescriptionOrName(), ribbedProperty.Thickness);
-                retA = m_model.PropArea.SetSlabRibbed(propertyName, ribbedProperty.TotalDepth, ribbedProperty.Thickness, ribbedProperty.StemWidth, ribbedProperty.StemWidth, ribbedProperty.Spacing, (int)ribbedProperty.Direction);
-            }
-            else if (property2d.GetType() == typeof(LoadingPanelProperty))
-            {
-                retA = m_model.PropArea.SetSlab(propertyName, eSlabType.Slab, shellType, property2d.Material.DescriptionOrName(), 0);
-            }
-
-            else if (property2d.GetType() == typeof(ConstantThickness))
-            {
-                ConstantThickness constantThickness = (ConstantThickness)property2d;
-                if (constantThickness.PanelType == PanelType.Wall)
-                    retA = m_model.PropArea.SetWall(propertyName, eWallPropType.Specified, shellType, property2d.Material.DescriptionOrName(), constantThickness.Thickness);
-                else
-                    retA = m_model.PropArea.SetSlab(propertyName, eSlabType.Slab, shellType, property2d.Material.DescriptionOrName(), constantThickness.Thickness);
-            }
-
-
-            if (property2d.HasModifiers())
-            {
-                double[] modifier = property2d.Modifiers();//(double[])property2d.CustomData["Modifiers"];
-                m_model.PropArea.SetModifiers(propertyName, ref modifier);
-            }
-
-            if (retA != 0)
-                success = false;
-
-            return success;
-        }
-
-        /***************************************************/
-
-        private bool CreateObject(Diaphragm diaphragm)
-        {
-            bool sucess = true;
-            sucess &= m_model.Diaphragm.SetDiaphragm(diaphragm.Name, diaphragm.Rigidity == oM.Adapters.ETABS.DiaphragmType.SemiRigidDiaphragm) == 0;
-
-            return sucess;
-        }
-
-        /***************************************************/
-        /***    Helper Methods                           ***/
-        /***************************************************/
-
-        private eShellType ShellTypeToCSI(ISurfaceProperty panel)
-        {
-            object obj;
-
-            if (panel.CustomData.TryGetValue("ShellType", out obj) && obj is ShellType)
-            {
-                switch ((ShellType)obj)
-                {
-                    case ShellType.ShellThin:
-                        return eShellType.ShellThin;
-                    case ShellType.ShellThick:
-                        return eShellType.ShellThick;
-                    case ShellType.Membrane:
-                        return eShellType.Membrane;
-                }
-            }
-            return eShellType.ShellThin;
-        }
-
-        /***************************************************/
+        
     }
 }
 
