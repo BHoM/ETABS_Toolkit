@@ -58,7 +58,7 @@ namespace BH.Adapter.ETABS
                 string name = bhPanel.CustomData[AdapterIdName].ToString();
                 string propertyName = bhPanel.Property.CustomData[AdapterIdName].ToString();
 
-                Engine.Reflection.Compute.RecordWarning("Update Panel does not affect the geometry of the panel. Openings are geometrical.");
+                Engine.Reflection.Compute.RecordWarning("The Etabs API does not allow for updating of the geometry of panels. This includes the external edges as well as the openings. To update the panel geometry, delete the existing panel you want to update and create a new one..");
 
                 m_model.AreaObj.SetProperty(name, propertyName);
 
@@ -89,4 +89,3 @@ namespace BH.Adapter.ETABS
 
     }
 }
-
