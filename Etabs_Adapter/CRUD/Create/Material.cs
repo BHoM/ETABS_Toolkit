@@ -60,24 +60,36 @@ namespace BH.Adapter.ETABS
             {
                 m_model.PropMaterial.AddMaterial(ref name, MaterialTypeToCSI(material.IMaterialType()), "", "", "");
                 m_model.PropMaterial.ChangeName(name, material.DescriptionOrName());
-                if (material is IIsotropic)
-                {
-                    IIsotropic isotropic = material as IIsotropic;
-                    success &= m_model.PropMaterial.SetMPIsotropic(material.DescriptionOrName(), isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff) == 0;
-                }
-                else if (material is IOrthotropic)
-                {
-                    IOrthotropic orthoTropic = material as IOrthotropic;
-                    double[] e = orthoTropic.YoungsModulus.ToDoubleArray();
-                    double[] v = orthoTropic.PoissonsRatio.ToDoubleArray();
-                    double[] a = orthoTropic.ThermalExpansionCoeff.ToDoubleArray();
-                    double[] g = orthoTropic.ShearModulus.ToDoubleArray();
-                    success &= m_model.PropMaterial.SetMPOrthotropic(material.DescriptionOrName(), ref e, ref v, ref a, ref g) == 0;
-                }
-                success &= m_model.PropMaterial.SetWeightAndMass(material.DescriptionOrName(), 2, material.Density) == 0;
+
+                success &= SetObject(material);
             }
             if (!success)
                 Engine.Reflection.Compute.RecordWarning($"Failed to assign material: {material.DescriptionOrName()}, ETABS may have overwritten some properties with default values");
+            return success;
+        }
+
+        /***************************************************/
+
+        private bool SetObject(IMaterialFragment material)
+        {
+            bool success = true;
+
+            if (material is IIsotropic)
+            {
+                IIsotropic isotropic = material as IIsotropic;
+                success &= m_model.PropMaterial.SetMPIsotropic(material.DescriptionOrName(), isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff) == 0;
+            }
+            else if (material is IOrthotropic)
+            {
+                IOrthotropic orthoTropic = material as IOrthotropic;
+                double[] e = orthoTropic.YoungsModulus.ToDoubleArray();
+                double[] v = orthoTropic.PoissonsRatio.ToDoubleArray();
+                double[] a = orthoTropic.ThermalExpansionCoeff.ToDoubleArray();
+                double[] g = orthoTropic.ShearModulus.ToDoubleArray();
+                success &= m_model.PropMaterial.SetMPOrthotropic(material.DescriptionOrName(), ref e, ref v, ref a, ref g) == 0;
+            }
+            success &= m_model.PropMaterial.SetWeightAndMass(material.DescriptionOrName(), 2, material.Density) == 0;
+
             return success;
         }
 
