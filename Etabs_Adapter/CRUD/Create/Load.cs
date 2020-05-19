@@ -56,7 +56,7 @@ namespace BH.Adapter.ETABS
 
             return true;
         }
-        
+
         /***************************************************/
 
         public void SetLoad(PointLoad pointLoad, bool replace)
@@ -91,7 +91,7 @@ namespace BH.Adapter.ETABS
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     int ret = 1;
-                    double val = direction == 1 ? barUniformLoad.Force.X : barUniformLoad.Axis == LoadAxis.Global ? 
+                    double val = direction == 1 ? barUniformLoad.Force.X : barUniformLoad.Axis == LoadAxis.Global ?
                         direction == 2 ? barUniformLoad.Force.Y : (shift == 6 ? -barUniformLoad.Force.Z : barUniformLoad.Force.Z) :
                         direction == 2 ? barUniformLoad.Force.Z : -barUniformLoad.Force.Y; //note: etabs acts different then stated in API documentstion
 
@@ -171,6 +171,12 @@ namespace BH.Adapter.ETABS
                         direction == 2 ? barLoad.ForceB.Y : (shift == 6 ? -barLoad.ForceB.Z : barLoad.ForceB.Z) :
                         direction == 2 ? barLoad.ForceB.Z : -barLoad.ForceB.Y; //note: etabs acts different then stated in API documentstion
 
+                    val1 = valA; //note: etabs acts different then stated in API documentstion
+                    val2 = valB;
+                    dist1 = barLoad.DistanceFromA;
+                    dist2 = bar.Length() - barLoad.DistanceFromB;
+
+#if Debug16 || Release16
                     if (bar.CheckFlipBar())
                     {
                         val1 = valB; //note: etabs acts different then stated in API documentstion
@@ -178,13 +184,7 @@ namespace BH.Adapter.ETABS
                         dist1 = barLoad.DistanceFromB;
                         dist2 = bar.Length() - barLoad.DistanceFromA;
                     }
-                    else
-                    {
-                        val1 = valA; //note: etabs acts different then stated in API documentstion
-                        val2 = valB;
-                        dist1 = barLoad.DistanceFromA;
-                        dist2 = bar.Length() - barLoad.DistanceFromB;
-                    }
+#endif
 
                     if (!(val1 == 0 && val2 == 0))
                     {
@@ -207,6 +207,12 @@ namespace BH.Adapter.ETABS
                         direction == 2 ? barLoad.MomentB.Y : (shift == 6 ? -barLoad.MomentB.Z : barLoad.MomentB.Z) :
                         direction == 2 ? barLoad.MomentB.Z : -barLoad.MomentB.Y; //note: etabs acts different then stated in API documentstion
 
+                    val1 = valA; //note: etabs acts different then stated in API documentstion
+                    val2 = valB;
+                    dist1 = barLoad.DistanceFromA;
+                    dist2 = bar.Length() - barLoad.DistanceFromB;
+
+#if Debug16 || Release16
                     if (bar.CheckFlipBar())
                     {
                         val1 = valB; //note: etabs acts different then stated in API documentstion
@@ -214,13 +220,7 @@ namespace BH.Adapter.ETABS
                         dist1 = barLoad.DistanceFromB;
                         dist2 = bar.Length() - barLoad.DistanceFromA;
                     }
-                    else
-                    {
-                        val1 = valA; //note: etabs acts different then stated in API documentstion
-                        val2 = valB;
-                        dist1 = barLoad.DistanceFromA;
-                        dist2 = bar.Length() - barLoad.DistanceFromB;
-                    }
+#endif
 
                     if (!(val1 == 0 && val2 == 0))
                     {
