@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Geometry;
+using System.ComponentModel;
 
 namespace BH.Engine.ETABS
 {
@@ -38,6 +39,7 @@ namespace BH.Engine.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Evaluates if the Bar would have its endpoints flipped on Push to ETABS in ETABS16.")]
         public static bool CheckFlipBar(this Bar bar)
         {
             Point start = bar.StartNode.Position;

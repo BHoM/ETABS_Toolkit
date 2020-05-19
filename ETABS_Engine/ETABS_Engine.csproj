@@ -121,6 +121,7 @@
     <Compile Include="Modify\SetSpandrel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\AutoLengthOffset.cs" />
+    <Compile Include="Query\CheckFlipBar.cs" />
     <Compile Include="Query\Diaphragm.cs" />
     <Compile Include="Query\DiaphragmType.cs" />
     <Compile Include="Query\ModifyStiffnessInsertionPoint.cs" />

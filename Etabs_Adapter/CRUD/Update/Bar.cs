@@ -82,6 +82,18 @@ namespace BH.Adapter.ETABS
                     continue;
                 }
 
+#if Debug16 || Release16
+                string start = "";
+                string end = "";
+                m_model.FrameObj.GetPoints(name, ref start, ref end);
+
+                if (bhBar.StartNode.CustomData[AdapterIdName].ToString() != start ||
+                    bhBar.EndNode.CustomData[AdapterIdName].ToString() != end)
+                {
+                    Engine.Reflection.Compute.RecordWarning("ETABS16 does not support Update of Bar connections.");
+                }
+#endif
+
                 if (SetObject(bhBar))
                     ret++;
 
