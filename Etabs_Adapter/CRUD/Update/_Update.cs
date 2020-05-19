@@ -32,6 +32,7 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Adapter;
+using BH.oM.Structure.SurfaceProperties;
 
 namespace BH.Adapter.ETABS
 {
@@ -62,9 +63,25 @@ namespace BH.Adapter.ETABS
             {
                 return UpdateObjects(objects as IEnumerable<Node>);
             }
-            if (typeof(T) == typeof(Panel))
+            else if (typeof(T) == typeof(Panel))
             {
                 return UpdateObjects(objects as IEnumerable<Panel>);
+            }
+            else if (typeof(T) == typeof(Bar))
+            {
+                return UpdateObjects(objects as IEnumerable<Bar>);
+            }
+            else if (typeof(T) == typeof(IMaterialFragment))
+            {
+                return UpdateObjects(objects as IEnumerable<IMaterialFragment>);
+            }
+            else if (typeof(T) == typeof(ISectionProperty))
+            {
+                return UpdateObjects(objects as IEnumerable<ISectionProperty>);
+            }
+            else if (typeof(T) == typeof(ISurfaceProperty))
+            {
+                return UpdateObjects(objects as IEnumerable<ISurfaceProperty>);
             }
             else
                 return base.IUpdate<T>(objects, actionConfig);
