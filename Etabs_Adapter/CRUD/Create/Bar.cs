@@ -66,16 +66,9 @@ namespace BH.Adapter.ETABS
 
 
             string name = "";
-
-            // Evaluate if the bar is alinged as Etabs wants it
-            if (bhBar.CheckFlipBar())
-            {
-                FlipEndPoints(bhBar);      //CloneBeforePush means this is fine
-                FlipInsertionPoint(bhBar); //ETABS specific operation
-                Engine.Reflection.Compute.RecordNote("Some bars has been flipped to comply with ETABS API, asymmetric sections will suffer");
-            }
+            
             ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterIdName].ToString(), bhBar.EndNode.CustomData[AdapterIdName].ToString(), ref name);
-
+            
             bhBar.CustomData[AdapterIdName] = name;
 
             if (ret != 0)
@@ -83,6 +76,20 @@ namespace BH.Adapter.ETABS
                 CreateElementError("Bar", name);
                 return false;
             }
+
+            return SetObject(bhBar);
+        }
+
+        /***************************************************/
+
+        [Description("Does all the ETABS interaction which does not initiate a new object in ETABS.")]
+        private bool SetObject(Bar bhBar)
+        {
+            int ret = 0;
+            string name = bhBar.CustomData[AdapterIdName].ToString();
+
+            // Needed rigth after create as well as AddByPoint flipps the Bar if it feels like it
+            m_model.EditFrame.ChangeConnectivity(name, bhBar.StartNode.CustomData[AdapterIdName].ToString(), bhBar.EndNode.CustomData[AdapterIdName].ToString());
 
             if (bhBar.SectionProperty != null)
             {
@@ -117,7 +124,7 @@ namespace BH.Adapter.ETABS
                 CreatePropertyWarning("insertion point and perpendicular offset", "Bar", name);
                 ret++;
             }
-            
+
             if (bhBar.Release != null)
             {
                 bool[] restraintStart = null;
@@ -157,86 +164,6 @@ namespace BH.Adapter.ETABS
             }
 
             return true;
-        }
-
-        /***************************************************/
-
-        [Description("Returns a bar where the endpoints have been flipped without cloning the object")]
-        private static void FlipEndPoints(Bar bar)
-        {
-            // Flip the endpoints
-            Node tempNode = bar.StartNode;
-            bar.StartNode = bar.EndNode;
-            bar.EndNode = tempNode;
-
-            // Flip orientationAngle
-            bar.OrientationAngle = -bar.OrientationAngle;
-            if (bar.IsVertical())
-                bar.OrientationAngle += Math.PI;
-
-            // Flip Offsets
-            if (bar.Offset != null)
-            {
-                Vector tempV = bar.Offset.Start;
-                bar.Offset.Start = bar.Offset.End;
-                bar.Offset.End = tempV;
-
-                bar.Offset.Start.X *= -1;
-                bar.Offset.End.X *= -1;
-
-                if (!bar.IsVertical())
-                {
-                    bar.Offset.Start.Y *= -1;
-                    bar.Offset.End.Y *= -1;
-                }
-            }
-            // mirror the section 
-            // not possible to push to ETABS afterwards if we did
-            // warning for asymetric sections?
-
-            // Flip Release
-            if (bar.Release != null)
-            {
-                Constraint6DOF tempC = bar.Release.StartRelease;
-                bar.Release.StartRelease = bar.Release.EndRelease;
-                bar.Release.EndRelease = tempC;
-            }
-        }
-
-        /***************************************************/
-
-        private static void FlipInsertionPoint(Bar bar)
-        {
-            InsertionPoint fragment = bar.FindFragment<InsertionPoint>();
-            if (fragment != null)
-            {
-                BarInsertionPoint insertionPoint = fragment.BarInsertionPoint;
-
-                switch (insertionPoint)
-                {
-                    case BarInsertionPoint.BottomLeft:
-                        fragment.BarInsertionPoint = BarInsertionPoint.BottomRight;
-                        break;
-                    case BarInsertionPoint.BottomRight:
-                        fragment.BarInsertionPoint = BarInsertionPoint.BottomLeft;
-                        break;
-                    case BarInsertionPoint.MiddleLeft:
-                        fragment.BarInsertionPoint = BarInsertionPoint.MiddleRight;
-                        break;
-                    case BarInsertionPoint.MiddleRight:
-                        fragment.BarInsertionPoint = BarInsertionPoint.MiddleLeft;
-                        break;
-                    case BarInsertionPoint.TopLeft:
-                        fragment.BarInsertionPoint = BarInsertionPoint.TopRight;
-                        break;
-                    case BarInsertionPoint.TopRight:
-                        fragment.BarInsertionPoint = BarInsertionPoint.TopLeft;
-                        break;
-                    default:
-                        break;
-                }
-                bar.Fragments.AddOrReplace(fragment);
-            }
         }
 
         /***************************************************/
