@@ -71,8 +71,8 @@ namespace BH.Adapter.ETABS
                 {
                     if (matType != MaterialTypeToCSI(material.IMaterialType()))
                     {
-                        // Can't update to a new type of material (??)
                         Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, can't update to another material type.");
+                        continue;
                     }
                     
                     success &= SetObject(material);
