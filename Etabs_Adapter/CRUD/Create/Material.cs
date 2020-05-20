@@ -25,6 +25,7 @@ using System.Linq;
 using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.ETABS;
+using System.ComponentModel;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -70,6 +71,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        [Description("Does all the ETABS interaction which does not initiate a new object in ETABS.")]
         private bool SetObject(IMaterialFragment material)
         {
             bool success = true;
