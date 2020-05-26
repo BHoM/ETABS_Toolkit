@@ -58,11 +58,9 @@ namespace BH.Adapter.ETABS
         
         private bool UpdateObjects(IEnumerable<IMaterialFragment> bhMaterials)
         {
-            bool success = true;
-
             foreach (IMaterialFragment material in bhMaterials)
             {
-                success = true;
+                bool success = true;
                 eMatType matType = eMatType.NoDesign;
                 int colour = 0;
                 string guid = "";
@@ -87,7 +85,7 @@ namespace BH.Adapter.ETABS
                     Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, all BHoM properties may not have been set.");
             }
 
-            return success;
+            return true;
         }
 
         /***************************************************/
