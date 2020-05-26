@@ -90,7 +90,8 @@ namespace BH.Adapter.ETABS
                 if (bhBar.StartNode.CustomData[AdapterIdName].ToString() != start ||
                     bhBar.EndNode.CustomData[AdapterIdName].ToString() != end)
                 {
-                    Engine.Reflection.Compute.RecordWarning("ETABS16 does not support Update of Bar connections.");
+                    Engine.Reflection.Compute.RecordWarning("ETABS16 does not support Update of Bar connectivity, which means the geometry can not be updated. \n" + 
+                                                            "To update the connectivity or position of a Bar, delete the existing Bar you want to update and create a new one.");
                 }
 #endif
 
