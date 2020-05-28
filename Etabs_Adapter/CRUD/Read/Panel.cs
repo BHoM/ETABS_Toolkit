@@ -40,6 +40,7 @@ using BH.Engine.Reflection;
 using BH.oM.Geometry.SettingOut;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Adapters.ETABS.Fragments;
+using BH.oM.Structure.Fragments;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -145,145 +146,6 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<ISurfaceProperty> ReadSurfaceProperty(List<string> ids = null)
-        {
-            List<ISurfaceProperty> propertyList = new List<ISurfaceProperty>();
-
-            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
-
-            int nameCount = 0;
-            string[] nameArr = { };
-            m_model.PropArea.GetNameList(ref nameCount, ref nameArr);
-
-            ids = FilterIds(ids, nameArr);
-
-            foreach (string id in ids)
-            {
-                eSlabType slabType = eSlabType.Slab;
-                eShellType shellType = eShellType.ShellThin;
-                eWallPropType wallType = eWallPropType.Specified;
-                string material = "";
-                double thickness = 0;
-                int colour = 0;
-                string notes = "";
-                string guid = "";
-                double depth = 0;
-                double stemWidthTop = 0;
-                double stemWidthBottom = 0;//not used
-                double ribSpacing = 0;
-                double ribSpacing2nd = 0;
-                int direction = 0;
-                double[] modifiers = new double[] { };
-                bool hasModifiers = false;
-
-                int ret = m_model.PropArea.GetSlab(id, ref slabType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
-                if (ret != 0)
-                    m_model.PropArea.GetWall(id, ref wallType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
-
-                if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
-                    hasModifiers = true;
-
-                IMaterialFragment bhMaterial = null;
-
-                try
-                {
-                    bhMaterial = bhomMaterials[material];
-                }
-                catch (Exception)
-                {
-                    Engine.Reflection.Compute.RecordNote("Could not get material from ETABS. Material for surface property " + id + " will be null");
-                }
-
-                if (wallType == eWallPropType.AutoSelectList)
-                {
-                    string[] propList = null;
-                    string currentProperty = "";
-
-                    m_model.PropArea.GetWallAutoSelectList(id, ref propList, ref currentProperty);
-                    m_model.PropArea.GetWall(currentProperty, ref wallType, ref shellType, ref material, ref thickness, ref colour, ref notes, ref guid);
-
-                    ConstantThickness panelConstant = new ConstantThickness();
-                    panelConstant.Name = currentProperty;
-                    panelConstant.CustomData[AdapterIdName] = id;
-                    panelConstant.Material = bhMaterial;
-                    panelConstant.Thickness = thickness;
-                    panelConstant.PanelType = PanelType.Wall;
-                    panelConstant.CustomData["ShellType"] = ShellTypeToBHoM(shellType);
-                    if (hasModifiers)
-                        panelConstant.CustomData.Add("Modifiers", modifiers);
-
-                    propertyList.Add(panelConstant);
-                }
-                else
-                {
-                    switch (slabType)
-                    {
-                        case eSlabType.Ribbed:
-                            Ribbed panelRibbed = new Ribbed();
-
-                            m_model.PropArea.GetSlabRibbed(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref direction);
-                            panelRibbed.Name = id;
-                            panelRibbed.CustomData[AdapterIdName] = id;
-                            panelRibbed.Material = bhMaterial;
-                            panelRibbed.Thickness = thickness;
-                            panelRibbed.PanelType = PanelType.Slab;
-                            panelRibbed.Direction = (PanelDirection)direction;
-                            panelRibbed.Spacing = ribSpacing;
-                            panelRibbed.StemWidth = stemWidthTop;
-                            panelRibbed.TotalDepth = depth;
-                            panelRibbed.CustomData["ShellType"] = ShellTypeToBHoM(shellType);
-                            if (hasModifiers)
-                                panelRibbed.CustomData.Add("Modifiers", modifiers);
-
-                            propertyList.Add(panelRibbed);
-                            break;
-                        case eSlabType.Waffle:
-                            Waffle panelWaffle = new Waffle();
-
-                            m_model.PropArea.GetSlabWaffle(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref ribSpacing2nd);
-                            panelWaffle.Name = id;
-                            panelWaffle.CustomData[AdapterIdName] = id;
-                            panelWaffle.Material = bhMaterial;
-                            panelWaffle.SpacingX = ribSpacing;
-                            panelWaffle.SpacingY = ribSpacing2nd;
-                            panelWaffle.StemWidthX = stemWidthTop;
-                            panelWaffle.StemWidthY = stemWidthTop; //ETABS does not appear to support direction dependent stem width
-                            panelWaffle.Thickness = thickness;
-                            panelWaffle.TotalDepthX = depth;
-                            panelWaffle.TotalDepthY = depth; // ETABS does not appear to to support direction dependent depth
-                            panelWaffle.PanelType = PanelType.Slab;
-                            panelWaffle.CustomData["ShellType"] = ShellTypeToBHoM(shellType);
-                            if (hasModifiers)
-                                panelWaffle.CustomData.Add("Modifiers", modifiers);
-
-                            propertyList.Add(panelWaffle);
-                            break;
-                        case eSlabType.Slab:
-                        case eSlabType.Drop:
-                        case eSlabType.Stiff_DO_NOT_USE:
-                        default:
-                            ConstantThickness panelConstant = new ConstantThickness();
-                            panelConstant.CustomData[AdapterIdName] = id;
-                            panelConstant.Name = id;
-                            panelConstant.Material = bhMaterial;
-                            panelConstant.Thickness = thickness;
-                            panelConstant.Name = id;
-                            panelConstant.PanelType = PanelType.Slab;
-                            panelConstant.CustomData["ShellType"] = ShellTypeToBHoM(shellType);
-                            if (hasModifiers)
-                                panelConstant.CustomData.Add("Modifiers", modifiers);
-
-                            propertyList.Add(panelConstant);
-                            break;
-                    }
-                }
-            }
-
-            return propertyList;
-        }
-
-        /***************************************************/
-
         private Polyline GetPanelPerimeter(string id)
         {
             string[] pName = null;
@@ -303,25 +165,6 @@ namespace BH.Adapter.ETABS
             Polyline pl = new Polyline() { ControlPoints = pts };
 
             return pl;
-        }
-
-        /***************************************************/
-        /***    Helper Methods                           ***/
-        /***************************************************/
-
-        private string ShellTypeToBHoM(eShellType shellType)
-        {
-            switch (shellType)
-            {
-                case eShellType.ShellThin:
-                    return oM.Adapters.ETABS.ShellType.ShellThin.ToString();
-                case eShellType.ShellThick:
-                    return oM.Adapters.ETABS.ShellType.ShellThick.ToString();
-                case eShellType.Membrane:
-                    return oM.Adapters.ETABS.ShellType.Membrane.ToString();
-                default:
-                    return "None";
-            }
         }
 
         /***************************************************/

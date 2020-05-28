@@ -22,17 +22,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Structure.Elements;
 using BH.oM.Structure.SectionProperties;
-using BH.oM.Structure.Constraints;
-using BH.oM.Structure.Loads;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
-using BH.oM.Structure.MaterialFragments;
-using BH.Engine.ETABS;
-using BH.oM.Adapters.ETABS.Elements;
-using BH.oM.Adapter;
-using BH.oM.Geometry;
+using BH.oM.Structure.Fragments;
+using BH.Engine.Base;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -77,18 +71,18 @@ namespace BH.Adapter.ETABS
                 // The API clamis that the Set methods for PropFrame are both initiasers and modifiers
                 SetSection(bhSection as dynamic);
 
-                double[] modifiers = bhSection.Modifiers();
+                SectionModifier modifier = bhSection.FindFragment<SectionModifier>();
 
-                if (modifiers != null)
+                if (modifier != null)
                 {
                     double[] etabsMods = new double[8];
 
-                    etabsMods[0] = modifiers[0];    //Area
-                    etabsMods[1] = modifiers[4];    //Minor axis shear
-                    etabsMods[2] = modifiers[5];    //Major axis shear
-                    etabsMods[3] = modifiers[3];    //Torsion
-                    etabsMods[4] = modifiers[1];    //Major bending
-                    etabsMods[5] = modifiers[2];    //Minor bending
+                    etabsMods[0] = modifier.Area;   //Area
+                    etabsMods[1] = modifier.Asz;    //Major axis shear
+                    etabsMods[2] = modifier.Asy;    //Minor axis shear
+                    etabsMods[3] = modifier.J;      //Torsion
+                    etabsMods[4] = modifier.Iz;     //Minor bending
+                    etabsMods[5] = modifier.Iy;     //Major bending
                     etabsMods[6] = 1;               //Mass, not currently implemented
                     etabsMods[7] = 1;               //Weight, not currently implemented
 

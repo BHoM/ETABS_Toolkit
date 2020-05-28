@@ -36,6 +36,7 @@ using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Adapters.ETABS.Fragments;
 using BH.oM.Adapters.ETABS;
 using BH.Engine.Structure;
+using BH.oM.Structure.Fragments;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -349,8 +350,22 @@ namespace BH.Adapter.ETABS
                         default:
                             continue;
                     }
-
                     bhSectionProperty.CustomData[AdapterIdName] = id;
+
+                    double[] modifiers = null;
+                    if (m_model.PropFrame.GetModifiers(id, ref modifiers) == 0 && modifiers != null && modifiers.Length > 6 && modifiers.Any(x => x != 1))
+                    {
+                        SectionModifier modifier = new SectionModifier
+                        {
+                            Area = modifiers[0],
+                            Asz = modifiers[1],
+                            Asy = modifiers[2],
+                            J = modifiers[3],
+                            Iz = modifiers[4],
+                            Iy = modifiers[5]
+                        };
+                        bhSectionProperty.Fragments.Add(modifier);
+                    }
 
                     propList.Add(bhSectionProperty);
                 }
