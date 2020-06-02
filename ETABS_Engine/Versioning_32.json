@@ -1,0 +1,18 @@
+﻿{
+  "Namespace": {
+    "ToNew": {
+	"BH.Engine.ETABS" : "BH.Engine.Adapters.ETABS"
+    },
+    "ToOld": {
+	"BH.Engine.Adapters.ETABS" : "BH.Engine.ETABS"
+    }
+  },
+  "Type": {
+    "ToNew": {
+
+    },
+    "ToOld": {
+
+    }
+  }
+} 

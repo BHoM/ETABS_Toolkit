@@ -26,13 +26,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Base;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.Constraints;
-using BH.oM.Structure.Loads;
-using BH.oM.Structure.MaterialFragments;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -40,12 +35,7 @@ using ETABSv1;
 #else
 using ETABS2016;
 #endif
-using BH.Engine.ETABS;
 using BH.oM.Geometry;
-using BH.Engine.Geometry;
-using BH.Engine.Reflection;
-using BH.oM.Geometry.SettingOut;
-using BH.oM.Adapters.ETABS.Elements;
 
 namespace BH.Adapter.ETABS
 {

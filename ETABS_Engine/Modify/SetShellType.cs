@@ -23,7 +23,7 @@
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Adapters.ETABS;
 
-namespace BH.Engine.ETABS
+namespace BH.Engine.Adapters.ETABS
 {
     public static partial class Modify
     {

@@ -29,7 +29,7 @@ using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Constraints;
 using BH.oM.Geometry;
 
-namespace BH.Engine.ETABS
+namespace BH.Engine.Adapters.ETABS
 {
     public static partial class Convert
     {

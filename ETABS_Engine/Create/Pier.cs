@@ -32,7 +32,7 @@ using BH.oM.Adapters.ETABS;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
 
-namespace BH.Engine.ETABS
+namespace BH.Engine.Adapters.ETABS
 {
     public static partial class Create
     {

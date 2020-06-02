@@ -30,7 +30,7 @@ using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Geometry;
 using System.ComponentModel;
 
-namespace BH.Engine.ETABS
+namespace BH.Engine.Adapters.ETABS
 {
     public static partial class Query
     {

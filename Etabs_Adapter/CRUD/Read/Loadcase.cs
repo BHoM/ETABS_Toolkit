@@ -26,11 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Base;
-using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
-using BH.Engine.ETABS;
-using BH.oM.Geometry;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18

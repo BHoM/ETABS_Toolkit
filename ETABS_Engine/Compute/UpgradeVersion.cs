@@ -29,7 +29,7 @@ using BH.oM.Architecture.Elements;
 using BH.oM.Geometry.SettingOut;
 using BH.oM.Reflection.Attributes;
 
-namespace BH.Engine.ETABS
+namespace BH.Engine.Adapters.ETABS
 {
     public static partial class Compute
     {
