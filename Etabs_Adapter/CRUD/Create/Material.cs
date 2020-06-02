@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
-using BH.Engine.ETABS;
+using BH.Engine.Adapters.ETABS;
 using System.ComponentModel;
 
 #if Debug17 || Release17

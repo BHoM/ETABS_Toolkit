@@ -27,7 +27,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
-using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
 #if Debug17 || Release17
 using ETABSv17;

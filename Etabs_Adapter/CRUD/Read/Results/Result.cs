@@ -35,9 +35,7 @@ using ETABSv1;
 #else
 using ETABS2016;
 #endif
-using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
-using BH.Engine.ETABS;
 using BH.oM.Structure.Loads;
 using BH.oM.Data.Requests;
 using BH.oM.Adapter;

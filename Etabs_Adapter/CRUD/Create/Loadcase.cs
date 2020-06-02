@@ -23,9 +23,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
-using BH.Engine.ETABS;
 
 #if Debug17 || Release17
 using ETABSv17;

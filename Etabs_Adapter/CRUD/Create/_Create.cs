@@ -22,18 +22,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Geometry.SettingOut;
-using BH.oM.Architecture.Elements;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.SectionProperties;
-using BH.oM.Structure.Constraints;
-using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.Loads;
-using BH.oM.Structure.Offsets;
-using BH.Engine.Structure;
-using BH.Engine.Geometry;
-using BH.oM.Structure.MaterialFragments;
-using BH.Engine.ETABS;
+using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Adapter;
 

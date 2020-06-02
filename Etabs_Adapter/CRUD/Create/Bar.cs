@@ -22,23 +22,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Geometry.SettingOut;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.SectionProperties;
-using BH.oM.Structure.Constraints;
-using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.Loads;
 using BH.oM.Structure.Offsets;
-using BH.Engine.Structure;
-using BH.Engine.Geometry;
-using BH.oM.Structure.MaterialFragments;
-using BH.Engine.ETABS;
+using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
-using BH.oM.Geometry.ShapeProfiles;
-using BH.oM.Geometry;
 using System.ComponentModel;
-using BH.oM.Adapters.ETABS;
-using BH.Engine.Base;
 using System;
 #if Debug17 || Release17
     using ETABSv17;

@@ -40,13 +40,6 @@ using ETABSv1;
 #else
 using ETABS2016;
 #endif
-using BH.Engine.ETABS;
-using BH.oM.Geometry;
-using BH.Engine.Geometry;
-using BH.Engine.Reflection;
-using BH.oM.Geometry.SettingOut;
-using BH.oM.Architecture.Elements;
-using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Adapter;
 using System.ComponentModel;
 

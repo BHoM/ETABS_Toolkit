@@ -26,7 +26,7 @@ using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry;
 using System.Linq;
 
-namespace BH.Engine.ETABS
+namespace BH.Engine.Adapters.ETABS
 {
     public static partial class Convert
     {

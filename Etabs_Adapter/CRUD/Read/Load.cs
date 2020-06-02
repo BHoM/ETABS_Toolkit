@@ -29,7 +29,6 @@ using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
-using BH.Engine.ETABS;
 using BH.oM.Geometry;
 using BH.Engine.Structure;
 #if Debug17 || Release17

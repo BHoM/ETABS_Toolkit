@@ -29,7 +29,7 @@ using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.Engine.Base;
 
-namespace BH.Engine.ETABS
+namespace BH.Engine.Adapters.ETABS
 {
     public static partial class Query
     {

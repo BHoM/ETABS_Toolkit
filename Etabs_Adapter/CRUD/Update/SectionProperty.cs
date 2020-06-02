@@ -24,7 +24,6 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.SectionProperties;
 using BH.Engine.Structure;
-using BH.Engine.Geometry;
 using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
 
