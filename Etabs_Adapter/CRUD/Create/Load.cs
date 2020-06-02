@@ -26,6 +26,7 @@ using System;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.Engine.Spatial;
+using BH.Engine.Adapters.ETABS;
 
 #if Debug17 || Release17
 using ETABSv17;
