@@ -28,6 +28,11 @@ using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using System.ComponentModel;
 using System;
+using BH.Engine.Structure;
+using BH.oM.Geometry;
+using BH.oM.Structure.Constraints;
+using BH.oM.Adapters.ETABS;
+using BH.Engine.Base;
 #if Debug17 || Release17
     using ETABSv17;
 #elif Debug18 || Release18
