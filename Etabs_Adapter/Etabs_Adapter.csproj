@@ -259,10 +259,6 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Common_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Common_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Data_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
       <Private>False</Private>
