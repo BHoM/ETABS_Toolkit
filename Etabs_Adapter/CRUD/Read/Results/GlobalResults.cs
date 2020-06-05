@@ -27,7 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Results;
-using BH.oM.Common;
+using BH.oM.Analytical.Results;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
