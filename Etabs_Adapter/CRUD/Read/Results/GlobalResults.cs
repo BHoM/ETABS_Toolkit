@@ -87,17 +87,11 @@ namespace BH.Adapter.ETABS
 
             for (int i = 0; i < resultCount; i++)
             {
-                GlobalReactions g = new GlobalReactions()
-                {
-                    ResultCase = loadcaseNames[i],
-                    FX = fx[i],
-                    FY = fy[i],
-                    FZ = fz[i],
-                    MX = mx[i],
-                    MY = my[i],
-                    MZ = mz[i],
-                    TimeStep = stepNum[i]
-                };
+                int mode;
+                double timeStep;
+                GetStepAndMode(stepType[i], stepNum[i], out timeStep, out mode);
+
+                GlobalReactions g = new GlobalReactions("", loadcaseNames[i], mode, timeStep, fx[i], fy[i], fz[i], mx[i], my[i], mz[i]);
 
                 globalReactions.Add(g);
             }
@@ -116,15 +110,14 @@ namespace BH.Adapter.ETABS
             string[] stepType = null; double[] stepNum = null;
             double[] period = null;
             double[] ux = null; double[] uy = null; double[] uz = null;
-            double[] sumUx = null; double[] sumUy = null; double[] sumUz = null;
             double[] rx = null; double[] ry = null; double[] rz = null;
-            double[] sumRx = null; double[] sumRy = null; double[] sumRz = null;
+            double[] modalMass = null;
+            double[] modalStiff = null;
 
-            int res = m_model.Results.ModalParticipatingMassRatios(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
-                ref period, ref ux, ref uy, ref uz, ref sumUx, ref sumUy, ref sumUz, ref rx, ref ry, ref rz, ref sumRx, ref sumRy, ref sumRz);
+            int res = m_model.Results.ModalParticipationFactors(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
+                ref period, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz, ref modalMass, ref modalStiff);
 
             if (res != 0) Engine.Reflection.Compute.RecordError("Could not extract Modal information.");
-
 
             // Although API documentation says that StepNumber should correspond to the Mode Number, testing shows that StepNumber is always 0.
             string previousModalCase = "";
@@ -134,19 +127,7 @@ namespace BH.Adapter.ETABS
                 if (loadcaseNames[i] != previousModalCase)
                     modeNumber = 1;
 
-                ModalDynamics mod = new ModalDynamics()
-                {
-                    ResultCase = loadcaseNames[i],
-                    ModeNumber = modeNumber,
-                    Frequency = 1 / period[i],
-                    MassRatioX = ux[i],
-                    MassRatioY = uy[i],
-                    MassRatioZ = uz[i],
-                    InertiaRatioX = rx[i],
-                    InertiaRatioY = ry[i],
-                    InertiaRatioZ = rz[i]
-                };
-
+                ModalDynamics mod = new ModalDynamics("", loadcaseNames[i], modeNumber, 0, 1 / period[i], modalMass[i], modalStiff[i], 0, ux[i], uy[i], uz[i], rx[i], ry[i], rz[i]);
                 modeNumber += 1;
                 previousModalCase = loadcaseNames[i];
 

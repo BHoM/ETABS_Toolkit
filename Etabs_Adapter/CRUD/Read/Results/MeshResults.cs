@@ -136,13 +136,19 @@ namespace BH.Adapter.ETABS
 
                 for (int j = 0; j < resultCount; j++)
                 {
-                    double step = 0;
-                    if (stepType[j] == "Single Value" || stepNum.Length < j)
-                        step = 0;
-                    else
-                        step = stepNum[j];
+                    int mode;
+                    double timeStep;
+                    
 
-                    MeshForce pf = new MeshForce(panelIds[i], pointElm[j], elm[j], loadCase[j], step, 0, 0, 0,
+                    if (stepType[j] == "Single Value" || stepNum.Length < j)
+                    {
+                        mode = 0;
+                        timeStep = 0;
+                    }
+                    else
+                        GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+
+                    MeshForce pf = new MeshForce(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, 0, 0, 0,
                         oM.Geometry.Basis.XY, f11[j], f22[j], f12[j], m11[j], m22[j], m12[j], v13[j], v23[j]);
 
                     forces.Add(pf);
@@ -231,8 +237,11 @@ namespace BH.Adapter.ETABS
 
                         for (int j = 0; j < resultCount; j++)
                         {
-                            MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], double.NaN);
-                            MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], double.NaN);
+                            int mode;
+                            double timeStep;
+                            GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                            MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], double.NaN);
+                            MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], double.NaN);
 
                             stressBot.Add(mStressBot);
                             stressTop.Add(mStressTop);
@@ -324,7 +333,10 @@ namespace BH.Adapter.ETABS
 
                         for (int j = 0; j < resultCount - 1; j++)
                         {
-                            MeshStress mStress = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], stepNum[j], MeshResultLayer.Arbitrary, layerPos[j], MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11[j], s22[j], s12[j], s13[j], s23[j], sMax[j], sMin[j], sMaxAvg[j]);
+                            int mode;
+                            double timeStep;
+                            GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                            MeshStress mStress = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Arbitrary, layerPos[j], MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11[j], s22[j], s12[j], s13[j], s23[j], sMax[j], sMin[j], sMaxAvg[j]);
 
                             stresses.Add(mStress);
                         }
@@ -399,7 +411,10 @@ namespace BH.Adapter.ETABS
 
                     for (int j = 0; j < resultCount; j++)
                     {
-                        MeshDisplacement disp = new MeshDisplacement(panelIds[i], ptId, "", loadCase[j], stepNum[j], MeshResultLayer.Middle, 0, MeshResultSmoothingType.Global, Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
+                        int mode;
+                        double timeStep;
+                        GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                        MeshDisplacement disp = new MeshDisplacement(panelIds[i], ptId, "", loadCase[j], mode, timeStep, MeshResultLayer.Middle, 0, MeshResultSmoothingType.Global, Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
                         displacements.Add(disp);
                     }
                 }
@@ -416,10 +431,10 @@ namespace BH.Adapter.ETABS
         private List<MeshResult> GroupMeshResults(IEnumerable<MeshElementResult> meshElementResults)
         {
             List<MeshResult> results = new List<MeshResult>();
-            foreach (IEnumerable<MeshElementResult> group in meshElementResults.GroupBy(x => new { x.ResultCase, x.TimeStep }))
+            foreach (IEnumerable<MeshElementResult> group in meshElementResults.GroupBy(x => new { x.ResultCase, x.TimeStep, x.ModeNumber }))
             {
                 MeshElementResult first = group.First();
-                results.Add(new MeshResult(first.ObjectId, first.ResultCase, first.TimeStep, first.MeshResultLayer, first.LayerPosition, first.Smoothing, new System.Collections.ObjectModel.ReadOnlyCollection<MeshElementResult>(group.ToList())));
+                results.Add(new MeshResult(first.ObjectId, first.ResultCase, first.ModeNumber, first.TimeStep, first.MeshResultLayer, first.LayerPosition, first.Smoothing, new System.Collections.ObjectModel.ReadOnlyCollection<MeshElementResult>(group.ToList())));
             }
 
             return results;
@@ -471,7 +486,7 @@ namespace BH.Adapter.ETABS
                 double vx = group.Average(x => x.VX);
                 double vy = group.Average(x => x.VY);
 
-                smoothenedForces.Add(new MeshForce(first.ObjectId, first.NodeId, "", first.ResultCase, first.TimeStep, first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, nxx, nyy, nxy, mxx, myy, mxy, vx, vy));
+                smoothenedForces.Add(new MeshForce(first.ObjectId, first.NodeId, "", first.ResultCase, first.ModeNumber, first.TimeStep, first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, nxx, nyy, nxy, mxx, myy, mxy, vx, vy));
             }
 
             return smoothenedForces;
@@ -498,7 +513,7 @@ namespace BH.Adapter.ETABS
                 double pr2 = group.Average(x => x.Principal_2);
                 double pr1_2 = group.Average(x => x.Principal_1_2);
 
-                smoothenedForces.Add(new MeshStress(first.ObjectId, first.NodeId, "", first.ResultCase, first.TimeStep, first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, sxx, syy, sxy, txx, tyy, pr1, pr2, pr1_2));
+                smoothenedForces.Add(new MeshStress(first.ObjectId, first.NodeId, "", first.ResultCase, first.ModeNumber, first.TimeStep, first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, sxx, syy, sxy, txx, tyy, pr1, pr2, pr1_2));
             }
 
             return smoothenedForces;
