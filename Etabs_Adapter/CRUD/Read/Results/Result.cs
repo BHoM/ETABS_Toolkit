@@ -104,22 +104,9 @@ namespace BH.Adapter.ETABS
                     {
                         position = 1;
                     }
-                    PierForce bf = new PierForce()
-                    {
-                        ResultCase = loadcaseNames[j],
-                        ObjectId = pierName[j],
-                        MX = t[j],
-                        MY = m2[j],
-                        MZ = m3[j],
-                        FX = p[j],
-                        FY = v2[j],
-                        FZ = v3[j],
-                        //Divisions = divisions,
-                        Position = position,
-                        // TimeStep = stepNum[j]
-                    };
-                    bf.Location = storyName[j];
-                    pierForces.Add(bf);
+
+                    PierForce pf = new PierForce(pierName[j], loadcaseNames[j], storyName[j], 0, 0, position, 2, p[j], v2[j], v3[j], t[j], m2[j], m3[j]);
+                    pierForces.Add(pf);
                 }
 
             }
@@ -207,6 +194,22 @@ namespace BH.Adapter.ETABS
                 }
             }
             return true;
+        }
+
+        /***************************************************/
+
+        private void GetStepAndMode(string stepType, double stepNum, out double timeStep, out int mode)
+        {
+            if (stepType == "Mode")
+            {
+                mode = (int)stepNum;
+                timeStep = 0;
+            }
+            else
+            {
+                timeStep = stepNum;
+                mode = 0;
+            }
         }
 
         /***************************************************/

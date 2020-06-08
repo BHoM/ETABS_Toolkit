@@ -124,22 +124,11 @@ namespace BH.Adapter.ETABS
                 {
                     for (int j = 0; j < resultCount; j++)
                     {
+                        int mode;
+                        double timeStep;
+                        GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
 
-                        BarForce bf = new BarForce()
-                        {
-                            ResultCase = loadcaseNames[j],
-                            ObjectId = barIds[i],
-                            MX = t[j],
-                            MY = -m3[j],
-                            MZ = m2[j],
-                            FX = p[j],
-                            FY = v3[j],
-                            FZ = v2[j],
-                            Divisions = divs,
-                            Position = objStation[j] /length,
-                            TimeStep = stepNum[j]
-                        };
-
+                        BarForce bf = new BarForce(barIds[i], loadcaseNames[j], mode, timeStep, objStation[j] / length, divs, p[j], v3[j], v2[j], t[j], -m3[j], m2[j]);
                         barForces.Add(bf);
                     }
                 }
@@ -157,11 +146,11 @@ namespace BH.Adapter.ETABS
             Engine.Reflection.Compute.RecordWarning("Displacements will only be extracted at ETABS calculation nodes. 'Divisions' parameter will not be considered in result extraction");
 
             int resultCount = 0;
-            string[] Obj = null;
-            string[] Elm = null;
-            string[] LoadCase = null;
-            string[] StepType = null;
-            double[] StepNum = null;
+            string[] obj = null;
+            string[] elm = null;
+            string[] loadCase = null;
+            string[] stepType = null;
+            double[] stepNum = null;
 
             double[] ux = null;
             double[] uy = null;
@@ -196,26 +185,17 @@ namespace BH.Adapter.ETABS
 
                 foreach (var nodePos in nodeWithPos)
                 {
-                    int ret = m_model.Results.JointDispl(nodePos.Key, eItemTypeElm.Element, ref resultCount, ref Obj, ref Elm, ref LoadCase, ref StepType, ref StepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
+                    int ret = m_model.Results.JointDispl(nodePos.Key, eItemTypeElm.Element, ref resultCount, ref obj, ref elm, ref loadCase, ref stepType, ref stepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
                     
                     if (ret == 0)
                     {
                         for (int j = 0; j < resultCount; j++)
                         {
-                            BarDisplacement disp = new BarDisplacement
-                            {
-                                UX = ux[j],
-                                UY = uy[j],
-                                UZ = uz[j],
-                                RX = rx[j],
-                                RY = ry[j],
-                                RZ = rz[j],
-                                ObjectId = barIds[i],
-                                Divisions = divs + 1,
-                                Position = nodePos.Value,
-                                ResultCase = LoadCase[j],
-                                TimeStep = StepNum[j]
-                            };
+                            int mode;
+                            double timeStep;
+                            GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+
+                            BarDisplacement disp = new BarDisplacement(barIds[i], loadCase[j], mode, timeStep, nodePos.Value, divs + 1, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
                             displacements.Add(disp);
                         }
                     }

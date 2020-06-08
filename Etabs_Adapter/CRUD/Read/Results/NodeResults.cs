@@ -92,34 +92,25 @@ namespace BH.Adapter.ETABS
             string[] elm = null;
             string[] stepType = null;
             double[] stepNum = null;
-            double[] fx = null;
-            double[] fy = null;
-            double[] fz = null;
-            double[] mx = null;
-            double[] my = null;
-            double[] mz = null;
+            double[] ux = null;
+            double[] uy = null;
+            double[] uz = null;
+            double[] rx = null;
+            double[] ry = null;
+            double[] rz = null;
 
             for (int i = 0; i < nodeIds.Count; i++)
             {
                 int ret = m_model.Results.JointDispl(nodeIds[i].ToString(), eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
-                ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
+                ref loadcaseNames, ref stepType, ref stepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
                 if (ret == 0)
                 {
                     for (int j = 0; j < resultCount; j++)
                     {
-
-                        NodeDisplacement nd = new NodeDisplacement()
-                        {
-                            ResultCase = loadcaseNames[j],
-                            ObjectId = nodeIds[i],
-                            RX = mx[j],
-                            RY = my[j],
-                            RZ = mz[j],
-                            UX = fx[j],
-                            UY = fy[j],
-                            UZ = fz[j],
-                            TimeStep = stepNum[j]
-                        };
+                        int mode;
+                        double timeStep;
+                        GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                        NodeDisplacement nd = new NodeDisplacement(nodeIds[i], loadcaseNames[j], mode, timeStep, oM.Geometry.Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
                         nodeDisplacements.Add(nd);
                     }
                 }
@@ -158,19 +149,10 @@ namespace BH.Adapter.ETABS
                 {
                     for (int j = 0; j < resultCount; j++)
                     {
-                        //string step = stepType[j] != null ? stepType[j] == "Max" ? " Max" : stepType[j] == "Min" ? " Min" : "1" : "0";
-                        NodeReaction nr = new NodeReaction()
-                        {
-                            ResultCase = loadcaseNames[j],
-                            ObjectId = nodeIds[i],
-                            MX = mx[j],
-                            MY = my[j],
-                            MZ = mz[j],
-                            FX = fx[j],
-                            FY = fy[j],
-                            FZ = fz[j],
-                            TimeStep = stepNum[j]
-                        };
+                        int mode;
+                        double timeStep;
+                        GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                        NodeReaction nr = new NodeReaction(nodeIds[i], loadcaseNames[j], mode, timeStep, oM.Geometry.Basis.XY, fx[j], fy[j], fz[j], mx[j], my[j], mz[j]);
                         nodeReactions.Add(nr);
                     }
                 }
