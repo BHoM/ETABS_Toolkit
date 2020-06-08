@@ -38,7 +38,17 @@ namespace BH.oM.Adapters.ETABS.Elements
         /***************************************************/
 
         //Just using this for the name
-        public virtual string Location { get; set; } = "";
+        public virtual string Location { get; } = "";
+
+        /***************************************************/
+        /**** Constructors                              ****/
+        /***************************************************/
+
+        public PierForce(IComparable objectId, IComparable resultCase, string location, int modeNumber, double timeStep, double position, int divisions, double fx, double fy, double fz, double mx, double my, double mz)
+            : base(objectId, resultCase, modeNumber, timeStep, position, divisions, fx, fy, fz, mx, my, mz)
+        {
+            Location = location;
+        }
 
         /***************************************************/
     }
