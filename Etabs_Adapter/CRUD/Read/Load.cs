@@ -111,11 +111,11 @@ namespace BH.Adapter.ETABS
 
             if (!typeCouldBeRead)
             {
-                Engine.Reflection.Compute.RecordError("The load type " + type.GetType().Name + "is not implemented for ETABS and could not be read.");
+                Engine.Reflection.Compute.RecordError("The load type " + type.GetType().Name + " is not implemented for ETABS and could not be read.");
             }
             else if (loads.Count == 0)
             {
-                Engine.Reflection.Compute.RecordWarning("No loads found in ETABS of that type.");
+                Engine.Reflection.Compute.RecordWarning("No loads found in ETABS of the requested type.");
             }
 
             return loads;
@@ -570,4 +570,3 @@ namespace BH.Adapter.ETABS
 
     }
 }
-

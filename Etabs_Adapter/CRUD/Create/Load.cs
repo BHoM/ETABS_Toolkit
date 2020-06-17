@@ -331,7 +331,7 @@ namespace BH.Adapter.ETABS
 
         private void SetLoad(ILoad load, bool replace)
         {
-            Engine.Reflection.Compute.RecordError("Load of type " + load.GetType().Name + " not supported.");
+            Engine.Reflection.Compute.RecordError("Load of type " + load.GetType().Name + " is not supported.");
         }
 
         /***************************************************/
@@ -354,4 +354,3 @@ namespace BH.Adapter.ETABS
 
     }
 }
-
