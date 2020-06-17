@@ -324,8 +324,16 @@ namespace BH.Adapter.ETABS
             BH.Engine.Reflection.Compute.RecordWarning("ETABS handles gravity loads via loadcases, why only one gravity load per loadcase can be used. THis gravity load will be applied to all objects");
         }
 
+
         /***************************************************/
         /****       Helper Methods                      ****/
+        /***************************************************/
+
+        private void SetLoad(ILoad load, bool replace)
+        {
+            Engine.Reflection.Compute.RecordError("Load of type " + load.GetType().Name + " not supported.");
+        }
+
         /***************************************************/
 
         private void GetDirectionData(ILoad load, out string axis, out int shift)
