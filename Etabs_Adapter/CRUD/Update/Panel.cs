@@ -25,6 +25,7 @@ using System.Linq;
 using BH.oM.Structure.Elements;
 using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Adapter;
 
 namespace BH.Adapter.ETABS
 {
@@ -42,6 +43,10 @@ namespace BH.Adapter.ETABS
         
         private bool UpdateObjects(IEnumerable<Panel> bhPanels)
         {
+            //Make sure Diaphragms are pushed
+            List<Diaphragm> diaphragms = bhPanels.Select(x => x.Diaphragm()).Where(x => x != null).ToList();
+            this.FullCRUD(diaphragms, PushType.FullPush);
+
             bool success = true;
             m_model.SelectObj.ClearSelection();
 
