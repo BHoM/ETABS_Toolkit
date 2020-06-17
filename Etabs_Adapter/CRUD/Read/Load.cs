@@ -56,7 +56,7 @@ namespace BH.Adapter.ETABS
         private List<ILoad> ReadLoad(Type type, List<string> ids = null)
         {
             List<ILoad> loadList = new List<ILoad>();
-            
+
             List<Loadcase> loadcaseList = ReadLoadcase();
 
             if (ids != null)
@@ -64,28 +64,62 @@ namespace BH.Adapter.ETABS
                 Engine.Reflection.Compute.RecordWarning("Id filtering is not implemented for Loads, all Loads will be returned.");
             }
 
-            if (type == typeof(PointLoad))
-                return ReadPointLoad(loadcaseList);
-            else if (type == typeof(BarUniformlyDistributedLoad))
-                return ReadBarLoad(loadcaseList);
-            else if (type == typeof(BarVaryingDistributedLoad))
-                return ReadBarVaryingLoad(loadcaseList);
-            else if (type == typeof(AreaUniformlyDistributedLoad))
-                return ReadAreaLoad(loadcaseList);
-            else if (type == typeof(AreaTemperatureLoad))
-                return ReadAreaTempratureLoad(loadcaseList);
-            else if (type == typeof(BarTemperatureLoad))
-                return ReadBarTempratureLoad(loadcaseList);
-            else if (type == typeof(BarPointLoad))
-                return ReadBarPointLoad(loadcaseList);
-            else
+            List<ILoad> loads = new List<ILoad>();
+            bool typeCouldBeRead = false;
+
+            if (type.IsAssignableFrom(typeof(PointLoad)))
             {
-                List<ILoad> loads = new List<ILoad>();
                 loads.AddRange(ReadPointLoad(loadcaseList));
-                loads.AddRange(ReadBarLoad(loadcaseList));
-                loads.AddRange(ReadAreaLoad(loadcaseList));
-                return loads;
+                typeCouldBeRead = true;
             }
+
+            if (type.IsAssignableFrom(typeof(BarUniformlyDistributedLoad)))
+            {
+                loads.AddRange(ReadBarLoad(loadcaseList));
+                typeCouldBeRead = true;
+            }
+
+            if (type.IsAssignableFrom(typeof(BarVaryingDistributedLoad)))
+            {
+                loads.AddRange(ReadBarVaryingLoad(loadcaseList));
+                typeCouldBeRead = true;
+            }
+
+            if (type.IsAssignableFrom(typeof(AreaUniformlyDistributedLoad)))
+            {
+                loads.AddRange(ReadAreaLoad(loadcaseList));
+                typeCouldBeRead = true;
+            }
+
+            if (type.IsAssignableFrom(typeof(AreaTemperatureLoad)))
+            {
+                loads.AddRange(ReadAreaTempratureLoad(loadcaseList));
+                typeCouldBeRead = true;
+            }
+
+            if (type.IsAssignableFrom(typeof(BarTemperatureLoad)))
+            {
+                loads.AddRange(ReadBarTempratureLoad(loadcaseList));
+                typeCouldBeRead = true;
+            }
+
+            if (type.IsAssignableFrom(typeof(BarPointLoad)))
+            {
+                loads.AddRange(ReadBarPointLoad(loadcaseList));
+                typeCouldBeRead = true;
+            }
+
+            if (!typeCouldBeRead)
+            {
+                Engine.Reflection.Compute.RecordError("The load type " + type.GetType().Name + "is not implemented for ETABS and could not be read.");
+            }
+            else if (loads.Count == 0)
+            {
+                Engine.Reflection.Compute.RecordWarning("No loads found in ETABS of that type.");
+            }
+
+            return loads;
+
         }
 
         /***************************************************/
