@@ -42,6 +42,8 @@ using ETABS2016;
 #endif
 using BH.oM.Adapter;
 using System.ComponentModel;
+using BH.oM.Data.Requests;
+using BH.oM.Reflection;
 
 namespace BH.Adapter.ETABS
 {
@@ -93,6 +95,61 @@ namespace BH.Adapter.ETABS
                 return ReadMesh(listIds);
 
             return new List<IBHoMObject>();//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
+        }
+
+        /***************************************************/
+
+        public IEnumerable<IBHoMObject> Read(SelectionRequest request, ActionConfig actionConfig = null)
+        {
+            List<IBHoMObject> results = new List<IBHoMObject>();
+
+            foreach (KeyValuePair<Type, List<string>> keyVal in SelectedElements())
+            {
+                results.AddRange(IRead(keyVal.Key, keyVal.Value, actionConfig));
+            }
+
+            return results;
+        }
+
+        /***************************************************/
+
+        public Dictionary<Type, List<string>> SelectedElements()
+        {
+            int numItems = 0;
+            int[] objectTypes = new int[0];
+            string[] objectIds = new string[0];
+
+            m_model.SelectObj.GetSelected(ref numItems, ref objectTypes, ref objectIds);
+
+            Dictionary<int, List<string>> dict = objectTypes.Distinct().ToDictionary(x => x, x => new List<string>());
+
+            for (int i = 0; i < numItems; i++)
+            {
+                dict[objectTypes[i]].Add(objectIds[i]);
+            }
+
+            Func<int, Type> ToType = x =>
+            {
+                switch (x)
+                {
+                    case 1: // Point Object
+                        return typeof(Node);
+                    case 2: // Frame Object
+                    case 3: // Cable Object
+                    case 4: // Tendon Object
+                        return typeof(Bar);
+                    case 5: // Area Object
+                        return typeof(Panel);
+                    case 6: // Solid Object
+                        return null;
+                    case 7: // Link Object
+                        return typeof(RigidLink);
+                    default:
+                        return null;
+                }
+            };
+
+            return dict.ToDictionary(x => ToType(x.Key), x => x.Value);
         }
 
         /***************************************************/
