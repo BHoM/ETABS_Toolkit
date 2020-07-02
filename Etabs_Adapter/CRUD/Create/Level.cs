@@ -55,6 +55,9 @@ namespace BH.Adapter.ETABS
                 Engine.Reflection.Compute.RecordWarning("Unnamed levels have been given name according to their height index: Level 'i'");
 
             string[] names = levelList.Select((x,i) => string.IsNullOrWhiteSpace(x.Name) ? "Level " + i.ToString() : x.Name).ToArray();
+            double[] heights = new double[count];   //Heights empty, set by elevations
+
+#if Debug16 || Release16
             double[] elevations = new double[count + 1];
 
             for (int i = 0; i < count; i++)
@@ -62,7 +65,23 @@ namespace BH.Adapter.ETABS
                 elevations[i + 1] = levelList[i].Elevation;
             }
 
-            double[] heights = new double[count];   //Heights empty, set by elevations
+            if (elevations.Any(x => x <= 0))
+            {
+                Engine.Reflection.Compute.RecordError("Levels can not be pushed as equal to or below zero in ETABS16.");
+            }
+            return true;
+#else
+            double baseEl = levelList[0].Elevation;
+            double prevEl = baseEl;
+
+            for (int i = 1; i < count; i++)
+            { 
+                double temp = levelList[i].Elevation;
+                heights[i] = temp - prevEl;
+                prevEl = temp;
+            }
+#endif
+
             bool[] isMasterStory = new bool[count];
             isMasterStory[count - 1] = true;    //Top story as master
             string[] similarTo = new string[count];
@@ -73,11 +92,15 @@ namespace BH.Adapter.ETABS
 
             bool[] spliceAbove = new bool[count];   //No splice
             double[] spliceHeight = new double[count];  //No splice
+            int[] colour = new int[count];  //no colour
 
+#if Debug16 || Release16
             if(m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight) == 0) { }
+#else
+            if (m_model.Story.SetStories_2(baseEl, count, ref names, ref heights, ref isMasterStory, ref similarTo, ref spliceAbove, ref spliceHeight, ref colour) == 0) { }
+#endif
             else
             {
-
                 Engine.Reflection.Compute.RecordError("Failed to push levels. Levels can only be pushed to an empty model.");
             }
 
