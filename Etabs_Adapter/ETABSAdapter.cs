@@ -164,19 +164,19 @@ namespace BH.Adapter.ETABS
                     factor = 1;
                     break;
                 case eLength.inch:
-                    factor = factor.FromInch();
+                    factor = factor.ToInch();
                     break;
                 case eLength.ft:
-                    factor = factor.FromFoot();
+                    factor = factor.ToFoot();
                     break;
                 case eLength.micron:
-                    factor = factor.FromMicrometre();
+                    factor = factor.ToMicrometre();
                     break;
                 case eLength.mm:
-                    factor = factor.FromMillimetre();
+                    factor = factor.ToMillimetre();
                     break;
                 case eLength.cm:
-                    factor = factor.FromCentimetre();
+                    factor = factor.ToCentimetre();
                     break;
                 case eLength.m:
                     factor = 1;
