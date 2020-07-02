@@ -25,7 +25,8 @@ using System.Linq;
 using BH.oM.Structure.Elements;
 using BH.Engine.Structure;
 using BH.Engine.Adapters.ETABS;
-
+using BH.Engine.Geometry;
+using BH.oM.Geometry;
 
 namespace BH.Adapter.ETABS
 {
@@ -42,29 +43,43 @@ namespace BH.Adapter.ETABS
         {
             string name = "";
 
-            oM.Geometry.Point position = bhNode.Position();
+            oM.Geometry.Point position = bhNode.Position;
             if (m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name) == 0)
             {
                 bhNode.CustomData[AdapterIdName] = name;
 
-                if (bhNode.Support != null)
+                SetObject(bhNode, name);
+            }
+
+            return true;
+        }
+
+        /***************************************************/
+
+        private bool SetObject(Node bhNode, string name)
+        {
+            if (bhNode.Support != null)
+            {
+                bool[] restraint = new bool[6];
+                double[] spring = new double[6];
+
+                bhNode.Support.ToCSI(ref restraint, ref spring);
+
+                if (m_model.PointObj.SetRestraint(name, ref restraint) == 0) { }
+                else
                 {
-                    bool[] restraint = new bool[6];
-                    double[] spring = new double[6];
-
-                    bhNode.Support.ToCSI(ref restraint, ref spring);
-
-                    if (m_model.PointObj.SetRestraint(name, ref restraint) == 0) { }
-                    else
-                    {
-                        CreatePropertyWarning("Node Restraint", "Node", name);
-                    }
-                    if (m_model.PointObj.SetSpring(name, ref spring) == 0) { }
-                    else
-                    {
-                        CreatePropertyWarning("Node Spring", "Node", name);
-                    }
+                    CreatePropertyWarning("Node Restraint", "Node", name);
                 }
+                if (m_model.PointObj.SetSpring(name, ref spring) == 0) { }
+                else
+                {
+                    CreatePropertyWarning("Node Spring", "Node", name);
+                }
+            }
+
+            if (bhNode.Orientation != null && !bhNode.Orientation.IsEqual(Basis.XY))
+            {
+                Engine.Reflection.Compute.RecordWarning("ETABS does not support local coordinate systems other than the global one. Any nodes pushed will have been so as if they had the global coordinatesystem.");
             }
 
             return true;
