@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
+using BH.Engine.Adapters.ETABS;
 
 namespace BH.Adapter.ETABS
 {
@@ -38,34 +39,41 @@ namespace BH.Adapter.ETABS
         /***************************************************/
         /**** Update Node                               ****/
         /***************************************************/
-        
+
         private bool UpdateObjects(IEnumerable<Node> nodes)
         {
             bool success = true;
+            m_model.SelectObj.ClearSelection();
+
+            double factor = DatabaseLengthUnitFactor();
+
+            Engine.Structure.NodeDistanceComparer comparer = AdapterComparers[typeof(Node)] as Engine.Structure.NodeDistanceComparer;
+
             foreach (Node bhNode in nodes)
             {
-                if (bhNode.Support != null)
+                string name = bhNode.CustomData[AdapterIdName].ToString();
+
+                SetObject(bhNode, name);
+
+                // Update position
+                double x = 0;
+                double y = 0;
+                double z = 0;
+
+                if (m_model.PointObj.GetCoordCartesian(name, ref x, ref y, ref z) == 0)
                 {
-                    string name = bhNode.CustomData[AdapterIdName].ToString();
+                    oM.Geometry.Point p = new oM.Geometry.Point() { X = x, Y = y, Z = z };
+                    
+                    if (!comparer.Equals(bhNode, (Node)p))
+                    {
+                        x = bhNode.Position.X - x;
+                        y = bhNode.Position.Y - y;
+                        z = bhNode.Position.Z - z;
 
-                    bool[] restraint = new bool[6];
-                    restraint[0] = bhNode.Support.TranslationX == DOFType.Fixed;
-                    restraint[1] = bhNode.Support.TranslationY == DOFType.Fixed;
-                    restraint[2] = bhNode.Support.TranslationZ == DOFType.Fixed;
-                    restraint[3] = bhNode.Support.RotationX == DOFType.Fixed;
-                    restraint[4] = bhNode.Support.RotationY == DOFType.Fixed;
-                    restraint[5] = bhNode.Support.RotationZ == DOFType.Fixed;
-
-                    double[] spring = new double[6];
-                    spring[0] = bhNode.Support.TranslationalStiffnessX;
-                    spring[1] = bhNode.Support.TranslationalStiffnessY;
-                    spring[2] = bhNode.Support.TranslationalStiffnessZ;
-                    spring[3] = bhNode.Support.RotationalStiffnessX;
-                    spring[4] = bhNode.Support.RotationalStiffnessY;
-                    spring[5] = bhNode.Support.RotationalStiffnessZ;
-
-                    success &= m_model.PointObj.SetRestraint(name, ref restraint) == 0;
-                    success &= m_model.PointObj.SetSpring(name, ref spring) == 0;
+                        m_model.PointObj.SetSelected(name, true);
+                        m_model.EditGeneral.Move(x * factor, y * factor, z * factor);
+                        m_model.PointObj.SetSelected(name, false);
+                    }
                 }
             }
 
