@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Adapters.ETABS;
+using BH.Engine.Units;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -142,6 +143,49 @@ namespace BH.Adapter.ETABS
                     ToEtabsFileName(EtabsSettings.DatabaseSettings.SectionDatabase),
                     ref num, ref m_DBSectionsNames, ref types);
             }
+        }
+
+        /***************************************************/
+
+        public double DatabaseLengthUnitFactor()
+        {
+            eForce force = 0;
+            eLength length = 0;
+            eTemperature temp = 0;
+
+            m_model.GetDatabaseUnits_2(ref force, ref length, ref temp);
+
+            double factor = 1;
+
+            switch (length)
+            {
+                case eLength.NotApplicable:
+                    Engine.Reflection.Compute.RecordWarning("Unknow NotApplicable unit, assumed to be meter.");
+                    factor = 1;
+                    break;
+                case eLength.inch:
+                    factor = factor.FromInch();
+                    break;
+                case eLength.ft:
+                    factor = factor.FromFoot();
+                    break;
+                case eLength.micron:
+                    factor = factor.FromMicrometre();
+                    break;
+                case eLength.mm:
+                    factor = factor.FromMillimetre();
+                    break;
+                case eLength.cm:
+                    factor = factor.FromCentimetre();
+                    break;
+                case eLength.m:
+                    factor = 1;
+                    break;
+                default:
+                    break;
+            }
+
+            return factor;
         }
 
         /***************************************************/
