@@ -65,7 +65,7 @@ namespace BH.Adapter.ETABS
                 elevations[i + 1] = levelList[i].Elevation;
             }
 
-            if (elevations.Any(x => x <= 0))
+            if (levelList.Any(x => x.Elevation <= 0))
             {
                 Engine.Reflection.Compute.RecordError("Levels can not be pushed as equal to or below zero in ETABS16.");
             }
