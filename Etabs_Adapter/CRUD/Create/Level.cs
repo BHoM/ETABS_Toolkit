@@ -58,18 +58,37 @@ namespace BH.Adapter.ETABS
             double[] heights = new double[count];   //Heights empty, set by elevations
 
 #if Debug16 || Release16
-            double[] elevations = new double[count + 1];
 
-            for (int i = 0; i < count; i++)
-            {
-                elevations[i + 1] = levelList[i].Elevation;
-            }
+            double[] elevations;
 
-            if (levelList.Any(x => x.Elevation <= 0))
+            //Check if any level is lower than or equal 0, if so base level set to lowes level
+            if (levelList.First().Elevation <= 0)
             {
-                Engine.Reflection.Compute.RecordError("Levels can not be pushed as equal to or below zero in ETABS16.");
+                elevations = new double[count];
+                for (int i = 0; i < count; i++)
+                {
+                    elevations[i] = levelList[i].Elevation;
+                }
+
+                //remove the first name, as first level will be the base level
+                names = names.Skip(1).ToArray();
+
+                Engine.Reflection.Compute.RecordNote("First level will be the base level and will not be given the provided name");
+
+                //Reduce the count for the heights etc, as the baselevel is not included in the API call
+                count--;
             }
-            return true;
+            else
+            {
+                //When provided levels are all above 0, keep the base at 0 and proceed with adding the levels above
+                elevations = new double[count + 1];
+
+                for (int i = 0; i < count; i++)
+                {
+                    elevations[i + 1] = levelList[i].Elevation;
+                }
+            }
+            
 #else
             double baseEl = levelList[0].Elevation;
             double prevEl = baseEl;
