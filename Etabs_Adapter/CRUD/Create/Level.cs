@@ -46,63 +46,48 @@ namespace BH.Adapter.ETABS
         private bool CreateCollection(IEnumerable<Level> levels)
         {
             int count = levels.Count();
-            if (count < 1)
+            if (count == 0)
                 return true;
+            if (count == 1)
+            {
+                Engine.Reflection.Compute.RecordError("Need to provide at least two levels to be able to push levels to ETABS through the API.");
+                return false;
+            }
+
+            //Check for any duplicate level elevations
+            if (levels.GroupBy(x => x.Elevation).Any(g => g.Count() > 1))
+            {
+                Engine.Reflection.Compute.RecordError("Duplicate level elevations provided. All provided levels need to have a unique elevation, please check the inputs.");
+                return false;
+            }
 
             List<Level> levelList = levels.OrderBy(x => x.Elevation).ToList();
 
             if (levelList.Any(x => string.IsNullOrWhiteSpace(x.Name)))
                 Engine.Reflection.Compute.RecordWarning("Unnamed levels have been given name according to their height index: Level 'i'");
 
-            string[] names = levelList.Select((x,i) => string.IsNullOrWhiteSpace(x.Name) ? "Level " + i.ToString() : x.Name).ToArray();
-            double[] heights = new double[count];   //Heights empty, set by elevations
+            //remove the first name, as first level will be the base level
+            string[] names = levelList.Select((x, i) => string.IsNullOrWhiteSpace(x.Name) ? "Level " + i.ToString() : x.Name).Skip(1).ToArray();
+            Engine.Reflection.Compute.RecordNote("First level will be the base level and will not be given the provided name");
 
-#if Debug16 || Release16
+            double[] heights = new double[count];   //Heights empty, set by elevations
 
             double[] elevations;
 
-            //Check if any level is lower than or equal 0, if so base level set to lowes level
-            if (levelList.First().Elevation <= 0)
+
+            elevations = new double[count];
+            for (int i = 0; i < count; i++)
             {
-                elevations = new double[count];
-                for (int i = 0; i < count; i++)
-                {
-                    elevations[i] = levelList[i].Elevation;
-                }
-
-                //remove the first name, as first level will be the base level
-                names = names.Skip(1).ToArray();
-
-                Engine.Reflection.Compute.RecordNote("First level will be the base level and will not be given the provided name");
-
-                //Reduce the count for the heights etc, as the baselevel is not included in the API call
-                count--;
+                elevations[i] = levelList[i].Elevation;
             }
-            else
-            {
-                //When provided levels are all above 0, keep the base at 0 and proceed with adding the levels above
-                elevations = new double[count + 1];
 
-                for (int i = 0; i < count; i++)
-                {
-                    elevations[i + 1] = levelList[i].Elevation;
-                }
-            }
-            
-#else
-            double baseEl = levelList[0].Elevation;
-            double prevEl = baseEl;
 
-            for (int i = 1; i < count; i++)
-            { 
-                double temp = levelList[i].Elevation;
-                heights[i] = temp - prevEl;
-                prevEl = temp;
-            }
-#endif
+            //Reduce the count for the heights etc, as the baselevel is not included in the API call
+            count--;
 
             bool[] isMasterStory = new bool[count];
             isMasterStory[count - 1] = true;    //Top story as master
+
             string[] similarTo = new string[count];
             for (int i = 0; i < count; i++)
             {
@@ -113,11 +98,8 @@ namespace BH.Adapter.ETABS
             double[] spliceHeight = new double[count];  //No splice
             int[] colour = new int[count];  //no colour
 
-#if Debug16 || Release16
-            if(m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight) == 0) { }
-#else
-            if (m_model.Story.SetStories_2(baseEl, count, ref names, ref heights, ref isMasterStory, ref similarTo, ref spliceAbove, ref spliceHeight, ref colour) == 0) { }
-#endif
+
+            if (m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight) == 0) { }
             else
             {
                 Engine.Reflection.Compute.RecordError("Failed to push levels. Levels can only be pushed to an empty model.");
