@@ -74,13 +74,11 @@ namespace BH.Adapter.ETABS
 
             double[] elevations;
 
-
             elevations = new double[count];
             for (int i = 0; i < count; i++)
             {
                 elevations[i] = levelList[i].Elevation;
             }
-
 
             //Reduce the count for the heights etc, as the baselevel is not included in the API call
             count--;
