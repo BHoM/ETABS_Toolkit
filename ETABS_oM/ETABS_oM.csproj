@@ -64,7 +64,7 @@
     <Compile Include="Fragments\AutoLengthOffset.cs" />
     <Compile Include="Elements\Diaphragm.cs" />
     <Compile Include="Elements\Pier.cs" />
-    <Compile Include="Elements\PierForce.cs" />
+    <Compile Include="Results\PierForce.cs" />
     <Compile Include="Elements\Spandrel.cs" />
     <Compile Include="Enums\BarInsertionPoint.cs" />
     <Compile Include="Enums\Diaphragm.cs" />
@@ -75,7 +75,9 @@
     <Compile Include="Loads\ModalCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Versioning_33.json" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
