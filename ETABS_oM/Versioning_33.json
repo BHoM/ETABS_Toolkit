@@ -1,0 +1,22 @@
+﻿{
+  "Namespace": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  },
+  "Type": {
+    "ToNew": {
+	"BH.oM.Adapters.ETABS.Elements.PierForce" : "BH.oM.Adapters.ETABS.Results.PierForce"
+    },
+    "ToOld": {
+	"BH.oM.Adapters.ETABS.Results.PierForce" : "BH.oM.Adapters.ETABS.Elements.PierForce"
+    }
+  },
+  "Property": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  }
+}
