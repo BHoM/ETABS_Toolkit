@@ -351,6 +351,7 @@
     <Compile Include="CRUD\Delete\_Delete.cs" />
     <Compile Include="CRUD\Read\Grid.cs" />
     <Compile Include="CRUD\Read\Loadcase.cs" />
+    <Compile Include="CRUD\Read\Results\PierAndSpandrelResults.cs" />
     <Compile Include="CRUD\Read\SectionProperty.cs" />
     <Compile Include="CRUD\Read\Results\BarResults.cs" />
     <Compile Include="CRUD\Read\Results\GlobalResults.cs" />

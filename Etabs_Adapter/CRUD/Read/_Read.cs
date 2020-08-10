@@ -33,6 +33,7 @@ using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.MaterialFragments;
+using BH.oM.Analytical.Results;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -93,6 +94,13 @@ namespace BH.Adapter.ETABS
                 return ReadGrid(listIds);
             else if (type == typeof(FEMesh))
                 return ReadMesh(listIds);
+            else if (type == typeof(FEMesh))
+                return ReadMesh(listIds);
+            else if (typeof(IResult).IsAssignableFrom(type))
+            {
+                ReadResultsError(type);
+                return null;
+            }
 
             return new List<IBHoMObject>();//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
