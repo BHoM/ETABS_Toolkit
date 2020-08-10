@@ -93,7 +93,6 @@ namespace BH.Adapter.ETABS
             double[] m2 = null;
             double[] m3 = null;
 
-
             int ret = m_model.Results.PierForce(ref numberResults, ref storyName, ref pierName, ref loadcaseNames, ref location, ref p, ref v2, ref v3, ref t, ref m2, ref m3);
             if (ret == 0)
             {
