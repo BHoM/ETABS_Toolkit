@@ -36,6 +36,9 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Data_oM">
+      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Geometry_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
       <Private>False</Private>
@@ -58,6 +61,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Requests\Enum\PierAndSpandrelResultType.cs" />
+    <Compile Include="Requests\PierAndSpandrelForceRequest.cs" />
     <Compile Include="Settings\DataBaseSettings.cs" />
     <Compile Include="Settings\EtabsSettings.cs" />
     <Compile Include="Enums\SectionDatabase.cs" />
