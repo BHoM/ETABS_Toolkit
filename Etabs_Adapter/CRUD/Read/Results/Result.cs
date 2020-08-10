@@ -38,6 +38,8 @@ using ETABS2016;
 using BH.oM.Adapters.ETABS.Results;
 using BH.oM.Structure.Loads;
 using BH.oM.Data.Requests;
+using BH.oM.Structure.Requests;
+using BH.oM.Adapters.ETABS.Requests;
 using BH.oM.Adapter;
 
 namespace BH.Adapter.ETABS
@@ -50,69 +52,9 @@ namespace BH.Adapter.ETABS
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif
     {
-        /***************************************************/
-
-        protected override IEnumerable<IResult> ReadResults(Type type, IList ids = null, IList cases = null, int divisions = 5, ActionConfig actionConfig = null)
-        {
-            //Etabs special case forces.
-            //TODO: Add PierForceResultRequest
-            if (type == typeof(PierForce))
-                return GetPierForce(ids, cases, divisions);
-
-            IResultRequest request = Engine.Structure.Create.IResultRequest(type, ids?.Cast<object>(), cases?.Cast<object>(), divisions);
-
-            if (request != null)
-                return this.ReadResults(request as dynamic);
-            else
-                return new List<IResult>();
-
-        }
 
         /***************************************************/
-
-        private List<PierForce> GetPierForce(IList ids = null, IList cases = null, int divisions = 5)
-        {
-            List<string> loadcaseIds = new List<string>();
-            List<string> barIds = new List<string>();
-            List<PierForce> pierForces = new List<PierForce>();
-
-            //Gets and setup all the loadcases. if cases are null or have could 0, all are assigned
-            loadcaseIds = CheckAndSetUpCases(cases);
-
-            string[] loadcaseNames = null;
-
-            int numberResults = 0;
-            string[] storyName = null;
-            string[] pierName = null;
-            string[] location = null;
-
-            double[] p = null;
-            double[] v2 = null;
-            double[] v3 = null;
-            double[] t = null;
-            double[] m2 = null;
-            double[] m3 = null;
-
-            int ret = m_model.Results.PierForce(ref numberResults, ref storyName, ref pierName, ref loadcaseNames, ref location, ref p, ref v2, ref v3, ref t, ref m2, ref m3);
-            if (ret == 0)
-            {
-                for (int j = 0; j < numberResults; j++)
-                {
-                    int position = 0;
-                    if (location[j].ToUpper().Contains("BOTTOM"))
-                    {
-                        position = 1;
-                    }
-
-                    PierForce pf = new PierForce(pierName[j], loadcaseNames[j], storyName[j], 0, 0, position, 2, p[j], v2[j], v3[j], t[j], m2[j], m3[j]);
-                    pierForces.Add(pf);
-                }
-
-            }
-            return pierForces;
-        }
-
-
+        /**** Private method - Support methods          ****/
         /***************************************************/
 
         private List<string> CheckAndSetUpCases(IResultRequest request)
@@ -209,6 +151,26 @@ namespace BH.Adapter.ETABS
                 timeStep = stepNum;
                 mode = 0;
             }
+        }
+
+        /***************************************************/
+
+        private void ReadResultsError(Type resultType)
+        {
+            Type requestType = null;
+
+            if (typeof(PierForce).IsAssignableFrom(resultType))
+                requestType = typeof(PierAndSpandrelForceRequest);
+            else if (typeof(BarResult).IsAssignableFrom(resultType))
+                requestType = typeof(BarResultRequest);
+            else if (typeof(MeshResult).IsAssignableFrom(resultType) || typeof(MeshElementResult).IsAssignableFrom(resultType))
+                requestType = typeof(MeshResultRequest);
+            else if (typeof(StructuralGlobalResult).IsAssignableFrom(resultType))
+                requestType = typeof(GlobalResultRequest);
+            else if (typeof(NodeResult).IsAssignableFrom(resultType))
+                requestType = typeof(NodeResultRequest);
+
+            Modules.Structure.ErrorMessages.ReadResultsError(resultType, requestType);
         }
 
         /***************************************************/
