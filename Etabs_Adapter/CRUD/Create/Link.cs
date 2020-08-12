@@ -48,20 +48,18 @@ namespace BH.Adapter.ETABS
         private bool CreateObject(RigidLink bhLink)
         {
             bool success = true;
-            int retA = 0;
 
             List<string> linkIds = new List<string>();
 
             LinkConstraint constraint = bhLink.Constraint;//not used yet
-            Node masterNode = bhLink.MasterNode;
-            List<Node> slaveNodes = bhLink.SlaveNodes;
-            bool multiSlave = slaveNodes.Count() == 1 ? false : true;
+            Node primaryNode = bhLink.PrimaryNode;
+            List<Node> secondaryNodes = bhLink.SecondaryNodes;
 
-            for (int i = 0; i < slaveNodes.Count(); i++)
+            for (int i = 0; i < secondaryNodes.Count(); i++)
             {
                 string name = "";
 
-                retA = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterIdName].ToString(), slaveNodes[i].CustomData[AdapterIdName].ToString(), ref name, false, constraint.DescriptionOrName());
+                m_model.LinkObj.AddByPoint(primaryNode.CustomData[AdapterIdName].ToString(), secondaryNodes[i].CustomData[AdapterIdName].ToString(), ref name, false, constraint.DescriptionOrName());
 
                 linkIds.Add(name);
             }

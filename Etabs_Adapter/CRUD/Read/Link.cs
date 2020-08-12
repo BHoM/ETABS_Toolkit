@@ -59,20 +59,20 @@ namespace BH.Adapter.ETABS
 
             ids = FilterIds(ids, names);
 
-            //read master-multiSlave nodes if these were initially created from (non-etabs)BHoM side
+            //read primary-multiSecondary nodes if these were initially created from (non-etabs)BHoM side
             Dictionary<string, List<string>> idDict = new Dictionary<string, List<string>>();
-            string[] masterSlaveId;
+            string[] primarySecondaryId;
 
             foreach (string id in ids)
             {
-                masterSlaveId = id.Split(new[] { ":::" }, StringSplitOptions.None);
-                if (masterSlaveId.Count() > 1)
+                primarySecondaryId = id.Split(new[] { ":::" }, StringSplitOptions.None);
+                if (primarySecondaryId.Count() > 1)
                 {
-                    //has multi slaves
-                    if (idDict.ContainsKey(masterSlaveId[0]))
-                        idDict[masterSlaveId[0]].Add(masterSlaveId[1]);
+                    //has plural secondaries
+                    if (idDict.ContainsKey(primarySecondaryId[0]))
+                        idDict[primarySecondaryId[0]].Add(primarySecondaryId[1]);
                     else
-                        idDict.Add(masterSlaveId[0], new List<string>() { masterSlaveId[1] });
+                        idDict.Add(primarySecondaryId[0], new List<string>() { primarySecondaryId[1] });
                 }
                 else
                 {
@@ -96,8 +96,8 @@ namespace BH.Adapter.ETABS
                     m_model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
 
                     List<Node> endNodes = ReadNode(new List<string> { startId, endId });
-                    bhLink.MasterNode = endNodes[0];
-                    bhLink.SlaveNodes = new List<Node>() { endNodes[1] };
+                    bhLink.PrimaryNode = endNodes[0];
+                    bhLink.SecondaryNodes = new List<Node>() { endNodes[1] };
                 }
                 else
                 {
@@ -119,9 +119,9 @@ namespace BH.Adapter.ETABS
                     }
 
                     List<Node> endNodes = ReadNode(nodeIdsToRead);
-                    bhLink.MasterNode = endNodes[0];
+                    bhLink.PrimaryNode = endNodes[0];
                     endNodes.RemoveAt(0);
-                    bhLink.SlaveNodes = endNodes;
+                    bhLink.SecondaryNodes = endNodes;
                 }
                 string propName = "";
                 m_model.LinkObj.GetProperty(kvp.Key, ref propName);
