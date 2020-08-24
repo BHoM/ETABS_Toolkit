@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SurfaceProperties;
+using BH.Engine.Structure;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -121,6 +122,15 @@ namespace BH.Adapter.ETABS
 
                 //Set mesh nodes
                 mesh.Nodes = meshNodeIds.Select(x => nodes[x]).ToList();
+
+
+                //Get local x-axis
+                double orientation = 0;
+                bool advanced = false;
+                m_model.AreaObj.GetLocalAxes(id, ref orientation, ref advanced);
+                Vector normal = mesh.Faces.First().Normal(mesh);    //Assuming flat mesh, all normals equal
+                Vector localX = Convert.ToBHoMLocalX(normal, orientation);
+                mesh = mesh.SetLocalOrientations(localX);
 
                 meshes.Add(mesh);
             }
