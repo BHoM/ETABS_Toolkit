@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -28,6 +28,7 @@ using BH.oM.Structure.Loads;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Constraints;
 using BH.oM.Geometry;
+using BH.Engine.Geometry;
 
 namespace BH.Adapter.ETABS
 {
@@ -37,12 +38,24 @@ namespace BH.Adapter.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Vector ToVector(this double[] v)
+        public static Vector ToBHoMLocalX(Vector normal, double orientationAngle)
         {
-            if (v.Length == 3)
-                return new Vector { X = v[0], Y = v[1], Z = v[2] };
+            Vector locYref;
+
+            if (normal.IsParallel(Vector.ZAxis) == 0)
+            {
+                //Vector is not paralell to z-axis
+                locYref = Vector.ZAxis.Project(new Plane { Normal = normal });
+            }
             else
-                return null;
+            {
+                //Vector is paralell to z-axis
+                locYref = Vector.YAxis;
+            }
+
+            Vector localXref = locYref.CrossProduct(normal);
+
+            return localXref.Rotate(orientationAngle / 180 * Math.PI, normal);
         }
 
         /***************************************************/

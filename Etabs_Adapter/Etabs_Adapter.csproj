@@ -335,9 +335,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterActions\Exectute.cs" />
+    <Compile Include="Convert\ToBHoM\Panel.cs" />
     <Compile Include="Convert\ToBHoM\Vector.cs" />
     <Compile Include="Convert\ToCSI\BarRelease.cs" />
     <Compile Include="Convert\ToCSI\Constraint6DOF.cs" />
+    <Compile Include="Convert\ToCSI\Panel.cs" />
     <Compile Include="Convert\ToCSI\Vector.cs" />
     <Compile Include="CRUD\Create\Loadcase.cs" />
     <Compile Include="CRUD\Create\Diaphragm.cs" />

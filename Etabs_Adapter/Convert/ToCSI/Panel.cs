@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,14 +20,13 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
-using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Constraints;
+using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry;
+using BH.Engine.Geometry;
+using System.Linq;
+using System;
 
 namespace BH.Adapter.ETABS
 {
@@ -37,15 +36,26 @@ namespace BH.Adapter.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Vector ToVector(this double[] v)
+        public static double ToEtabsPanelOrientation(this Vector normal, Vector localY)
         {
-            if (v.Length == 3)
-                return new Vector { X = v[0], Y = v[1], Z = v[2] };
+            Vector refVec;
+
+            if (normal.IsParallel(Vector.ZAxis) == 0)
+            {
+                //Vector is not paralell to z-axis
+                refVec = Vector.ZAxis.Project(new Plane { Normal = normal }).Normalise();
+            }
             else
-                return null;
+            {
+                //Vector is paralell to z-axis
+                refVec = Vector.YAxis;
+            }
+
+            return refVec.Angle(localY, new Plane { Normal = normal }) * 180 / Math.PI;
         }
 
         /***************************************************/
     }
+
 }
 

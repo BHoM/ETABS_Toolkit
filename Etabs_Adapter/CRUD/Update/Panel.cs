@@ -26,6 +26,8 @@ using BH.oM.Structure.Elements;
 using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Adapter;
+using BH.oM.Geometry;
+using BH.Engine.Structure;
 
 namespace BH.Adapter.ETABS
 {
@@ -58,6 +60,10 @@ namespace BH.Adapter.ETABS
                 Engine.Reflection.Compute.RecordWarning("The Etabs API does not allow for updating of the geometry of panels. This includes the external edges as well as the openings. To update the panel geometry, delete the existing panel you want to update and create a new one.");
 
                 m_model.AreaObj.SetProperty(name, propertyName);
+
+                //Set local orientations:
+                Basis orientation = bhPanel.LocalOrientation();
+                m_model.AreaObj.SetLocalAxes(name, Convert.ToEtabsPanelOrientation(orientation.Z, orientation.Y));
 
                 Pier pier = bhPanel.Pier();
                 Spandrel spandrel = bhPanel.Spandrel();
