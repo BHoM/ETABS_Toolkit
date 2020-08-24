@@ -101,8 +101,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Convert\ToBHoM.cs" />
-    <Compile Include="Convert\ToCSI.cs" />
     <Compile Include="Create\Diaphragm.cs" />
     <Compile Include="Create\MassSource.cs" />
     <Compile Include="Create\Pier.cs" />
