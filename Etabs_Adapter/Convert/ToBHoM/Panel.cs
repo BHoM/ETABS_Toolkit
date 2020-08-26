@@ -42,20 +42,27 @@ namespace BH.Adapter.ETABS
         {
             Vector locYref;
 
-            if (normal.IsParallel(Vector.ZAxis) == 0)
-            {
-                //Vector is not paralell to z-axis
-                locYref = Vector.ZAxis.Project(new Plane { Normal = normal });
-            }
-            else
+            if (normal.IsEtabsVertical())
             {
                 //Vector is paralell to z-axis
                 locYref = Vector.YAxis;
+            }
+            else
+            {
+                //Vector is not paralell to z-axis
+                locYref = Vector.ZAxis.Project(new Plane { Normal = normal });
             }
 
             Vector localXref = locYref.CrossProduct(normal);
 
             return localXref.Rotate(orientationAngle / 180 * Math.PI, normal);
+        }
+
+        /***************************************************/
+
+        private static bool IsEtabsVertical(this Vector vector)
+        {
+            return Math.Sin(vector.Angle(Vector.ZAxis)) < 1e-3;
         }
 
         /***************************************************/

@@ -128,7 +128,6 @@ namespace BH.Adapter.ETABS
             {
                 m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
             }
-
             return success;
         }
         

@@ -40,15 +40,15 @@ namespace BH.Adapter.ETABS
         {
             Vector refVec;
 
-            if (normal.IsParallel(Vector.ZAxis) == 0)
-            {
-                //Vector is not paralell to z-axis
-                refVec = Vector.ZAxis.Project(new Plane { Normal = normal }).Normalise();
-            }
-            else
+            if (normal.IsEtabsVertical())
             {
                 //Vector is paralell to z-axis
                 refVec = Vector.YAxis;
+            }
+            else
+            {
+                //Vector is not paralell to z-axis
+                refVec = Vector.ZAxis.Project(new Plane { Normal = normal }).Normalise();
             }
 
             return refVec.Angle(localY, new Plane { Normal = normal }) * 180 / Math.PI;
