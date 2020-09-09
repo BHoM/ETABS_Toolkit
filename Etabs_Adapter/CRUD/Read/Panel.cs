@@ -125,7 +125,7 @@ namespace BH.Adapter.ETABS
                 bool advanced = false;
                 m_model.AreaObj.GetLocalAxes(id, ref orientation, ref advanced);
 
-                panel = panel.SetLocalOrientation(Convert.ToBHoMLocalX(panel.Normal(), orientation));
+                panel = panel.SetLocalOrientation(Convert.FromCSILocalX(panel.Normal(), orientation));
 
                 //Label and story
                 string label = "";

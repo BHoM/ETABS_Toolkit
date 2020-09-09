@@ -38,7 +38,7 @@ namespace BH.Adapter.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Vector ToBHoMLocalX(Vector normal, double orientationAngle)
+        public static Vector FromCSILocalX(Vector normal, double orientationAngle)
         {
             Vector locYref;
 

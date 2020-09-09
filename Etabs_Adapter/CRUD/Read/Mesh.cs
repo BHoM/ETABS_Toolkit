@@ -129,7 +129,7 @@ namespace BH.Adapter.ETABS
                 bool advanced = false;
                 m_model.AreaObj.GetLocalAxes(id, ref orientation, ref advanced);
                 Vector normal = mesh.Faces.First().Normal(mesh);    //Assuming flat mesh, all normals equal
-                Vector localX = Convert.ToBHoMLocalX(normal, orientation);
+                Vector localX = Convert.FromCSILocalX(normal, orientation);
                 mesh = mesh.SetLocalOrientations(localX);
 
                 meshes.Add(mesh);

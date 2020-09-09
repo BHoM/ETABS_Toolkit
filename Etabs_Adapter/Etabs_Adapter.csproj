@@ -335,8 +335,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterActions\Exectute.cs" />
-    <Compile Include="Convert\ToBHoM\Panel.cs" />
-    <Compile Include="Convert\ToBHoM\Vector.cs" />
+    <Compile Include="Convert\FromCSI\Panel.cs" />
+    <Compile Include="Convert\FromCSI\Vector.cs" />
     <Compile Include="Convert\ToCSI\BarRelease.cs" />
     <Compile Include="Convert\ToCSI\Constraint6DOF.cs" />
     <Compile Include="Convert\ToCSI\Panel.cs" />
