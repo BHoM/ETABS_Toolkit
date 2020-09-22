@@ -39,6 +39,7 @@ using BH.oM.Structure.Requests;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.oM.Adapter;
+using BH.oM.Structure.Elements;
 
 namespace BH.Adapter.ETABS
 {
@@ -230,24 +231,15 @@ namespace BH.Adapter.ETABS
 
         private List<string> CheckGetBarIds(BarResultRequest request)
         {
-            List<string> barIds = new List<string>();
-            var ids = request.ObjectIds;
+            List<string> barIds = CheckAndGetIds<Bar>(request.ObjectIds);
 
-            if (ids == null || ids.Count == 0)
+            if (barIds == null || barIds.Count == 0)
             {
                 int bars = 0;
                 string[] names = null;
                 m_model.FrameObj.GetNameList(ref bars, ref names);
                 barIds = names.ToList();
             }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    barIds.Add(ids[i].ToString());
-                }
-            }
-
             return barIds;
         }
 
