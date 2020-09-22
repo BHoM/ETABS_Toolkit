@@ -37,6 +37,7 @@ using ETABS2016;
 #endif
 using BH.oM.Structure.Requests;
 using BH.oM.Adapter;
+using BH.oM.Structure.Elements;
 
 namespace BH.Adapter.ETABS
 {
@@ -175,24 +176,16 @@ namespace BH.Adapter.ETABS
 
         private List<string> CheckGetNodeIds(NodeResultRequest request)
         {
-            List<string> nodeIds = new List<string>();
-            var ids = request.ObjectIds;
+            List<string> nodeIds = CheckAndGetIds<Node>(request.ObjectIds);
 
-            if (ids == null || ids.Count == 0)
+            if (nodeIds == null || nodeIds.Count == 0)
             {
                 int nodes = 0;
                 string[] names = null;
                 m_model.PointObj.GetNameList(ref nodes, ref names);
                 nodeIds = names.ToList();
             }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    nodeIds.Add(ids[i].ToString());
-                }
-            }
-
+          
             return nodeIds;
         }
 

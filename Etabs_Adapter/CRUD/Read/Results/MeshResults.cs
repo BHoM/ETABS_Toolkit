@@ -39,6 +39,7 @@ using BH.oM.Structure.Requests;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.oM.Adapter;
+using BH.oM.Structure.Elements;
 
 namespace BH.Adapter.ETABS
 {
@@ -444,24 +445,16 @@ namespace BH.Adapter.ETABS
 
         private List<string> CheckGetPanelIds(MeshResultRequest request)
         {
-            List<string> panelIds = new List<string>();
-            var ids = request.ObjectIds;
+            List<string> panelIds = CheckAndGetIds<IAreaElement>(request.ObjectIds);
 
-            if (ids == null || ids.Count == 0)
+            if (panelIds == null || panelIds.Count == 0)
             {
                 int panels = 0;
                 string[] names = null;
                 m_model.AreaObj.GetNameList(ref panels, ref names);
                 panelIds = names.ToList();
             }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    panelIds.Add(ids[i].ToString());
-                }
-            }
-
+          
             return panelIds;
         }
 

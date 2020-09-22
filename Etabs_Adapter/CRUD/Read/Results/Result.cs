@@ -41,6 +41,7 @@ using BH.oM.Data.Requests;
 using BH.oM.Structure.Requests;
 using BH.oM.Adapters.ETABS.Requests;
 using BH.oM.Adapter;
+using BH.oM.Base;
 
 namespace BH.Adapter.ETABS
 {
@@ -171,6 +172,32 @@ namespace BH.Adapter.ETABS
                 requestType = typeof(NodeResultRequest);
 
             Modules.Structure.ErrorMessages.ReadResultsError(resultType, requestType);
+        }
+
+        /***************************************************/
+
+        private List<string> CheckAndGetIds<T>(IEnumerable ids) where T : IBHoMObject
+        {
+            if (ids == null)
+            {
+                return null;
+            }
+            else
+            {
+                List<string> idsOut = new List<string>();
+                foreach (object o in ids)
+                {
+                    object idObj;
+
+                    if (o is string)
+                        idsOut.Add((string)o);
+                    if (o is int || o is double)
+                        idsOut.Add(o.ToString());
+                    else if (o is T && ((T)o).CustomData.TryGetValue(AdapterIdName, out idObj))
+                        idsOut.Add(idObj.ToString());
+                }
+                return idsOut;
+            }
         }
 
         /***************************************************/
