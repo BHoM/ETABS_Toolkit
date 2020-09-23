@@ -61,7 +61,6 @@ namespace BH.Adapter.ETABS
                 case GlobalResultType.Reactions:
                     return GetGlobalReactions();
                 case GlobalResultType.ModalDynamics:
-                    return GetModalParticipationMassRatios();
                 default:
                     Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
@@ -103,6 +102,8 @@ namespace BH.Adapter.ETABS
 
         private List<ModalDynamics> GetModalParticipationMassRatios()
         {
+            //TODO: This method is to be fixed before exposed. Currently does not give back ratios when it should, but full values
+            //All arguments to be fully checked through and refactored before exposed
             List<ModalDynamics> partRatios = new List<ModalDynamics>();
 
             int resultCount = 0;
