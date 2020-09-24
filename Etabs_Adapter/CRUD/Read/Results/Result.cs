@@ -191,7 +191,7 @@ namespace BH.Adapter.ETABS
 
                     if (o is string)
                         idsOut.Add((string)o);
-                    if (o is int || o is double)
+                    else if (o is int || o is double)
                         idsOut.Add(o.ToString());
                     else if (o is T && ((T)o).CustomData.TryGetValue(AdapterIdName, out idObj))
                         idsOut.Add(idObj.ToString());
