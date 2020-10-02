@@ -135,7 +135,7 @@ namespace BH.Adapter.ETABS
             double[] length = new double[num];
 
             // Formatt section names and positions to ETABS standard
-            decimal[] positions = profile.Profiles.Keys.ToArray();
+            double[] positions = profile.Profiles.Keys.ToArray();
             for (int i = 0; i < num; i++)
             {
                 segmentStartProfile[i] = sectionName + "_SubSection" + (i).ToString();

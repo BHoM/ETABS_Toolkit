@@ -176,13 +176,13 @@ namespace BH.Adapter.ETABS
                             }
 
                             // convert length values to relative positions between 0 and 1
-                            List<decimal> positions = new List<decimal>() { 0 };
+                            List<double> positions = new List<double>() { 0 };
                             for (int i = 0; i < myLength.Length; i++)
                             {
-                                positions.Add(System.Convert.ToDecimal(myLength[i]) + positions[i]);
+                                positions.Add(System.Convert.ToDouble(myLength[i]) + positions[i]);
                             }
                             double totLength = myLength.Sum();
-                            positions = positions.Select(x => x / System.Convert.ToDecimal(totLength)).ToList();
+                            positions = positions.Select(x => x / System.Convert.ToDouble(totLength)).ToList();
 
                             // Getting a Profile from a name in the propList
                             Func<string, IProfile> getProfile = sectionName =>
@@ -205,7 +205,7 @@ namespace BH.Adapter.ETABS
                                 if (startSec[i] != endSec[i - 1])
                                 {
                                     profiles.Insert(i + 1, getProfile(startSec[i]));
-                                    positions.Insert(i + 1, positions[i] + System.Convert.ToDecimal(Tolerance.Distance));
+                                    positions.Insert(i + 1, positions[i] + System.Convert.ToDouble(Tolerance.Distance));
                                 }
                             }
 
@@ -223,13 +223,16 @@ namespace BH.Adapter.ETABS
                                 }
                             }
 
+                            //Etabs can only accept sections that vary linearly along it's length
+                            List<int> interpolationOrder = Enumerable.Repeat(1, positions.Count - 1).ToList();
+
                             if (profiles.Any(x => x == null))
                             {
                                 Engine.Reflection.Compute.RecordNote("Tapered profiles require the sub-profiles to be geometrically defined, they can not be any kind of explicit section.");
                             }
                             else
                             {
-                                dimensions = Engine.Geometry.Create.TaperedProfile(positions, profiles);
+                                dimensions = Engine.Geometry.Create.TaperedProfile(positions, profiles, interpolationOrder);
                             }
                         break;
                         case eFramePropType.Joist:
