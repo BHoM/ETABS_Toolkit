@@ -23,6 +23,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.SectionProperties;
+using BH.Engine.Geometry;
 using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry.ShapeProfiles;
@@ -123,6 +124,9 @@ namespace BH.Adapter.ETABS
 
         private void SetProfile(TaperedProfile profile, string sectionName, IMaterialFragment material)
         {
+            //Map Position domain to [0,1]
+            profile.MapPositionDomain();
+            
             // Create a section for each sub profile
             IProfile[] profiles = profile.Profiles.Values.ToArray();
             for (int i = 0; i < profiles.Length; i++)
