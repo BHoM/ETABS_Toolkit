@@ -85,6 +85,9 @@ namespace BH.Adapter.ETABS
                 }
             }
 
+            //Force refresh to make sure panel local orientation are set correctly
+            ForceRefresh();
+
             return success;
         }
 

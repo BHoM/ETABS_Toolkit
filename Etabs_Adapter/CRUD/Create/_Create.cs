@@ -97,6 +97,13 @@ namespace BH.Adapter.ETABS
                     success &= CreateObject(obj as dynamic);
                 }
             }
+
+            if (typeof(T) == typeof(Panel))
+            {
+                //Force refresh to make sure panel local orientation are set correctly
+                ForceRefresh();
+            }
+
             return success;
         }
         

@@ -94,10 +94,7 @@ namespace BH.Adapter.ETABS
             // ETABS refuses to update the location of Bars unless a edit command for them is run.
             // Mainly a UI bug, but seem to contain other artifacts as well.
             // Does not count as a command if the movment is zero.
-            m_model.SelectObj.All();
-            m_model.EditGeneral.Move(1, 0, 0);
-            m_model.EditGeneral.Move(-1, 0, 0);
-            m_model.SelectObj.ClearSelection();
+            ForceRefresh();
 #endif
 
 
