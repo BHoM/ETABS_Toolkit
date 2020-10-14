@@ -133,6 +133,17 @@ namespace BH.Adapter.ETABS
         /**** Private Methods                           ****/
         /***************************************************/
 
+        private bool ForceRefresh()
+        {
+            //Forcing refresh of the model by moving all elements in back and forward along the x-axis.
+            //If a more elegant way can be found to do this, this should be changed.
+            m_model.SelectObj.All();
+            m_model.EditGeneral.Move(1, 0, 0);
+            m_model.EditGeneral.Move(-1, 0, 0);
+            m_model.SelectObj.ClearSelection();
+            return true;
+        }
+
         private void LoadSectionDatabaseNames()
         {
             int num = 0;

@@ -26,6 +26,8 @@ using BH.oM.Structure.Elements;
 using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Adapter;
+using BH.oM.Geometry;
+using BH.Engine.Structure;
 
 namespace BH.Adapter.ETABS
 {
@@ -59,6 +61,10 @@ namespace BH.Adapter.ETABS
 
                 m_model.AreaObj.SetProperty(name, propertyName);
 
+                //Set local orientations:
+                Basis orientation = bhPanel.LocalOrientation();
+                m_model.AreaObj.SetLocalAxes(name, Convert.ToEtabsPanelOrientation(orientation.Z, orientation.Y));
+
                 Pier pier = bhPanel.Pier();
                 Spandrel spandrel = bhPanel.Spandrel();
                 Diaphragm diaphragm = bhPanel.Diaphragm();
@@ -78,6 +84,9 @@ namespace BH.Adapter.ETABS
                     m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
                 }
             }
+
+            //Force refresh to make sure panel local orientation are set correctly
+            ForceRefresh();
 
             return success;
         }

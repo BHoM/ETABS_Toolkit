@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,30 +20,27 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
-using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Constraints;
+using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry;
+using System.Linq;
 
-namespace BH.Engine.Adapters.ETABS
+namespace BH.Adapter.ETABS
 {
     public static partial class Convert
     {
         /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
 
-        public static Vector ToVector(this double[] v)
+        public static double[] ToDoubleArray(this Vector v)
         {
-            if (v.Length == 3)
-                return new Vector { X = v[0], Y = v[1], Z = v[2] };
-            else
-                return null;
+            return new double[] { v.X, v.Y, v.Z };
         }
 
         /***************************************************/
     }
+
 }
 

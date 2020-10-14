@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -26,29 +26,12 @@ using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry;
 using System.Linq;
 
-namespace BH.Engine.Adapters.ETABS
+namespace BH.Adapter.ETABS
 {
     public static partial class Convert
     {
-        public static void ToCSI(this Constraint6DOF support, ref bool[] restraint, ref double[] spring)
-        {
-            restraint = new bool[6];
-            restraint[0] = support.TranslationX == DOFType.Fixed;
-            restraint[1] = support.TranslationY == DOFType.Fixed;
-            restraint[2] = support.TranslationZ == DOFType.Fixed;
-            restraint[3] = support.RotationX == DOFType.Fixed;
-            restraint[4] = support.RotationY == DOFType.Fixed;
-            restraint[5] = support.RotationZ == DOFType.Fixed;
-
-            spring = new double[6];
-            spring[0] = support.TranslationalStiffnessX;
-            spring[1] = support.TranslationalStiffnessY;
-            spring[2] = support.TranslationalStiffnessZ;
-            spring[3] = support.RotationalStiffnessX;
-            spring[4] = support.RotationalStiffnessY;
-            spring[5] = support.RotationalStiffnessZ;
-        }
-
+        /***************************************************/
+        /**** Public Methods                            ****/
         /***************************************************/
 
         public static bool ToCSI(this BarRelease release, ref bool[] startRestraint, ref double[] startSpring, ref bool[] endRestraint, ref double[] endSpring)
@@ -103,17 +86,11 @@ namespace BH.Engine.Adapters.ETABS
             { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ when RotationY is released for both ends"); success = false; }
 
             return success;
-        }        
-        
-        /***************************************************/
-
-        public static double[] ToDoubleArray(this Vector v)
-        {
-            return new double[] { v.X, v.Y, v.Z };
         }
 
         /***************************************************/
+
     }
-    
+
 }
 

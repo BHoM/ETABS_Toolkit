@@ -33,6 +33,7 @@ using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Adapters.ETABS.Fragments;
+using BH.Engine.Structure;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -120,6 +121,11 @@ namespace BH.Adapter.ETABS
                 panel = panel.SetSpandrel(new Spandrel { Name = SpandrelName });
                 panel = panel.SetPier(new Pier { Name = PierName });
 
+                double orientation = 0;
+                bool advanced = false;
+                m_model.AreaObj.GetLocalAxes(id, ref orientation, ref advanced);
+
+                panel = panel.SetLocalOrientation(Convert.FromCSILocalX(panel.Normal(), orientation));
 
                 //Label and story
                 string label = "";
