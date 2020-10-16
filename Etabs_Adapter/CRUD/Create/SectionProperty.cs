@@ -27,7 +27,7 @@ using BH.Engine.Geometry;
 using BH.Engine.Spatial;
 using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
-using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
