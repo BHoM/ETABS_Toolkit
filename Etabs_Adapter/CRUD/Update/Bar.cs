@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 
 #if Debug17 || Release17
@@ -56,14 +58,14 @@ namespace BH.Adapter.ETABS
 
             foreach (Bar bhBar in bhBars)
             {
-                object o;
-                if(!bhBar.CustomData.TryGetValue(AdapterIdName, out o))
+                object id = bhBar.AdapterId(typeof(ETABSId));
+                if (id != null)
                 {
                     Engine.Reflection.Compute.RecordWarning("The Bar must have an ETABS adapter id to be updated.");
                     continue;
                 }
 
-                string name = o as string;
+                string name = id as string;
                 if (!names.Contains(name))
                 {
                     Engine.Reflection.Compute.RecordWarning("The Bar must be present in ETABS to be updated.");
@@ -75,8 +77,8 @@ namespace BH.Adapter.ETABS
                 string end = "";
                 m_model.FrameObj.GetPoints(name, ref start, ref end);
 
-                if (bhBar.StartNode.CustomData[AdapterIdName].ToString() != start ||
-                    bhBar.EndNode.CustomData[AdapterIdName].ToString() != end)
+                if (bhBar.StartNode.AdapterId(typeof(ETABSId)).ToString() != start ||
+                    bhBar.EndNode.AdapterId(typeof(ETABSId)).ToString() != end)
                 {
                     Engine.Reflection.Compute.RecordWarning("ETABS16 does not support Update of Bar connectivity, which means the geometry can not be updated. \n" + 
                                                             "To update the connectivity or position of a Bar, delete the existing Bar you want to update and create a new one.");

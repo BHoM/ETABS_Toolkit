@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Adapters.ETABS;

@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
@@ -59,7 +61,7 @@ namespace BH.Adapter.ETABS
             double mergeTol = 1e-3; //Merging panel points to the mm, same behaviour as the default node comparer
 
             string name = "";
-            string propertyName = bhPanel.Property.CustomData[AdapterIdName].ToString();
+            string propertyName = bhPanel.Property.AdapterId(typeof(ETABSId)).ToString();
             List<BH.oM.Geometry.Point> boundaryPoints = bhPanel.ControlPoints(true).CullDuplicates(mergeTol);
 
             int segmentCount = boundaryPoints.Count();
@@ -75,7 +77,7 @@ namespace BH.Adapter.ETABS
 
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
 
-            bhPanel.CustomData[AdapterIdName] = name;
+            bhPanel.SetAdapterId(typeof(ETABSId), name);
 
             if (retA != 0)
                 return false;
@@ -102,7 +104,7 @@ namespace BH.Adapter.ETABS
                     m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "");//<-- setting panel property to empty string, verify that this is correct
                     m_model.AreaObj.SetOpening(openingName, true);
 
-                    bhPanel.Openings[i].CustomData[AdapterIdName] = openingName;
+                    bhPanel.Openings[i].SetAdapterId(typeof(ETABSId), openingName);
                 }
             }
 

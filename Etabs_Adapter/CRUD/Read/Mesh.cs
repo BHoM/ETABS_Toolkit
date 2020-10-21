@@ -21,9 +21,13 @@
  */
 
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
@@ -72,7 +76,7 @@ namespace BH.Adapter.ETABS
                 ISurfaceProperty panelProperty = ReadSurfaceProperty(new List<string>() { propertyName })[0];
 
                 FEMesh mesh = new FEMesh() { Property = panelProperty };
-                mesh.CustomData[AdapterIdName] = id;
+                mesh.SetAdapterId(typeof(ETABSId), id);
 
                 //Get out the "Element" ids, i.e. the mesh faces
                 int nbELem = 0;
@@ -87,7 +91,7 @@ namespace BH.Adapter.ETABS
                     m_model.AreaElm.GetPoints(elemNames[j], ref nbPts, ref ptsNames);
 
                     FEMeshFace face = new FEMeshFace();
-                    face.CustomData[AdapterIdName] = elemNames[j];
+                    face.SetAdapterId(typeof(ETABSId), elemNames[j]);
 
                     for (int k = 0; k < nbPts; k++)
                     {
@@ -103,7 +107,7 @@ namespace BH.Adapter.ETABS
                             double z = 0;
                             m_model.PointElm.GetCoordCartesian(nodeId, ref x, ref y, ref z);
                             node = new Node() { Position = new Point { X = x, Y = y, Z = z } };
-                            node.CustomData[AdapterIdName] = nodeId;
+                            node.SetAdapterId(typeof(ETABSId), nodeId);
                             nodes[ptsNames[k]] = node;
                         }
 

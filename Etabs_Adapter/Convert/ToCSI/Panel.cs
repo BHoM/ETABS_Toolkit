@@ -26,7 +26,11 @@ using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 
 namespace BH.Adapter.ETABS
 {

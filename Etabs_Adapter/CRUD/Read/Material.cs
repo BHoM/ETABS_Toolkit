@@ -21,9 +21,13 @@
  */
 
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.MaterialFragments;
@@ -162,7 +166,7 @@ namespace BH.Adapter.ETABS
                             m = new GenericIsotropicMaterial() { Name = id + "_replacment" };
                         }
                     }
-                    m.CustomData[AdapterIdName] = id;
+                    m.SetAdapterId(typeof(ETABSId), id);
 
                     materialList.Add(m);
                 }

@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
 using BH.Engine.Adapters.ETABS;
@@ -51,7 +53,7 @@ namespace BH.Adapter.ETABS
 
             foreach (Node bhNode in nodes)
             {
-                string name = bhNode.CustomData[AdapterIdName].ToString();
+                string name = bhNode.AdapterId(typeof(ETABSId)).ToString();
 
                 SetObject(bhNode, name);
 

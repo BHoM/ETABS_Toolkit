@@ -20,57 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Geometry.SettingOut;
-#if Debug17 || Release17
-using ETABSv17;
-#elif Debug18 || Release18
-using ETABSv1;
-#else
-using ETABS2016;
-#endif
 
-namespace BH.Adapter.ETABS
+using BH.oM.Base;
+using System.ComponentModel;
+
+namespace BH.oM.Adapters.ETABS
 {
-#if Debug17 || Release17
-    public partial class ETABS17Adapter : BHoMAdapter
-#elif Debug18 || Release18
-   public partial class ETABS18Adapter : BHoMAdapter
-#else
-    public partial class ETABS2016Adapter : BHoMAdapter
-#endif
+    public class ETABSId : IAdapterId<object>
     {
         /***************************************************/
+        /**** Public Properties                         ****/
+        /***************************************************/
 
-        private List<Level> ReadLevel(List<string> ids = null)
-        {
-            List<Level> levellist = new List<Level>();
-            int numberNames = 0;
-            string[] names = null;
-            m_model.Story.GetNameList(ref numberNames, ref names);
-
-            ids = FilterIds(ids, names);
-
-            foreach (string id in ids)
-            {
-                double elevation = 0;
-                int ret = m_model.Story.GetElevation(id, ref elevation);
-
-                Level lvl = new Level() { Elevation = elevation, Name = id };
-                levellist.Add(lvl);
-            }
-
-            return levellist;
-        }
+        public object Id { get; set; }
 
         /***************************************************/
     }

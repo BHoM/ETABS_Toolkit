@@ -22,7 +22,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.Engine.Spatial;
@@ -68,8 +72,8 @@ namespace BH.Adapter.ETABS
             int ret = 0;
             foreach (Node node in pointLoad.Objects.Elements)
             {
-                string caseName = pointLoad.Loadcase.CustomData[AdapterIdName].ToString();
-                string nodeName = node.CustomData[AdapterIdName].ToString();
+                string caseName = pointLoad.Loadcase.AdapterId(typeof(ETABSId)).ToString();
+                string nodeName = node.AdapterId(typeof(ETABSId)).ToString();
                 ret = m_model.PointObj.SetLoadForce(nodeName, caseName, ref pfValues, replace);
             }
         }
@@ -85,8 +89,8 @@ namespace BH.Adapter.ETABS
             {
                 bool stepReplace = replace;
 
-                string caseName = barUniformLoad.Loadcase.CustomData[AdapterIdName].ToString();
-                string barName = bar.CustomData[AdapterIdName].ToString();
+                string caseName = barUniformLoad.Loadcase.AdapterId(typeof(ETABSId)).ToString();
+                string barName = bar.AdapterId(typeof(ETABSId)).ToString();
 
                 for (int direction = 1; direction <= 3; direction++)
                 {
@@ -128,7 +132,7 @@ namespace BH.Adapter.ETABS
             int shift;
             GetDirectionData(areaUniformLoad, out axis, out shift);
             int ret = 0;
-            string caseName = areaUniformLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string caseName = areaUniformLoad.Loadcase.AdapterId(typeof(ETABSId)).ToString();
             foreach (IAreaElement area in areaUniformLoad.Objects.Elements)
             {
                 bool tempReplace = replace;
@@ -140,7 +144,7 @@ namespace BH.Adapter.ETABS
 
                     if (val != 0)
                     {
-                        ret = m_model.AreaObj.SetLoadUniform(area.CustomData[AdapterIdName].ToString(), caseName, val, direction + shift, tempReplace, axis);
+                        ret = m_model.AreaObj.SetLoadUniform(area.AdapterId(typeof(ETABSId)).ToString(), caseName, val, direction + shift, tempReplace, axis);
                         tempReplace = false;
                     }
                 }
@@ -155,13 +159,13 @@ namespace BH.Adapter.ETABS
             int shift;
             GetDirectionData(barLoad, out axis, out shift);
             int ret = 0;
-            string caseName = barLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string caseName = barLoad.Loadcase.AdapterId(typeof(ETABSId)).ToString();
 
             foreach (Bar bar in barLoad.Objects.Elements)
             {
                 bool stepReplace = replace;
                 double val1, val2, dist1, dist2;
-                string barName = bar.CustomData[AdapterIdName].ToString();
+                string barName = bar.AdapterId(typeof(ETABSId)).ToString();
                 for (int direction = 1; direction <= 3; direction++)
                 {
                     double valA = direction == 1 ? barLoad.ForceA.X : barLoad.Axis == LoadAxis.Global ?
@@ -192,7 +196,7 @@ namespace BH.Adapter.ETABS
                             Engine.Reflection.Compute.RecordWarning("BarVaryingLoad can not be in opposite directions for the two end values");
                         else
                         {
-                            ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 1, direction + shift, dist1, dist2, val1, val2, axis, false, stepReplace);
+                            ret = m_model.FrameObj.SetLoadDistributed(bar.AdapterId(typeof(ETABSId)).ToString(), caseName, 1, direction + shift, dist1, dist2, val1, val2, axis, false, stepReplace);
                             stepReplace = false;
                         }
                     }
@@ -224,7 +228,7 @@ namespace BH.Adapter.ETABS
 
                     if (!(val1 == 0 && val2 == 0))
                     {
-                        ret = m_model.FrameObj.SetLoadDistributed(bar.CustomData[AdapterIdName].ToString(), caseName, 2, direction + shift, dist1, dist2, val1, val2, axis, false, stepReplace);
+                        ret = m_model.FrameObj.SetLoadDistributed(bar.AdapterId(typeof(ETABSId)).ToString(), caseName, 2, direction + shift, dist1, dist2, val1, val2, axis, false, stepReplace);
                         stepReplace = false;
                     }
                 }
@@ -242,8 +246,8 @@ namespace BH.Adapter.ETABS
             {
                 bool stepReplace = replace;
 
-                string caseName = barPointLoad.Loadcase.CustomData[AdapterIdName].ToString();
-                string barName = bar.CustomData[AdapterIdName].ToString();
+                string caseName = barPointLoad.Loadcase.AdapterId(typeof(ETABSId)).ToString();
+                string barName = bar.AdapterId(typeof(ETABSId)).ToString();
 
                 for (int direction = 1; direction <= 3; direction++)
                 {
@@ -280,12 +284,12 @@ namespace BH.Adapter.ETABS
         public void SetLoad(AreaTemperatureLoad areaTempratureLoad, bool replace)
         {
             int ret = 0;
-            string caseName = areaTempratureLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string caseName = areaTempratureLoad.Loadcase.AdapterId(typeof(ETABSId)).ToString();
             foreach (IAreaElement area in areaTempratureLoad.Objects.Elements)
             {
                 double val = areaTempratureLoad.TemperatureChange;
                 if (val != 0)
-                    ret = m_model.AreaObj.SetLoadTemperature(area.CustomData[AdapterIdName].ToString(), caseName, 1, val, "", replace);
+                    ret = m_model.AreaObj.SetLoadTemperature(area.AdapterId(typeof(ETABSId)).ToString(), caseName, 1, val, "", replace);
             }
         }
 
@@ -294,12 +298,12 @@ namespace BH.Adapter.ETABS
         public void SetLoad(BarTemperatureLoad barTempratureLoad, bool replace)
         {
             int ret = 0;
-            string caseName = barTempratureLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string caseName = barTempratureLoad.Loadcase.AdapterId(typeof(ETABSId)).ToString();
             foreach (Bar bar in barTempratureLoad.Objects.Elements)
             {
                 double val = barTempratureLoad.TemperatureChange;
                 if (val != 0)
-                    ret = m_model.FrameObj.SetLoadTemperature(bar.CustomData[AdapterIdName].ToString(), caseName, 1, val, "", replace);
+                    ret = m_model.FrameObj.SetLoadTemperature(bar.AdapterId(typeof(ETABSId)).ToString(), caseName, 1, val, "", replace);
             }
         }
 
@@ -309,7 +313,7 @@ namespace BH.Adapter.ETABS
         {
             double selfWeightMultiplier = 0;
 
-            string caseName = gravityLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string caseName = gravityLoad.Loadcase.AdapterId(typeof(ETABSId)).ToString();
 
             m_model.LoadPatterns.GetSelfWTMultiplier(caseName, ref selfWeightMultiplier);
 
