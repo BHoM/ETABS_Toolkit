@@ -21,9 +21,13 @@
  */
 
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.SurfaceProperties;
@@ -56,7 +60,7 @@ namespace BH.Adapter.ETABS
         {
             List<ISurfaceProperty> propertyList = new List<ISurfaceProperty>();
 
-            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
 
             int nameCount = 0;
             string[] nameArr = { };
@@ -126,7 +130,7 @@ namespace BH.Adapter.ETABS
 
                     ConstantThickness panelConstant = new ConstantThickness();
                     panelConstant.Name = currentProperty;
-                    panelConstant.CustomData[AdapterIdName] = id;
+                    panelConstant.SetAdapterId(typeof(ETABSId), id);
                     panelConstant.Material = bhMaterial;
                     panelConstant.Thickness = thickness;
                     panelConstant.PanelType = PanelType.Wall;
@@ -145,7 +149,7 @@ namespace BH.Adapter.ETABS
 
                             m_model.PropArea.GetSlabRibbed(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref direction);
                             panelRibbed.Name = id;
-                            panelRibbed.CustomData[AdapterIdName] = id;
+                            panelRibbed.SetAdapterId(typeof(ETABSId), id);
                             panelRibbed.Material = bhMaterial;
                             panelRibbed.Thickness = thickness;
                             panelRibbed.PanelType = PanelType.Slab;
@@ -164,7 +168,7 @@ namespace BH.Adapter.ETABS
 
                             m_model.PropArea.GetSlabWaffle(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref ribSpacing2nd);
                             panelWaffle.Name = id;
-                            panelWaffle.CustomData[AdapterIdName] = id;
+                            panelWaffle.SetAdapterId(typeof(ETABSId), id);
                             panelWaffle.Material = bhMaterial;
                             panelWaffle.SpacingX = ribSpacing;
                             panelWaffle.SpacingY = ribSpacing2nd;
@@ -185,7 +189,7 @@ namespace BH.Adapter.ETABS
                         case eSlabType.Stiff_DO_NOT_USE:
                         default:
                             ConstantThickness panelConstant = new ConstantThickness();
-                            panelConstant.CustomData[AdapterIdName] = id;
+                            panelConstant.SetAdapterId(typeof(ETABSId), id);
                             panelConstant.Name = id;
                             panelConstant.Material = bhMaterial;
                             panelConstant.Thickness = thickness;

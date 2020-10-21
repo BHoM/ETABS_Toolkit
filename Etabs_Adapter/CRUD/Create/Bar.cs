@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Offsets;
 using BH.Engine.Adapters.ETABS;
@@ -31,7 +33,6 @@ using System;
 using BH.Engine.Structure;
 using BH.oM.Geometry;
 using BH.oM.Structure.Constraints;
-using BH.oM.Adapters.ETABS;
 using BH.Engine.Base;
 #if Debug17 || Release17
     using ETABSv17;
@@ -72,9 +73,9 @@ namespace BH.Adapter.ETABS
 
 #endif
 
-            ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterIdName].ToString(), bhBar.EndNode.CustomData[AdapterIdName].ToString(), ref name);
+            ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.AdapterId(typeof(ETABSId)).ToString(), bhBar.EndNode.AdapterId(typeof(ETABSId)).ToString(), ref name);
 
-            bhBar.CustomData[AdapterIdName] = name;
+            bhBar.SetAdapterId(typeof(ETABSId), name);
 
             if (ret != 0)
             {
@@ -91,16 +92,16 @@ namespace BH.Adapter.ETABS
         private bool SetObject(Bar bhBar)
         {
             int ret = 0;
-            string name = bhBar.CustomData[AdapterIdName].ToString();
+            string name = bhBar.AdapterId(typeof(ETABSId)).ToString();
 
             // Needed rigth after create as well as AddByPoint flipps the Bar if it feels like it
 #if Debug17 || Release17 || Debug18 || Release18
-            m_model.EditFrame.ChangeConnectivity(name, bhBar.StartNode.CustomData[AdapterIdName].ToString(), bhBar.EndNode.CustomData[AdapterIdName].ToString());
+            m_model.EditFrame.ChangeConnectivity(name, bhBar.StartNode.AdapterId(typeof(ETABSId)).ToString(), bhBar.EndNode.AdapterId(typeof(ETABSId)).ToString());
 #endif
 
             if (bhBar.SectionProperty != null)
             {
-                if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.CustomData[AdapterIdName].ToString()) != 0)
+                if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.AdapterId(typeof(ETABSId)).ToString()) != 0)
                 {
                     CreatePropertyWarning("SectionProperty", "Bar", name);
                     ret++;

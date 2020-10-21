@@ -21,9 +21,13 @@
  */
 
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.SectionProperties;
@@ -348,7 +352,7 @@ namespace BH.Adapter.ETABS
                         default:
                             continue;
                     }
-                    bhSectionProperty.CustomData[AdapterIdName] = id;
+                    bhSectionProperty.SetAdapterId(typeof(ETABSId), id);
 
                     double[] modifiers = null;
                     if (m_model.PropFrame.GetModifiers(id, ref modifiers) == 0 && modifiers != null && modifiers.Length > 6 && modifiers.Any(x => x != 1))

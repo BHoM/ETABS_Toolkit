@@ -21,9 +21,13 @@
  */
 
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
@@ -55,8 +59,8 @@ namespace BH.Adapter.ETABS
         private List<Bar> ReadBar(List<string> ids = null)
         {
             List<Bar> barList = new List<Bar>();
-            Dictionary<string, Node> bhomNodes = ReadNode().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
-            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperty().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, Node> bhomNodes = ReadNode().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
+            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperty().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
 
             int nameCount = 0;
             string[] names = { };
@@ -69,7 +73,7 @@ namespace BH.Adapter.ETABS
                 try
                 {
                     Bar bhBar = new Bar();
-                    bhBar.CustomData.Add(AdapterIdName, id);
+                    bhBar.SetAdapterId(typeof(ETABSId), id);
                     string startId = "";
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);

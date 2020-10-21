@@ -26,6 +26,7 @@ using BH.Engine.Structure;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
+using BH.Engine.Adapter;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -55,7 +56,7 @@ namespace BH.Adapter.ETABS
             int retA = 0;
 
             string propertyName = property2d.DescriptionOrName();
-            property2d.CustomData[AdapterIdName] = propertyName;
+            property2d.SetAdapterId(typeof(ETABSId), propertyName);
 
             eShellType shellType = ShellTypeToCSI(property2d);
 

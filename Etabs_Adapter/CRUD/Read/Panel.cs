@@ -21,9 +21,13 @@
  */
 
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
@@ -61,7 +65,7 @@ namespace BH.Adapter.ETABS
         {
             List<Panel> panelList = new List<Panel>();
 
-            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
             int nameCount = 0;
             string[] nameArr = { };
             m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
@@ -97,7 +101,7 @@ namespace BH.Adapter.ETABS
                 }
 
                 Panel panel = new Panel();
-                panel.CustomData[AdapterIdName] = id;
+                panel.SetAdapterId(typeof(ETABSId), id);
 
                 Polyline pl = GetPanelPerimeter(id);
 

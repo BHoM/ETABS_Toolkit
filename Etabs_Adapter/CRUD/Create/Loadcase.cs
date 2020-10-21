@@ -22,7 +22,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Loads;
 
 #if Debug17 || Release17
@@ -53,7 +57,7 @@ namespace BH.Adapter.ETABS
             double selfWeight = 0;
 
             int ret = m_model.LoadPatterns.Add(loadcase.Name, patternType, selfWeight, true);
-            loadcase.CustomData[AdapterIdName] = loadcase.Name;
+            loadcase.SetAdapterId(typeof(ETABSId), loadcase.Name);
 
             return true;
         }
@@ -112,7 +116,7 @@ namespace BH.Adapter.ETABS
 
                     m_model.RespCombo.SetCaseList(loadCombination.Name, ref cTypeName, lcName, factor);
                 }
-                loadCombination.CustomData[AdapterIdName] = loadCombination.Name;
+                loadCombination.SetAdapterId(typeof(ETABSId), loadCombination.Name);
             }
             else
             {

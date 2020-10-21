@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
 using BH.Engine.Structure;
@@ -59,12 +61,12 @@ namespace BH.Adapter.ETABS
             {
                 string name = "";
 
-                m_model.LinkObj.AddByPoint(primaryNode.CustomData[AdapterIdName].ToString(), secondaryNodes[i].CustomData[AdapterIdName].ToString(), ref name, false, constraint.DescriptionOrName());
+                m_model.LinkObj.AddByPoint(primaryNode.AdapterId(typeof(ETABSId)).ToString(), secondaryNodes[i].AdapterId(typeof(ETABSId)).ToString(), ref name, false, constraint.DescriptionOrName());
 
                 linkIds.Add(name);
             }
 
-            bhLink.CustomData[AdapterIdName] = linkIds;
+            bhLink.SetAdapterId(typeof(ETABSId), linkIds);
 
             return success;
         }

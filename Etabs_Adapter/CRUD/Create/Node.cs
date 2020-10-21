@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.Engine.Structure;
 using BH.Engine.Adapters.ETABS;
@@ -46,7 +48,7 @@ namespace BH.Adapter.ETABS
             oM.Geometry.Point position = bhNode.Position;
             if (m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name) == 0)
             {
-                bhNode.CustomData[AdapterIdName] = name;
+                bhNode.SetAdapterId(typeof(ETABSId), name);
 
                 SetObject(bhNode, name);
             }

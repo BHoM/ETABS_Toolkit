@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fragments\ETABSId.cs" />
     <Compile Include="Requests\Enum\PierAndSpandrelResultType.cs" />
     <Compile Include="Requests\PierAndSpandrelForceRequest.cs" />
     <Compile Include="Settings\DataBaseSettings.cs" />

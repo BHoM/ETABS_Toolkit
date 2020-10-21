@@ -21,9 +21,13 @@
  */
 
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
@@ -74,8 +78,6 @@ namespace BH.Adapter.ETABS
             
             if (active)
             {
-                AdapterIdName = ID;
-
                 this.EtabsSettings = etabsSetting == null ? new EtabsSettings() : etabsSetting;
 
                 //string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");

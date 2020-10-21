@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.SectionProperties;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
@@ -32,6 +34,8 @@ using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
 using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 #if Debug17 || Release17
 using ETABSv17;
 #else
@@ -56,7 +60,7 @@ namespace BH.Adapter.ETABS
         private bool CreateObject(ISectionProperty bhSection)
         {
             string propertyName = bhSection.DescriptionOrName();
-            bhSection.CustomData[AdapterIdName] = propertyName;
+            bhSection.SetAdapterId(typeof(ETABSId), propertyName);
             
             if (!LoadFromDatabase(bhSection))
             {

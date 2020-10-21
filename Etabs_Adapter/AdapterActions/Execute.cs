@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Adapter;
 using BH.oM.Reflection;
 using BH.oM.Adapter.Commands;
