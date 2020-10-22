@@ -25,8 +25,6 @@ using System.Linq;
 using BH.Engine.Adapter;
 using BH.oM.Adapters.ETABS;
 using System;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.Engine.Spatial;

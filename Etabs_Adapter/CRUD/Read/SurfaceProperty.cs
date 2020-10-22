@@ -26,8 +26,6 @@ using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.SurfaceProperties;
@@ -77,7 +75,7 @@ namespace BH.Adapter.ETABS
                 double thickness = 0;
                 int colour = 0;
                 string notes = "";
-                string guid = "";
+                string guid = null;
                 double depth = 0;
                 double stemWidthTop = 0;
                 double stemWidthBottom = 0;//not used
@@ -130,7 +128,6 @@ namespace BH.Adapter.ETABS
 
                     ConstantThickness panelConstant = new ConstantThickness();
                     panelConstant.Name = currentProperty;
-                    panelConstant.SetAdapterId(typeof(ETABSId), id);
                     panelConstant.Material = bhMaterial;
                     panelConstant.Thickness = thickness;
                     panelConstant.PanelType = PanelType.Wall;
@@ -138,6 +135,7 @@ namespace BH.Adapter.ETABS
                     if (modifier != null)
                         panelConstant.Fragments.Add(modifier);
 
+                    panelConstant.SetAdapterId(typeof(ETABSId), id);
                     propertyList.Add(panelConstant);
                 }
                 else
@@ -149,7 +147,6 @@ namespace BH.Adapter.ETABS
 
                             m_model.PropArea.GetSlabRibbed(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref direction);
                             panelRibbed.Name = id;
-                            panelRibbed.SetAdapterId(typeof(ETABSId), id);
                             panelRibbed.Material = bhMaterial;
                             panelRibbed.Thickness = thickness;
                             panelRibbed.PanelType = PanelType.Slab;
@@ -161,6 +158,7 @@ namespace BH.Adapter.ETABS
                             if (modifier != null)
                                 panelRibbed.Fragments.Add(modifier);
 
+                            panelRibbed.SetAdapterId(typeof(ETABSId), id);
                             propertyList.Add(panelRibbed);
                             break;
                         case eSlabType.Waffle:
@@ -168,7 +166,6 @@ namespace BH.Adapter.ETABS
 
                             m_model.PropArea.GetSlabWaffle(id, ref depth, ref thickness, ref stemWidthTop, ref stemWidthBottom, ref ribSpacing, ref ribSpacing2nd);
                             panelWaffle.Name = id;
-                            panelWaffle.SetAdapterId(typeof(ETABSId), id);
                             panelWaffle.Material = bhMaterial;
                             panelWaffle.SpacingX = ribSpacing;
                             panelWaffle.SpacingY = ribSpacing2nd;
@@ -182,6 +179,7 @@ namespace BH.Adapter.ETABS
                             if (modifier != null)
                                 panelWaffle.Fragments.Add(modifier);
 
+                            panelWaffle.SetAdapterId(typeof(ETABSId), id);
                             propertyList.Add(panelWaffle);
                             break;
                         case eSlabType.Slab:
@@ -189,7 +187,6 @@ namespace BH.Adapter.ETABS
                         case eSlabType.Stiff_DO_NOT_USE:
                         default:
                             ConstantThickness panelConstant = new ConstantThickness();
-                            panelConstant.SetAdapterId(typeof(ETABSId), id);
                             panelConstant.Name = id;
                             panelConstant.Material = bhMaterial;
                             panelConstant.Thickness = thickness;
@@ -199,6 +196,7 @@ namespace BH.Adapter.ETABS
                             if (modifier != null)
                                 panelConstant.Fragments.Add(modifier);
 
+                            panelConstant.SetAdapterId(typeof(ETABSId), id);
                             propertyList.Add(panelConstant);
                             break;
                     }

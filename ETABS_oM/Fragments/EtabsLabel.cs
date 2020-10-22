@@ -31,18 +31,18 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.ETABS.Fragments
 {
-    public class EtabsLabel : IFragment
-    {
-        /***************************************************/
-        /**** Public Properties                         ****/
-        /***************************************************/
+    //public class EtabsLabel : IFragment
+    //{
+    //    /***************************************************/
+    //    /**** Public Properties                         ****/
+    //    /***************************************************/
 
-        [Description("Label of the element in Etabs")]
-        public virtual string Label { get; set; } = "";
+    //    [Description("Label of the element in Etabs")]
+    //    public virtual string Label { get; set; } = "";
 
-        [Description("Name of the story of the element in Etabs")]
-        public virtual string Story { get; set; } = "";
+    //    [Description("Name of the story of the element in Etabs")]
+    //    public virtual string Story { get; set; } = "";
 
-        /***************************************************/
-    }
+    //    /***************************************************/
+    //}
 }

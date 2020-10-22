@@ -26,8 +26,6 @@ using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Loads;
@@ -75,6 +73,7 @@ namespace BH.Adapter.ETABS
                     bhLoadcase.Nature = LoadPatternTypeToBHoM(type);
                 }
 
+                bhLoadcase.SetAdapterId(typeof(ETABSId), id);
                 loadcaseList.Add(bhLoadcase);
             }
 
@@ -120,6 +119,7 @@ namespace BH.Adapter.ETABS
                         }
                     }
 
+                    combination.SetAdapterId(typeof(ETABSId), id);
                     combinations.Add(combination);
                 }
             }

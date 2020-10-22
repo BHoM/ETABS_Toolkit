@@ -57,16 +57,22 @@ namespace BH.Adapter.ETABS
             Node primaryNode = bhLink.PrimaryNode;
             List<Node> secondaryNodes = bhLink.SecondaryNodes;
 
+            ETABSMultiId multiId = new ETABSMultiId();
+
             for (int i = 0; i < secondaryNodes.Count(); i++)
             {
+
                 string name = "";
+                string guid = null;
 
                 m_model.LinkObj.AddByPoint(primaryNode.AdapterId(typeof(ETABSId)).ToString(), secondaryNodes[i].AdapterId(typeof(ETABSId)).ToString(), ref name, false, constraint.DescriptionOrName());
+                m_model.LinkObj.GetGUID(name, ref guid);
 
                 linkIds.Add(name);
             }
 
-            bhLink.SetAdapterId(typeof(ETABSId), linkIds);
+            multiId.Id = linkIds;
+            bhLink.SetAdapterId(multiId);
 
             return success;
         }
