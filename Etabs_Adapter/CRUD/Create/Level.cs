@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BH.Engine.Adapter;
@@ -73,7 +74,6 @@ namespace BH.Adapter.ETABS
             Engine.Reflection.Compute.RecordNote("First level will be the base level and will not be given the provided name");
 
             double[] heights = new double[count];   //Heights empty, set by elevations
-
             double[] elevations;
 
             elevations = new double[count];
@@ -103,7 +103,11 @@ namespace BH.Adapter.ETABS
             else
             {
                 Engine.Reflection.Compute.RecordError("Failed to push levels. Levels can only be pushed to an empty model.");
+                return false;
             }
+
+            // Set the names as the AdapterId of the Levels.
+            levelList.Zip(names, (l, n) => new { Level = l, Name = n }).ToList().ForEach(l => l.Level.SetAdapterId(typeof(ETABSId), l.Name));
 
             return true;
         }

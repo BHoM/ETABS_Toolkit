@@ -26,8 +26,6 @@ using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.MaterialFragments;
@@ -65,7 +63,7 @@ namespace BH.Adapter.ETABS
             {
                 eMatType matType = eMatType.NoDesign;
                 int colour = 0;
-                string guid = "";
+                string guid = null;
                 string notes = "";
                 if (m_model.PropMaterial.GetMaterial(id, ref matType, ref colour, ref notes, ref guid) == 0)
                 {
@@ -166,8 +164,8 @@ namespace BH.Adapter.ETABS
                             m = new GenericIsotropicMaterial() { Name = id + "_replacment" };
                         }
                     }
-                    m.SetAdapterId(typeof(ETABSId), id);
 
+                    m.SetAdapterId(typeof(ETABSId), id);
                     materialList.Add(m);
                 }
             }

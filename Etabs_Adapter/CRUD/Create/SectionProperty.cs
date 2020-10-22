@@ -30,12 +30,10 @@ using BH.Engine.Spatial;
 using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Spatial.ShapeProfiles;
-using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
 using System;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
+
 #if Debug17 || Release17
 using ETABSv17;
 #else

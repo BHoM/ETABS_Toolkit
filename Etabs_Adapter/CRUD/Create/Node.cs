@@ -44,12 +44,27 @@ namespace BH.Adapter.ETABS
         private bool CreateObject(Node bhNode)
         {
             string name = "";
+            ETABSId etabsid = new ETABSId();
 
             oM.Geometry.Point position = bhNode.Position;
             if (m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name) == 0)
             {
-                bhNode.SetAdapterId(typeof(ETABSId), name);
+                etabsid.Id = name;
 
+                //Label and story
+                string label = "";
+                string story = "";
+                if (m_model.AreaObj.GetLabelFromName(name, ref label, ref story) == 0)
+                {
+                    etabsid.Label = label;
+                    etabsid.Story = story;
+                }
+
+                string guid = null;
+                if (m_model.PointObj.GetGUID(name, ref guid) == 0)
+                    etabsid.PersistentId = guid;
+
+                bhNode.SetAdapterId(etabsid);
                 SetObject(bhNode, name);
             }
 

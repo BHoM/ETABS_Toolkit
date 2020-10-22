@@ -26,8 +26,6 @@ using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
@@ -87,6 +85,9 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
+                ETABSId etabsId = new ETABSId();
+                etabsId.Id = id;
+
                 if (openingDict.ContainsKey(id))
                     continue;
 
@@ -101,8 +102,6 @@ namespace BH.Adapter.ETABS
                 }
 
                 Panel panel = new Panel();
-                panel.SetAdapterId(typeof(ETABSId), id);
-
                 Polyline pl = GetPanelPerimeter(id);
 
                 panel.ExternalEdges = pl.SubParts().Select(x => new Edge { Curve = x }).ToList();
@@ -134,12 +133,17 @@ namespace BH.Adapter.ETABS
                 //Label and story
                 string label = "";
                 string story = "";
+                string guid = null;
                 if (m_model.AreaObj.GetLabelFromName(id, ref label, ref story) == 0)
                 {
-                    EtabsLabel eLabel = new EtabsLabel { Label = label, Story = story };
-                    panel.Fragments.Add(eLabel);
+                    etabsId.Label = label;
+                    etabsId.Story = story;
                 }
 
+                if (m_model.AreaObj.GetGUID(id, ref guid) == 0)
+                    etabsId.PersistentId = guid;
+
+                panel.SetAdapterId(etabsId);
                 panelList.Add(panel);
             }
 

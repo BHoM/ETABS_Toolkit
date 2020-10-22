@@ -75,13 +75,30 @@ namespace BH.Adapter.ETABS
 
             ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.AdapterId(typeof(ETABSId)).ToString(), bhBar.EndNode.AdapterId(typeof(ETABSId)).ToString(), ref name);
 
-            bhBar.SetAdapterId(typeof(ETABSId), name);
 
             if (ret != 0)
             {
                 CreateElementError("Bar", name);
                 return false;
             }
+
+            //Label and story
+            string label = "";
+            string story = "";
+            string guid = null;
+
+            ETABSId etabsIdFragment = new ETABSId { Id = name };
+
+            if (m_model.FrameObj.GetLabelFromName(name, ref label, ref story) == 0)
+            {
+                etabsIdFragment.Label = label;
+                etabsIdFragment.Story = story;
+            }
+
+            if (m_model.AreaObj.GetGUID(name, ref guid) == 0)
+                etabsIdFragment.PersistentId = guid;
+
+            bhBar.SetAdapterId(etabsIdFragment);
 
             return SetObject(bhBar);
         }

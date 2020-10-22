@@ -26,8 +26,6 @@ using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.SectionProperties;
@@ -90,7 +88,7 @@ namespace BH.Adapter.ETABS
                     double t2b = 0;
                     int colour = 0;
                     string notes = "";
-                    string guid = "";
+                    string guid = null;
 
                     bool verticalFlip = false;
                     bool horFlip = false;
@@ -348,6 +346,7 @@ namespace BH.Adapter.ETABS
                             };
                             bhSectionProperty.Material = material;
                             bhSectionProperty.Name = id;
+
                             break;
                         default:
                             continue;

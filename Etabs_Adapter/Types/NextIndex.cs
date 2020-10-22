@@ -25,8 +25,6 @@ using BH.Engine.Adapter;
 using BH.oM.Adapters.ETABS;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 

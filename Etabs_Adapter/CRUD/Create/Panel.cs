@@ -76,9 +76,27 @@ namespace BH.Adapter.ETABS
             }
 
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
+            ETABSId etabsid = new ETABSId();
+            etabsid.Id = name;
 
-            bhPanel.SetAdapterId(typeof(ETABSId), name);
+            //Label and story
+            string label = "";
+            string story = "";
+            string guid = null;
 
+            ETABSId etabsIdFragment = new ETABSId { Id = name };
+
+            if (m_model.AreaObj.GetLabelFromName(name, ref label, ref story) == 0)
+            {
+                etabsIdFragment.Label = label;
+                etabsIdFragment.Story = story;
+            }
+
+            if (m_model.AreaObj.GetGUID(name, ref guid) == 0)
+                etabsid.PersistentId = guid;
+
+            bhPanel.SetAdapterId(etabsid);
+            
             if (retA != 0)
                 return false;
 
@@ -103,6 +121,8 @@ namespace BH.Adapter.ETABS
                     string openingName = name + "_Opening_" + i;
                     m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "");//<-- setting panel property to empty string, verify that this is correct
                     m_model.AreaObj.SetOpening(openingName, true);
+
+
 
                     bhPanel.Openings[i].SetAdapterId(typeof(ETABSId), openingName);
                 }

@@ -56,7 +56,7 @@ namespace BH.Adapter.ETABS
                 bool success = true;
                 eMatType matType = eMatType.NoDesign;
                 int colour = 0;
-                string guid = "";
+                string guid = null;
                 string notes = "";
                 if (m_model.PropMaterial.GetMaterial(material.DescriptionOrName(), ref matType, ref colour, ref notes, ref guid) == 0)
                 {

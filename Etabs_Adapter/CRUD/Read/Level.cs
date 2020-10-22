@@ -26,8 +26,6 @@ using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Geometry.SettingOut;
@@ -62,10 +60,19 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
+                ETABSId etabsid = new ETABSId();
+                etabsid.Id = id;
+
                 double elevation = 0;
                 int ret = m_model.Story.GetElevation(id, ref elevation);
 
+                string guid = null;
+                m_model.Story.GetGUID(id, ref guid);
+                etabsid.PersistentId = guid;
+
                 Level lvl = new Level() { Elevation = elevation, Name = id };
+
+                lvl.SetAdapterId(typeof(ETABSId), etabsid);
                 levellist.Add(lvl);
             }
 

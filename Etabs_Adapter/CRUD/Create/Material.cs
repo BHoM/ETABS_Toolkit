@@ -56,7 +56,7 @@ namespace BH.Adapter.ETABS
             bool success = true;
             eMatType matType = eMatType.NoDesign;
             int colour = 0;
-            string guid = "";
+            string guid = null;
             string notes = "";
             string name = "";
             if (m_model.PropMaterial.GetMaterial(material.DescriptionOrName(), ref matType, ref colour, ref notes, ref guid) != 0)
@@ -93,6 +93,8 @@ namespace BH.Adapter.ETABS
                 success &= m_model.PropMaterial.SetMPOrthotropic(material.DescriptionOrName(), ref e, ref v, ref a, ref g) == 0;
             }
             success &= m_model.PropMaterial.SetWeightAndMass(material.DescriptionOrName(), 2, material.Density) == 0;
+
+            material.SetAdapterId(typeof(ETABSId), material.Name);
 
             return success;
         }

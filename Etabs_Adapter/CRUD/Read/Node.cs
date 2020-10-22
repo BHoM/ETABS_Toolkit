@@ -26,8 +26,6 @@ using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
@@ -66,6 +64,8 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
+                ETABSId etabsIdFragment = new ETABSId();
+                etabsIdFragment.Id = id;
 
                 double x, y, z;
                 x = y = z = 0;
@@ -80,17 +80,21 @@ namespace BH.Adapter.ETABS
                 Constraint6DOF support = GetConstraint6DOF(restraint, spring);
 
                 Node bhNode = Engine.Structure.Create.Node(new oM.Geometry.Point() { X = x, Y = y, Z = z }, "", support);
-                bhNode.SetAdapterId(typeof(ETABSId), id);
 
                 //Label and story
                 string label = "";
                 string story = "";
+                string guid = null;
                 if (m_model.PointObj.GetLabelFromName(id, ref label, ref story) == 0)
                 {
-                    EtabsLabel eLabel = new EtabsLabel { Label = label, Story = story };
-                    bhNode.Fragments.Add(eLabel);
+                    etabsIdFragment.Label = label;
+                    etabsIdFragment.Story = story;
                 }
 
+                if(m_model.PointObj.GetGUID(id, ref guid) == 0)
+                    etabsIdFragment.PersistentId = guid;
+
+                bhNode.SetAdapterId(etabsIdFragment);
                 nodeList.Add(bhNode);
             }
 

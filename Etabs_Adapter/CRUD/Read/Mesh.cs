@@ -26,8 +26,6 @@ using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
@@ -68,6 +66,9 @@ namespace BH.Adapter.ETABS
 
             foreach (string id in ids)
             {
+                ETABSId etabsid = new ETABSId();
+                etabsid.Id = id;
+
                 List<string> meshNodeIds = new List<string>();
 
                 string propertyName = "";
@@ -76,7 +77,6 @@ namespace BH.Adapter.ETABS
                 ISurfaceProperty panelProperty = ReadSurfaceProperty(new List<string>() { propertyName })[0];
 
                 FEMesh mesh = new FEMesh() { Property = panelProperty };
-                mesh.SetAdapterId(typeof(ETABSId), id);
 
                 //Get out the "Element" ids, i.e. the mesh faces
                 int nbELem = 0;
@@ -91,7 +91,6 @@ namespace BH.Adapter.ETABS
                     m_model.AreaElm.GetPoints(elemNames[j], ref nbPts, ref ptsNames);
 
                     FEMeshFace face = new FEMeshFace();
-                    face.SetAdapterId(typeof(ETABSId), elemNames[j]);
 
                     for (int k = 0; k < nbPts; k++)
                     {
@@ -101,13 +100,7 @@ namespace BH.Adapter.ETABS
                         //Check if node already has been pulled
                         if (!nodes.TryGetValue(nodeId, out node))
                         {
-                            //Extract node. TODO: to be generalised using read node method
-                            double x = 0;
-                            double y = 0;
-                            double z = 0;
-                            m_model.PointElm.GetCoordCartesian(nodeId, ref x, ref y, ref z);
-                            node = new Node() { Position = new Point { X = x, Y = y, Z = z } };
-                            node.SetAdapterId(typeof(ETABSId), nodeId);
+                            node = ReadNode(new List<string>() { nodeId }).FirstOrDefault();
                             nodes[ptsNames[k]] = node;
                         }
 
@@ -120,6 +113,7 @@ namespace BH.Adapter.ETABS
                     }
 
                     //Add face to list
+                    face.SetAdapterId(typeof(ETABSId), elemNames[j]);
                     mesh.Faces.Add(face);
 
                 }
@@ -132,10 +126,17 @@ namespace BH.Adapter.ETABS
                 double orientation = 0;
                 bool advanced = false;
                 m_model.AreaObj.GetLocalAxes(id, ref orientation, ref advanced);
+
                 Vector normal = mesh.Faces.First().Normal(mesh);    //Assuming flat mesh, all normals equal
                 Vector localX = Convert.FromCSILocalX(normal, orientation);
                 mesh = mesh.SetLocalOrientations(localX);
 
+                // Get guid
+                string guid = null;
+                m_model.AreaObj.GetGUID(id, ref guid);
+                etabsid.PersistentId = guid;
+
+                mesh.SetAdapterId(typeof(ETABSId), etabsid);
                 meshes.Add(mesh);
             }
 
