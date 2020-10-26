@@ -58,8 +58,8 @@ namespace BH.Adapter.ETABS
         private bool CreateObject(ISectionProperty bhSection)
         {
             string propertyName = bhSection.DescriptionOrName();
-            bhSection.SetAdapterId(typeof(ETABSId), propertyName);
-            
+            SetAdapterId(bhSection, propertyName);
+
             if (!LoadFromDatabase(bhSection))
             {
                 SetSection(bhSection as dynamic);
@@ -129,7 +129,7 @@ namespace BH.Adapter.ETABS
         {
             //Map Position domain to [0,1]
             profile.MapPositionDomain();
-            
+
             // Create a section for each sub profile
             IProfile[] profiles = profile.Profiles.Values.ToArray();
             for (int i = 0; i < profiles.Length; i++)
@@ -148,7 +148,7 @@ namespace BH.Adapter.ETABS
                 segmentStartProfile[i] = sectionName + "_SubSection" + (i).ToString();
 
                 // Etabs reads this in mm, and multiplying strictly does not matter (since they're relative values), but is easier on the eyes in ETBAS later
-                length[i] = System.Convert.ToDouble(positions[i + 1] - positions[i]) * 1000;    
+                length[i] = System.Convert.ToDouble(positions[i + 1] - positions[i]) * 1000;
                 segmentEndProfile[i] = sectionName + "_SubSection" + (i + 1).ToString();
             }
 
@@ -374,61 +374,61 @@ namespace BH.Adapter.ETABS
             switch (sectionDB)
             {
                 case SectionDatabase.AISC14:
-                     return "AISC14.xml";
+                    return "AISC14.xml";
                 case SectionDatabase.AISC14M:
-                     return "AISC14.xml";
+                    return "AISC14.xml";
                 case SectionDatabase.AISC15:
-                     return "AISC15.xml";
+                    return "AISC15.xml";
                 case SectionDatabase.AISC15M:
-                     return "AISC15M.xml";
+                    return "AISC15M.xml";
                 case SectionDatabase.ArcelorMittal_British:
-                     return "ArcelorMittal_British.xml";
+                    return "ArcelorMittal_British.xml";
                 case SectionDatabase.ArcelorMittal_BritishHISTAR:
-                     return "ArcelorMittal_BritishHISTAR.xml";
+                    return "ArcelorMittal_BritishHISTAR.xml";
                 case SectionDatabase.ArcelorMittal_Europe:
-                     return "ArcelorMittal_Europe.xml";
+                    return "ArcelorMittal_Europe.xml";
                 case SectionDatabase.ArcelorMittal_EuropeHISTAR:
-                     return "ArcelorMittal_EuropeHISTAR.xml";
+                    return "ArcelorMittal_EuropeHISTAR.xml";
                 case SectionDatabase.ArcelorMittal_Japan:
-                     return "ArcelorMittal_Japan.xml";
+                    return "ArcelorMittal_Japan.xml";
                 case SectionDatabase.ArcelorMittal_Russia:
-                     return "ArcelorMittal_Russia.xml";
+                    return "ArcelorMittal_Russia.xml";
                 case SectionDatabase.ArcelorMittal_US_ASTM_A913:
-                     return "ArcelorMittal_US_ASTM-A913.xml";
+                    return "ArcelorMittal_US_ASTM-A913.xml";
                 case SectionDatabase.ArcelorMittal_US_ASTM_A913M:
-                     return "ArcelorMittal_US_ASTM-A913M.xml";
+                    return "ArcelorMittal_US_ASTM-A913M.xml";
                 case SectionDatabase.ArcelorMittal_US_ASTM_A992:
-                     return "ArcelorMittal_US_ASTM-A992.xml";
+                    return "ArcelorMittal_US_ASTM-A992.xml";
                 case SectionDatabase.ArcelorMittal_US_ASTM_A992M:
-                     return "ArcelorMittal_US_ASTM-A992M.xml";
+                    return "ArcelorMittal_US_ASTM-A992M.xml";
                 case SectionDatabase.Australia_NewZealand:
-                     return "Australia-NewZealand.xml";
+                    return "Australia-NewZealand.xml";
                 case SectionDatabase.BSShapes2006:
-                     return "BSShapes2006.xml";
+                    return "BSShapes2006.xml";
                 case SectionDatabase.ChineseGB08:
-                     return "ChineseGB08.xml";
+                    return "ChineseGB08.xml";
                 case SectionDatabase.CISC9:
-                     return "CISC9.xml";
+                    return "CISC9.xml";
                 case SectionDatabase.CISC10:
-                     return "CISC10.xml";
+                    return "CISC10.xml";
                 case SectionDatabase.CoreBraceBRB_2016:
-                     return "CoreBraceBRB_2016.xml";
+                    return "CoreBraceBRB_2016.xml";
                 case SectionDatabase.Euro:
-                     return "Euro.xml";
+                    return "Euro.xml";
                 case SectionDatabase.Indian:
-                     return "Indian.xml";
+                    return "Indian.xml";
                 case SectionDatabase.JIS_G_3192_2014:
-                     return "JIS-G-3192-2014.xml";
+                    return "JIS-G-3192-2014.xml";
                 case SectionDatabase.Nordic:
-                     return "Nordic.xml";
+                    return "Nordic.xml";
                 case SectionDatabase.Russian:
-                     return "Russian.xml";
+                    return "Russian.xml";
                 case SectionDatabase.SJIJoists:
-                     return "SJIJoists.xml";
+                    return "SJIJoists.xml";
                 case SectionDatabase.StarSeismicBRB:
-                     return "StarSeismicBRB.xml";
+                    return "StarSeismicBRB.xml";
                 default:
-                     return "";
+                    return "";
             }
         }
 

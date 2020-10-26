@@ -113,7 +113,7 @@ namespace BH.Adapter.ETABS
                     }
 
                     //Add face to list
-                    face.SetAdapterId(typeof(ETABSId), elemNames[j]);
+                    SetAdapterId(face, elemNames[j]);
                     mesh.Faces.Add(face);
 
                 }
@@ -136,7 +136,7 @@ namespace BH.Adapter.ETABS
                 m_model.AreaObj.GetGUID(id, ref guid);
                 etabsid.PersistentId = guid;
 
-                mesh.SetAdapterId(typeof(ETABSId), etabsid);
+                SetAdapterId(mesh, etabsid);
                 meshes.Add(mesh);
             }
 

@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Loads;
+using BH.Engine.Adapters.ETABS;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -73,7 +74,7 @@ namespace BH.Adapter.ETABS
                     bhLoadcase.Nature = LoadPatternTypeToBHoM(type);
                 }
 
-                bhLoadcase.SetAdapterId(typeof(ETABSId), id);
+                SetAdapterId(bhLoadcase, id);
                 loadcaseList.Add(bhLoadcase);
             }
 
@@ -119,7 +120,7 @@ namespace BH.Adapter.ETABS
                         }
                     }
 
-                    combination.SetAdapterId(typeof(ETABSId), id);
+                    SetAdapterId(combination, id);
                     combinations.Add(combination);
                 }
             }

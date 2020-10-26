@@ -94,7 +94,7 @@ namespace BH.Adapter.ETABS
             }
             success &= m_model.PropMaterial.SetWeightAndMass(material.DescriptionOrName(), 2, material.Density) == 0;
 
-            material.SetAdapterId(typeof(ETABSId), material.Name);
+            SetAdapterId(material, material.Name);
 
             return success;
         }

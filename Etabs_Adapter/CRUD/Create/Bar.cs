@@ -73,7 +73,7 @@ namespace BH.Adapter.ETABS
 
 #endif
 
-            ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.AdapterId(typeof(ETABSId)).ToString(), bhBar.EndNode.AdapterId(typeof(ETABSId)).ToString(), ref name);
+            ret = m_model.FrameObj.AddByPoint(GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode), ref name);
 
 
             if (ret != 0)
@@ -109,16 +109,16 @@ namespace BH.Adapter.ETABS
         private bool SetObject(Bar bhBar)
         {
             int ret = 0;
-            string name = bhBar.AdapterId(typeof(ETABSId)).ToString();
+            string name = GetAdapterId<string>(bhBar);
 
             // Needed rigth after create as well as AddByPoint flipps the Bar if it feels like it
 #if Debug17 || Release17 || Debug18 || Release18
-            m_model.EditFrame.ChangeConnectivity(name, bhBar.StartNode.AdapterId(typeof(ETABSId)).ToString(), bhBar.EndNode.AdapterId(typeof(ETABSId)).ToString());
+            m_model.EditFrame.ChangeConnectivity(name, GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode));
 #endif
 
             if (bhBar.SectionProperty != null)
             {
-                if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.AdapterId(typeof(ETABSId)).ToString()) != 0)
+                if (m_model.FrameObj.SetSection(name, GetAdapterId<string>(bhBar.SectionProperty)) != 0)
                 {
                     CreatePropertyWarning("SectionProperty", "Bar", name);
                     ret++;

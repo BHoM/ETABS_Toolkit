@@ -33,6 +33,7 @@ using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.oM.Geometry;
 using BH.Engine.Structure;
+using BH.Engine.Adapters.ETABS;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -130,7 +131,7 @@ namespace BH.Adapter.ETABS
         {
             List<ILoad> bhLoads = new List<ILoad>();
 
-            Dictionary<string, Node> bhomNodes = ReadNode().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
+            Dictionary<string, Node> bhomNodes = ReadNode().ToDictionary(x => GetAdapterId<string>(x));
 
             string[] names = null;
             string[] loadcase = null;
@@ -178,7 +179,7 @@ namespace BH.Adapter.ETABS
         {
             List<ILoad> bhLoads = new List<ILoad>();
             
-            Dictionary<string, Bar> bhomBars = ReadBar().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
+            Dictionary<string, Bar> bhomBars = ReadBar().ToDictionary(x => GetAdapterId<string>(x));
 
             string[] names = null;
             string[] loadcase = null;
@@ -242,7 +243,7 @@ namespace BH.Adapter.ETABS
         {
             List<ILoad> bhLoads = new List<ILoad>();
 
-            Dictionary<string, Bar> bhomBars = ReadBar().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
+            Dictionary<string, Bar> bhomBars = ReadBar().ToDictionary(x => GetAdapterId<string>(x));
 
             string[] names = null;
             string[] loadcase = null;
@@ -313,7 +314,7 @@ namespace BH.Adapter.ETABS
         {
             List<ILoad> bhLoads = new List<ILoad>();
 
-            Dictionary<string, Panel> bhomPanels = ReadPanel().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
+            Dictionary<string, Panel> bhomPanels = ReadPanel().ToDictionary(x => GetAdapterId<string>(x));
 
             string[] names = null;
             string[] loadcase = null;
@@ -363,7 +364,7 @@ namespace BH.Adapter.ETABS
         {
             List<ILoad> bhLoads = new List<ILoad>();
 
-            Dictionary<string, Panel> bhomPanels = ReadPanel().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
+            Dictionary<string, Panel> bhomPanels = ReadPanel().ToDictionary(x => GetAdapterId<string>(x));
 
             string[] names = null;
             string[] loadcase = null;
@@ -399,7 +400,7 @@ namespace BH.Adapter.ETABS
         {
             List<ILoad> bhLoads = new List<ILoad>();
 
-            Dictionary<string, Bar> bhomBars = ReadBar().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
+            Dictionary<string, Bar> bhomBars = ReadBar().ToDictionary(x => GetAdapterId<string>(x));
 
             string[] names = null;
             string[] loadcase = null;
@@ -435,7 +436,7 @@ namespace BH.Adapter.ETABS
         {
             List<ILoad> bhLoads = new List<ILoad>();
 
-            Dictionary<string, Bar> bhomBars = ReadBar().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
+            Dictionary<string, Bar> bhomBars = ReadBar().ToDictionary(x => GetAdapterId<string>(x));
 
             string[] names = null;
             string[] loadcase = null;

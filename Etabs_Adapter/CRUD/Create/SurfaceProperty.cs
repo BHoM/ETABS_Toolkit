@@ -56,7 +56,7 @@ namespace BH.Adapter.ETABS
             int retA = 0;
 
             string propertyName = property2d.DescriptionOrName();
-            property2d.SetAdapterId(typeof(ETABSId), propertyName);
+            SetAdapterId(property2d, propertyName);
 
             eShellType shellType = ShellTypeToCSI(property2d);
 

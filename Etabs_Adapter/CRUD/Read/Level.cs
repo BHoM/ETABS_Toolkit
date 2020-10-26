@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Geometry.SettingOut;
+using BH.Engine.Adapters.ETABS;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -72,7 +73,7 @@ namespace BH.Adapter.ETABS
 
                 Level lvl = new Level() { Elevation = elevation, Name = id };
 
-                lvl.SetAdapterId(typeof(ETABSId), etabsid);
+                lvl.SetAdapterId(etabsid);
                 levellist.Add(lvl);
             }
 

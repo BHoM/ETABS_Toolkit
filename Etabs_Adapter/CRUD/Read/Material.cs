@@ -165,7 +165,7 @@ namespace BH.Adapter.ETABS
                         }
                     }
 
-                    m.SetAdapterId(typeof(ETABSId), id);
+                    SetAdapterId(m, id);
                     materialList.Add(m);
                 }
             }

@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
+using BH.Engine.Adapters.ETABS;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -92,7 +93,7 @@ namespace BH.Adapter.ETABS
 
                 if (kvp.Value == null)
                 {
-                    bhLink.SetAdapterId(typeof(ETABSId), kvp.Key);
+                    SetAdapterId(bhLink, kvp.Key);
                     string startId = "";
                     string endId = "";
                     m_model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
@@ -104,7 +105,7 @@ namespace BH.Adapter.ETABS
                 else
                 {
 
-                    bhLink.SetAdapterId(typeof(ETABSId), kvp.Key);
+                    SetAdapterId(bhLink, kvp.Key);
                     string startId = "";
                     string endId = "";
                     string multiLinkId = kvp.Key + ":::0";
@@ -212,7 +213,7 @@ namespace BH.Adapter.ETABS
             LinkConstraint constraint = new LinkConstraint();
 
             constraint.Name = name;
-            constraint.SetAdapterId(typeof(ETABSId), name);
+            SetAdapterId(constraint, name);
 
             constraint.XtoX = fix[0];
             constraint.ZtoZ = fix[1];

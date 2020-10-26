@@ -55,7 +55,7 @@ namespace BH.Adapter.ETABS
             double selfWeight = 0;
 
             int ret = m_model.LoadPatterns.Add(loadcase.Name, patternType, selfWeight, true);
-            loadcase.SetAdapterId(typeof(ETABSId), loadcase.Name);
+            SetAdapterId(loadcase, loadcase.Name);
 
             return true;
         }
@@ -114,7 +114,7 @@ namespace BH.Adapter.ETABS
 
                     m_model.RespCombo.SetCaseList(loadCombination.Name, ref cTypeName, lcName, factor);
                 }
-                loadCombination.SetAdapterId(typeof(ETABSId), loadCombination.Name);
+                SetAdapterId(loadCombination, loadCombination.Name);
             }
             else
             {

@@ -28,10 +28,10 @@ using System.Collections.Generic;
 
 namespace BH.oM.Adapters.ETABS
 {
-    public interface IETABSId : IAdapterId
-    { }
+    //public interface IETABSId : IAdapterId
+    //{ }
 
-    public class ETABSId : IETABSId, IAdapterId<object>, IPersistentId
+    public class ETABSId : IAdapterId, IPersistentId //, IETABSId
     {
         /***************************************************/
         /**** Public Properties                         ****/

@@ -27,6 +27,7 @@ using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
 using BH.Engine.Structure;
+using BH.Engine.Adapters.ETABS;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -52,12 +53,13 @@ namespace BH.Adapter.ETABS
             bool success = true;
 
             List<string> linkIds = new List<string>();
+            List<object> guids = new List<object>();
 
             LinkConstraint constraint = bhLink.Constraint;//not used yet
             Node primaryNode = bhLink.PrimaryNode;
             List<Node> secondaryNodes = bhLink.SecondaryNodes;
 
-            ETABSMultiId multiId = new ETABSMultiId();
+            ETABSId multiId = new ETABSId();
 
             for (int i = 0; i < secondaryNodes.Count(); i++)
             {
@@ -65,7 +67,7 @@ namespace BH.Adapter.ETABS
                 string name = "";
                 string guid = null;
 
-                m_model.LinkObj.AddByPoint(primaryNode.AdapterId(typeof(ETABSId)).ToString(), secondaryNodes[i].AdapterId(typeof(ETABSId)).ToString(), ref name, false, constraint.DescriptionOrName());
+                m_model.LinkObj.AddByPoint(GetAdapterId<string>(primaryNode), GetAdapterId<string>(secondaryNodes[i]), ref name, false, constraint.DescriptionOrName());
                 m_model.LinkObj.GetGUID(name, ref guid);
 
                 linkIds.Add(name);

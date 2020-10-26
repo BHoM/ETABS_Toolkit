@@ -53,7 +53,7 @@ namespace BH.Adapter.ETABS
 
             foreach (Node bhNode in nodes)
             {
-                string name = bhNode.AdapterId(typeof(ETABSId)).ToString();
+                string name = GetAdapterId<string>(bhNode);
 
                 SetObject(bhNode, name);
 

@@ -126,6 +126,7 @@ namespace BH.Adapter.ETABS
         private cOAPI m_app;
         private cSapModel m_model;
         private string[] m_DBSectionsNames;
+        public Type AdapterIdFragmentType { get; set; } = typeof(ETABSId);
 
 
         /***************************************************/

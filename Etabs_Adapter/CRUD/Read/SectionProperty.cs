@@ -351,7 +351,7 @@ namespace BH.Adapter.ETABS
                         default:
                             continue;
                     }
-                    bhSectionProperty.SetAdapterId(typeof(ETABSId), id);
+                    SetAdapterId(bhSectionProperty, id);
 
                     double[] modifiers = null;
                     if (m_model.PropFrame.GetModifiers(id, ref modifiers) == 0 && modifiers != null && modifiers.Length > 6 && modifiers.Any(x => x != 1))
