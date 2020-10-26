@@ -58,7 +58,7 @@ namespace BH.Adapter.ETABS
         {
             List<ISurfaceProperty> propertyList = new List<ISurfaceProperty>();
 
-            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
+            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => GetAdapterId<string>(x));
 
             int nameCount = 0;
             string[] nameArr = { };
@@ -135,7 +135,7 @@ namespace BH.Adapter.ETABS
                     if (modifier != null)
                         panelConstant.Fragments.Add(modifier);
 
-                    panelConstant.SetAdapterId(typeof(ETABSId), id);
+                    SetAdapterId(panelConstant, id);
                     propertyList.Add(panelConstant);
                 }
                 else
@@ -158,7 +158,7 @@ namespace BH.Adapter.ETABS
                             if (modifier != null)
                                 panelRibbed.Fragments.Add(modifier);
 
-                            panelRibbed.SetAdapterId(typeof(ETABSId), id);
+                            SetAdapterId(panelRibbed, id);
                             propertyList.Add(panelRibbed);
                             break;
                         case eSlabType.Waffle:
@@ -179,7 +179,7 @@ namespace BH.Adapter.ETABS
                             if (modifier != null)
                                 panelWaffle.Fragments.Add(modifier);
 
-                            panelWaffle.SetAdapterId(typeof(ETABSId), id);
+                            SetAdapterId(panelWaffle, id);
                             propertyList.Add(panelWaffle);
                             break;
                         case eSlabType.Slab:
@@ -196,7 +196,7 @@ namespace BH.Adapter.ETABS
                             if (modifier != null)
                                 panelConstant.Fragments.Add(modifier);
 
-                            panelConstant.SetAdapterId(typeof(ETABSId), id);
+                            SetAdapterId(panelConstant, id);
                             propertyList.Add(panelConstant);
                             break;
                     }

@@ -34,7 +34,6 @@ using BH.Engine.Adapters.ETABS;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.ETABS.Elements;
-using BH.oM.Adapters.ETABS.Fragments;
 using BH.Engine.Structure;
 
 #if Debug17 || Release17
@@ -63,7 +62,7 @@ namespace BH.Adapter.ETABS
         {
             List<Panel> panelList = new List<Panel>();
 
-            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.AdapterId(typeof(ETABSId)).ToString());
+            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => GetAdapterId<string>(x));
             int nameCount = 0;
             string[] nameArr = { };
             m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);

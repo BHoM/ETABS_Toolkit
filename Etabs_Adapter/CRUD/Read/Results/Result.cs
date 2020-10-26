@@ -194,7 +194,7 @@ namespace BH.Adapter.ETABS
                     else if (o is int || o is double)
                         idsOut.Add(o.ToString());
                     else if (o is T && ((T)o).AdapterId(typeof(ETABSId)) != null)
-                        idsOut.Add(((T)o).AdapterId(typeof(ETABSId)).ToString());
+                        idsOut.Add(GetAdapterId<string>((T)o));
                 }
                 return idsOut;
             }

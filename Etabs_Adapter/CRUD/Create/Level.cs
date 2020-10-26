@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BH.Engine.Adapter;
+using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Geometry.SettingOut;
 #if Debug17 || Release17
@@ -107,7 +108,7 @@ namespace BH.Adapter.ETABS
             }
 
             // Set the names as the AdapterId of the Levels.
-            levelList.Zip(names, (l, n) => new { Level = l, Name = n }).ToList().ForEach(l => l.Level.SetAdapterId(typeof(ETABSId), l.Name));
+            levelList.Zip(names, (l, n) => new { Level = l, Name = n }).ToList().ForEach(l => SetAdapterId(l.Level, l.Name));
 
             return true;
         }

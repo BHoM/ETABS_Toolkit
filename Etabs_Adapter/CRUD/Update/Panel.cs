@@ -56,8 +56,8 @@ namespace BH.Adapter.ETABS
 
             foreach (Panel bhPanel in bhPanels)
             {
-                string name = bhPanel.AdapterId(typeof(ETABSId)).ToString();
-                string propertyName = bhPanel.Property.AdapterId(typeof(ETABSId)).ToString();
+                string name = GetAdapterId<string>(bhPanel);
+                string propertyName = GetAdapterId<string>(bhPanel.Property);
 
                 Engine.Reflection.Compute.RecordWarning("The Etabs API does not allow for updating of the geometry of panels. This includes the external edges as well as the openings. To update the panel geometry, delete the existing panel you want to update and create a new one.");
 
