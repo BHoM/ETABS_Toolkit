@@ -31,20 +31,20 @@ namespace BH.oM.Adapters.ETABS
     public interface IETABSId : IAdapterId
     { }
 
-    public class ETABSId : IETABSId, IAdapterId<string>, IPersistentId
+    public class ETABSId : IETABSId, IAdapterId<object>, IPersistentId
     {
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/
 
-        [Description("Id of the element as assigned in ETABS.")]
-        public virtual string Id { get; set; }
+        [Description("Id or multi-ids of the element as assigned in ETABS.")]
+        public virtual object Id { get; set; }
 
         [Description("Label of the element in Etabs. Only populated for Element-type objects.")]
-        public virtual string Label { get; set; } = "";
+        public virtual object Label { get; set; } = "";
 
         [Description("Name of the story of the element in Etabs. Only populated for Element-type objects.")]
-        public virtual string Story { get; set; } = "";
+        public virtual object Story { get; set; } = "";
 
         [Description("Persistent GUID assigned by ETABS upon element creation. This does not vary when the element is modified. Only populated for Element-type objects.")]
         public virtual object PersistentId { get; set; }
@@ -52,12 +52,17 @@ namespace BH.oM.Adapters.ETABS
         /***************************************************/
     }
 
-    public class ETABSMultiId : IETABSId, IAdapterId<List<string>>, IPersistentId
-    {
-        public List<string> Id { get; set; }
+    //public class MultiId<T> : IAdapterId where T : IAdapterId
+    //{
+    //    List<T> Ids { get; set; }
+    //}
 
-        [Description("Persistent GUIDs assigned by ETABS upon element creation. This does not vary when the element is modified. Only populated for Element-type objects.")]
-        public object PersistentId { get; set; }
-    }
+    //public class ETABSMultiId : IETABSId, IAdapterId<List<string>>, IPersistentId
+    //{
+    //    public List<string> Id { get; set; }
+
+    //    [Description("Persistent GUIDs assigned by ETABS upon element creation. This does not vary when the element is modified. Only populated for Element-type objects.")]
+    //    public object PersistentId { get; set; }
+    //}
 }
 

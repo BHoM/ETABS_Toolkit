@@ -110,16 +110,6 @@ namespace BH.Adapter.ETABS
 
         }
 
-        public override string ToString()
-        {
-#if Debug17 || Release17
-    return base.ToString();
-#else
-            return base.ToString();
-#endif
-
-        }
-
         /***************************************************/
     }
 }
