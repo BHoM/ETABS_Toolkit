@@ -33,7 +33,6 @@ using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.Constraints;
 using BH.Engine.Adapters.ETABS;
 using BH.oM.Geometry;
-using BH.oM.Adapters.ETABS.Fragments;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18

@@ -38,7 +38,6 @@ using ETABSv1;
 #else
 using ETABS2016;
 #endif
-using BH.oM.Adapters.ETABS.Fragments;
 
 namespace BH.Adapter.ETABS
 {
