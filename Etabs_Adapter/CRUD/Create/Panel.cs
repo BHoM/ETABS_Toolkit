@@ -84,12 +84,10 @@ namespace BH.Adapter.ETABS
             string story = "";
             string guid = null;
 
-            ETABSId etabsIdFragment = new ETABSId { Id = name };
-
             if (m_model.AreaObj.GetLabelFromName(name, ref label, ref story) == 0)
             {
-                etabsIdFragment.Label = label;
-                etabsIdFragment.Story = story;
+                etabsid.Label = label;
+                etabsid.Story = story;
             }
 
             if (m_model.AreaObj.GetGUID(name, ref guid) == 0)
@@ -157,4 +155,3 @@ namespace BH.Adapter.ETABS
         
     }
 }
-
