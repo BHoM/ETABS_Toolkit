@@ -54,7 +54,7 @@ namespace BH.Adapter.ETABS
                 //Label and story
                 string label = "";
                 string story = "";
-                if (m_model.AreaObj.GetLabelFromName(name, ref label, ref story) == 0)
+                if (m_model.PointObj.GetLabelFromName(name, ref label, ref story) == 0)
                 {
                     etabsid.Label = label;
                     etabsid.Story = story;
@@ -105,4 +105,3 @@ namespace BH.Adapter.ETABS
         /***************************************************/
     }
 }
-
