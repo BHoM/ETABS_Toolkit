@@ -72,7 +72,8 @@ namespace BH.Adapter.ETABS
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
             SetupDependencies();
             SetupComparers();
-            
+            AdapterIdFragmentType = typeof(ETABSId);
+
             if (active)
             {
                 this.EtabsSettings = etabsSetting == null ? new EtabsSettings() : etabsSetting;
@@ -126,8 +127,6 @@ namespace BH.Adapter.ETABS
         private cOAPI m_app;
         private cSapModel m_model;
         private string[] m_DBSectionsNames;
-        public Type AdapterIdFragmentType { get; set; } = typeof(ETABSId);
-
 
         /***************************************************/
         /**** Private Methods                           ****/

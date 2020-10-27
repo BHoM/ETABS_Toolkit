@@ -100,7 +100,10 @@ namespace BH.Adapter.ETABS
                         //Check if node already has been pulled
                         if (!nodes.TryGetValue(nodeId, out node))
                         {
-                            node = ReadNode(new List<string>() { nodeId }).FirstOrDefault();
+                            double x = 0, y = 0, z = 0;
+                            m_model.PointElm.GetCoordCartesian(nodeId, ref x, ref y, ref z);
+                            node = new Node() { Position = new Point { X = x, Y = y, Z = z } };
+                            SetAdapterId(node, nodeId);
                             nodes[ptsNames[k]] = node;
                         }
 
@@ -130,6 +133,15 @@ namespace BH.Adapter.ETABS
                 Vector normal = mesh.Faces.First().Normal(mesh);    //Assuming flat mesh, all normals equal
                 Vector localX = Convert.FromCSILocalX(normal, orientation);
                 mesh = mesh.SetLocalOrientations(localX);
+
+                //Label and story
+                string label = "";
+                string story = "";
+                if (m_model.AreaObj.GetLabelFromName(id, ref label, ref story) == 0)
+                {
+                    etabsid.Label = label;
+                    etabsid.Story = story;
+                }
 
                 // Get guid
                 string guid = null;
