@@ -28,10 +28,7 @@ using System.Collections.Generic;
 
 namespace BH.oM.Adapters.ETABS
 {
-    //public interface IETABSId : IAdapterId
-    //{ }
-
-    public class ETABSId : IAdapterId, IPersistentId //, IETABSId
+    public class ETABSId : IAdapterId, IPersistentAdapterId
     {
         /***************************************************/
         /**** Public Properties                         ****/
@@ -51,18 +48,5 @@ namespace BH.oM.Adapters.ETABS
 
         /***************************************************/
     }
-
-    //public class MultiId<T> : IAdapterId where T : IAdapterId
-    //{
-    //    List<T> Ids { get; set; }
-    //}
-
-    //public class ETABSMultiId : IETABSId, IAdapterId<List<string>>, IPersistentId
-    //{
-    //    public List<string> Id { get; set; }
-
-    //    [Description("Persistent GUIDs assigned by ETABS upon element creation. This does not vary when the element is modified. Only populated for Element-type objects.")]
-    //    public object PersistentId { get; set; }
-    //}
 }
 

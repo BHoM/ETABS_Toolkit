@@ -193,8 +193,12 @@ namespace BH.Adapter.ETABS
                         idsOut.Add((string)o);
                     else if (o is int || o is double)
                         idsOut.Add(o.ToString());
-                    else if (o is T && ((T)o).AdapterId(typeof(ETABSId)) != null)
-                        idsOut.Add(GetAdapterId<string>((T)o));
+                    else if (o is T)
+                    {
+                        string id = GetAdapterId<string>((T)o);
+                        if (id != null)
+                            idsOut.Add(id);
+                    }
                 }
                 return idsOut;
             }
