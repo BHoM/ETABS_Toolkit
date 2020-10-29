@@ -27,6 +27,7 @@ using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
 using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS.Fragments;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -106,13 +107,11 @@ namespace BH.Adapter.ETABS
 
         private eShellType ShellTypeToCSI(ISurfaceProperty property)
         {
-            object obj;
+            ShellTypeFragment shelltypeFr = property.FindFragment<ShellTypeFragment>();
 
-
-
-            if (property.CustomData.TryGetValue("ShellType", out obj) && obj is ShellType)
+            if (shelltypeFr != null)
             {
-                switch ((ShellType)obj)
+                switch (shelltypeFr.ShellType)
                 {
                     case ShellType.ShellThin:
                         return eShellType.ShellThin;
