@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Fragments;
+using BH.oM.Adapters.ETABS.Fragments;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -234,7 +235,7 @@ namespace BH.Adapter.ETABS
             oM.Adapters.ETABS.ShellType? bhSHellType = ShellTypeToBHoM(shellType);
 
             if (bhSHellType.HasValue)
-                property.CustomData["ShellType"] = bhSHellType.Value;
+                property.Fragments.AddOrReplace(new ShellTypeFragment { ShellType = bhSHellType.Value });
         }
 
         /***************************************************/
