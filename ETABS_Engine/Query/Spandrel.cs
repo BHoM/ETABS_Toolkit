@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.Engine.Base;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -40,13 +41,7 @@ namespace BH.Engine.Adapters.ETABS
 
         public static Spandrel Spandrel(this Panel panel)
         {
-            object obj;
-
-            if (panel.CustomData.TryGetValue("EtabsSpandrel", out obj) && obj is Spandrel)
-            {
-                return (Spandrel)obj;
-            }
-            return null;
+            return panel.FindFragment<Spandrel>();
         }
 
         /***************************************************/
