@@ -40,10 +40,6 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Diffing_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Diffing_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Geometry_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
       <Private>False</Private>
@@ -80,7 +76,6 @@
     <Compile Include="Enums\BarInsertionPoint.cs" />
     <Compile Include="Enums\Diaphragm.cs" />
     <Compile Include="Enums\ShellType.cs" />
-    <Compile Include="Fragments\EtabsLabel.cs" />
     <Compile Include="Fragments\InsertionPoint.cs" />
     <Compile Include="Loads\MassSource.cs" />
     <Compile Include="Loads\ModalCase.cs" />
