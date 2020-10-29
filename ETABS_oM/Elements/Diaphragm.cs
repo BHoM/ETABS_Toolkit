@@ -30,7 +30,7 @@ using BH.oM.Structure.Elements;
 
 namespace BH.oM.Adapters.ETABS.Elements
 {
-    public class Diaphragm : BHoMObject
+    public class Diaphragm : BHoMObject, IFragment
     {
         /***************************************************/
         /**** Public Properties                         ****/

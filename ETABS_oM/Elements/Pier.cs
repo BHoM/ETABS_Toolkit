@@ -31,7 +31,7 @@ using BH.oM.Structure.Elements;
 
 namespace BH.oM.Adapters.ETABS.Elements
 {
-    public class Pier : BHoMObject
+    public class Pier : BHoMObject, IFragment
     {
         /***************************************************/
         /**** Public Properties                         ****/
