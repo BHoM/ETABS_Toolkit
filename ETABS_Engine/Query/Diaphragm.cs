@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.Engine.Base;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -39,13 +40,7 @@ namespace BH.Engine.Adapters.ETABS
 
         public static Diaphragm Diaphragm(this Panel panel)
         {
-            object obj;
-
-            if (panel.CustomData.TryGetValue("EtabsDiaphragm", out obj) && obj is Diaphragm)
-            {
-                return (Diaphragm)obj;
-            }
-            return null;
+            return panel.FindFragment<Diaphragm>();
         }
 
         /***************************************************/

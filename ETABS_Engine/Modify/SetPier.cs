@@ -41,11 +41,9 @@ namespace BH.Engine.Adapters.ETABS
 
         public static Panel SetPier(this Panel panel, Pier pier)
         {
-            Panel clone = (Panel)panel.GetShallowClone();
+            panel.Fragments.AddOrReplace(pier);
 
-            clone.CustomData["EtabsPier"] = pier;
-
-            return clone;
+            return panel;
         }
 
         /***************************************************/

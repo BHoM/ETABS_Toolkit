@@ -40,11 +40,8 @@ namespace BH.Engine.Adapters.ETABS
 
         public static Panel SetDiaphragm(this Panel panel, Diaphragm diaphragm)
         {
-            Panel clone = (Panel)panel.GetShallowClone();
-
-            clone.CustomData["EtabsDiaphragm"] = diaphragm;
-
-            return clone;
+            panel.Fragments.AddOrReplace(diaphragm);
+            return panel;
         }
 
         /***************************************************/

@@ -41,11 +41,8 @@ namespace BH.Engine.Adapters.ETABS
 
         public static Panel SetSpandrel(this Panel panel, Spandrel spandrel)
         {
-            Panel clone = (Panel)panel.GetShallowClone();
-
-            clone.CustomData["EtabsSpandrel"] = spandrel;
-
-            return clone;
+            panel.Fragments.AddOrReplace(spandrel);
+            return panel;
         }
 
         /***************************************************/
