@@ -31,7 +31,7 @@ using BH.oM.Structure.Elements;
 
 namespace BH.oM.Adapters.ETABS.Elements
 {
-    public class Spandrel : BHoMObject
+    public class Spandrel : BHoMObject, IFragment
     {
         /***************************************************/
         /**** Public Properties                         ****/
