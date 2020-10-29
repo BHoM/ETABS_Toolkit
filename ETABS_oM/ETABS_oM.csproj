@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fragments\ETABSId.cs" />
+    <Compile Include="Fragments\ShellTypeFragment.cs" />
     <Compile Include="Requests\Enum\PierAndSpandrelResultType.cs" />
     <Compile Include="Requests\PierAndSpandrelForceRequest.cs" />
     <Compile Include="Settings\DataBaseSettings.cs" />

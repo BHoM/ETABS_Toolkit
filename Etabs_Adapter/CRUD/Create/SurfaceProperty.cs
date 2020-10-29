@@ -104,11 +104,13 @@ namespace BH.Adapter.ETABS
         /***    Helper Methods                           ***/
         /***************************************************/
 
-        private eShellType ShellTypeToCSI(ISurfaceProperty panel)
+        private eShellType ShellTypeToCSI(ISurfaceProperty property)
         {
             object obj;
 
-            if (panel.CustomData.TryGetValue("ShellType", out obj) && obj is ShellType)
+
+
+            if (property.CustomData.TryGetValue("ShellType", out obj) && obj is ShellType)
             {
                 switch ((ShellType)obj)
                 {
