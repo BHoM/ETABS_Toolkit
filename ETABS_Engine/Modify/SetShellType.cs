@@ -22,6 +22,7 @@
 
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Adapters.ETABS;
+using BH.oM.Adapters.ETABS.Fragments;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -33,11 +34,8 @@ namespace BH.Engine.Adapters.ETABS
 
         public static ISurfaceProperty SetShellType(this ISurfaceProperty property, ShellType shellType)
         {
-            ISurfaceProperty clone = (ISurfaceProperty)property.GetShallowClone();
-
-            clone.CustomData["ShellType"] = shellType;
-
-            return clone;
+            property.Fragments.AddOrReplace(new ShellTypeFragment { ShellType = shellType });
+            return property;
         }
 
         /***************************************************/

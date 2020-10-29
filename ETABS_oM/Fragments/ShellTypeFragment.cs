@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,36 +20,17 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using BH.oM.Structure.Elements;
-//using BH.oM.Adapters.ETABS;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using BH.oM.Base;
 
-//namespace BH.Engine.ETABS
-//{
-//    public static partial class Query
-//    {
-
-//        /***************************************************/
-//        /**** Public Methods                            ****/
-//        /***************************************************/
-
-//        public static DiaphragmType? Diaphragm(this Panel panel)
-//        {
-//            object obj;
-
-//            if (panel.CustomData.TryGetValue("EtabsDiaphragm", out obj) && obj is DiaphragmType)
-//            {
-//                return (DiaphragmType)obj;
-//            }
-//            return null;
-//        }
-
-//        /***************************************************/
-
-//    }
-//}
-
+namespace BH.oM.Adapters.ETABS.Fragments
+{
+    public class ShellTypeFragment : IFragment
+    {
+        public virtual ShellType ShellType { get; set; } = ShellType.ShellThin;
+    }
+}
