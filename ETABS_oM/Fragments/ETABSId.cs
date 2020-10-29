@@ -23,7 +23,6 @@
 
 using BH.oM.Base;
 using System.ComponentModel;
-using BH.oM.Diffing;
 using System.Collections.Generic;
 
 namespace BH.oM.Adapters.ETABS
