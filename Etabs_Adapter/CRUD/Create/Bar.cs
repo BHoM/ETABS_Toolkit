@@ -58,6 +58,11 @@ namespace BH.Adapter.ETABS
         {
             int ret = 0;
 
+            if (bhBar.StartNode == null || bhBar.EndNode == null || bhBar.StartNode.Position == null || bhBar.EndNode.Position == null)
+            {
+                Engine.Reflection.Compute.RecordError("At least one end node, or position of one end node of a Bar is null. The bar could not be created.");
+                return false;
+            }
 
             string name = "";
 
@@ -73,7 +78,16 @@ namespace BH.Adapter.ETABS
 
 #endif
 
-            ret = m_model.FrameObj.AddByPoint(GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode), ref name);
+            string stNodeId = GetAdapterId<string>(bhBar.StartNode);
+            string endNodeId = GetAdapterId<string>(bhBar.EndNode);
+
+            if (string.IsNullOrEmpty(stNodeId) || string.IsNullOrEmpty(endNodeId))
+            {
+                Engine.Reflection.Compute.RecordError("Could not find the ids for at least one end node for at least one Bar. Bar not created.");
+                return false;
+            }
+
+            ret = m_model.FrameObj.AddByPoint(stNodeId, endNodeId, ref name);
 
 
             if (ret != 0)
@@ -118,7 +132,8 @@ namespace BH.Adapter.ETABS
 
             if (bhBar.SectionProperty != null)
             {
-                if (m_model.FrameObj.SetSection(name, GetAdapterId<string>(bhBar.SectionProperty)) != 0)
+                string sectionName = GetAdapterId<string>(bhBar.SectionProperty);
+                if (string.IsNullOrEmpty(sectionName) || m_model.FrameObj.SetSection(name, sectionName) != 0)
                 {
                     CreatePropertyWarning("SectionProperty", "Bar", name);
                     ret++;
@@ -136,7 +151,7 @@ namespace BH.Adapter.ETABS
             double[] offset1 = new double[3];
             double[] offset2 = new double[3];
 
-            if (offset != null)
+            if (offset != null && offset.Start != null && offset.End == null)
             {
                 offset1[1] = offset.Start.Z;
                 offset1[2] = offset.Start.Y;
@@ -146,11 +161,11 @@ namespace BH.Adapter.ETABS
 
             if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
             {
-                CreatePropertyWarning("insertion point and perpendicular offset", "Bar", name);
+                CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
                 ret++;
             }
 
-            if (bhBar.Release != null)
+            if (bhBar.Release != null && bhBar.Release.StartRelease != null && bhBar.Release.EndRelease != null) 
             {
                 bool[] restraintStart = null;
                 double[] springStart = null;
@@ -179,7 +194,7 @@ namespace BH.Adapter.ETABS
                     ret++;
                 }
             }
-            else if (bhBar.Offset != null)
+            else if (offset != null && offset.Start != null && offset.End != null)
             {
                 if (m_model.FrameObj.SetEndLengthOffset(name, false, bhBar.Offset.Start.X, -1 * (bhBar.Offset.End.X), 1) != 0)
                 {
@@ -215,13 +230,19 @@ namespace BH.Adapter.ETABS
                 bar.Offset.Start = bar.Offset.End;
                 bar.Offset.End = tempV;
 
-                bar.Offset.Start.X *= -1;
-                bar.Offset.End.X *= -1;
+                if(bar.Offset.Start != null)
+                    bar.Offset.Start.X *= -1;
+
+                if(bar.Offset.End != null)
+                    bar.Offset.End.X *= -1;
 
                 if (!bar.IsVertical())
                 {
-                    bar.Offset.Start.Y *= -1;
-                    bar.Offset.End.Y *= -1;
+                    if(bar.Offset.Start != null)
+                        bar.Offset.Start.Y *= -1;
+
+                    if(bar.Offset.End != null)
+                        bar.Offset.End.Y *= -1;
                 }
             }
             // mirror the section 
