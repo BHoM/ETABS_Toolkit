@@ -60,8 +60,26 @@ namespace BH.Adapter.ETABS
 
             double mergeTol = 1e-3; //Merging panel points to the mm, same behaviour as the default node comparer
 
+            if (!CheckPropertyError(bhPanel, bhP => bhP.ExternalEdges, true))
+                return false;
+
+            for (int i = 0; i < bhPanel.ExternalEdges.Count; i++)
+            {
+                if (!CheckPropertyError(bhPanel, bhP => bhP.ExternalEdges[i], true))
+                    return false;
+
+                if (!CheckPropertyError(bhPanel, bhP => bhP.ExternalEdges[i].Curve, true))
+                    return false;
+            }
+
+            NonLinearEdgesCheck(bhPanel.ExternalEdges);
+
             string name = "";
-            string propertyName = GetAdapterId<string>(bhPanel.Property);
+            string propertyName = "";
+
+            if(CheckPropertyWarning(bhPanel, bhP => bhP.Property))
+                propertyName = GetAdapterId<string>(bhPanel.Property);
+
             List<BH.oM.Geometry.Point> boundaryPoints = bhPanel.ControlPoints(true).CullDuplicates(mergeTol);
 
             int segmentCount = boundaryPoints.Count();
@@ -102,7 +120,24 @@ namespace BH.Adapter.ETABS
             {
                 for (int i = 0; i < bhPanel.Openings.Count; i++)
                 {
-                    boundaryPoints = bhPanel.Openings[i].ControlPoints().CullDuplicates(mergeTol);
+
+                    if (!CheckPropertyError(bhPanel, bhP => bhP.Openings[i]))
+                        continue;
+
+                    Opening opening = bhPanel.Openings[i];
+
+                    for (int j = 0; j < opening.Edges.Count; j++)
+                    {
+                        if (!CheckPropertyError(opening, o => o.Edges[j], true))
+                            return false;
+
+                        if (!CheckPropertyError(opening, o => o.Edges[j], true))
+                            return false;
+                    }
+
+                    NonLinearEdgesCheck(opening.Edges);
+
+                    boundaryPoints = opening.ControlPoints().CullDuplicates(mergeTol);
 
                     segmentCount = boundaryPoints.Count();
                     x = new double[segmentCount];
@@ -119,8 +154,6 @@ namespace BH.Adapter.ETABS
                     string openingName = name + "_Opening_" + i;
                     m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "");//<-- setting panel property to empty string, verify that this is correct
                     m_model.AreaObj.SetOpening(openingName, true);
-
-
 
                     SetAdapterId(bhPanel.Openings[i], openingName);
                 }
@@ -150,8 +183,28 @@ namespace BH.Adapter.ETABS
             }
             return success;
         }
-        
+
         /***************************************************/
-        
+
+        private static void NonLinearEdgesCheck(List<Edge> edges)
+        {
+            bool isNonLinear = false;
+
+            try
+            {
+                isNonLinear = edges.Any(e => e.Curve.ISubParts().Any(c => !c.IIsLinear()));
+            }
+            catch (System.Exception)
+            {
+                //Try catch in case of curves not yet supported in the IsNonLinear method.
+                isNonLinear = true;
+            }
+            if (isNonLinear)
+                Engine.Reflection.Compute.RecordWarning("Non-linear edges will be pushed using the control points of the underlying curves. It is recomended that you subsegment all edge curves into linear segements before you push to ETABS. Try using the CollapseToPolyline method. Please check the result of the push in the ETABS model!");
+
+        }
+
+        /***************************************************/
+
     }
 }

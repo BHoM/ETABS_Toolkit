@@ -58,9 +58,9 @@ namespace BH.Adapter.ETABS
         {
             int ret = 0;
 
-            if (bhBar.StartNode == null || bhBar.EndNode == null || bhBar.StartNode.Position == null || bhBar.EndNode.Position == null)
+            if (!CheckPropertyError(bhBar, b => b.StartNode, true) || !CheckPropertyError(bhBar, b => b.EndNode, true) ||
+                !CheckPropertyError(bhBar, b => b.StartNode.Position, true) || !CheckPropertyError(bhBar, b => b.EndNode.Position, true))
             {
-                Engine.Reflection.Compute.RecordError("At least one end node, or position of one end node of a Bar is null. The bar could not be created.");
                 return false;
             }
 

@@ -22,12 +22,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Adapter;
+using BH.oM.Base;
 
 
 #if Debug17 || Release17
@@ -55,6 +54,9 @@ namespace BH.Adapter.ETABS
             bool success = true;
 
             objects = objects.Where(x => x != null); //Filter out any nulls
+
+            if (!objects.Any()) //Return if no objects
+                return true;
 
             if (typeof(BH.oM.Base.IBHoMObject).IsAssignableFrom(typeof(T)))
             {
@@ -111,7 +113,15 @@ namespace BH.Adapter.ETABS
 
             return true;
         }
-        
+
+        /***************************************************/
+
+        private bool CreateObject(IBHoMObject obj)
+        {
+            Engine.Reflection.Compute.RecordWarning($"Objects of type {obj.GetType()} are not suppoerted by the ETABSAdapter");
+            return false;
+        }
+
         /***************************************************/
 
     }

@@ -83,7 +83,6 @@ namespace BH.Adapter.ETABS
 
         private bool CreateObject(LinkConstraint bhLinkConstraint)
         {
-
             string name = bhLinkConstraint.DescriptionOrName();
 
             bool[] dof = new bool[6];

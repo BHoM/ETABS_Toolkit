@@ -46,7 +46,7 @@ namespace BH.Adapter.ETABS
             string name = "";
             ETABSId etabsid = new ETABSId();
 
-            if (!CheckPropertyError(bhNode, x => x.Position))
+            if (!CheckPropertyError(bhNode, x => x.Position, true))
                 return false;
 
             oM.Geometry.Point position = bhNode.Position;
