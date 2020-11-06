@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.Engine.Adapter;
 using BH.oM.Adapters.ETABS;
+using System;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18
@@ -42,6 +43,32 @@ namespace BH.Adapter.ETABS
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif
     {
+        /***************************************************/
+
+        private bool CheckPropertyWarning<T, P>(T obj, Func<T, P> selector)
+        {
+            return CheckPropertyEvent(obj, selector, oM.Reflection.Debugging.EventType.Warning);
+        }
+
+        /***************************************************/
+
+        private bool CheckPropertyError<T, P>(T obj, Func<T, P> selector)
+        {
+            return CheckPropertyEvent(obj, selector, oM.Reflection.Debugging.EventType.Error);
+        }
+
+        /***************************************************/
+
+        private bool CheckPropertyEvent<T, P>(T obj, Func<T, P> selector, BH.oM.Reflection.Debugging.EventType errorLevel)
+        {
+            if (selector(obj) == null)
+            {
+                Engine.Reflection.Compute.RecordEvent($"A property of type {typeof(P).Name} on an object of type {obj.GetType().Name} is null and could not be set.", errorLevel);
+                return false;
+            }
+            return true;
+        }
+
         /***************************************************/
 
         private void CreateElementError(string elemType, string elemName)
