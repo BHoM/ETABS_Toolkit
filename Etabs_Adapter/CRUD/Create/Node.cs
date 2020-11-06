@@ -46,6 +46,9 @@ namespace BH.Adapter.ETABS
             string name = "";
             ETABSId etabsid = new ETABSId();
 
+            if (!CheckPropertyError(bhNode, x => x.Position))
+                return false;
+
             oM.Geometry.Point position = bhNode.Position;
             if (m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name) == 0)
             {
