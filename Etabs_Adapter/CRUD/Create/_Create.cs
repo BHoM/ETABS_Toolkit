@@ -54,6 +54,8 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
 
+            objects = objects.Where(x => x != null); //Filter out any nulls
+
             if (typeof(BH.oM.Base.IBHoMObject).IsAssignableFrom(typeof(T)))
             {
                 success = CreateCollection(objects);
@@ -71,6 +73,7 @@ namespace BH.Adapter.ETABS
 
         private bool CreateCollection<T>(IEnumerable<T> objects) where T : BH.oM.Base.IObject
         {
+
             bool success = true;
 
             if (typeof(T) == typeof(Panel))
@@ -106,7 +109,7 @@ namespace BH.Adapter.ETABS
                 ForceRefresh();
             }
 
-            return success;
+            return true;
         }
         
         /***************************************************/
