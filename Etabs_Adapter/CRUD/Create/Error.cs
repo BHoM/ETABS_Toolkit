@@ -45,25 +45,29 @@ namespace BH.Adapter.ETABS
     {
         /***************************************************/
 
-        private bool CheckPropertyWarning<T, P>(T obj, Func<T, P> selector)
+        private bool CheckPropertyWarning<T, P>(T obj, Func<T, P> selector, bool couldNotBeCreated = false)
         {
-            return CheckPropertyEvent(obj, selector, oM.Reflection.Debugging.EventType.Warning);
+            return CheckPropertyEvent(obj, selector, couldNotBeCreated, oM.Reflection.Debugging.EventType.Warning);
         }
 
         /***************************************************/
 
-        private bool CheckPropertyError<T, P>(T obj, Func<T, P> selector)
+        private bool CheckPropertyError<T, P>(T obj, Func<T, P> selector, bool couldNotBeCreated = false)
         {
-            return CheckPropertyEvent(obj, selector, oM.Reflection.Debugging.EventType.Error);
+            return CheckPropertyEvent(obj, selector, couldNotBeCreated, oM.Reflection.Debugging.EventType.Error);
         }
 
         /***************************************************/
 
-        private bool CheckPropertyEvent<T, P>(T obj, Func<T, P> selector, BH.oM.Reflection.Debugging.EventType errorLevel)
+        private bool CheckPropertyEvent<T, P>(T obj, Func<T, P> selector, bool couldNotBeCreated = false, BH.oM.Reflection.Debugging.EventType errorLevel = oM.Reflection.Debugging.EventType.Error)
         {
             if (selector(obj) == null)
             {
-                Engine.Reflection.Compute.RecordEvent($"A property of type {typeof(P).Name} on an object of type {obj.GetType().Name} is null and could not be set.", errorLevel);
+                if(couldNotBeCreated)
+                    Engine.Reflection.Compute.RecordEvent($"An object of type {obj.GetType().Name} could not be created due to a property of type {typeof(P).Name} being null. Please check your input data!", errorLevel);
+                else
+                    Engine.Reflection.Compute.RecordEvent($"A property of type {typeof(P).Name} on an object of type {obj.GetType().Name} is null and could not be set.", errorLevel);
+
                 return false;
             }
             return true;
