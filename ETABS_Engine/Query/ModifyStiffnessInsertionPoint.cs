@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.ETABS
 
         public static bool ModifyStiffnessInsertionPoint(this Bar bar)
         {
-            InsertionPoint o = bar.FindFragment<InsertionPoint>();
+            InsertionPoint o = bar?.FindFragment<InsertionPoint>();
 
             return o == null ? true : o.ModifyStiffness;
         }
