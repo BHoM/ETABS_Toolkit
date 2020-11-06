@@ -28,6 +28,7 @@ using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Adapters.ETABS;
 using System.ComponentModel;
+using System;
 
 #if Debug17 || Release17
 using ETABSv17;
@@ -86,11 +87,19 @@ namespace BH.Adapter.ETABS
             else if (material is IOrthotropic)
             {
                 IOrthotropic orthoTropic = material as IOrthotropic;
-                double[] e = orthoTropic.YoungsModulus.ToDoubleArray();
-                double[] v = orthoTropic.PoissonsRatio.ToDoubleArray();
-                double[] a = orthoTropic.ThermalExpansionCoeff.ToDoubleArray();
-                double[] g = orthoTropic.ShearModulus.ToDoubleArray();
-                success &= m_model.PropMaterial.SetMPOrthotropic(material.DescriptionOrName(), ref e, ref v, ref a, ref g) == 0;
+                if (CheckPropertyWarning(orthoTropic, x => x.YoungsModulus) &&
+                    CheckPropertyWarning(orthoTropic, x => x.PoissonsRatio) &&
+                    CheckPropertyWarning(orthoTropic, x => x.ThermalExpansionCoeff) &&
+                    CheckPropertyWarning(orthoTropic, x => x.ShearModulus))
+                {
+                    double[] e = orthoTropic.YoungsModulus.ToDoubleArray();
+                    double[] v = orthoTropic.PoissonsRatio.ToDoubleArray();
+                    double[] a = orthoTropic.ThermalExpansionCoeff.ToDoubleArray();
+                    double[] g = orthoTropic.ShearModulus.ToDoubleArray();
+                    success &= m_model.PropMaterial.SetMPOrthotropic(material.DescriptionOrName(), ref e, ref v, ref a, ref g) == 0;
+                }
+                else
+                    success = false;
             }
             success &= m_model.PropMaterial.SetWeightAndMass(material.DescriptionOrName(), 2, material.Density) == 0;
 
@@ -133,6 +142,8 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
+
 
     }
 }
