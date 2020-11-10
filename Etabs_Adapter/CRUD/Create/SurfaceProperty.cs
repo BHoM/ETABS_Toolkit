@@ -59,32 +59,38 @@ namespace BH.Adapter.ETABS
             string propertyName = property2d.DescriptionOrName();
             SetAdapterId(property2d, propertyName);
 
+            string materialName = "";
+
+            if (CheckPropertyWarning(property2d, p => p.Material))
+            {
+                materialName = GetAdapterId<string>(property2d.Material) ?? "";
+            }
+
             eShellType shellType = ShellTypeToCSI(property2d);
 
             if (property2d.GetType() == typeof(Waffle))
             {
                 Waffle waffleProperty = (Waffle)property2d;
-                m_model.PropArea.SetSlab(propertyName, eSlabType.Waffle, shellType, property2d.Material.DescriptionOrName(), waffleProperty.Thickness);
+                m_model.PropArea.SetSlab(propertyName, eSlabType.Waffle, shellType, materialName, waffleProperty.Thickness);
                 retA = m_model.PropArea.SetSlabWaffle(propertyName, waffleProperty.TotalDepthX, waffleProperty.Thickness, waffleProperty.StemWidthX, waffleProperty.StemWidthX, waffleProperty.SpacingX, waffleProperty.SpacingY);
             }
             else if (property2d.GetType() == typeof(Ribbed))
             {
                 Ribbed ribbedProperty = (Ribbed)property2d;
-                m_model.PropArea.SetSlab(propertyName, eSlabType.Ribbed, shellType, property2d.Material.DescriptionOrName(), ribbedProperty.Thickness);
+                m_model.PropArea.SetSlab(propertyName, eSlabType.Ribbed, shellType, materialName, ribbedProperty.Thickness);
                 retA = m_model.PropArea.SetSlabRibbed(propertyName, ribbedProperty.TotalDepth, ribbedProperty.Thickness, ribbedProperty.StemWidth, ribbedProperty.StemWidth, ribbedProperty.Spacing, (int)ribbedProperty.Direction);
             }
             else if (property2d.GetType() == typeof(LoadingPanelProperty))
             {
-                retA = m_model.PropArea.SetSlab(propertyName, eSlabType.Slab, shellType, property2d.Material.DescriptionOrName(), 0);
+                retA = m_model.PropArea.SetSlab(propertyName, eSlabType.Slab, shellType, materialName, 0);
             }
-
             else if (property2d.GetType() == typeof(ConstantThickness))
             {
                 ConstantThickness constantThickness = (ConstantThickness)property2d;
                 if (constantThickness.PanelType == PanelType.Wall)
-                    retA = m_model.PropArea.SetWall(propertyName, eWallPropType.Specified, shellType, property2d.Material.DescriptionOrName(), constantThickness.Thickness);
+                    retA = m_model.PropArea.SetWall(propertyName, eWallPropType.Specified, shellType, materialName, constantThickness.Thickness);
                 else
-                    retA = m_model.PropArea.SetSlab(propertyName, eSlabType.Slab, shellType, property2d.Material.DescriptionOrName(), constantThickness.Thickness);
+                    retA = m_model.PropArea.SetSlab(propertyName, eSlabType.Slab, shellType, materialName, constantThickness.Thickness);
             }
 
             SurfacePropertyModifier modifier = property2d.FindFragment<SurfacePropertyModifier>();
