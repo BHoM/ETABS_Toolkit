@@ -61,6 +61,9 @@ namespace BH.Adapter.ETABS
 
         private bool CheckPropertyEvent<T, P>(T obj, Func<T, P> selector, bool couldNotBeCreated = false, BH.oM.Reflection.Debugging.EventType errorLevel = oM.Reflection.Debugging.EventType.Error)
         {
+            if (obj == null || selector == null)
+                return false;
+
             if (selector(obj) == null)
             {
                 if(couldNotBeCreated)

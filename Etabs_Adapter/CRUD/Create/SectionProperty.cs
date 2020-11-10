@@ -295,7 +295,10 @@ namespace BH.Adapter.ETABS
             if (EtabsSettings.DatabaseSettings.SectionDatabase == SectionDatabase.None)
                 return false;
 
-            string bhName = bhSection.DescriptionOrName();
+            string bhName = bhSection?.DescriptionOrName();
+
+            if (string.IsNullOrEmpty(bhName))
+                return false;
 
             // Formatt as uppercase and no spaces
             bhName = bhName.ToUpper();
