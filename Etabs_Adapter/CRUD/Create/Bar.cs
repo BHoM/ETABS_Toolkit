@@ -130,7 +130,7 @@ namespace BH.Adapter.ETABS
             m_model.EditFrame.ChangeConnectivity(name, GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode));
 #endif
 
-            if (bhBar.SectionProperty != null)
+            if (CheckPropertyWarning(bhBar, b => b.SectionProperty))
             {
                 string sectionName = GetAdapterId<string>(bhBar.SectionProperty);
                 if (string.IsNullOrEmpty(sectionName) || m_model.FrameObj.SetSection(name, sectionName) != 0)
