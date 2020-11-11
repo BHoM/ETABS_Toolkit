@@ -279,7 +279,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public void SetLoad(AreaTemperatureLoad areaTempratureLoad, bool replace)
+        public void SetLoad(AreaUniformTemperatureLoad areaTempratureLoad, bool replace)
         {
             int ret = 0;
             string caseName = GetAdapterId<string>(areaTempratureLoad.Loadcase);
@@ -293,7 +293,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public void SetLoad(BarTemperatureLoad barTempratureLoad, bool replace)
+        public void SetLoad(BarUniformTemperatureLoad barTempratureLoad, bool replace)
         {
             int ret = 0;
             string caseName = GetAdapterId<string>(barTempratureLoad.Loadcase);

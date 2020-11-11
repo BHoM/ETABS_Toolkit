@@ -94,13 +94,13 @@ namespace BH.Adapter.ETABS
                 typeCouldBeRead = true;
             }
 
-            if (type.IsAssignableFrom(typeof(AreaTemperatureLoad)))
+            if (type.IsAssignableFrom(typeof(AreaUniformTemperatureLoad)))
             {
                 loads.AddRange(ReadAreaTempratureLoad(loadcaseList));
                 typeCouldBeRead = true;
             }
 
-            if (type.IsAssignableFrom(typeof(BarTemperatureLoad)))
+            if (type.IsAssignableFrom(typeof(BarUniformTemperatureLoad)))
             {
                 loads.AddRange(ReadBarTempratureLoad(loadcaseList));
                 typeCouldBeRead = true;
@@ -387,7 +387,7 @@ namespace BH.Adapter.ETABS
                 {
                     BHoMGroup<IAreaElement> panelObjects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanels[names[i]] } };
 
-                    bhLoads.Add(new AreaTemperatureLoad() { Loadcase = bhLoadcase, Objects = panelObjects, TemperatureChange = value[i] });
+                    bhLoads.Add(new AreaUniformTemperatureLoad() { Loadcase = bhLoadcase, Objects = panelObjects, TemperatureChange = value[i] });
                 }
             }
 
@@ -423,7 +423,7 @@ namespace BH.Adapter.ETABS
                 {
                     BHoMGroup<Bar> barObjects = new BHoMGroup<Bar>() { Elements = { bhomBars[names[i]] } };
 
-                    bhLoads.Add(new BarTemperatureLoad() { TemperatureChange = value[i], Loadcase = bhLoadcase, Objects = barObjects });
+                    bhLoads.Add(new BarUniformTemperatureLoad() { TemperatureChange = value[i], Loadcase = bhLoadcase, Objects = barObjects });
                 }
             }
 
