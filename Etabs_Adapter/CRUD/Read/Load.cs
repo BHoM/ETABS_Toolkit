@@ -32,6 +32,7 @@ using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.oM.Geometry;
+using BH.Engine.Spatial;
 using BH.Engine.Structure;
 using BH.Engine.Adapters.ETABS;
 #if Debug17 || Release17

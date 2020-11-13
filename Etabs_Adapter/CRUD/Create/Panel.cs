@@ -27,6 +27,7 @@ using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
+using BH.Engine.Spatial;
 using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Geometry;
