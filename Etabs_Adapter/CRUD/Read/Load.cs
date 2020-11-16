@@ -280,21 +280,22 @@ namespace BH.Adapter.ETABS
 
                 BarVaryingDistributedLoad bhLoad = new BarVaryingDistributedLoad()
                 {
-                    DistanceFromA = dist1[i],
-                    DistanceFromB = bhBar.Length() - dist2[i],
+                    StartPosition = dist1[i],
+                    EndPosition = dist2[i],
                     Loadcase = bhLoadcase,
-                    Objects = barObjects
+                    Objects = barObjects,
+                    RelativePositions = false
                 };
 
                 switch (myType[i])
                 {
                     case 1:
-                        bhLoad.ForceA = forceA;
-                        bhLoad.ForceB = forceB;
+                        bhLoad.ForceAtStart = forceA;
+                        bhLoad.ForceAtEnd = forceB;
                         break;
                     case 2:
-                        bhLoad.MomentA = forceA;
-                        bhLoad.MomentB = forceB;
+                        bhLoad.MomentAtStart = forceA;
+                        bhLoad.MomentAtEnd = forceB;
                         break;
                     default:
                         BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());

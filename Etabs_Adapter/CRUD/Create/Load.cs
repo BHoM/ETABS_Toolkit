@@ -166,17 +166,17 @@ namespace BH.Adapter.ETABS
                 string barName = GetAdapterId<string>(bar);
                 for (int direction = 1; direction <= 3; direction++)
                 {
-                    double valA = direction == 1 ? barLoad.ForceA.X : barLoad.Axis == LoadAxis.Global ?
-                        direction == 2 ? barLoad.ForceA.Y : (shift == 6 ? -barLoad.ForceA.Z : barLoad.ForceA.Z) :
-                        direction == 2 ? barLoad.ForceA.Z : -barLoad.ForceA.Y; //note: etabs acts different then stated in API documentstion
-                    double valB = direction == 1 ? barLoad.ForceB.X : barLoad.Axis == LoadAxis.Global ?
-                        direction == 2 ? barLoad.ForceB.Y : (shift == 6 ? -barLoad.ForceB.Z : barLoad.ForceB.Z) :
-                        direction == 2 ? barLoad.ForceB.Z : -barLoad.ForceB.Y; //note: etabs acts different then stated in API documentstion
+                    double valA = direction == 1 ? barLoad.ForceAtStart.X : barLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barLoad.ForceAtStart.Y : (shift == 6 ? -barLoad.ForceAtStart.Z : barLoad.ForceAtStart.Z) :
+                        direction == 2 ? barLoad.ForceAtStart.Z : -barLoad.ForceAtStart.Y; //note: etabs acts different then stated in API documentstion
+                    double valB = direction == 1 ? barLoad.ForceAtEnd.X : barLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barLoad.ForceAtEnd.Y : (shift == 6 ? -barLoad.ForceAtEnd.Z : barLoad.ForceAtEnd.Z) :
+                        direction == 2 ? barLoad.ForceAtEnd.Z : -barLoad.ForceAtEnd.Y; //note: etabs acts different then stated in API documentstion
 
                     val1 = valA; //note: etabs acts different then stated in API documentstion
                     val2 = valB;
-                    dist1 = barLoad.DistanceFromA;
-                    dist2 = bar.Length() - barLoad.DistanceFromB;
+                    dist1 = barLoad.StartPosition;
+                    dist2 = barLoad.EndPosition;
 
 #if Debug16 || Release16
                     if (bar.CheckFlipBar())
@@ -194,7 +194,7 @@ namespace BH.Adapter.ETABS
                             Engine.Reflection.Compute.RecordWarning("BarVaryingLoad can not be in opposite directions for the two end values");
                         else
                         {
-                            ret = m_model.FrameObj.SetLoadDistributed(GetAdapterId<string>(bar), caseName, 1, direction + shift, dist1, dist2, val1, val2, axis, false, stepReplace);
+                            ret = m_model.FrameObj.SetLoadDistributed(GetAdapterId<string>(bar), caseName, 1, direction + shift, dist1, dist2, val1, val2, axis, barLoad.RelativePositions, stepReplace);
                             stepReplace = false;
                         }
                     }
@@ -202,17 +202,17 @@ namespace BH.Adapter.ETABS
                 // Moment
                 for (int direction = 1; direction <= 3; direction++)
                 {
-                    double valA = direction == 1 ? barLoad.MomentA.X : barLoad.Axis == LoadAxis.Global ?
-                        direction == 2 ? barLoad.MomentA.Y : (shift == 6 ? -barLoad.MomentA.Z : barLoad.MomentA.Z) :
-                        direction == 2 ? barLoad.MomentA.Z : -barLoad.MomentA.Y; //note: etabs acts different then stated in API documentstion
-                    double valB = direction == 1 ? barLoad.MomentB.X : barLoad.Axis == LoadAxis.Global ?
-                        direction == 2 ? barLoad.MomentB.Y : (shift == 6 ? -barLoad.MomentB.Z : barLoad.MomentB.Z) :
-                        direction == 2 ? barLoad.MomentB.Z : -barLoad.MomentB.Y; //note: etabs acts different then stated in API documentstion
+                    double valA = direction == 1 ? barLoad.MomentAtStart.X : barLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barLoad.MomentAtStart.Y : (shift == 6 ? -barLoad.MomentAtStart.Z : barLoad.MomentAtStart.Z) :
+                        direction == 2 ? barLoad.MomentAtStart.Z : -barLoad.MomentAtStart.Y; //note: etabs acts different then stated in API documentstion
+                    double valB = direction == 1 ? barLoad.MomentAtEnd.X : barLoad.Axis == LoadAxis.Global ?
+                        direction == 2 ? barLoad.MomentAtEnd.Y : (shift == 6 ? -barLoad.MomentAtEnd.Z : barLoad.MomentAtEnd.Z) :
+                        direction == 2 ? barLoad.MomentAtEnd.Z : -barLoad.MomentAtEnd.Y; //note: etabs acts different then stated in API documentstion
 
                     val1 = valA; //note: etabs acts different then stated in API documentstion
                     val2 = valB;
-                    dist1 = barLoad.DistanceFromA;
-                    dist2 = bar.Length() - barLoad.DistanceFromB;
+                    dist1 = barLoad.StartPosition;
+                    dist2 = barLoad.EndPosition;
 
 #if Debug16 || Release16
                     if (bar.CheckFlipBar())
@@ -226,7 +226,7 @@ namespace BH.Adapter.ETABS
 
                     if (!(val1 == 0 && val2 == 0))
                     {
-                        ret = m_model.FrameObj.SetLoadDistributed(GetAdapterId<string>(bar), caseName, 2, direction + shift, dist1, dist2, val1, val2, axis, false, stepReplace);
+                        ret = m_model.FrameObj.SetLoadDistributed(GetAdapterId<string>(bar), caseName, 2, direction + shift, dist1, dist2, val1, val2, axis, barLoad.RelativePositions, stepReplace);
                         stepReplace = false;
                     }
                 }
