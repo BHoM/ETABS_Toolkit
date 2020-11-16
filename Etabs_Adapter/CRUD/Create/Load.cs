@@ -183,8 +183,8 @@ namespace BH.Adapter.ETABS
                     {
                         val1 = valB; //note: etabs acts different then stated in API documentstion
                         val2 = valA;
-                        dist1 = barLoad.DistanceFromB;
-                        dist2 = bar.Length() - barLoad.DistanceFromA;
+                        dist1 = barLoad.EndPosition;
+                        dist2 = barLoad.StartPosition;
                     }
 #endif
 
@@ -219,8 +219,8 @@ namespace BH.Adapter.ETABS
                     {
                         val1 = valB; //note: etabs acts different then stated in API documentstion
                         val2 = valA;
-                        dist1 = barLoad.DistanceFromB;
-                        dist2 = bar.Length() - barLoad.DistanceFromA;
+                        dist1 = barLoad.EndPosition;
+                        dist2 = barLoad.StartPosition;
                     }
 #endif
 
