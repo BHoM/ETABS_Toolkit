@@ -1,10 +1,10 @@
 {
     "Type": {
         "ToNew": {
-            "BH.oM.Adapters.ETABS.Fragments.EtabsLabel": "BH.oM.Adapters.ETABS.EtabsId"
+            "BH.oM.Adapters.ETABS.Fragments.EtabsLabel": "BH.oM.Adapters.ETABS.ETABSId"
         },
         "ToOld": {
-            "BH.oM.Adapters.ETABS.EtabsId": "BH.oM.Adapters.ETABS.Fragments.EtabsLabel"
+            "BH.oM.Adapters.ETABS.ETABSId": "BH.oM.Adapters.ETABS.Fragments.EtabsLabel"
         }
     }
 }
