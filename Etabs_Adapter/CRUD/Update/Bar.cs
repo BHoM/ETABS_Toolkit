@@ -74,7 +74,7 @@ namespace BH.Adapter.ETABS
 #if Debug16 || Release16
                 string start = "";
                 string end = "";
-                m_model.FrameObj.GetPoints(name, ref start, ref end);
+                m_model.FrameObj.GetPoints(id, ref start, ref end);
 
                 if (GetAdapterId<string>(bhBar.StartNode) != start ||
                     GetAdapterId<string>(bhBar.EndNode) != end)
