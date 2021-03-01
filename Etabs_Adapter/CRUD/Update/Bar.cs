@@ -58,15 +58,14 @@ namespace BH.Adapter.ETABS
 
             foreach (Bar bhBar in bhBars)
             {
-                object id = bhBar.AdapterId(typeof(ETABSId));
+                string id = bhBar.AdapterId<string>(typeof(ETABSId));
                 if (id != null)
                 {
                     Engine.Reflection.Compute.RecordWarning("The Bar must have an ETABS adapter id to be updated.");
                     continue;
                 }
 
-                string name = id as string;
-                if (!names.Contains(name))
+                if (!names.Contains(id))
                 {
                     Engine.Reflection.Compute.RecordWarning("The Bar must be present in ETABS to be updated.");
                     continue;
