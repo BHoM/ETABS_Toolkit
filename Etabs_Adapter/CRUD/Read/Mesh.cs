@@ -63,20 +63,16 @@ namespace BH.Adapter.ETABS
 
             List<FEMesh> meshes = new List<FEMesh>();
             Dictionary<string, Node> nodes = new Dictionary<string, Node>();
+            Dictionary<string, ISurfaceProperty> surfaceProps = ReadSurfaceProperty().ToDictionary(x => GetAdapterId<string>(x));
 
             foreach (string id in ids)
             {
+                FEMesh mesh = new FEMesh();
+
                 ETABSId etabsid = new ETABSId();
                 etabsid.Id = id;
 
                 List<string> meshNodeIds = new List<string>();
-
-                string propertyName = "";
-
-                m_model.AreaObj.GetProperty(id, ref propertyName);
-                ISurfaceProperty panelProperty = ReadSurfaceProperty(new List<string>() { propertyName })[0];
-
-                FEMesh mesh = new FEMesh() { Property = panelProperty };
 
                 //Get out the "Element" ids, i.e. the mesh faces
                 int nbELem = 0;
@@ -121,35 +117,50 @@ namespace BH.Adapter.ETABS
 
                 }
 
-                //Set mesh nodes
-                mesh.Nodes = meshNodeIds.Select(x => nodes[x]).ToList();
-
-
-                //Get local x-axis
-                double orientation = 0;
-                bool advanced = false;
-                m_model.AreaObj.GetLocalAxes(id, ref orientation, ref advanced);
-
-                Vector normal = mesh.Faces.First().Normal(mesh);    //Assuming flat mesh, all normals equal
-                Vector localX = Convert.FromCSILocalX(normal, orientation);
-                mesh = mesh.SetLocalOrientations(localX);
-
-                //Label and story
-                string label = "";
-                string story = "";
-                if (m_model.AreaObj.GetLabelFromName(id, ref label, ref story) == 0)
+                //Set mesh nodes - if there are no nodes, don't create the mesh.
+                if (nodes.Count != 0 && mesh.Faces.Count != 0)
                 {
-                    etabsid.Label = label;
-                    etabsid.Story = story;
+                    mesh.Nodes = meshNodeIds.Select(x => nodes[x]).ToList();
+
+                    string propertyName = "";
+
+                    m_model.AreaObj.GetProperty(id, ref propertyName);
+
+                    if (propertyName != "None")
+                    {
+                        mesh.Property = surfaceProps[propertyName];
+                    }
+                    
+                    //Get local x-axis
+                    double orientation = 0;
+                    bool advanced = false;
+                    m_model.AreaObj.GetLocalAxes(id, ref orientation, ref advanced);
+
+                    Vector normal = mesh.Faces.First().Normal(mesh);    //Assuming flat mesh, all normals equal
+                    Vector localX = Convert.FromCSILocalX(normal, orientation);
+                    mesh = mesh.SetLocalOrientations(localX);
+
+                    //Label and story
+                    string label = "";
+                    string story = "";
+                    if (m_model.AreaObj.GetLabelFromName(id, ref label, ref story) == 0)
+                    {
+                        etabsid.Label = label;
+                        etabsid.Story = story;
+                    }
+
+                    // Get guid
+                    string guid = null;
+                    m_model.AreaObj.GetGUID(id, ref guid);
+                    etabsid.PersistentId = guid;
+
+                    SetAdapterId(mesh, etabsid);
+                    meshes.Add(mesh);
                 }
-
-                // Get guid
-                string guid = null;
-                m_model.AreaObj.GetGUID(id, ref guid);
-                etabsid.PersistentId = guid;
-
-                SetAdapterId(mesh, etabsid);
-                meshes.Add(mesh);
+                else
+                {
+                    BH.Engine.Reflection.Compute.RecordWarning("Mesh " + id.ToString() + " could not be pulled, because it contains no nodes");
+                }
             }
 
             return meshes;
