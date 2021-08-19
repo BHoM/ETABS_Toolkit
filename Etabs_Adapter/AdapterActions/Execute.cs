@@ -131,10 +131,10 @@ namespace BH.Adapter.ETABS
 
         public bool RunCommand(Exit command)
         {
-            bool sucess = m_app.ApplicationExit(command.SaveBeforeClose) == 0;
+            bool success = m_app.ApplicationExit(command.SaveBeforeClose) == 0;
             m_app = null;
             m_model = null;
-            return sucess;
+            return success;
         }
 
         /***************************************************/
