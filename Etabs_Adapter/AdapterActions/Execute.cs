@@ -135,7 +135,7 @@ namespace BH.Adapter.ETABS
             {
                 if (m_app.SapModel.GetModelFilepath() == "(Untitled)")
                 {
-                    Engine.Reflection.Compute.RecordError("Application not exited. File does not have a name. Please manually save the file or use the SaveAs command before trying to Exit the application. If you want to close the application anyway, please toggle SaveBeforeClose to false.");
+                    Engine.Reflection.Compute.RecordError($"Application not exited. File does not have a name. Please manually save the file or use the {nameof(SaveAs)} command before trying to Exit the application. If you want to close the application anyway, please toggle {nameof(Exit.SaveBeforeClose)} to false.");
                     return false;
                 }
             }
