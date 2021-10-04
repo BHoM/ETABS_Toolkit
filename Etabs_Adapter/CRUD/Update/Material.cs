@@ -29,7 +29,7 @@ using BH.oM.Structure.MaterialFragments;
 
 #if Debug17 || Release17
 using ETABSv17;
-#elif Debug18 || Release18
+#elif Debug18 || Release18 || Debug19 || Release19 
 using ETABSv1;
 #else
 using ETABS2016;
@@ -38,17 +38,19 @@ using ETABS2016;
 namespace BH.Adapter.ETABS
 {
 #if Debug17 || Release17
-    public partial class ETABS17Adapter : BHoMAdapter
+    public partial class ETABS17Adapter
 #elif Debug18 || Release18
-   public partial class ETABS18Adapter : BHoMAdapter
+    public partial class ETABS18Adapter
+#elif Debug19 || Release19
+    public partial class ETABS19Adapter
 #else
-    public partial class ETABS2016Adapter : BHoMAdapter
+    public partial class ETABS2016Adapter
 #endif
     {
         /***************************************************/
         /**** Update Panel                              ****/
         /***************************************************/
-        
+
         private bool UpdateObjects(IEnumerable<IMaterialFragment> bhMaterials)
         {
             foreach (IMaterialFragment material in bhMaterials)

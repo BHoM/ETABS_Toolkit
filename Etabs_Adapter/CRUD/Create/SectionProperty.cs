@@ -34,7 +34,7 @@ using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
 using System;
 
-#if Debug18 || Release18
+#if Debug18 || Release18 || Debug19 || Release19 
 using ETABSv1;
 #elif Debug17 || Release17
 using ETABSv17;
@@ -45,11 +45,13 @@ using ETABS2016;
 namespace BH.Adapter.ETABS
 {
 #if Debug17 || Release17
-    public partial class ETABS17Adapter : BHoMAdapter
+    public partial class ETABS17Adapter
 #elif Debug18 || Release18
-   public partial class ETABS18Adapter : BHoMAdapter
+    public partial class ETABS18Adapter
+#elif Debug19 || Release19
+    public partial class ETABS19Adapter
 #else
-    public partial class ETABS2016Adapter : BHoMAdapter
+    public partial class ETABS2016Adapter
 #endif
     {
 

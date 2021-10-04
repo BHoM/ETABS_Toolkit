@@ -32,7 +32,7 @@ using BH.oM.Base;
 using BH.Engine.Units;
 #if Debug17 || Release17
 using ETABSv17;
-#elif Debug18 || Release18
+#elif Debug18 || Release18 || Debug19 || Release19 
 using ETABSv1;
 #else
 using ETABS2016;
@@ -44,6 +44,8 @@ namespace BH.Adapter.ETABS
     public partial class ETABS17Adapter : BHoMAdapter
 #elif Debug18 || Release18
    public partial class ETABS18Adapter : BHoMAdapter
+#elif Debug19 || Release19
+   public partial class ETABS19Adapter : BHoMAdapter
 #else
     public partial class ETABS2016Adapter : BHoMAdapter
 #endif
@@ -64,6 +66,8 @@ namespace BH.Adapter.ETABS
         public ETABS17Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #elif Debug18 || Release18
         public ETABS18Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
+#elif Debug19 || Release19
+        public ETABS19Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #else
         public ETABS2016Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #endif
@@ -85,6 +89,9 @@ namespace BH.Adapter.ETABS
                 cHelper helper = new ETABSv17.Helper();
 #elif Debug18 || Release18
                 string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 18\ETABS.exe";
+                cHelper helper = new ETABSv1.Helper();
+#elif Debug19 || Release19
+                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 19\ETABS.exe";
                 cHelper helper = new ETABSv1.Helper();
 #else
                 string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 2016\ETABS.exe";
