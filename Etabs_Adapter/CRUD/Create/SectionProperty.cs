@@ -34,10 +34,12 @@ using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
 using System;
 
-#if Debug17 || Release17
+#if Debug18 || Release18
+using ETABSv1;
+#elif Debug17 || Release17
 using ETABSv17;
 #else
-    using ETABS2016;
+using ETABS2016;
 #endif
 
 namespace BH.Adapter.ETABS

@@ -329,20 +329,21 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSI_ETABSv2016_x64.1.0.3\lib\ETABS2016.dll</HintPath>
+    <Reference Include="ETABS2016, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL" Condition="'$(Configuration)'=='Debug16' Or '$(Configuration)'=='Release16' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
       <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
+      <HintPath>..\libs\2016\ETABS2016.dll</HintPath>
     </Reference>
-    <Reference Include="ETABSv1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=453d728ef24c6f5e, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSI_ETABSv18_x64.1.0.0\lib\ETABSv1.dll</HintPath>
+	<Reference Include="ETABSv17, Version=17.0.0.0, Culture=neutral, processorArchitecture=MSIL" Condition="'$(Configuration)'=='Debug17' Or '$(Configuration)'=='Release17'">
+		<SpecificVersion>False</SpecificVersion>
+		<HintPath>..\libs\17\ETABSv17.dll</HintPath>
+	</Reference>
+    <Reference Include="ETABSv1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=453d728ef24c6f5e, processorArchitecture=MSIL" Condition="'$(Configuration)'=='Debug18' Or '$(Configuration)'=='Release18'">
       <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+      <HintPath>..\libs\18\ETABSv1.dll</HintPath>
     </Reference>
-    <Reference Include="ETABSv17, Version=17.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSI_ETABSv17_x64.1.0.3\lib\ETABSv17.dll</HintPath>
+	<Reference Include="ETABSv1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=453d728ef24c6f5e, processorArchitecture=MSIL" Condition="'$(Configuration)'=='Debug19' Or '$(Configuration)'=='Release19'">
       <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
+      <HintPath>..\libs\19\ETABSv1.dll</HintPath>
     </Reference>
     <Reference Include="Geometry_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -464,9 +465,8 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <None Include="packages.config" />
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
