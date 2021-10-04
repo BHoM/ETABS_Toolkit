@@ -469,14 +469,30 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug16' Or '$(Configuration)'=='Release16' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
     <PostBuildEvent>
       xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y
       xcopy "$(TargetDir)ETABS2016.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
-xcopy "$(TargetDir)ETABSv17.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
-xcopy "$(TargetDir)ETABSv1.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
-</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Debug17' Or '$(Configuration)'=='Release17'">
+		<PostBuildEvent>
+			xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y
+			xcopy "$(TargetDir)ETABSv17.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
+		</PostBuildEvent>
+	</PropertyGroup>
+	<PropertyGroup  Condition="'$(Configuration)'=='Debug18' Or '$(Configuration)'=='Release18'">
+		<PostBuildEvent>
+			xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y
+			copy "$(TargetDir)ETABSv1.dll"  "C:\ProgramData\BHoM\Assemblies\ETABSv18.dll" /Y
+		</PostBuildEvent>
+	</PropertyGroup>
+	<PropertyGroup  Condition="'$(Configuration)'=='Debug19' Or '$(Configuration)'=='Release19'">
+		<PostBuildEvent>
+			xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y
+			copy "$(TargetDir)ETABSv1.dll"  "C:\ProgramData\BHoM\Assemblies\ETABSv19.dll" /Y
+		</PostBuildEvent>
+	</PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
