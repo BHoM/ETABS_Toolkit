@@ -39,12 +39,12 @@ namespace BH.Adapter.ETABS
         public static bool ToCSI(this BarRelease release, ref bool[] startRestraint, ref double[] startSpring, ref bool[] endRestraint, ref double[] endSpring)
         {
             startRestraint = new bool[6];
-            startRestraint[0] = release.StartRelease.TranslationX == DOFType.Free;
-            startRestraint[1] = release.StartRelease.TranslationZ == DOFType.Free;
-            startRestraint[2] = release.StartRelease.TranslationY == DOFType.Free;
-            startRestraint[3] = release.StartRelease.RotationX == DOFType.Free;
-            startRestraint[4] = release.StartRelease.RotationZ == DOFType.Free;
-            startRestraint[5] = release.StartRelease.RotationY == DOFType.Free;
+            startRestraint[0] = release.StartRelease.TranslationX != DOFType.Fixed;
+            startRestraint[1] = release.StartRelease.TranslationZ != DOFType.Fixed;
+            startRestraint[2] = release.StartRelease.TranslationY != DOFType.Fixed;
+            startRestraint[3] = release.StartRelease.RotationX != DOFType.Fixed;
+            startRestraint[4] = release.StartRelease.RotationZ != DOFType.Fixed;
+            startRestraint[5] = release.StartRelease.RotationY != DOFType.Fixed;
 
             startSpring = new double[6];
             startSpring[0] = release.StartRelease.TranslationalStiffnessX;
@@ -55,12 +55,12 @@ namespace BH.Adapter.ETABS
             startSpring[5] = release.StartRelease.RotationalStiffnessY;
 
             endRestraint = new bool[6];
-            endRestraint[0] = release.EndRelease.TranslationX == DOFType.Free;
-            endRestraint[1] = release.EndRelease.TranslationZ == DOFType.Free;
-            endRestraint[2] = release.EndRelease.TranslationY == DOFType.Free;
-            endRestraint[3] = release.EndRelease.RotationX == DOFType.Free;
-            endRestraint[4] = release.EndRelease.RotationZ == DOFType.Free;
-            endRestraint[5] = release.EndRelease.RotationY == DOFType.Free;
+            endRestraint[0] = release.EndRelease.TranslationX != DOFType.Fixed;
+            endRestraint[1] = release.EndRelease.TranslationZ != DOFType.Fixed;
+            endRestraint[2] = release.EndRelease.TranslationY != DOFType.Fixed;
+            endRestraint[3] = release.EndRelease.RotationX != DOFType.Fixed;
+            endRestraint[4] = release.EndRelease.RotationZ != DOFType.Fixed;
+            endRestraint[5] = release.EndRelease.RotationY != DOFType.Fixed;
 
             endSpring = new double[6];
             endSpring[0] = release.EndRelease.TranslationalStiffnessX;
