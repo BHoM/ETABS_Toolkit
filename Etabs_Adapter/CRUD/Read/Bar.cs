@@ -152,39 +152,54 @@ namespace BH.Adapter.ETABS
         {
             Constraint6DOF bhStartRelease = new Constraint6DOF();
 
-            bhStartRelease.TranslationX = startRelease[0] == true ? startSpring[0] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
-            bhStartRelease.TranslationY = startRelease[1] == true ? startSpring[1] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
-            bhStartRelease.TranslationZ = startRelease[2] == true ? startSpring[2] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
-            bhStartRelease.RotationX = startRelease[3] == true ? startSpring[3] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
-            bhStartRelease.RotationY = startRelease[4] == true ? startSpring[4] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
-            bhStartRelease.RotationZ = startRelease[5] == true ? startSpring[5] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
+            bhStartRelease.TranslationX = GetDofType(startRelease, startSpring, 0);
+            bhStartRelease.TranslationY = GetDofType(startRelease, startSpring, 2);
+            bhStartRelease.TranslationZ = GetDofType(startRelease, startSpring, 1);
+            bhStartRelease.RotationX = GetDofType(startRelease, startSpring, 3);
+            bhStartRelease.RotationY = GetDofType(startRelease, startSpring, 5);
+            bhStartRelease.RotationZ = GetDofType(startRelease, startSpring, 4);
 
             bhStartRelease.TranslationalStiffnessX = startSpring[0];
-            bhStartRelease.TranslationalStiffnessY = startSpring[1];
-            bhStartRelease.TranslationalStiffnessZ = startSpring[2];
+            bhStartRelease.TranslationalStiffnessY = startSpring[2];
+            bhStartRelease.TranslationalStiffnessZ = startSpring[1];
             bhStartRelease.RotationalStiffnessX = startSpring[3];
-            bhStartRelease.RotationalStiffnessY = startSpring[4];
-            bhStartRelease.RotationalStiffnessZ = startSpring[5];
+            bhStartRelease.RotationalStiffnessY = startSpring[5];
+            bhStartRelease.RotationalStiffnessZ = startSpring[4];
 
             Constraint6DOF bhEndRelease = new Constraint6DOF();
 
-            bhEndRelease.TranslationX = endRelease[0] == true ? endSpring[0] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
-            bhEndRelease.TranslationY = endRelease[1] == true ? endSpring[1] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
-            bhEndRelease.TranslationZ = endRelease[2] == true ? endSpring[2] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
-            bhEndRelease.RotationX = endRelease[3] == true ? endSpring[3] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
-            bhEndRelease.RotationY = endRelease[4] == true ? endSpring[4] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
-            bhEndRelease.RotationZ = endRelease[5] == true ? endSpring[5] == 0 ? DOFType.Free : DOFType.Spring : DOFType.Fixed;
+            bhEndRelease.TranslationX = GetDofType(endRelease, endSpring, 0);
+            bhEndRelease.TranslationY = GetDofType(endRelease, endSpring, 2);
+            bhEndRelease.TranslationZ = GetDofType(endRelease, endSpring, 1);
+            bhEndRelease.RotationX = GetDofType(endRelease, endSpring, 3);
+            bhEndRelease.RotationY = GetDofType(endRelease, endSpring, 5);
+            bhEndRelease.RotationZ = GetDofType(endRelease, endSpring, 4);
 
             bhEndRelease.TranslationalStiffnessX = endSpring[0];
-            bhEndRelease.TranslationalStiffnessY = endSpring[1];
-            bhEndRelease.TranslationalStiffnessZ = endSpring[2];
+            bhEndRelease.TranslationalStiffnessY = endSpring[2];
+            bhEndRelease.TranslationalStiffnessZ = endSpring[1];
             bhEndRelease.RotationalStiffnessX = endSpring[3];
-            bhEndRelease.RotationalStiffnessY = endSpring[4];
-            bhEndRelease.RotationalStiffnessZ = endSpring[5];
+            bhEndRelease.RotationalStiffnessY = endSpring[5];
+            bhEndRelease.RotationalStiffnessZ = endSpring[4];
 
             BarRelease barRelease = new BarRelease() { StartRelease = bhStartRelease, EndRelease = bhEndRelease };
 
             return barRelease;
+        }
+
+        /***************************************************/
+
+        private static DOFType GetDofType(bool[] isReleased, double[] springValue, int i)
+        {
+            if (isReleased[i])
+            {
+                if (springValue[i] != 0)
+                    return DOFType.Spring;
+                else
+                    return DOFType.Free;
+            }
+            else
+                return DOFType.Fixed;
         }
 
         /***************************************************/
