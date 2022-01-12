@@ -50,7 +50,7 @@ namespace BH.Engine.Adapters.ETABS
             if (rigidZoneFactor < 0 || rigidZoneFactor > 1.0)
             {
                 rigidZoneFactor = Math.Min(Math.Max(0, rigidZoneFactor), 1);
-                Engine.Reflection.Compute.RecordWarning("Rigid zone factor needs to be between 0 and 1. The value has been updated to fit in this interval");
+                Engine.Base.Compute.RecordWarning("Rigid zone factor needs to be between 0 and 1. The value has been updated to fit in this interval");
             }
             
             return (Bar)bar.AddFragment(new AutoLengthOffset { AutoOffset = autoLengthOffset, RigidZoneFactor = rigidZoneFactor }, true);

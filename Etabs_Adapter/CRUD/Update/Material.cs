@@ -62,7 +62,7 @@ namespace BH.Adapter.ETABS
                 {
                     if (matType != MaterialTypeToCSI(material.IMaterialType()))
                     {
-                        Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, can't update to another material type.");
+                        Engine.Base.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, can't update to another material type.");
                         continue;
                     }
                     
@@ -71,11 +71,11 @@ namespace BH.Adapter.ETABS
                 else
                 {
                     // No material of that name found
-                    Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, as no such material was present in the model.");
+                    Engine.Base.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, as no such material was present in the model.");
                 }
 
                 if (!success)
-                    Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, all BHoM properties may not have been set.");
+                    Engine.Base.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, all BHoM properties may not have been set.");
             }
 
             return true;

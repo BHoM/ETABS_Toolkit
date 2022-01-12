@@ -85,7 +85,7 @@ namespace BH.Adapter.ETABS
                         if (m_model.PropMaterial.GetMPOrthotropic(id, ref eArr, ref vArr, ref aArr, ref gArr) != 0)
                         {
                             string msg = string.Format("Could not extract structural properties for material {0}, this has been replaced with a GenericIsotropicMaterial with no properties.", id);
-                            Engine.Reflection.Compute.RecordWarning(msg);
+                            Engine.Base.Compute.RecordWarning(msg);
                             m = new GenericIsotropicMaterial() { Name = id + "_replacment" };
                         }
                         else
@@ -160,7 +160,7 @@ namespace BH.Adapter.ETABS
                         else
                         {
                             string msg = string.Format("Could not extract structural properties for material {0}, this has been replaced with a GenericIsotropicMaterial with no properties.", id);
-                            Engine.Reflection.Compute.RecordWarning(msg);
+                            Engine.Base.Compute.RecordWarning(msg);
                             m = new GenericIsotropicMaterial() { Name = id + "_replacment" };
                         }
                     }

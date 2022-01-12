@@ -44,13 +44,13 @@ namespace BH.Engine.Adapters.ETABS.Structure
             {
                 if (caseFactors == null)
                 {
-                    Engine.Reflection.Compute.RecordError("If cases are provided, please provide factors as well");
+                    Engine.Base.Compute.RecordError("If cases are provided, please provide factors as well");
                     return null;
                 }
 
                 if (loadCases.Count != caseFactors.Count)
                 {
-                    Engine.Reflection.Compute.RecordError("Please provide the same number of cases and case factors");
+                    Engine.Base.Compute.RecordError("Please provide the same number of cases and case factors");
                     return null;
                 }
 
@@ -61,7 +61,7 @@ namespace BH.Engine.Adapters.ETABS.Structure
             }
             else if (caseFactors != null)
             {
-                Engine.Reflection.Compute.RecordError("If factors are provided, please provide cases as well");
+                Engine.Base.Compute.RecordError("If factors are provided, please provide cases as well");
                 return null;
             }
 

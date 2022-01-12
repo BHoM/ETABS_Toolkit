@@ -68,7 +68,7 @@ namespace BH.Adapter.ETABS
                 success &= SetObject(material);
             }
             if (!success)
-                Engine.Reflection.Compute.RecordWarning($"Failed to assign material: {material.DescriptionOrName()}, ETABS may have overwritten some properties with default values");
+                Engine.Base.Compute.RecordWarning($"Failed to assign material: {material.DescriptionOrName()}, ETABS may have overwritten some properties with default values");
             return success;
         }
 
@@ -123,20 +123,20 @@ namespace BH.Adapter.ETABS
                 case MaterialType.Concrete:
                     return eMatType.Concrete;
                 case MaterialType.Timber:
-                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Timber materials, the material has been set to type 'Other' with 'Orthotropic' directional symmetry");
+                    Engine.Base.Compute.RecordWarning("ETABS does not contain a definition for Timber materials, the material has been set to type 'Other' with 'Orthotropic' directional symmetry");
                     return eMatType.NoDesign;
                 case MaterialType.Rebar:
                     return eMatType.Rebar;
                 case MaterialType.Tendon:
                     return eMatType.Tendon;
                 case MaterialType.Glass:
-                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Glass materials, the material has been set to type 'Other'");
+                    Engine.Base.Compute.RecordWarning("ETABS does not contain a definition for Glass materials, the material has been set to type 'Other'");
                     return eMatType.NoDesign;
                 case MaterialType.Cable:
-                    Engine.Reflection.Compute.RecordWarning("ETABS does not contain a definition for Cable materials, the material has been set to type 'Steel'");
+                    Engine.Base.Compute.RecordWarning("ETABS does not contain a definition for Cable materials, the material has been set to type 'Steel'");
                     return eMatType.Steel;
                 default:
-                    Engine.Reflection.Compute.RecordWarning("BHoM material type not found, the material has been set to type 'Other'");
+                    Engine.Base.Compute.RecordWarning("BHoM material type not found, the material has been set to type 'Other'");
                     return eMatType.NoDesign;
             }
         }

@@ -74,7 +74,7 @@ namespace BH.Adapter.ETABS
                     return ReadMeshStress(panelIds, cases, request.Smoothing, request.Layer);
                 case MeshResultType.VonMises:
                 default:
-                    Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
+                    Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
             }
 
@@ -93,7 +93,7 @@ namespace BH.Adapter.ETABS
                 case MeshResultSmoothingType.BySelection:
                 case MeshResultSmoothingType.Global:
                 case MeshResultSmoothingType.ByFiniteElementCentres:
-                    Engine.Reflection.Compute.RecordWarning("Smoothing type not supported for MeshForce. No results extracted");
+                    Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshForce. No results extracted");
                     return new List<MeshResult>();
             }
 
@@ -126,7 +126,7 @@ namespace BH.Adapter.ETABS
             List<MeshResult> results = new List<MeshResult>();
 
             if (smoothing == MeshResultSmoothingType.ByPanel)
-                Engine.Reflection.Compute.RecordWarning("Force values have been smoothed outside the API by averaging all force values in each node");
+                Engine.Base.Compute.RecordWarning("Force values have been smoothed outside the API by averaging all force values in each node");
 
             for (int i = 0; i < panelIds.Count; i++)
             {
@@ -175,17 +175,17 @@ namespace BH.Adapter.ETABS
                 case MeshResultSmoothingType.BySelection:
                 case MeshResultSmoothingType.Global:
                 case MeshResultSmoothingType.ByFiniteElementCentres:
-                    Engine.Reflection.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted");
+                    Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted");
                     return new List<MeshResult>();
             }
 
             if (layer == MeshResultLayer.Upper || layer == MeshResultLayer.Lower)
             {
-                Engine.Reflection.Compute.RecordWarning("Results for both bot and top layers will be extracted at the same time");
+                Engine.Base.Compute.RecordWarning("Results for both bot and top layers will be extracted at the same time");
             }
             else
             {
-                Engine.Reflection.Compute.RecordWarning("Stress extraction is currently only possible at bot and top layers. Please update the MeshResultLayer parameter");
+                Engine.Base.Compute.RecordWarning("Stress extraction is currently only possible at bot and top layers. Please update the MeshResultLayer parameter");
                 return new List<MeshResult>();
             }
 
@@ -220,7 +220,7 @@ namespace BH.Adapter.ETABS
 
 
             if (smoothing == MeshResultSmoothingType.ByPanel)
-                Engine.Reflection.Compute.RecordWarning("Stress values have been smoothed outside the API by averaging all force values in each node");
+                Engine.Base.Compute.RecordWarning("Stress values have been smoothed outside the API by averaging all force values in each node");
 
             foreach (string caseName in cases)
             {
@@ -263,7 +263,7 @@ namespace BH.Adapter.ETABS
                     }
                     else
                     {
-                        Engine.Reflection.Compute.RecordWarning("Failed to extract results for element " + panelIds[i] + " for case " + caseName);
+                        Engine.Base.Compute.RecordWarning("Failed to extract results for element " + panelIds[i] + " for case " + caseName);
                     }
                 }
             }
@@ -282,7 +282,7 @@ namespace BH.Adapter.ETABS
                 case MeshResultSmoothingType.BySelection:
                 case MeshResultSmoothingType.Global:
                 case MeshResultSmoothingType.ByFiniteElementCentres:
-                    Engine.Reflection.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted");
+                    Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted");
                     return new List<MeshResult>();
             }
 
@@ -316,7 +316,7 @@ namespace BH.Adapter.ETABS
 
 
             if (smoothing == MeshResultSmoothingType.ByPanel)
-                Engine.Reflection.Compute.RecordWarning("Stress values have been smoothened outside the API by averaging all force values in each node");
+                Engine.Base.Compute.RecordWarning("Stress values have been smoothened outside the API by averaging all force values in each node");
 
 
             foreach (string caseName in cases)
@@ -354,7 +354,7 @@ namespace BH.Adapter.ETABS
                     }
                     else
                     {
-                        Engine.Reflection.Compute.RecordWarning("Failed to extract results for element " + panelIds[i] + " for case " + caseName);
+                        Engine.Base.Compute.RecordWarning("Failed to extract results for element " + panelIds[i] + " for case " + caseName);
                     }
 
                 }

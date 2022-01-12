@@ -133,7 +133,7 @@ namespace BH.Adapter.ETABS
                 // If that fails, try setting it as a Load Combination
                 if (m_model.Results.Setup.SetComboSelectedForOutput(caseName) != 0)
                 {
-                    Engine.Reflection.Compute.RecordWarning("Failed to setup result extraction for case " + caseName);
+                    Engine.Base.Compute.RecordWarning("Failed to setup result extraction for case " + caseName);
                     return false;
                 }
             }

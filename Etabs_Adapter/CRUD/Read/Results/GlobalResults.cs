@@ -64,7 +64,7 @@ namespace BH.Adapter.ETABS
                     return GetGlobalReactions();
                 case GlobalResultType.ModalDynamics:
                 default:
-                    Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
+                    Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
             }
         }
@@ -120,7 +120,7 @@ namespace BH.Adapter.ETABS
             int res = m_model.Results.ModalParticipationFactors(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
                 ref period, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz, ref modalMass, ref modalStiff);
 
-            if (res != 0) Engine.Reflection.Compute.RecordError("Could not extract Modal information.");
+            if (res != 0) Engine.Base.Compute.RecordError("Could not extract Modal information.");
 
             // Although API documentation says that StepNumber should correspond to the Mode Number, testing shows that StepNumber is always 0.
             string previousModalCase = "";

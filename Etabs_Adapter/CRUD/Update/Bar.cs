@@ -61,13 +61,13 @@ namespace BH.Adapter.ETABS
                 string id = bhBar.AdapterId<string>(typeof(ETABSId));
                 if (id != null)
                 {
-                    Engine.Reflection.Compute.RecordWarning("The Bar must have an ETABS adapter id to be updated.");
+                    Engine.Base.Compute.RecordWarning("The Bar must have an ETABS adapter id to be updated.");
                     continue;
                 }
 
                 if (!names.Contains(id))
                 {
-                    Engine.Reflection.Compute.RecordWarning("The Bar must be present in ETABS to be updated.");
+                    Engine.Base.Compute.RecordWarning("The Bar must be present in ETABS to be updated.");
                     continue;
                 }
 
@@ -79,7 +79,7 @@ namespace BH.Adapter.ETABS
                 if (GetAdapterId<string>(bhBar.StartNode) != start ||
                     GetAdapterId<string>(bhBar.EndNode) != end)
                 {
-                    Engine.Reflection.Compute.RecordWarning("ETABS16 does not support Update of Bar connectivity, which means the geometry can not be updated. \n" + 
+                    Engine.Base.Compute.RecordWarning("ETABS16 does not support Update of Bar connectivity, which means the geometry can not be updated. \n" + 
                                                             "To update the connectivity or position of a Bar, delete the existing Bar you want to update and create a new one.");
                 }
 #endif

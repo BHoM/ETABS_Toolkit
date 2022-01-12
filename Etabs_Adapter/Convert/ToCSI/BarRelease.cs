@@ -75,17 +75,17 @@ namespace BH.Adapter.ETABS
             bool success = true;
 
             if (startReleased[0] && endReleased[0])
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationX for both ends"); success = false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationX for both ends"); success = false; }
             if (startReleased[1] && endReleased[1])
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ for both ends"); success = false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ for both ends"); success = false; }
             if (startReleased[2] && endReleased[2])
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY for both ends"); success = false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY for both ends"); success = false; }
             if (startReleased[3] && endReleased[3])
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release RotationX for both ends"); success = false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release RotationX for both ends"); success = false; }
             if (startReleased[4] && endReleased[4] && (startReleased[2] || endReleased[2]))
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY when RotationZ is released for both ends"); success = false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY when RotationZ is released for both ends"); success = false; }
             if (startReleased[5] && endReleased[5] && (startReleased[1] || endReleased[1]))
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ when RotationY is released for both ends"); success = false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ when RotationY is released for both ends"); success = false; }
 
             return success;
         }

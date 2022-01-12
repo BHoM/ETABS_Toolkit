@@ -73,7 +73,7 @@ namespace BH.Adapter.ETABS
             {
                 FlipEndPoints(bhBar);      //CloneBeforePush means this is fine
                 FlipInsertionPoint(bhBar); //ETABS specific operation
-                Engine.Reflection.Compute.RecordNote("Some bars has been flipped to comply with ETABS API, asymmetric sections will suffer");
+                Engine.Base.Compute.RecordNote("Some bars has been flipped to comply with ETABS API, asymmetric sections will suffer");
             }
 
 #endif
@@ -83,7 +83,7 @@ namespace BH.Adapter.ETABS
 
             if (string.IsNullOrEmpty(stNodeId) || string.IsNullOrEmpty(endNodeId))
             {
-                Engine.Reflection.Compute.RecordError("Could not find the ids for at least one end node for at least one Bar. Bar not created.");
+                Engine.Base.Compute.RecordError("Could not find the ids for at least one end node for at least one Bar. Bar not created.");
                 return false;
             }
 

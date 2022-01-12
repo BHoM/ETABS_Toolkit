@@ -118,7 +118,7 @@ namespace BH.Adapter.ETABS
 
         private bool CreateObject(IBHoMObject obj)
         {
-            Engine.Reflection.Compute.RecordWarning($"Objects of type {obj.GetType()} are not supported by the ETABSAdapter.");
+            Engine.Base.Compute.RecordWarning($"Objects of type {obj.GetType()} are not supported by the ETABSAdapter.");
             return false;
         }
 

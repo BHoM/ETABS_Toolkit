@@ -116,7 +116,7 @@ namespace BH.Adapter.ETABS
                 }
                 catch (Exception)
                 {
-                    Engine.Reflection.Compute.RecordNote("Could not get material from ETABS. Material for surface property " + id + " will be null");
+                    Engine.Base.Compute.RecordNote("Could not get material from ETABS. Material for surface property " + id + " will be null");
                 }
 
                 if (wallType == eWallPropType.AutoSelectList)

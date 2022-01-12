@@ -173,7 +173,7 @@ namespace BH.Adapter.ETABS
                             // Check type
                             if (myType.Any(x => x != 1))
                             {
-                                Engine.Reflection.Compute.RecordWarning("BhoM can only pull Non-prismatic sections with relative length values.");
+                                Engine.Base.Compute.RecordWarning("BhoM can only pull Non-prismatic sections with relative length values.");
                                 break;
                             }
 
@@ -220,7 +220,7 @@ namespace BH.Adapter.ETABS
                                 else if (materialName != sec.Material.DescriptionOrName())
                                 {
                                     materialName = "";
-                                    Engine.Reflection.Compute.RecordWarning("All sub-sections must have the same material.");
+                                    Engine.Base.Compute.RecordWarning("All sub-sections must have the same material.");
                                     break;
                                 }
                             }
@@ -230,7 +230,7 @@ namespace BH.Adapter.ETABS
 
                             if (profiles.Any(x => x == null))
                             {
-                                Engine.Reflection.Compute.RecordNote("Tapered profiles require the sub-profiles to be geometrically defined, they can not be any kind of explicit section.");
+                                Engine.Base.Compute.RecordNote("Tapered profiles require the sub-profiles to be geometrically defined, they can not be any kind of explicit section.");
                             }
                             else
                             {
@@ -309,7 +309,7 @@ namespace BH.Adapter.ETABS
                     }
                     if (dimensions == null)
                     {
-                        Engine.Reflection.Compute.RecordNote(propertyType.ToString() + " properties are not implemented in ETABS adapter. An empty section has been returned.");
+                        Engine.Base.Compute.RecordNote(propertyType.ToString() + " properties are not implemented in ETABS adapter. An empty section has been returned.");
                         constructSelector = "explicit";
                     }
                     #endregion
@@ -320,7 +320,7 @@ namespace BH.Adapter.ETABS
                     if (!bhomMaterials.TryGetValue(materialName, out material))
                     {
                         material = new GenericIsotropicMaterial() { Name = materialName };
-                        Engine.Reflection.Compute.RecordNote("Could not get material from ETABS. GenericIsotropic material with 0 values have been extracted in its place.");
+                        Engine.Base.Compute.RecordNote("Could not get material from ETABS. GenericIsotropic material with 0 values have been extracted in its place.");
                     }
 
                     switch (constructSelector)

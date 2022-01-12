@@ -45,7 +45,7 @@ namespace BH.Engine.Adapters.ETABS
 
             //if (zvals.Where(x => Math.Abs(zvals.First() - x) > BH.oM.Geometry.Tolerance.Distance).Count() > 0)
             //{
-            //    BH.Engine.Reflection.Compute.RecordError("All panels need to be in the same plane");
+            //    BH.Engine.Base.Compute.RecordError("All panels need to be in the same plane");
             //    return null;
             //}
 
