@@ -86,7 +86,7 @@ namespace BH.Adapter.ETABS
                 foreach (string id in listIds)
                     count -= m_model.LoadCases.Delete(id);
             else if (type == typeof(ILoad) || type.GetInterfaces().Contains(typeof(ILoad)))
-                Engine.Reflection.Compute.RecordError("Loads do not have ids in ETABS, try deleting Loadcases, LoadCombinations or overwriting the old loads with `ReplaceLoads`.");
+                Engine.Base.Compute.RecordError("Loads do not have ids in ETABS, try deleting Loadcases, LoadCombinations or overwriting the old loads with `ReplaceLoads`.");
             else if (type == typeof(RigidLink))
                 foreach (string id in listIds)
                     count -= m_model.LinkObj.Delete(id);
@@ -94,16 +94,16 @@ namespace BH.Adapter.ETABS
                 foreach (string id in listIds)
                     count -= m_model.PropLink.Delete(id);
             else if (type == typeof(oM.Geometry.SettingOut.Level) || type == typeof(oM.Architecture.Elements.Level))
-                Engine.Reflection.Compute.RecordError("Can't delete levels in ETABS.");
+                Engine.Base.Compute.RecordError("Can't delete levels in ETABS.");
             else if (type == typeof(oM.Geometry.SettingOut.Grid))
-                Engine.Reflection.Compute.RecordError("Can't delete grids in ETABS.");
+                Engine.Base.Compute.RecordError("Can't delete grids in ETABS.");
             else if (type == typeof(FEMesh))
                 foreach (string id in listIds)
                     count -= m_model.AreaObj.Delete(id);
 
             if (count != controlCount)
             {
-                Engine.Reflection.Compute.RecordWarning("Some of the requested delete operations failed.");
+                Engine.Base.Compute.RecordWarning("Some of the requested delete operations failed.");
             }
 
             return count;

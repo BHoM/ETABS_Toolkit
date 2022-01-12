@@ -46,7 +46,7 @@ using ETABS2016;
 using BH.oM.Adapter;
 using System.ComponentModel;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection;
+using BH.oM.Base;
 
 namespace BH.Adapter.ETABS
 {
@@ -175,7 +175,7 @@ namespace BH.Adapter.ETABS
             {
                 List<string> result = ids.Intersect(etabsIds).ToList();
                 if (result.Count() != ids.Count())
-                    Engine.Reflection.Compute.RecordWarning("Some requested ETABS ids were not present in the model.");
+                    Engine.Base.Compute.RecordWarning("Some requested ETABS ids were not present in the model.");
                 return result;
             }
         }

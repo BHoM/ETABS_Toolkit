@@ -75,7 +75,7 @@ namespace BH.Adapter.ETABS
                         gridList.AddRange(CylindricalGrids(id, ids));
                         break;
                     default:
-                        Engine.Reflection.Compute.RecordWarning("Can not pull " + gridSysType + " Grid systems from ETABS, offender: " + id);
+                        Engine.Base.Compute.RecordWarning("Can not pull " + gridSysType + " Grid systems from ETABS, offender: " + id);
                         break;
                 }
             }

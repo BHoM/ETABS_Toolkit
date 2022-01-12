@@ -64,7 +64,7 @@ namespace BH.Adapter.ETABS
         public void SetLoad(PointLoad pointLoad, bool replace)
         {
             if (pointLoad.Axis != LoadAxis.Global)
-                Engine.Reflection.Compute.RecordWarning("The local coordinate system of BHoM nodes are not pushed to ETABS, Local Axis PointLoads are set on the Global Axis");
+                Engine.Base.Compute.RecordWarning("The local coordinate system of BHoM nodes are not pushed to ETABS, Local Axis PointLoads are set on the Global Axis");
 
             double[] pfValues = new double[] { pointLoad.Force.X, pointLoad.Force.Y, pointLoad.Force.Z, pointLoad.Moment.X, pointLoad.Moment.Y, pointLoad.Moment.Z };
             int ret = 0;
@@ -191,7 +191,7 @@ namespace BH.Adapter.ETABS
                     if (!(val1 == 0 && val2 == 0))
                     {
                         if (val1 * val2 < 0)
-                            Engine.Reflection.Compute.RecordWarning("BarVaryingLoad can not be in opposite directions for the two end values");
+                            Engine.Base.Compute.RecordWarning("BarVaryingLoad can not be in opposite directions for the two end values");
                         else
                         {
                             ret = m_model.FrameObj.SetLoadDistributed(GetAdapterId<string>(bar), caseName, 1, direction + shift, dist1, dist2, val1, val2, axis, barLoad.RelativePositions, stepReplace);
@@ -316,14 +316,14 @@ namespace BH.Adapter.ETABS
             m_model.LoadPatterns.GetSelfWTMultiplier(caseName, ref selfWeightMultiplier);
 
             if (selfWeightMultiplier != 0)
-                BH.Engine.Reflection.Compute.RecordWarning($"Loadcase {gravityLoad.Loadcase.Name} allready had a selfweight multiplier which will get overridden. Previous value: {selfWeightMultiplier}, new value: {-gravityLoad.GravityDirection.Z}");
+                BH.Engine.Base.Compute.RecordWarning($"Loadcase {gravityLoad.Loadcase.Name} allready had a selfweight multiplier which will get overridden. Previous value: {selfWeightMultiplier}, new value: {-gravityLoad.GravityDirection.Z}");
 
             m_model.LoadPatterns.SetSelfWTMultiplier(caseName, -gravityLoad.GravityDirection.Z);
 
             if (gravityLoad.GravityDirection.X != 0 || gravityLoad.GravityDirection.Y != 0)
-                Engine.Reflection.Compute.RecordError("ETABS can only handle gravity loads in global z direction");
+                Engine.Base.Compute.RecordError("ETABS can only handle gravity loads in global z direction");
 
-            BH.Engine.Reflection.Compute.RecordWarning("ETABS handles gravity loads via loadcases, why only one gravity load per loadcase can be used. THis gravity load will be applied to all objects");
+            BH.Engine.Base.Compute.RecordWarning("ETABS handles gravity loads via loadcases, why only one gravity load per loadcase can be used. THis gravity load will be applied to all objects");
         }
 
 
@@ -333,7 +333,7 @@ namespace BH.Adapter.ETABS
 
         private void SetLoad(ILoad load, bool replace)
         {
-            Engine.Reflection.Compute.RecordError("Load of type " + load.GetType().Name + " is not supported.");
+            Engine.Base.Compute.RecordError("Load of type " + load.GetType().Name + " is not supported.");
         }
 
         /***************************************************/

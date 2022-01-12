@@ -59,7 +59,7 @@ namespace BH.Adapter.ETABS
                 string name = GetAdapterId<string>(bhPanel);
                 string propertyName = GetAdapterId<string>(bhPanel.Property);
 
-                Engine.Reflection.Compute.RecordWarning("The Etabs API does not allow for updating of the geometry of panels. This includes the external edges as well as the openings. To update the panel geometry, delete the existing panel you want to update and create a new one.");
+                Engine.Base.Compute.RecordWarning("The Etabs API does not allow for updating of the geometry of panels. This includes the external edges as well as the openings. To update the panel geometry, delete the existing panel you want to update and create a new one.");
 
                 m_model.AreaObj.SetProperty(name, propertyName);
 

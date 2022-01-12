@@ -65,7 +65,7 @@ namespace BH.Adapter.ETABS
                 case PierAndSpandrelResultType.PierForce:
                     return GetPierForce(request.ObjectIds);
                 default:
-                    Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
+                    Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
             }
         }

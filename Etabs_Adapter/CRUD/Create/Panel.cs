@@ -201,7 +201,7 @@ namespace BH.Adapter.ETABS
                 isNonLinear = true;
             }
             if (isNonLinear)
-                Engine.Reflection.Compute.RecordWarning("Non-linear edges will be pushed using the control points of the underlying curves. It is recomended that you subsegment all edge curves into linear segements before you push to ETABS. Try using the CollapseToPolyline method. Please check the result of the push in the ETABS model!");
+                Engine.Base.Compute.RecordWarning("Non-linear edges will be pushed using the control points of the underlying curves. It is recomended that you subsegment all edge curves into linear segements before you push to ETABS. Try using the CollapseToPolyline method. Please check the result of the push in the ETABS model!");
 
         }
 

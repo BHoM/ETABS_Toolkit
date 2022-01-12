@@ -162,7 +162,7 @@ namespace BH.Adapter.ETABS
                 if (constr != null)
                     propList.Add(constr);
                 else
-                    Engine.Reflection.Compute.RecordError("Failed to read link constraint with id :" + id);
+                    Engine.Base.Compute.RecordError("Failed to read link constraint with id :" + id);
 
             }
             return propList;
@@ -187,7 +187,7 @@ namespace BH.Adapter.ETABS
                 case eLinkPropType.MultilinearPlastic:
                 case eLinkPropType.Isolator3:
                 default:
-                    Engine.Reflection.Compute.RecordError("Reading of LinkConstraint of type " + linkType + " not implemented");
+                    Engine.Base.Compute.RecordError("Reading of LinkConstraint of type " + linkType + " not implemented");
                     return null;
             }
 
@@ -223,10 +223,10 @@ namespace BH.Adapter.ETABS
             constraint.ZZtoZZ = fix[5];
 
             if (stiff != null && stiff.Any(x => x != 0))
-                Engine.Reflection.Compute.RecordWarning("No stiffness read for link constraints");
+                Engine.Base.Compute.RecordWarning("No stiffness read for link constraints");
 
             if (damp != null && damp.Any(x => x != 0))
-                Engine.Reflection.Compute.RecordWarning("No damping read for link contraint");
+                Engine.Base.Compute.RecordWarning("No damping read for link contraint");
 
             return constraint;
 

@@ -47,19 +47,19 @@ namespace BH.Adapter.ETABS
 
         private bool CheckPropertyWarning<T, P>(T obj, Func<T, P> selector, bool couldNotBeCreated = false)
         {
-            return CheckPropertyEvent(obj, selector, couldNotBeCreated, oM.Reflection.Debugging.EventType.Warning);
+            return CheckPropertyEvent(obj, selector, couldNotBeCreated, oM.Base.Debugging.EventType.Warning);
         }
 
         /***************************************************/
 
         private bool CheckPropertyError<T, P>(T obj, Func<T, P> selector, bool couldNotBeCreated = false)
         {
-            return CheckPropertyEvent(obj, selector, couldNotBeCreated, oM.Reflection.Debugging.EventType.Error);
+            return CheckPropertyEvent(obj, selector, couldNotBeCreated, oM.Base.Debugging.EventType.Error);
         }
 
         /***************************************************/
 
-        private bool CheckPropertyEvent<T, P>(T obj, Func<T, P> selector, bool couldNotBeCreated = false, BH.oM.Reflection.Debugging.EventType errorLevel = oM.Reflection.Debugging.EventType.Error)
+        private bool CheckPropertyEvent<T, P>(T obj, Func<T, P> selector, bool couldNotBeCreated = false, BH.oM.Base.Debugging.EventType errorLevel = oM.Base.Debugging.EventType.Error)
         {
             if (obj == null || selector == null)
                 return false;
@@ -67,9 +67,9 @@ namespace BH.Adapter.ETABS
             if (selector(obj) == null)
             {
                 if(couldNotBeCreated)
-                    Engine.Reflection.Compute.RecordEvent($"An object of type {obj.GetType().Name} could not be created due to a property of type {typeof(P).Name} being null. Please check your input data!", errorLevel);
+                    Engine.Base.Compute.RecordEvent($"An object of type {obj.GetType().Name} could not be created due to a property of type {typeof(P).Name} being null. Please check your input data!", errorLevel);
                 else
-                    Engine.Reflection.Compute.RecordEvent($"A property of type {typeof(P).Name} on an object of type {obj.GetType().Name} is null and could not be set.", errorLevel);
+                    Engine.Base.Compute.RecordEvent($"A property of type {typeof(P).Name} on an object of type {obj.GetType().Name} is null and could not be set.", errorLevel);
 
                 return false;
             }
@@ -80,35 +80,35 @@ namespace BH.Adapter.ETABS
 
         private void CreateElementError(string elemType, string elemName)
         {
-            Engine.Reflection.Compute.RecordError("Failed to create the element of type " + elemType + ", with id: " + elemName);
+            Engine.Base.Compute.RecordError("Failed to create the element of type " + elemType + ", with id: " + elemName);
         }
 
         /***************************************************/
 
         private void CreatePropertyError(string failedProperty, string elemType, string elemName)
         {
-            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debugging.EventType.Error);
+            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Base.Debugging.EventType.Error);
         }
 
         /***************************************************/
 
         private void CreatePropertyWarning(string failedProperty, string elemType, string elemName)
         {
-            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debugging.EventType.Warning);
+            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Base.Debugging.EventType.Warning);
         }
 
         /***************************************************/
 
-        private void CreatePropertyEvent(string failedProperty, string elemType, string elemName, oM.Reflection.Debugging.EventType eventType)
+        private void CreatePropertyEvent(string failedProperty, string elemType, string elemName, oM.Base.Debugging.EventType eventType)
         {
-            Engine.Reflection.Compute.RecordEvent("Failed to set property " + failedProperty + " for the " + elemType + "with id: " + elemName, eventType);
+            Engine.Base.Compute.RecordEvent("Failed to set property " + failedProperty + " for the " + elemType + "with id: " + elemName, eventType);
         }
 
         /***************************************************/
 
         private static void RecordFlippingError(string sectionName)
         {
-            BH.Engine.Reflection.Compute.RecordWarning("Section with name " + sectionName + "has a flipping boolean. This is not currently supported in the ETABS_Toolkit. The section will be set to etabs unflipped");
+            BH.Engine.Base.Compute.RecordWarning("Section with name " + sectionName + "has a flipping boolean. This is not currently supported in the ETABS_Toolkit. The section will be set to etabs unflipped");
         }
 
         /***************************************************/

@@ -54,25 +54,25 @@ namespace BH.Adapter.ETABS
                 return true;
             if (count == 1)
             {
-                Engine.Reflection.Compute.RecordError("Need to provide at least two levels to be able to push levels to ETABS through the API.");
+                Engine.Base.Compute.RecordError("Need to provide at least two levels to be able to push levels to ETABS through the API.");
                 return false;
             }
 
             //Check for any duplicate level elevations
             if (levels.GroupBy(x => x.Elevation).Any(g => g.Count() > 1))
             {
-                Engine.Reflection.Compute.RecordError("Duplicate level elevations provided. All provided levels need to have a unique elevation, please check the inputs.");
+                Engine.Base.Compute.RecordError("Duplicate level elevations provided. All provided levels need to have a unique elevation, please check the inputs.");
                 return false;
             }
 
             List<Level> levelList = levels.OrderBy(x => x.Elevation).ToList();
 
             if (levelList.Any(x => string.IsNullOrWhiteSpace(x.Name)))
-                Engine.Reflection.Compute.RecordWarning("Unnamed levels have been given name according to their height index: Level 'i'");
+                Engine.Base.Compute.RecordWarning("Unnamed levels have been given name according to their height index: Level 'i'");
 
             //remove the first name, as first level will be the base level
             string[] names = levelList.Select((x, i) => string.IsNullOrWhiteSpace(x.Name) ? "Level " + i.ToString() : x.Name).Skip(1).ToArray();
-            Engine.Reflection.Compute.RecordNote("First level will be the base level and will not be given the provided name");
+            Engine.Base.Compute.RecordNote("First level will be the base level and will not be given the provided name");
 
             double[] heights = new double[count];   //Heights empty, set by elevations
             double[] elevations;
@@ -103,7 +103,7 @@ namespace BH.Adapter.ETABS
             if (m_model.Story.SetStories(names, elevations, heights, isMasterStory, similarTo, spliceAbove, spliceHeight) == 0) { }
             else
             {
-                Engine.Reflection.Compute.RecordError("Failed to push levels. Levels can only be pushed to an empty model.");
+                Engine.Base.Compute.RecordError("Failed to push levels. Levels can only be pushed to an empty model.");
                 return false;
             }
 

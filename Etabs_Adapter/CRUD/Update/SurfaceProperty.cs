@@ -61,7 +61,7 @@ namespace BH.Adapter.ETABS
             {
                 if (!nameArr.Contains(property2d.DescriptionOrName()))
                 {
-                    Engine.Reflection.Compute.RecordWarning($"Failed to update SurfaceProperty: { property2d.DescriptionOrName() }, no surface property with that name found in ETABS.");
+                    Engine.Base.Compute.RecordWarning($"Failed to update SurfaceProperty: { property2d.DescriptionOrName() }, no surface property with that name found in ETABS.");
                     continue;
                 }
 

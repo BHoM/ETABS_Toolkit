@@ -65,7 +65,7 @@ namespace BH.Adapter.ETABS
 
             if (ids != null)
             {
-                Engine.Reflection.Compute.RecordWarning("Id filtering is not implemented for Loads, all Loads will be returned.");
+                Engine.Base.Compute.RecordWarning("Id filtering is not implemented for Loads, all Loads will be returned.");
             }
 
             List<ILoad> loads = new List<ILoad>();
@@ -115,11 +115,11 @@ namespace BH.Adapter.ETABS
 
             if (!typeCouldBeRead)
             {
-                Engine.Reflection.Compute.RecordError("The load type " + type.Name + " is not implemented for ETABS and could not be read.");
+                Engine.Base.Compute.RecordError("The load type " + type.Name + " is not implemented for ETABS and could not be read.");
             }
             else if (loads.Count == 0)
             {
-                Engine.Reflection.Compute.RecordWarning("No loads found in ETABS of the requested type.");
+                Engine.Base.Compute.RecordWarning("No loads found in ETABS of the requested type.");
             }
 
             return loads;
@@ -152,7 +152,7 @@ namespace BH.Adapter.ETABS
             for (int i = 0; i < nameCount; i++)
             {
                 if (CSys[i] != "Global")
-                    Engine.Reflection.Compute.RecordWarning($"The coordinate system: {CSys[i]} was not read. The PointLoads defined in the coordinate system: {CSys[i]} were set as Global");
+                    Engine.Base.Compute.RecordWarning($"The coordinate system: {CSys[i]} was not read. The PointLoads defined in the coordinate system: {CSys[i]} were set as Global");
 
                 Loadcase bhLoadcase = loadcases.FirstOrDefault(x => x.Name == loadcase[i]);
 
@@ -226,7 +226,7 @@ namespace BH.Adapter.ETABS
                         bhLoad.Moment = force;
                         break;
                     default:
-                        BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
+                        BH.Engine.Base.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
                         break;
                 }
 
@@ -298,7 +298,7 @@ namespace BH.Adapter.ETABS
                         bhLoad.MomentAtEnd = forceB;
                         break;
                     default:
-                        BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
+                        BH.Engine.Base.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
                         break;
                 }
 
@@ -480,7 +480,7 @@ namespace BH.Adapter.ETABS
                         bhBarPointLoad.Moment = force;
                         break;
                     default:
-                        BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
+                        BH.Engine.Base.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myType[i].ToString());
                         continue;
                 }
 
@@ -499,7 +499,7 @@ namespace BH.Adapter.ETABS
         private void SetDirection(ILoad load, int dir, string cSys)
         {
             if (cSys != "Global" && cSys != "Local")
-                Engine.Reflection.Compute.RecordWarning($"Custom coordinatesystem {cSys} for loads have been set as Global");
+                Engine.Base.Compute.RecordWarning($"Custom coordinatesystem {cSys} for loads have been set as Global");
             
             int type = (int)Math.Floor((double)((dir - 1) / 3));
             switch (type)

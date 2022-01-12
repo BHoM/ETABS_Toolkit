@@ -119,7 +119,7 @@ namespace BH.Adapter.ETABS
                     if (!advanced)
                         bhBar.OrientationAngle = angle * Math.PI / 180;
                     else
-                        BH.Engine.Reflection.Compute.RecordWarning("advanced local axis for bars are not supported");
+                        BH.Engine.Base.Compute.RecordWarning("advanced local axis for bars are not supported");
 
                     //Label and story
                     string label = "";
@@ -140,7 +140,7 @@ namespace BH.Adapter.ETABS
                 }
                 catch
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Bar " + id.ToString() + " could not be pulled");
+                    BH.Engine.Base.Compute.RecordError("Bar " + id.ToString() + " could not be pulled");
                 }
             }
             return barList;

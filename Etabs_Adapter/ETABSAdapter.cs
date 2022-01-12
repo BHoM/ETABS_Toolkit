@@ -171,7 +171,7 @@ namespace BH.Adapter.ETABS
             switch (length)
             {
                 case eLength.NotApplicable:
-                    Engine.Reflection.Compute.RecordWarning("Unknow NotApplicable unit, assumed to be meter.");
+                    Engine.Base.Compute.RecordWarning("Unknow NotApplicable unit, assumed to be meter.");
                     factor = 1;
                     break;
                 case eLength.inch:

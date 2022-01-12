@@ -69,12 +69,12 @@ namespace BH.Adapter.ETABS
                 case BarResultType.BarDisplacement:
                     return ReadBarDisplacements(barIds, request.Divisions);
                 case BarResultType.BarDeformation:
-                    Engine.Reflection.Compute.RecordError("Etabs cannot export localised BarDeformations. To get the full displacement of the bars in global coordinates, try pulling BarDisplacements");
+                    Engine.Base.Compute.RecordError("Etabs cannot export localised BarDeformations. To get the full displacement of the bars in global coordinates, try pulling BarDisplacements");
                     return new List<IResult>();
                 case BarResultType.BarStress:
                 case BarResultType.BarStrain:
                 default:
-                    Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
+                    Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
             }
         }
@@ -146,7 +146,7 @@ namespace BH.Adapter.ETABS
         {
             List<BarDisplacement> displacements = new List<BarDisplacement>();
 
-            Engine.Reflection.Compute.RecordWarning("Displacements will only be extracted at ETABS calculation nodes. 'Divisions' parameter will not be considered in result extraction");
+            Engine.Base.Compute.RecordWarning("Displacements will only be extracted at ETABS calculation nodes. 'Divisions' parameter will not be considered in result extraction");
 
             int resultCount = 0;
             string[] obj = null;

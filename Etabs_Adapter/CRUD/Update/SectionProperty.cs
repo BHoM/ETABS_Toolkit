@@ -65,7 +65,7 @@ namespace BH.Adapter.ETABS
 
                 if (!names.Contains(propertyName))
                 {
-                    Engine.Reflection.Compute.RecordWarning($"Failed to update SectionPoperty: { propertyName }, no section with that name found in ETABS.");
+                    Engine.Base.Compute.RecordWarning($"Failed to update SectionPoperty: { propertyName }, no section with that name found in ETABS.");
                     continue;
                 }
 

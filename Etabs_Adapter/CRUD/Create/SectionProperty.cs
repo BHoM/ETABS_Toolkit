@@ -101,7 +101,7 @@ namespace BH.Adapter.ETABS
             }
             else
             {
-                Engine.Reflection.Compute.RecordWarning($"Section of type {section.GetType().Name} with name {section.DescriptionOrName()} has a null SectionProfile. Section will be pushed as an explicit section");
+                Engine.Base.Compute.RecordWarning($"Section of type {section.GetType().Name} with name {section.DescriptionOrName()} has a null SectionProfile. Section will be pushed as an explicit section");
                 SetGeneral(section);
             }
         }
@@ -117,7 +117,7 @@ namespace BH.Adapter.ETABS
 
         private void SetSection(ISectionProperty section)
         {
-            Engine.Reflection.Compute.RecordError($"Sections of type {section.GetType().Name} are not explicitly supported by ETABS. Section with name {section.DescriptionOrName()} is pushed as an explicit section.");
+            Engine.Base.Compute.RecordError($"Sections of type {section.GetType().Name} are not explicitly supported by ETABS. Section with name {section.DescriptionOrName()} is pushed as an explicit section.");
             SetGeneral(section);
         }
 
@@ -175,7 +175,7 @@ namespace BH.Adapter.ETABS
             int[] type = length.Select(x => 1).ToArray<int>(); // Relative Length values, (No idea what happens or why someone would mix thease)
             int[] eI33 = length.Select(x => 1).ToArray<int>(); // Linear variation of EI33
             int[] eI22 = length.Select(x => 1).ToArray<int>(); // Linear variation of EI22
-            Engine.Reflection.Compute.RecordNote("Tapered Sections Properties are set to vary linearly along the element in ETABS.");
+            Engine.Base.Compute.RecordNote("Tapered Sections Properties are set to vary linearly along the element in ETABS.");
 
             return m_model.PropFrame.SetNonPrismatic(sectionName, num, ref segmentStartProfile, ref segmentEndProfile, ref length, ref type, ref eI33, ref eI22) == 0;
         }
@@ -199,7 +199,7 @@ namespace BH.Adapter.ETABS
         private bool SetProfile(FabricatedBoxProfile profile, string sectionName, IMaterialFragment material)
         {
             if (profile.TopFlangeThickness != profile.BotFlangeThickness)
-                Engine.Reflection.Compute.RecordWarning($"Different thickness of top and bottom flange is not supported in ETABS. Section named {sectionName} pushed to ETABS is using the top thickness for both flanges.");
+                Engine.Base.Compute.RecordWarning($"Different thickness of top and bottom flange is not supported in ETABS. Section named {sectionName} pushed to ETABS is using the top thickness for both flanges.");
             return m_model.PropFrame.SetTube(sectionName, material?.DescriptionOrName() ?? "", profile.Height, profile.Width, profile.TopFlangeThickness, profile.WebThickness) == 0;
         }
 
@@ -283,7 +283,7 @@ namespace BH.Adapter.ETABS
 
         private bool SetProfile(IProfile profile, string sectionName, IMaterialFragment material)
         {
-            Engine.Reflection.Compute.RecordWarning($"Profiles of type {profile.GetType().Name} is not supported by the ETABSAdapter. Section will be pushed as an Explicit section.");
+            Engine.Base.Compute.RecordWarning($"Profiles of type {profile.GetType().Name} is not supported by the ETABSAdapter. Section will be pushed as an Explicit section.");
             return false;
         }
 
@@ -338,7 +338,7 @@ namespace BH.Adapter.ETABS
             }
 
             // Notify user and return true to stop the adapter from creating a new Section
-            Engine.Reflection.Compute.RecordNote(bhSection.DescriptionOrName() + " properties has been assigned from the database section " + bhName + ".");
+            Engine.Base.Compute.RecordNote(bhSection.DescriptionOrName() + " properties has been assigned from the database section " + bhName + ".");
             return true;
         }
 

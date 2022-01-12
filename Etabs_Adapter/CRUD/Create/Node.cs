@@ -99,7 +99,7 @@ namespace BH.Adapter.ETABS
 
             if (bhNode.Orientation != null && !bhNode.Orientation.IsEqual(Basis.XY))
             {
-                Engine.Reflection.Compute.RecordWarning("ETABS does not support local coordinate systems other than the global one. Any nodes pushed will have been so as if they had the global coordinatesystem.");
+                Engine.Base.Compute.RecordWarning("ETABS does not support local coordinate systems other than the global one. Any nodes pushed will have been so as if they had the global coordinatesystem.");
             }
 
             return true;
