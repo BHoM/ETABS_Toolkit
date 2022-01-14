@@ -93,9 +93,9 @@ namespace BH.Adapter.ETABS
             else if (type == typeof(LinkConstraint))
                 foreach (string id in listIds)
                     count -= m_model.PropLink.Delete(id);
-            else if (type == typeof(oM.Geometry.SettingOut.Level) || type == typeof(oM.Architecture.Elements.Level))
+            else if (type == typeof(oM.Spatial.SettingOut.Level))
                 Engine.Base.Compute.RecordError("Can't delete levels in ETABS.");
-            else if (type == typeof(oM.Geometry.SettingOut.Grid))
+            else if (type == typeof(oM.Spatial.SettingOut.Grid))
                 Engine.Base.Compute.RecordError("Can't delete grids in ETABS.");
             else if (type == typeof(FEMesh))
                 foreach (string id in listIds)

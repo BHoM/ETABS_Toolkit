@@ -87,15 +87,9 @@ namespace BH.Adapter.ETABS
                 this.FullCRUD(diaphragms, PushType.FullPush);
             }
 
-            if (typeof(T) == typeof(oM.Geometry.SettingOut.Level))
+            if (typeof(T) == typeof(oM.Spatial.SettingOut.Level))
             {
-                return CreateCollection(objects as IEnumerable<oM.Geometry.SettingOut.Level>);
-            }
-            else if(typeof(T) == typeof(oM.Architecture.Elements.Level))
-            {
-                List<oM.Geometry.SettingOut.Level> levels = objects.Select(x => (x as oM.Architecture.Elements.Level).UpgradeVersion()).ToList();
-
-                return CreateCollection(levels as IEnumerable<oM.Geometry.SettingOut.Level>);
+                return CreateCollection(objects as IEnumerable<oM.Spatial.SettingOut.Level>);
             }
             else
             {

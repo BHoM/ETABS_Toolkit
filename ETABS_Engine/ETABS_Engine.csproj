@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -111,7 +111,6 @@
     <Compile Include="Create\Pier.cs" />
     <Compile Include="Create\Spandrel.cs" />
     <Compile Include="ModelData.cs" />
-    <Compile Include="Compute\UpgradeVersion.cs" />
     <Compile Include="Modify\SetAutoLengthOffset.cs" />
     <Compile Include="Modify\SetDiaphragm.cs" />
     <Compile Include="Modify\SetInsertionPoint.cs" />
@@ -136,9 +135,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Versioning_32.json" />
+    <None Include="Versioning_51.json" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Compute\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
