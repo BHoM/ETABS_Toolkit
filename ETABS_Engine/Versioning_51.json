@@ -1,0 +1,27 @@
+﻿{
+  "Namespace": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  },
+  "Type": {
+    "ToNew": {
+
+    },
+    "ToOld": {
+    }
+  },
+  "Property": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  },
+  "MessageForDeleted": {
+    "BH.Engine.Adapters.ETABS.UpgradeVersion(System.Collections.Generic.List<BH.oM.Architecture.Elements.Level>)": "The method was used to upgrade objects before a central Versioning system existed in the BHoM. With the proper Versioning system in place, the method is redundant and is hence removed.",
+    "BH.Engine.Adapters.ETABS.UpgradeVersion(BH.oM.Architecture.Elements.Level)": "The method was used to upgrade objects before a central Versioning system existed in the BHoM. With the proper Versioning system in place, the method is redundant and is hence removed."
+  },
+  "MessageForNoUpgrade": {
+  }
+}

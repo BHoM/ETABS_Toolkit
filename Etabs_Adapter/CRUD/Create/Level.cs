@@ -26,7 +26,7 @@ using System.Linq;
 using BH.Engine.Adapter;
 using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapters.ETABS;
-using BH.oM.Geometry.SettingOut;
+using BH.oM.Spatial.SettingOut;
 #if Debug17 || Release17
 using ETABSv17;
 #elif Debug18 || Release18

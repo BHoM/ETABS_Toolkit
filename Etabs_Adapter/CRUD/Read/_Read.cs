@@ -90,9 +90,9 @@ namespace BH.Adapter.ETABS
                 return ReadRigidLink(listIds);
             else if (type == typeof(LinkConstraint))
                 return ReadLinkConstraints(listIds);
-            else if (type == typeof(oM.Geometry.SettingOut.Level) || type == typeof(oM.Architecture.Elements.Level))
+            else if (type == typeof(oM.Spatial.SettingOut.Level))
                 return ReadLevel(listIds);
-            else if (type == typeof(oM.Geometry.SettingOut.Grid))
+            else if (type == typeof(oM.Spatial.SettingOut.Grid))
                 return ReadGrid(listIds);
             else if (type == typeof(FEMesh))
                 return ReadMesh(listIds);
