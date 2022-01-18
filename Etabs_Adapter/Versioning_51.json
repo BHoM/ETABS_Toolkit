@@ -1,0 +1,27 @@
+﻿{
+  "Namespace": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  },
+  "Type": {
+    "ToNew": {
+      "BH.Adapter.ETABS.ETABS18Adapter": "BH.Adapter.ETABS.ETABSAdapter"
+
+    },
+    "ToOld": {
+      "BH.Adapter.ETABS.ETABSAdapter": "BH.Adapter.ETABS.ETABS18Adapter"
+    }
+  },
+  "Property": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  },
+  "MessageForDeleted": {
+  },
+  "MessageForNoUpgrade": {
+  }
+}
