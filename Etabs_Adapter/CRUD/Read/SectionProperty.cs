@@ -34,22 +34,22 @@ using BH.oM.Geometry;
 using BH.oM.Spatial.ShapeProfiles;
 using BH.Engine.Structure;
 using BH.oM.Structure.Fragments;
-#if Debug17 || Release17
-using ETABSv17;
-#elif Debug18 || Release18
-using ETABSv1;
-#else
+#if Debug16 || Release16
 using ETABS2016;
+#elif Debug17 || Release17
+using ETABSv17;
+#else
+using ETABSv1;
 #endif
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
-    public partial class ETABS17Adapter : BHoMAdapter
-#elif Debug18 || Release18
-   public partial class ETABS18Adapter : BHoMAdapter
-#else
+#if Debug16 || Release16
     public partial class ETABS2016Adapter : BHoMAdapter
+#elif Debug17 || Release17
+   public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABSAdapter : BHoMAdapter
 #endif
     {
         /***************************************************/
