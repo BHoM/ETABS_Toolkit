@@ -78,24 +78,29 @@ namespace BH.Adapter.ETABS
             {
                 this.EtabsSettings = etabsSetting == null ? new EtabsSettings() : etabsSetting;
 
-                //string pathToETABS = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "ETABS 2016", "ETABS.exe");
-                //string pathToETABS = System.IO.Path.Combine("C:","Program Files", "Computers and Structures", "ETABS 2016", "ETABS.exe");
 #if Debug16 || Release16
-                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 17\ETABS.exe";
-                cHelper helper = new ETABS2016.Helper();
-#elif Debug17 || Release17
-                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 18\ETABS.exe";
-                cHelper helper = new ETABSv17.Helper();
-#else
                 string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 2016\ETABS.exe";
-                cHelper helper = new ETABSv1.Helper();
+
+#elif Debug17 || Release17
+                string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 17\ETABS.exe";
 #endif
 
 
-                object runningInstance = null;
-                if (System.Diagnostics.Process.GetProcessesByName("ETABS").Length > 0)
+                cHelper helper = new Helper();
+                string programId = "CSI.ETABS.API.ETABSObject";
+
+
+                int processes = System.Diagnostics.Process.GetProcessesByName("ETABS").Length;
+
+                if (processes > 1)
                 {
-                    runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.ETABS.API.ETABSObject");
+                    Engine.Base.Compute.RecordWarning("More than one ETABS instance is open. BHoM has attached to the most recently updated process, " +
+                        "but you should only work with one ETABS instance at a time with BHoM.");
+                }
+
+                if (processes > 0)
+                {
+                    object runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject(programId);
 
                     m_app = (cOAPI)runningInstance;
                     m_model = m_app.SapModel;
@@ -105,8 +110,11 @@ namespace BH.Adapter.ETABS
                 }
                 else
                 {
-                    //open ETABS if not running - NOTE: this behaviour is different from other adapters
+#if Debug16 || Release16 || Debug17 || Release17
                     m_app = helper.CreateObject(pathToETABS);
+#else
+                    m_app = helper.CreateObjectProgID(programId); //Starts the latest installed version of ETABS
+#endif
                     m_app.ApplicationStart();
                     m_model = m_app.SapModel;
                     m_model.InitializeNewModel(eUnits.N_m_C);
