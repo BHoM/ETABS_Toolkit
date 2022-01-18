@@ -28,7 +28,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using BH.Engine.Units;
 #if Debug16 || Release16
 using ETABS2016;
@@ -41,10 +43,13 @@ using ETABSv1;
 namespace BH.Adapter.ETABS
 {
 #if Debug16 || Release16
+    [Description("Class for handling connection to ETABS version 2016.")]
     public partial class ETABS2016Adapter : BHoMAdapter
 #elif Debug17 || Release17
+    [Description("Class for handling connection to ETABS version 17.")]
    public partial class ETABS17Adapter : BHoMAdapter
 #else
+    [Description("Class for handling connection to ETABS version 18 and later.")]
     public partial class ETABSAdapter : BHoMAdapter
 #endif
     {
@@ -60,11 +65,18 @@ namespace BH.Adapter.ETABS
         /**** Constructors                              ****/
         /***************************************************/
 
+
+        [Input("filePath","Optional file path. If empty, or not a valid file path. If empty, a new file will be created unless ETABS is already running.",typeof(FilePathAttribute))]
+        [Input("etabsSetting", "Controling various settings of the adapter.")]
+        [Input("active", "Toggle to true to activate the adapter. If ETABS is running, the adapter will connect to the running instance. If ETABS is not running, the adapter will start up a new instance of ETABS.")]
 #if Debug16 || Release16
+       [Description("Creates an adapter to ETABS 2016. For connection to ETABS v18 or later use the ETABSAdapter.  For connection to ETABS v17 use the ETABS17Adapter. Earlier versions not supported.")]
         public ETABS2016Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #elif Debug17 || Release17
+        [Description("Creates an adapter to ETABS v17. For connection to ETABS v18 or later use the ETABSAdapter. For connection to ETABS 2016 use the ETABS2016Adapter. Earlier versions not supported.")]
         public ETABS17Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #else
+        [Description("Creates an adapter to ETABS version 18 or later. For connection to ETABS v17 use the ETABS17Adapter. For connection to ETABS 2016 use the ETABS2016Adapter. Earlier versions not supported.")]
         public ETABSAdapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #endif
         {
