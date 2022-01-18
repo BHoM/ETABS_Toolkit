@@ -29,23 +29,23 @@ using BH.oM.Base;
 using BH.oM.Adapter.Commands;
 using BH.oM.Structure.Loads;
 
-#if Debug17 || Release17
-using ETABSv17;
-#elif Debug18 || Release18
-using ETABSv1;
-#else
+#if Debug16 || Release16
 using ETABS2016;
+#elif Debug17 || Release17
+using ETABSv17;
+#else
+using ETABSv1;
 #endif
 
 
 namespace BH.Adapter.ETABS
 {
-#if Debug17 || Release17
-    public partial class ETABS17Adapter
-#elif Debug18 || Release18
-    public partial class ETABS18Adapter
-#else
+#if Debug16 || Release16
     public partial class ETABS2016Adapter
+#elif Debug17 || Release17
+    public partial class ETABS17Adapter
+#else
+    public partial class ETABSAdapter
 #endif
     {
         /***************************************************/
