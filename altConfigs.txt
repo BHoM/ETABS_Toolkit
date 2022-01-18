@@ -1,0 +1,3 @@
+BHoM/ETABS_Toolkit/Debug
+BHoM/ETABS_Toolkit/Debug16
+BHoM/ETABS_Toolkit/Debug17
