@@ -120,8 +120,7 @@ namespace BH.Adapter.ETABS
             string name = GetAdapterId<string>(bhBar);
 
             // Needed rigth after create as well as AddByPoint flipps the Bar if it feels like it
-#if Debug16 || Release16
-#else
+#if Debug16 == false && Release16 == false
             m_model.EditFrame.ChangeConnectivity(name, GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode));
 #endif
 
