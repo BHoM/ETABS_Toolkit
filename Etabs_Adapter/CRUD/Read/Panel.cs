@@ -35,6 +35,7 @@ using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.Engine.Structure;
+using BH.Engine.Spatial;
 
 
 namespace BH.Adapter.ETABS
