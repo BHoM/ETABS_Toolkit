@@ -29,6 +29,7 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Adapters.ETABS;
 using System.ComponentModel;
 using System;
+using BH.Engine.Base;
 
 #if Debug16 || Release16
 using ETABS2016;
@@ -62,7 +63,7 @@ namespace BH.Adapter.ETABS
             string name = "";
             if (m_model.PropMaterial.GetMaterial(material.DescriptionOrName(), ref matType, ref colour, ref notes, ref guid) != 0)
             {
-                m_model.PropMaterial.AddMaterial(ref name, MaterialTypeToCSI(material.IMaterialType()), "", "", "");
+                m_model.PropMaterial.AddMaterial(ref name, MaterialTypeToCSI(material.IMaterialType()), "", "", material.DescriptionOrName());
                 m_model.PropMaterial.ChangeName(name, material.DescriptionOrName());
 
                 success &= SetObject(material);
@@ -102,6 +103,8 @@ namespace BH.Adapter.ETABS
                     success = false;
             }
             success &= m_model.PropMaterial.SetWeightAndMass(material.DescriptionOrName(), 2, material.Density) == 0;
+
+            success &= ISetDesignMaterial(material);
 
             SetAdapterId(material, material.Name);
 
@@ -143,7 +146,87 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        private bool ISetDesignMaterial(IMaterialFragment material)
+        {
+            return SetDesignMaterial(material as dynamic);
+        }
 
+        /***************************************************/
+
+        private bool SetDesignMaterial(Concrete material)
+        {
+            bool success = true;
+
+            Engine.Base.Compute.RecordNote("ETABS Concrete design parameters are being set, but BHoM materials do not define these quantities, check carefully");
+
+            bool lw = IsLightweight(material);
+            double fcsFactor = 1.0;
+            if (lw)
+                fcsFactor = 0.75;
+
+            success &= (0 == m_model.PropMaterial.SetOConcrete_1(
+                material.DescriptionOrName(),
+                material.CylinderStrength,
+                lw,
+                fcsFactor,
+                2, //Mander Stress Strain curve, program default.
+                4, //Concrete hysteresis type, program default.
+                0.002219, //Strain at F'c, program default.
+                0.005, //Strain at ultimate, program default.
+                -0.01 //Final Compression Slope, program default
+                ));
+
+            return success;
+        }
+
+        /***************************************************/
+
+        private bool SetDesignMaterial(Steel material)
+        {
+            bool success = true;
+
+            Engine.Base.Compute.RecordNote("ETABS Steel design parameters are being set, but BHoM materials do not define these quantities, check carefully");
+
+            success &= (0 == m_model.PropMaterial.SetOSteel_1(
+                material.DescriptionOrName(),
+                material.YieldStress,
+                material.UltimateStress,
+                1.1 * material.YieldStress, //program default
+                1.1 * material.UltimateStress, //program default
+                1, //Simple Stress Strain, program default.
+                1, //Kinematic Histeresis, program default.
+                0.015, //Strain at onset of hardening, program default.
+                0.11, //Strain at maximum stress, program default.
+                0.17, //Strain at rupture, program default.
+                -0.1 //final slope, program default.
+                ));
+
+            return success;
+        }
+
+        /***************************************************/
+
+        private bool SetDesignMaterial(IMaterialFragment material)
+        {
+            Engine.Base.Compute.RecordError($"Could not set ETABS design parameters for material: {material.DescriptionOrName()}. Please set them manually.");
+            return true;
+        }
+
+        /***************************************************/
+
+        private bool IsLightweight(Concrete material)
+        {
+            if (material.DescriptionOrName().Contains("LW"))
+                return true;
+            else if (material.DescriptionOrName().Contains("NW"))
+                return false;
+
+            Engine.Base.Compute.RecordWarning("Could not determine if the concrete is lightweight based on the name; it did not contain 'LW' or 'NW'. Trying to determine based on density - check results carefully.");
+
+            return (material.Density < 2080); //approximately 130 PCF
+        }
+
+        /***************************************************/
 
     }
 }
