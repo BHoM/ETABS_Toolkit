@@ -157,7 +157,7 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
 
-            Engine.Base.Compute.RecordNote("ETABS Concrete design parameters are being set, but BHoM materials do not define these quantities, check carefully");
+            Engine.Base.Compute.RecordNote("ETABS Concrete nonlinear material parameters are being set, but BHoM materials do not define these quantities, check carefully");
 
             bool lw = IsLightweight(material);
             double fcsFactor = 1.0;
@@ -185,7 +185,7 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
 
-            Engine.Base.Compute.RecordNote("ETABS Steel design parameters are being set, but BHoM materials do not define these quantities, check carefully");
+            Engine.Base.Compute.RecordNote("ETABS Steel nonlinear material parameters as well as expected yield strength and effective tensile strength are being set, but BHoM materials do not define these quantities, check carefully");
 
             success &= (0 == m_model.PropMaterial.SetOSteel_1(
                 material.DescriptionOrName(),
