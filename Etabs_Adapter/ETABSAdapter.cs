@@ -85,6 +85,8 @@ namespace BH.Adapter.ETABS
             SetupDependencies();
             SetupComparers();
             AdapterIdFragmentType = typeof(ETABSId);
+            m_AdapterSettings.DefaultPushType = oM.Adapter.PushType.CreateNonExisting;
+
 
             if (active)
             {
