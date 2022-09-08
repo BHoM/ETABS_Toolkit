@@ -66,11 +66,11 @@ namespace BH.Adapter.ETABS
                 return ReadBar(listIds);
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
                 return ReadSectionProperty(listIds);
-            else if (type == typeof(IMaterialFragment))
+            else if (type == typeof(IMaterialFragment) || type.GetInterfaces().Contains(typeof(IMaterialFragment)))
                 return ReadMaterial(listIds);
             else if (type == typeof(Panel))
                 return ReadPanel(listIds);
-            else if (type == typeof(ISurfaceProperty))
+            else if (type == typeof(ISurfaceProperty) || type.GetInterfaces().Contains(typeof(ISurfaceProperty)))
                 return ReadSurfaceProperty(listIds);
             else if (type == typeof(LoadCombination))
                 return ReadLoadCombination(listIds);

@@ -56,20 +56,34 @@ namespace BH.Adapter.ETABS
         private bool CreateObject(IMaterialFragment material)
         {
             bool success = true;
-            eMatType matType = eMatType.NoDesign;
-            int colour = 0;
+            eMatType matType = MaterialTypeToCSI(material.IMaterialType());
+            string bhName = material.DescriptionOrName();
+            int color = 0;
             string guid = null;
             string notes = "";
             string name = "";
-            if (m_model.PropMaterial.GetMaterial(material.DescriptionOrName(), ref matType, ref colour, ref notes, ref guid) != 0)
-            {
-                m_model.PropMaterial.AddMaterial(ref name, MaterialTypeToCSI(material.IMaterialType()), "", "", material.DescriptionOrName());
-                m_model.PropMaterial.ChangeName(name, material.DescriptionOrName());
+            ETABSId etabsId = new ETABSId();
 
-                success &= SetObject(material);
+            Engine.Base.Compute.RecordNote("Materials are being created in ETABS, rather than using existing materials from the ETABS database. Some parameters may be based on program defaults. It is recommended to pre-load any standard materials and ensure that the name in BHoM matches.");
+
+            // New method for creating a material. If Region, Standard, and Grade are provided verbatim, it will pick a DB material, otherwise (as written) it will use the default of the type.
+            if (m_model.PropMaterial.AddMaterial(ref name, matType, "", "", "", bhName) == 0)
+            {
+                etabsId.Id = name;
+                SetObject(material);
             }
-            if (!success)
-                Engine.Base.Compute.RecordWarning($"Failed to assign material: {material.DescriptionOrName()}, ETABS may have overwritten some properties with default values");
+            // This deprecated method creates a new material based on the default of the type. Keeping it here for compatibility.
+            else if (m_model.PropMaterial.SetMaterial(bhName, matType, color, notes, guid) == 0) 
+            {
+                etabsId.Id = bhName;
+                SetObject(material);
+            }
+            else
+            {
+                CreateElementError("Material", bhName);
+            }
+            SetAdapterId(material, etabsId);
+
             return success;
         }
 
@@ -105,8 +119,6 @@ namespace BH.Adapter.ETABS
             success &= m_model.PropMaterial.SetWeightAndMass(material.DescriptionOrName(), 2, material.Density) == 0;
 
             success &= ISetDesignMaterial(material);
-
-            SetAdapterId(material, material.Name);
 
             return success;
         }
@@ -157,23 +169,43 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
 
-            Engine.Base.Compute.RecordNote("ETABS Concrete nonlinear material parameters are being set, but BHoM materials do not define these quantities, check carefully");
+            double fc = 0;
+            bool lw = false;
+            double fcsFactor = 0;
+            int sstype = 0;
+            int sshystype = 0;
+            double strainAtFc = 0;
+            double strainUltimate = 0;
+            double finalSlope = 0;
+            double frictionAngle = 0;
+            double dilationAngle = 0;
 
-            bool lw = IsLightweight(material);
-            double fcsFactor = 1.0;
-            if (lw)
-                fcsFactor = 0.75;
+            m_model.PropMaterial.GetOConcrete_1(
+                material.DescriptionOrName(),
+                ref fc,
+                ref lw,
+                ref fcsFactor,
+                ref sstype,
+                ref sshystype,
+                ref strainAtFc,
+                ref strainUltimate,
+                ref finalSlope,
+                ref frictionAngle,
+                ref dilationAngle
+                );
 
             success &= (0 == m_model.PropMaterial.SetOConcrete_1(
                 material.DescriptionOrName(),
                 material.CylinderStrength,
-                lw,
-                fcsFactor,
-                2, //Mander Stress Strain curve, program default.
-                4, //Concrete hysteresis type, program default.
-                0.002219, //Strain at F'c, program default.
-                0.005, //Strain at ultimate, program default.
-                -0.01 //Final Compression Slope, program default
+                IsLightweight(material),
+                IsLightweight(material) ? 0.75 : 1.0, //Strength reduction factor for lightweight concrete
+                sstype,
+                sshystype,
+                strainAtFc,
+                strainUltimate,
+                finalSlope,
+                frictionAngle,
+                dilationAngle
                 ));
 
             return success;
@@ -185,20 +217,43 @@ namespace BH.Adapter.ETABS
         {
             bool success = true;
 
-            Engine.Base.Compute.RecordNote("ETABS Steel nonlinear material parameters as well as expected yield strength and effective tensile strength are being set, but BHoM materials do not define these quantities, check carefully");
+            double fy = 0;
+            double fu = 0;
+            double Efy = 0;
+            double Efu = 0;
+            int sstype = 0;
+            int sshystype = 0;
+            double strainAtHardening = 0;
+            double strainAtMaxStress = 0;
+            double strainAtRupture = 0;
+            double finalSlope = 0;
+
+            m_model.PropMaterial.GetOSteel_1(
+                material.DescriptionOrName(),
+                ref fy,
+                ref fu,
+                ref fy,
+                ref fu,
+                ref sstype,
+                ref sshystype,
+                ref strainAtHardening,
+                ref strainAtMaxStress,
+                ref strainAtRupture,
+                ref finalSlope
+                );
 
             success &= (0 == m_model.PropMaterial.SetOSteel_1(
                 material.DescriptionOrName(),
                 material.YieldStress,
                 material.UltimateStress,
-                1.1 * material.YieldStress, //program default
-                1.1 * material.UltimateStress, //program default
-                1, //Simple Stress Strain, program default.
-                1, //Kinematic Histeresis, program default.
-                0.015, //Strain at onset of hardening, program default.
-                0.11, //Strain at maximum stress, program default.
-                0.17, //Strain at rupture, program default.
-                -0.1 //final slope, program default.
+                Efy,
+                Efu,
+                sstype,
+                sshystype,
+                strainAtHardening,
+                strainAtMaxStress,
+                strainAtRupture,
+                finalSlope
                 ));
 
             return success;
@@ -208,7 +263,7 @@ namespace BH.Adapter.ETABS
 
         private bool SetDesignMaterial(IMaterialFragment material)
         {
-            Engine.Base.Compute.RecordError($"Could not set ETABS design parameters for material: {material.DescriptionOrName()}. Please set them manually.");
+            Engine.Base.Compute.RecordError($"Could not set ETABS design parameters for material: {material.DescriptionOrName()}. Please set them manually in ETABS, or load the material from ETABS database prior to push.");
             return true;
         }
 
