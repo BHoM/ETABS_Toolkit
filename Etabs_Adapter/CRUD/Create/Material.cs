@@ -167,10 +167,10 @@ namespace BH.Adapter.ETABS
 
         private bool SetDesignMaterial(Concrete material)
         {
-            bool success = true;
+            bool success = true;           
 
             double fc = 0;
-            bool lw = false;
+            bool lw = IsLightweight(material); //run method to get the warning message 
             double fcsFactor = 0;
             int sstype = 0;
             int sshystype = 0;
@@ -197,8 +197,8 @@ namespace BH.Adapter.ETABS
             success &= (0 == m_model.PropMaterial.SetOConcrete_1(
                 material.DescriptionOrName(),
                 material.CylinderStrength,
-                IsLightweight(material),
-                IsLightweight(material) ? 0.75 : 1.0, //Strength reduction factor for lightweight concrete
+                lw,
+                fcsFactor,
                 sstype,
                 sshystype,
                 strainAtFc,
@@ -271,14 +271,12 @@ namespace BH.Adapter.ETABS
 
         private bool IsLightweight(Concrete material)
         {
-            if (material.DescriptionOrName().Contains("LW"))
+            if (material.DescriptionOrName().Contains("LW") || material.Density < 2080)
+            {
+                Engine.Base.Compute.RecordWarning("This concrete appears to be a lightweight type based on the name or density. ETABS has settings which account for this in some codes, but they have not been set. User should check the material design properties.");
                 return true;
-            else if (material.DescriptionOrName().Contains("NW"))
-                return false;
-
-            Engine.Base.Compute.RecordWarning("Could not determine if the concrete is lightweight based on the name; it did not contain 'LW' or 'NW'. Trying to determine based on density - check results carefully.");
-
-            return (material.Density < 2080); //approximately 130 PCF
+            }
+            return false;
         }
 
         /***************************************************/
