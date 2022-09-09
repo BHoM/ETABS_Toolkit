@@ -263,7 +263,7 @@ namespace BH.Adapter.ETABS
 
         private bool SetDesignMaterial(IMaterialFragment material)
         {
-            Engine.Base.Compute.RecordError($"Could not set ETABS design parameters for material: {material.DescriptionOrName()}. Please set them manually in ETABS, or load the material from ETABS database prior to push.");
+            Engine.Base.Compute.RecordWarning($"Could not set ETABS design parameters for material: {material.DescriptionOrName()}. Please set them manually in ETABS, or load the material from ETABS database prior to push.");
             return true;
         }
 
