@@ -130,6 +130,23 @@ namespace BH.Adapter.ETABS
                         etabsIdFragment.PersistentId = guid;
 
                     bhBar.SetAdapterId(etabsIdFragment);
+
+                    // Insertion Point Offset
+                    // Need to add more information to capture coordinate system?? GetCoordSys method and transform local csys
+                    int insertionPoint = (int)BarInsertionPoint.Centroid;
+                    bool mirror = false;
+                    bool modifyStiffness = false;
+
+                    double[] offset1 = new double[3];
+                    double[] offset2 = new double[3];
+                    string cSys = "";
+
+                    if (m_model.FrameObj.GetInsertionPoint(id, ref insertionPoint, ref mirror, ref modifyStiffness, ref offset1, ref offset2, ref cSys) == 0)
+                    {
+                        BarInsertionPoint barInsertionPoint = (BarInsertionPoint)insertionPoint;
+                        bhBar = bhBar.SetInsertionPoint(barInsertionPoint, modifyStiffness);
+                    }
+
                     barList.Add(bhBar);
                 }
                 catch
