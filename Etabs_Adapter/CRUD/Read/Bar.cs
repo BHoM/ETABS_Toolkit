@@ -126,7 +126,7 @@ namespace BH.Adapter.ETABS
                         etabsIdFragment.Story = story;
                     }
 
-                    if (m_model.AreaObj.GetGUID(id, ref guid) == 0)
+                    if (m_model.FrameObj.GetGUID(id, ref guid) == 0)
                         etabsIdFragment.PersistentId = guid;
 
                     bhBar.SetAdapterId(etabsIdFragment);
