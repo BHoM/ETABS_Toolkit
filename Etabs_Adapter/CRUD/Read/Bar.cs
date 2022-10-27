@@ -126,6 +126,15 @@ namespace BH.Adapter.ETABS
                         etabsIdFragment.Story = story;
                     }
 
+                    // Get the groups the bar is assigned to
+                    int numGroups = 0;
+                    string[] groupNames = new string[0];
+                    if (m_model.FrameObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
+                    {
+                        foreach (string grpName in groupNames)
+                            bhBar.Tags.Add(grpName);
+                    }
+
                     if (m_model.FrameObj.GetGUID(id, ref guid) == 0)
                         etabsIdFragment.PersistentId = guid;
 
