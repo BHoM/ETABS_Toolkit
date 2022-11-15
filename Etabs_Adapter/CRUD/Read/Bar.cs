@@ -126,6 +126,7 @@ namespace BH.Adapter.ETABS
                         etabsIdFragment.Story = story;
                     }
 
+#if !Debug16 && !Release16  //Not supported in ETABS 2016
                     // Get the groups the bar is assigned to
                     int numGroups = 0;
                     string[] groupNames = new string[0];
@@ -134,7 +135,7 @@ namespace BH.Adapter.ETABS
                         foreach (string grpName in groupNames)
                             bhBar.Tags.Add(grpName);
                     }
-
+#endif
                     if (m_model.FrameObj.GetGUID(id, ref guid) == 0)
                         etabsIdFragment.PersistentId = guid;
 
