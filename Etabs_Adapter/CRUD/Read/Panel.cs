@@ -56,7 +56,7 @@ namespace BH.Adapter.ETABS
         {
             List<Panel> panelList = new List<Panel>();
 
-            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => GetAdapterId<string>(x));
+            Dictionary<string, ISurfaceProperty> bhomProperties = GetCachedOrReadAsDictionary<string, ISurfaceProperty>();
             int nameCount = 0;
             string[] nameArr = { };
             m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
