@@ -88,8 +88,6 @@ namespace BH.Adapter.ETABS
                 return ReadGrid(listIds);
             else if (type == typeof(FEMesh))
                 return ReadMesh(listIds);
-            else if (type == typeof(FEMesh))
-                return ReadMesh(listIds);
             else if (typeof(IResult).IsAssignableFrom(type))
             {
                 ReadResultsError(type);
