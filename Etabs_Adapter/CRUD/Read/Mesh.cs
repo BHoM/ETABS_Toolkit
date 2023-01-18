@@ -55,8 +55,8 @@ namespace BH.Adapter.ETABS
             ids = FilterIds(ids, nameArr);
 
             List<FEMesh> meshes = new List<FEMesh>();
-            Dictionary<string, Node> nodes = new Dictionary<string, Node>();
-            Dictionary<string, ISurfaceProperty> surfaceProps = ReadSurfaceProperty().ToDictionary(x => GetAdapterId<string>(x));
+            Dictionary<string, Node> nodes = GetCachedOrReadAsDictionary<string, Node>();
+            Dictionary<string, ISurfaceProperty> surfaceProps = GetCachedOrReadAsDictionary<string, ISurfaceProperty>();
 
             foreach (string id in ids)
             {
