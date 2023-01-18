@@ -84,61 +84,79 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            Dictionary<string, LinkConstraint> constraints = new Dictionary<string, LinkConstraint>();
-
 
             foreach (KeyValuePair<string, List<string>> kvp in idDict)
             {
                 RigidLink bhLink = new RigidLink();
+                SetAdapterId(bhLink, kvp.Key);
 
                 if (kvp.Value == null)
                 {
-                    SetAdapterId(bhLink, kvp.Key);
                     string startId = "";
                     string endId = "";
                     m_model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
 
-                    List<Node> endNodes = ReadNode(new List<string> { startId, endId });
-                    bhLink.PrimaryNode = endNodes[0];
-                    bhLink.SecondaryNodes = new List<Node>() { endNodes[1] };
+                    //Dummy nodes with correct Id
+                    bhLink.PrimaryNode = new Node { Name = startId };
+                    bhLink.SecondaryNodes = new List<Node>() { new Node { Name = endId } };
                 }
                 else
                 {
-
-                    SetAdapterId(bhLink, kvp.Key);
                     string startId = "";
                     string endId = "";
                     string multiLinkId = kvp.Key + ":::0";
-                    List<string> nodeIdsToRead = new List<string>();
+
 
                     m_model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
-                    nodeIdsToRead.Add(startId);
+                    bhLink.PrimaryNode = new Node { Name = startId };   //Dummy startnode with correct Id
 
+                    List<string> endIds = new List<string>();
                     for (int i = 1; i < kvp.Value.Count(); i++)
                     {
                         multiLinkId = kvp.Key + ":::" + i;
                         m_model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
-                        nodeIdsToRead.Add(endId);
+                        endIds.Add(endId);
                     }
 
-                    List<Node> endNodes = ReadNode(nodeIdsToRead);
-                    bhLink.PrimaryNode = endNodes[0];
-                    endNodes.RemoveAt(0);
-                    bhLink.SecondaryNodes = endNodes;
+                    bhLink.SecondaryNodes = endIds.Select(x => new Node { Name = x }).ToList(); //Dummy endnodes with correct Id
                 }
                 string propName = "";
                 m_model.LinkObj.GetProperty(kvp.Key, ref propName);
 
-                LinkConstraint constr;
-                if (!constraints.TryGetValue(propName, out constr))
-                {
-                    constr = ReadLinkConstraints(new List<string> { propName }).FirstOrDefault();
-                    constraints[propName] = constr;
-                }
-                bhLink.Constraint = constr;
+                bhLink.Constraint = new LinkConstraint { Name = propName }; //Dummy constraint to be populated in later loop
 
                 linkList.Add(bhLink);
             }
+
+            if (linkList.Count == 0)
+                return linkList;
+
+            //Get ids of primary and secondary nodes
+            List<string> nodeIds = linkList.SelectMany(x => x.SecondaryNodes.Select(s => s.Name).Concat(new List<string> { x.PrimaryNode.Name })).Distinct().ToList();
+            Dictionary<string, Node> nodes = GetCachedOrReadAsDictionary<string, Node>(nodeIds);
+
+            List<string> contstrainIds = linkList.Select(x => x.Constraint.Name).Distinct().ToList();
+            //Get cached or read out all constraints used by Links
+            Dictionary<string, LinkConstraint> constraints = contstrainIds.Any() ? new Dictionary<string, LinkConstraint>() : GetCachedOrReadAsDictionary<string, LinkConstraint>(contstrainIds);
+
+            foreach (RigidLink link in linkList)
+            {
+                LinkConstraint constraint;  //Reasign cached/read contraint
+                if (constraints.TryGetValue(link.Constraint.Name, out constraint))
+                    link.Constraint = constraint;
+
+                Node stNode;
+                if (nodes.TryGetValue(link.PrimaryNode.Name, out stNode))
+                    link.PrimaryNode = stNode;
+
+                for (int i = 0; i < link.SecondaryNodes.Count; i++)
+                {
+                    Node secNode;
+                    if (nodes.TryGetValue(link.SecondaryNodes[i].Name, out secNode))
+                        link.SecondaryNodes[i] = secNode;
+                }
+            }
+
 
             return linkList;
         }
@@ -235,7 +253,3 @@ namespace BH.Adapter.ETABS
         /***************************************************/
     }
 }
-
-
-
-
