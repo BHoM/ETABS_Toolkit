@@ -50,8 +50,8 @@ namespace BH.Adapter.ETABS
         private List<Bar> ReadBar(List<string> ids = null)
         {
             List<Bar> barList = new List<Bar>();
-            Dictionary<string, Node> bhomNodes = ReadNode().ToDictionary(x => GetAdapterId<string>(x));
-            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperty().ToDictionary(x => GetAdapterId<string>(x));
+            Dictionary<string, Node> bhomNodes = GetCachedOrReadAsDictionary<string, Node>();
+            Dictionary<string, ISectionProperty> bhomSections = GetCachedOrReadAsDictionary<string, ISectionProperty>();
 
             int nameCount = 0;
             string[] names = { };
