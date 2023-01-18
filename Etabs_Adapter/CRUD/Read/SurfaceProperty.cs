@@ -59,7 +59,7 @@ namespace BH.Adapter.ETABS
         {
             List<ISurfaceProperty> propertyList = new List<ISurfaceProperty>();
 
-            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => GetAdapterId<string>(x));
+            Dictionary<string, IMaterialFragment> bhomMaterials = GetCachedOrReadAsDictionary<string, IMaterialFragment>();
 
             int nameCount = 0;
             string[] nameArr = { };
