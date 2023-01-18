@@ -57,7 +57,7 @@ namespace BH.Adapter.ETABS
         private List<ISectionProperty> ReadSectionProperty(List<string> ids = null)
         {
             List<ISectionProperty> propList = new List<ISectionProperty>();
-            Dictionary<String, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.DescriptionOrName());
+            Dictionary<string, IMaterialFragment> bhomMaterials = GetCachedOrReadAsDictionary<string, IMaterialFragment>();
 
             int nameCount = 0;
             string[] names = { };
