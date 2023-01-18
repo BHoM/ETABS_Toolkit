@@ -88,7 +88,7 @@ namespace BH.Adapter.ETABS
             List<LoadCombination> combinations = new List<LoadCombination>();
 
             //get all load cases before combinations
-            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+            Dictionary<string, Loadcase> bhomCases = GetCachedOrReadAsDictionary<string, Loadcase>();
 
             int nameCount = 0;
             string[] nameArr = { };
