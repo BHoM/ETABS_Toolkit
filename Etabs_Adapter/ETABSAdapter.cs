@@ -81,10 +81,10 @@ namespace BH.Adapter.ETABS
 #endif
         {
             //Initialisation
+            AdapterIdFragmentType = typeof(ETABSId);
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
             SetupDependencies();
             SetupComparers();
-            AdapterIdFragmentType = typeof(ETABSId);
             m_AdapterSettings.DefaultPushType = oM.Adapter.PushType.CreateNonExisting;
 
 
