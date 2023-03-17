@@ -52,7 +52,7 @@ namespace BH.Adapter.ETABS
             foreach (Bar bhBar in bhBars)
             {
                 string id = bhBar.AdapterId<string>(typeof(ETABSId));
-                if (id != null)
+                if (id == null)
                 {
                     Engine.Base.Compute.RecordWarning("The Bar must have an ETABS adapter id to be updated.");
                     continue;
