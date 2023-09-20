@@ -124,7 +124,14 @@ namespace BH.Adapter.ETABS
 
         public bool RunCommand(ClearResults command)
         {
-            return m_model.Analyze.DeleteResults("", true) == 0;
+            if (m_model.Analyze.DeleteResults("", true) == 0)
+            {
+                return m_model.SetModelIsLocked(false) == 0;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /***************************************************/
