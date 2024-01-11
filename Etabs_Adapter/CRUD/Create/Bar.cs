@@ -208,9 +208,9 @@ namespace BH.Adapter.ETABS
         private static void FlipEndPoints(Bar bar)
         {
             // Flip the endpoints
-            Node tempNode = bar.StartNode;
-            bar.StartNode = bar.EndNode;
-            bar.EndNode = tempNode;
+            Node tempNode = bar.Start;
+            bar.Start = bar.End;
+            bar.End = tempNode;
 
             // Flip orientationAngle
             bar.OrientationAngle = -bar.OrientationAngle;
