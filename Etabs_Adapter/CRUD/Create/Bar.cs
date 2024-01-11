@@ -52,8 +52,8 @@ namespace BH.Adapter.ETABS
         {
             int ret = 0;
 
-            if (!CheckPropertyError(bhBar, b => b.StartNode, true) || !CheckPropertyError(bhBar, b => b.EndNode, true) ||
-                !CheckPropertyError(bhBar, b => b.StartNode.Position, true) || !CheckPropertyError(bhBar, b => b.EndNode.Position, true))
+            if (!CheckPropertyError(bhBar, b => b.Start, true) || !CheckPropertyError(bhBar, b => b.End, true) ||
+                !CheckPropertyError(bhBar, b => b.Start.Position, true) || !CheckPropertyError(bhBar, b => b.End.Position, true))
             {
                 return false;
             }
@@ -72,8 +72,8 @@ namespace BH.Adapter.ETABS
 
 #endif
 
-            string stNodeId = GetAdapterId<string>(bhBar.StartNode);
-            string endNodeId = GetAdapterId<string>(bhBar.EndNode);
+            string stNodeId = GetAdapterId<string>(bhBar.Start);
+            string endNodeId = GetAdapterId<string>(bhBar.End);
 
             if (string.IsNullOrEmpty(stNodeId) || string.IsNullOrEmpty(endNodeId))
             {
@@ -121,7 +121,7 @@ namespace BH.Adapter.ETABS
 
             // Needed rigth after create as well as AddByPoint flipps the Bar if it feels like it
 #if Debug16 == false && Release16 == false
-            m_model.EditFrame.ChangeConnectivity(name, GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode));
+            m_model.EditFrame.ChangeConnectivity(name, GetAdapterId<string>(bhBar.Start), GetAdapterId<string>(bhBar.End));
 #endif
 
             if (CheckPropertyWarning(bhBar, b => b.SectionProperty))

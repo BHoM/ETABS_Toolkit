@@ -71,8 +71,8 @@ namespace BH.Adapter.ETABS
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);
 
-                    bhBar.StartNode = bhomNodes[startId];
-                    bhBar.EndNode = bhomNodes[endId];
+                    bhBar.Start = bhomNodes[startId];
+                    bhBar.End = bhomNodes[endId];
 
                     bool[] restraintStart = new bool[6];
                     double[] springStart = new double[6];
