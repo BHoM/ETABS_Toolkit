@@ -35,7 +35,7 @@ using ETABS2016;
 #elif Debug17 || Release17
 using ETABSv17;
 #else
-using ETABSv1;
+using CSiAPIv1;
 #endif
 using BH.oM.Structure.Requests;
 using BH.oM.Geometry;
