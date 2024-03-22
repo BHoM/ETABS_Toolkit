@@ -27,11 +27,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
-using BH.oM.Structure.Elements;
 
 namespace BH.oM.Adapters.ETABS.Results
 {
-    public class PierForce : BH.oM.Structure.Results.BarForce
+    public class PierForce : Structure.Results.BarForce, IImmutable
     {
         /***************************************************/
         /**** Public Properties                         ****/
