@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -42,8 +42,8 @@ namespace BH.Engine.Adapters.ETABS
         [Description("Evaluates if the Bar would have its endpoints flipped on Push to ETABS in ETABS16.")]
         public static bool CheckFlipBar(this Bar bar)
         {
-            Point start = bar.StartNode.Position;
-            Point end = bar.EndNode.Position;
+            Point start = bar.Start.Position;
+            Point end = bar.End.Position;
 
             if (start.Z > end.Z)
                 return true;
@@ -59,5 +59,6 @@ namespace BH.Engine.Adapters.ETABS
 
     }
 }
+
 
 

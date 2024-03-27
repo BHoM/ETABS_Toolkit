@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,7 +37,7 @@ using ETABS2016;
 #elif Debug17 || Release17
 using ETABSv17;
 #else
-using ETABSv1;
+using CSiAPIv1;
 #endif
 
 namespace BH.Adapter.ETABS
@@ -225,6 +225,7 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 
 
 

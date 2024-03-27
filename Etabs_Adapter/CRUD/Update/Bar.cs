@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -69,8 +69,8 @@ namespace BH.Adapter.ETABS
                 string end = "";
                 m_model.FrameObj.GetPoints(id, ref start, ref end);
 
-                if (GetAdapterId<string>(bhBar.StartNode) != start ||
-                    GetAdapterId<string>(bhBar.EndNode) != end)
+                if (GetAdapterId<string>(bhBar.Start) != start ||
+                    GetAdapterId<string>(bhBar.End) != end)
                 {
                     Engine.Base.Compute.RecordWarning("ETABS16 does not support Update of Bar connectivity, which means the geometry can not be updated. \n" + 
                                                             "To update the connectivity or position of a Bar, delete the existing Bar you want to update and create a new one.");
@@ -99,6 +99,7 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -52,8 +52,8 @@ namespace BH.Adapter.ETABS
         {
             int ret = 0;
 
-            if (!CheckPropertyError(bhBar, b => b.StartNode, true) || !CheckPropertyError(bhBar, b => b.EndNode, true) ||
-                !CheckPropertyError(bhBar, b => b.StartNode.Position, true) || !CheckPropertyError(bhBar, b => b.EndNode.Position, true))
+            if (!CheckPropertyError(bhBar, b => b.Start, true) || !CheckPropertyError(bhBar, b => b.End, true) ||
+                !CheckPropertyError(bhBar, b => b.Start.Position, true) || !CheckPropertyError(bhBar, b => b.End.Position, true))
             {
                 return false;
             }
@@ -72,8 +72,8 @@ namespace BH.Adapter.ETABS
 
 #endif
 
-            string stNodeId = GetAdapterId<string>(bhBar.StartNode);
-            string endNodeId = GetAdapterId<string>(bhBar.EndNode);
+            string stNodeId = GetAdapterId<string>(bhBar.Start);
+            string endNodeId = GetAdapterId<string>(bhBar.End);
 
             if (string.IsNullOrEmpty(stNodeId) || string.IsNullOrEmpty(endNodeId))
             {
@@ -121,7 +121,7 @@ namespace BH.Adapter.ETABS
 
             // Needed rigth after create as well as AddByPoint flipps the Bar if it feels like it
 #if Debug16 == false && Release16 == false
-            m_model.EditFrame.ChangeConnectivity(name, GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode));
+            m_model.EditFrame.ChangeConnectivity(name, GetAdapterId<string>(bhBar.Start), GetAdapterId<string>(bhBar.End));
 #endif
 
             if (CheckPropertyWarning(bhBar, b => b.SectionProperty))
@@ -208,9 +208,9 @@ namespace BH.Adapter.ETABS
         private static void FlipEndPoints(Bar bar)
         {
             // Flip the endpoints
-            Node tempNode = bar.StartNode;
-            bar.StartNode = bar.EndNode;
-            bar.EndNode = tempNode;
+            Node tempNode = bar.Start;
+            bar.Start = bar.End;
+            bar.End = tempNode;
 
             // Flip orientationAngle
             bar.OrientationAngle = -bar.OrientationAngle;
@@ -292,6 +292,7 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 
 
 

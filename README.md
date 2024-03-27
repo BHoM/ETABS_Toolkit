@@ -32,7 +32,7 @@ Grab the [latest installer](https://bhom.xyz/) and a selection of [sample script
 ## Getting Started for Developers 🤖 
 
 If you want to build the BHoM and the Toolkits from source, it's hopefully easy! 😄 
-Do take a look at our specific wiki pages here: [Getting Started for Developers](https://bhom.xyz/documentation/Contributing/Getting-started-for-developers/)
+Do take a look at our specific wiki pages here: [Getting Started for Developers](https://bhom.xyz/documentation/Guides-and-Tutorials/Coding-with-BHoM/)
 
 In order to support multiple versions of ETABS with changes to the API, multiple build configurations have been set up. These all rename the resulting dll of the adapter project in order to support multiple versions to be installed simultaneously. ETABS_Toolkit needs to be built separately for each version of ETABS. To switch between version and specific ETABS_Toolkit configurations use Configuration Manager:  
 Debug16 -> ETABS 2016   
