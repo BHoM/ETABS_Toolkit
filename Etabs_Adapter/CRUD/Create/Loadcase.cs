@@ -143,7 +143,7 @@ namespace BH.Adapter.ETABS
                     loadType = eLoadPatternType.Live;
                     break;
                 case LoadNature.Wind:
-                    loadType = eLoadPatternType.Dead;
+                    loadType = eLoadPatternType.Wind;
                     break;
                 case LoadNature.Seismic:
                     loadType = eLoadPatternType.Quake;
