@@ -70,10 +70,16 @@ namespace BH.oM.Adapters.ETABS.Results
         /**** Constructors                              ****/
         /***************************************************/
 
-        public PierForce(IComparable objectId, IComparable resultCase, string location, int modeNumber, double timeStep, double position, int divisions, double FX, double FY, double FZ, double MX, double MY, double MZ)
+        public PierForce(IComparable objectId, IComparable resultCase, string location, int modeNumber, double timeStep, double position, int divisions, double fx, double fy, double fz, double mx, double my, double mz)
             : base(objectId, resultCase, modeNumber, timeStep, position, divisions)
         {
             Location = location;
+            FX = fx;
+            FY = fy;
+            FZ = fz;
+            MX = mx;
+            MY = my;
+            MZ = mz;
         }
 
         /***************************************************/
