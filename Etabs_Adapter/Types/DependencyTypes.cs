@@ -50,11 +50,11 @@ namespace BH.Adapter.ETABS
         {
             DependencyTypes = new Dictionary<Type, List<Type>>
             {
-                {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node),typeof(Level)} },
+                {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node)} },
                 {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
-                {typeof(Panel), new List<Type> { typeof(ISurfaceProperty), typeof(Level) } },
+                {typeof(Panel), new List<Type> { typeof(ISurfaceProperty)} },
                 {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
-                {typeof(RigidLink), new List<Type> { typeof(Node), typeof(LinkConstraint), typeof(Level) } },
+                {typeof(RigidLink), new List<Type> { typeof(Node), typeof(LinkConstraint)} },
                 {typeof(ILoad), new List<Type> {typeof(Loadcase) } },
                 {typeof(IElementLoad<Bar>), new List<Type>{ typeof(Bar)} },
                 {typeof(IElementLoad<Node>), new List<Type>{ typeof(Node)} }
