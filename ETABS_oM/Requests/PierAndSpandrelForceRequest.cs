@@ -37,7 +37,7 @@ namespace BH.oM.Adapters.ETABS.Requests
         /***************************************************/
 
         [Description("Defines which type of results that should be extracted.")]
-        public virtual PierAndSpandrelResultType ResultType { get; set; } = PierAndSpandrelResultType.PierForce;
+        public virtual PierAndSpandrelResultType ResultType { get; set; } = new PierAndSpandrelResultType();
 
         [Description("Defines which cases and/or combinations that results should be extracted for. Can generally be set to either Loadcase or Loadcombination objects, or identifiers matching the software. If nothing is provided, results for all cases will be assumed.")]
         public virtual List<object> Cases { get; set; } = new List<object>();

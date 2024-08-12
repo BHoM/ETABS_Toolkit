@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -66,6 +66,7 @@
     <Compile Include="Fragments\ShellTypeFragment.cs" />
     <Compile Include="Requests\Enum\PierAndSpandrelResultType.cs" />
     <Compile Include="Requests\PierAndSpandrelForceRequest.cs" />
+    <Compile Include="Results\SpandrelForce.cs" />
     <Compile Include="Settings\DataBaseSettings.cs" />
     <Compile Include="Settings\EtabsSettings.cs" />
     <Compile Include="Enums\SectionDatabase.cs" />

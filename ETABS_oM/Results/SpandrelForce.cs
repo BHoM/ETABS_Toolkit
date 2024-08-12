@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -20,15 +20,36 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
 
-namespace BH.oM.Adapters.ETABS.Requests
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using BH.oM.Base;
+
+namespace BH.oM.Adapters.ETABS.Results
 {
-    [Description("Defines the type of results that should be extracted for PierAndSpandrelForceRequest.")]
-    public enum PierAndSpandrelResultType
+    public class SpandrelForce : Structure.Results.BarForce, IImmutable
     {
-        PierForce,
-        SpandrelForce
+        /***************************************************/
+        /**** Public Properties                         ****/
+        /***************************************************/
+
+        //Just using this for the name
+        public virtual string Location { get; } = "";
+
+        /***************************************************/
+        /**** Constructors                              ****/
+        /***************************************************/
+
+        public SpandrelForce(IComparable objectId, IComparable resultCase, string location, int modeNumber, double timeStep, double position, int divisions, double fx, double fy, double fz, double mx, double my, double mz)
+            : base(objectId, resultCase, modeNumber, timeStep, position, divisions, fx, fy, fz, mx, my, mz)
+        {
+            Location = location;
+        }
+
+        /***************************************************/
     }
 }
 
