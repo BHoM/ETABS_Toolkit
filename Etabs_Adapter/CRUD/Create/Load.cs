@@ -297,13 +297,11 @@ namespace BH.Adapter.ETABS
                 double tempMed = tempProfile.Average(kv => kv.Value);
                 double tempDelta= ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
 
-                if (tempMed!=0 &&  tempDelta==0)
+                if (tempMed!=0)
                 { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 1, tempMed, "", replace);}
-                else if (tempMed==0 && tempDelta!=0)
+
+                if (tempDelta!=0)
                 { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 3, tempDelta, "", replace);}
-                else if (tempMed!=0 && tempDelta!=0)
-                { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 1, tempMed, "", replace);
-                  ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 3, tempDelta, "", replace);}
 
             }
         }
@@ -336,9 +334,10 @@ namespace BH.Adapter.ETABS
                 double tempMed = tempProfile.Average(kv => kv.Value);
                 double tempDelta = ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
 
-                if (tempMed != 0 && tempDelta == 0)
+                if (tempMed != 0)
                 { ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 1, tempMed, "", replace); }
-                else if (tempMed == 0 && tempDelta != 0)
+
+                if (tempDelta != 0)
                 { switch (loadDir) { 
                     case DifferentialTemperatureLoadDirection.LocalY:
                         ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 2, tempDelta, "", replace);
@@ -347,21 +346,7 @@ namespace BH.Adapter.ETABS
                         ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 3, tempDelta, "", replace);
                         break;}
                 }
-                else if (tempMed != 0 && tempDelta != 0)
-                {   ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 1, tempMed, "", replace);
-                    switch (loadDir) {
-                        case DifferentialTemperatureLoadDirection.LocalY:
-                            ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 2, tempDelta, "", replace);
-                            break;
-                        case DifferentialTemperatureLoadDirection.LocalZ:
-                            ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 3, tempDelta, "", replace);
-                            break;}
-                }
-
             }
-
-
-
         }
 
 
