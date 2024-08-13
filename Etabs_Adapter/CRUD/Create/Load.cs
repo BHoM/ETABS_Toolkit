@@ -324,6 +324,51 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        public void SetLoad(BarDifferentialTemperatureLoad barDifferentialTemperatureLoad, bool replace)
+        {
+            int ret = 0;
+            string caseName = GetAdapterId<string>(barDifferentialTemperatureLoad.Loadcase);
+            DifferentialTemperatureLoadDirection loadDir= barDifferentialTemperatureLoad.LoadDirection;
+
+            foreach (Bar bar in barDifferentialTemperatureLoad.Objects.Elements)
+            {
+                Dictionary<double, double> tempProfile = barDifferentialTemperatureLoad.TemperatureProfile;
+                double tempMed = tempProfile.Average(kv => kv.Value);
+                double tempDelta = ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
+
+                if (tempMed != 0 && tempDelta == 0)
+                { ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 1, tempMed, "", replace); }
+                else if (tempMed == 0 && tempDelta != 0)
+                { switch (loadDir) { 
+                    case DifferentialTemperatureLoadDirection.LocalY:
+                        ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 2, tempDelta, "", replace);
+                        break;
+                    case DifferentialTemperatureLoadDirection.LocalZ:
+                        ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 3, tempDelta, "", replace);
+                        break;}
+                }
+                else if (tempMed != 0 && tempDelta != 0)
+                {   ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 1, tempMed, "", replace);
+                    switch (loadDir) {
+                        case DifferentialTemperatureLoadDirection.LocalY:
+                            ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 2, tempDelta, "", replace);
+                            break;
+                        case DifferentialTemperatureLoadDirection.LocalZ:
+                            ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 3, tempDelta, "", replace);
+                            break;}
+                }
+
+            }
+
+
+
+        }
+
+
+
+
+        /***************************************************/
+
         public void SetLoad(GravityLoad gravityLoad, bool replace)
         {
             double selfWeightMultiplier = 0;
