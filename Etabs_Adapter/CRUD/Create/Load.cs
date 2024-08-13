@@ -273,13 +273,13 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public void SetLoad(AreaUniformTemperatureLoad areaTempratureLoad, bool replace)
+        public void SetLoad(AreaUniformTemperatureLoad areaTemperatureLoad, bool replace)
         {
             int ret = 0;
-            string caseName = GetAdapterId<string>(areaTempratureLoad.Loadcase);
-            foreach (IAreaElement area in areaTempratureLoad.Objects.Elements)
+            string caseName = GetAdapterId<string>(areaTemperatureLoad.Loadcase);
+            foreach (IAreaElement area in areaTemperatureLoad.Objects.Elements)
             {
-                double val = areaTempratureLoad.TemperatureChange;
+                double val = areaTemperatureLoad.TemperatureChange;
                 if (val != 0)
                     ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 1, val, "", replace);
             }
@@ -287,13 +287,36 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public void SetLoad(BarUniformTemperatureLoad barTempratureLoad, bool replace)
+        public void SetLoad(AreaDifferentialTemperatureLoad areaDifferentialTemperatureLoad, bool replace)
         {
             int ret = 0;
-            string caseName = GetAdapterId<string>(barTempratureLoad.Loadcase);
-            foreach (Bar bar in barTempratureLoad.Objects.Elements)
+            string caseName = GetAdapterId<string>(areaDifferentialTemperatureLoad.Loadcase);
+            foreach (IAreaElement area in areaDifferentialTemperatureLoad.Objects.Elements)
             {
-                double val = barTempratureLoad.TemperatureChange;
+                Dictionary<double, double> tempProfile = areaDifferentialTemperatureLoad.TemperatureProfile;
+                double tempMed = tempProfile.Average(kv => kv.Value);
+                double tempDelta= ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
+
+                if (tempMed!=0 &&  tempDelta==0)
+                { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 1, tempMed, "", replace);}
+                else if (tempMed==0 && tempDelta!=0)
+                { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 2, tempDelta, "", replace);}
+                else if (tempMed!=0 && tempDelta!=0)
+                { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 1, tempMed, "", replace);
+                  ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 2, tempDelta, "", replace);}
+
+            }
+        }
+
+        /***************************************************/
+
+        public void SetLoad(BarUniformTemperatureLoad barTemperatureLoad, bool replace)
+        {
+            int ret = 0;
+            string caseName = GetAdapterId<string>(barTemperatureLoad.Loadcase);
+            foreach (Bar bar in barTemperatureLoad.Objects.Elements)
+            {
+                double val = barTemperatureLoad.TemperatureChange;
                 if (val != 0)
                     ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 1, val, "", replace);
             }
