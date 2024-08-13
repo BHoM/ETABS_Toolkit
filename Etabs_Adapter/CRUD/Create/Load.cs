@@ -300,10 +300,10 @@ namespace BH.Adapter.ETABS
                 if (tempMed!=0 &&  tempDelta==0)
                 { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 1, tempMed, "", replace);}
                 else if (tempMed==0 && tempDelta!=0)
-                { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 2, tempDelta, "", replace);}
+                { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 3, tempDelta, "", replace);}
                 else if (tempMed!=0 && tempDelta!=0)
                 { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 1, tempMed, "", replace);
-                  ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 2, tempDelta, "", replace);}
+                  ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 3, tempDelta, "", replace);}
 
             }
         }
