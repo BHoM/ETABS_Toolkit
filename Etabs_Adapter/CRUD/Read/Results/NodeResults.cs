@@ -68,6 +68,7 @@ namespace BH.Adapter.ETABS
                 case NodeResultType.NodeDisplacement:
                     return ReadNodeDisplacement(nodeIds);
                 case NodeResultType.NodeVelocity:
+                    return ReadNodeVelocity(nodeIds);
                 case NodeResultType.NodeAcceleration:
                 default:
                     Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
