@@ -82,7 +82,6 @@ namespace BH.Adapter.ETABS
 
         private List<NodeAcceleration> ReadNodeAcceleration(List<string> nodeIds)
         {
-            //throw new NotImplementedException("Node Acceleration results is not supported yet!");
 
             List<NodeAcceleration> nodeAccelerations = new List<NodeAcceleration>();
 
