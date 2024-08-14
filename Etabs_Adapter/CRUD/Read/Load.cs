@@ -176,6 +176,55 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        private List<ILoad> ReadPointDisplacementLoad(List<Loadcase> loadcases)
+        {
+            List<ILoad> bhDisplLoads = new List<ILoad>();
+
+            Dictionary<string, Node> bhomNodes = GetCachedOrReadAsDictionary<string, Node>();
+
+            string[] names = null;
+            string[] loadcase = null;
+            string[] CSys = null;
+            int[] step = null;
+            int nameCount = 0;
+            double[] u1 = null;
+            double[] u2 = null;
+            double[] u3 = null;
+            double[] r1 = null;
+            double[] r2 = null;
+            double[] r3 = null;
+
+            if (m_model.PointObj.GetLoadDispl("All", ref nameCount, ref names, ref loadcase, ref step, ref CSys, ref u1, ref u2, ref u3, ref r1, ref r2, ref r3, eItemType.Group) != 0)
+                return bhDisplLoads;
+
+            for (int i = 0; i < nameCount; i++)
+            {
+                if (CSys[i] != "Global")
+                    Engine.Base.Compute.RecordWarning($"The coordinate system: {CSys[i]} was not read. The PointLoads defined in the coordinate system: {CSys[i]} were set as Global");
+
+                Loadcase bhLoadcase = loadcases.FirstOrDefault(x => x.Name == loadcase[i]);
+
+                if (bhLoadcase == null)
+                    continue;
+
+                PointDisplacement bhDisplLoad = new PointDisplacement()
+                {
+                    Translation = new Vector() { X = u1[i], Y = u2[i], Z = u3[i] },
+                    Rotation = new Vector() { X = r1[i], Y = r2[i], Z = r3[i] },
+                    Loadcase = bhLoadcase,
+                    Objects = new BHoMGroup<Node>() { Elements = { bhomNodes[names[i]] } }
+                };
+
+                bhDisplLoads.Add(bhDisplLoad);
+            }
+
+            return bhDisplLoads;
+
+        }
+
+        /***************************************************/
+
+
         private List<ILoad> ReadBarLoad(List<Loadcase> loadcases)
         {
             List<ILoad> bhLoads = new List<ILoad>();
