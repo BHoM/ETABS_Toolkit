@@ -32,6 +32,7 @@ using BH.oM.Structure.Results;
 using BH.oM.Analytical.Results;
 using BH.oM.Structure.Requests;
 using BH.oM.Adapter;
+using BH.oM.Structure.Loads;
 
 namespace BH.Adapter.ETABS
 {
@@ -106,13 +107,23 @@ namespace BH.Adapter.ETABS
             string[] loadcaseNames = null;
             string[] stepType = null; double[] stepNum = null;
             double[] period = null;
+            double[] massRatioX = null; double[] massRatioY = null; double[] massRatioZ = null;
+            double[] inertiaRatioX = null; double[]inertiaRatioY = null; double[]inertiaRatioZ = null;
+            double[] sumMassRatioX = null; double[] sumMassRatioY = null; double[] sumMassRatioZ = null;
+            double[] sumInertiaRatioX = null; double[] sumInertiaRatioY = null; double[] sumInertiaRatioZ = null;
             double[] ux = null; double[] uy = null; double[] uz = null;
             double[] rx = null; double[] ry = null; double[] rz = null;
             double[] modalMass = null;
             double[] modalStiff = null;
 
-            int res = m_model.Results.ModalParticipationFactors(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
+            int res=m_model.Results.ModalParticipatingMassRatios(ref resultCount, ref loadcaseNames, ref stepType, ref  stepNum, ref  period, 
+                                                                 ref massRatioX, ref massRatioY, ref massRatioZ, ref sumMassRatioX, ref sumMassRatioY, ref sumMassRatioZ, 
+                                                                 ref inertiaRatioX, ref inertiaRatioY, ref inertiaRatioZ, 
+                                                                 ref sumInertiaRatioX, ref sumInertiaRatioY, ref sumInertiaRatioZ);
+
+            res = m_model.Results.ModalParticipationFactors(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
                 ref period, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz, ref modalMass, ref modalStiff);
+
 
             if (res != 0) Engine.Base.Compute.RecordError("Could not extract Modal information.");
 
@@ -124,7 +135,8 @@ namespace BH.Adapter.ETABS
                 if (loadcaseNames[i] != previousModalCase)
                     modeNumber = 1;
 
-                ModalDynamics mod = new ModalDynamics("", loadcaseNames[i], modeNumber, 0, 1 / period[i], modalMass[i], modalStiff[i], 0, ux[i], uy[i], uz[i], rx[i], ry[i], rz[i]);
+                ModalDynamics mod = new ModalDynamics("", loadcaseNames[i], modeNumber, 0, 1 / period[i], modalMass[i], modalStiff[i], 0, 
+                                                        massRatioX[i], massRatioY[i], massRatioZ[i], sumMassRatioX[i], sumMassRatioY[i], sumMassRatioZ[i]);
                 modeNumber += 1;
                 previousModalCase = loadcaseNames[i];
 
