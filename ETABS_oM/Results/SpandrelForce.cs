@@ -44,9 +44,16 @@ namespace BH.oM.Adapters.ETABS.Results
         /***************************************************/
 
         public SpandrelForce(IComparable objectId, IComparable resultCase, string location, int modeNumber, double timeStep, double position, int divisions, double fx, double fy, double fz, double mx, double my, double mz)
-            : base(objectId, resultCase, modeNumber, timeStep, position, divisions, fx, fy, fz, mx, my, mz)
+            : base(objectId, resultCase, modeNumber, timeStep, position, divisions)
         {
             Location = location;
+            fx = fx;
+            fy = fy;
+            fz = fz;
+            mx = mx;
+            my = my;
+            mz = mz;
+
         }
 
         /***************************************************/
