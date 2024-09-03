@@ -136,7 +136,7 @@ namespace BH.Adapter.ETABS
                     modeNumber = 1;
 
                 ModalDynamics mod = new ModalDynamics("", loadcaseNames[i], modeNumber, 0, 1 / period[i], modalMass[i], modalStiff[i], 0, 
-                                                        massRatioX[i], massRatioY[i], massRatioZ[i], sumMassRatioX[i], sumMassRatioY[i], sumMassRatioZ[i]);
+                                                        massRatioX[i], massRatioY[i], massRatioZ[i], inertiaRatioX[i], inertiaRatioY[i], inertiaRatioZ[i]);
                 modeNumber += 1;
                 previousModalCase = loadcaseNames[i];
 
