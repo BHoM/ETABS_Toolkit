@@ -38,7 +38,29 @@ namespace BH.oM.Adapters.ETABS.Results
 
         //Just using this for the name
         public virtual string Location { get; } = "";
+        [Force]
+        [Description("Axial force along the local x-axis. Positive for tension, negative for compression.")]
+        public virtual double FX { get; }
 
+        [Force]
+        [Description("Shear force along the local y-axis. Generally minor axis shear force.")]
+        public virtual double FY { get; }
+
+        [Force]
+        [Description("Shear force along the local z-axis. Generally major axis shear force.")]
+        public virtual double FZ { get; }
+
+        [Moment]
+        [Description("Torsional moment.")]
+        public virtual double MX { get; }
+
+        [Moment]
+        [Description("Bending moment about the local y-axis. Generally major axis bending moment.")]
+        public virtual double MY { get; }
+
+        [Moment]
+        [Description("Bending moment about the local z-axis. Generally minor axis bending moment.")]
+        public virtual double MZ { get; }
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
