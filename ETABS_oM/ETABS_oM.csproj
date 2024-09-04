@@ -33,22 +33,27 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BHoM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\BHoM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Data_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Data_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Geometry_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Quantities_oM">
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Quantities_oM.dll</HintPath>
+	  <Private>False</Private>
+	  <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="Structure_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Structure_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
