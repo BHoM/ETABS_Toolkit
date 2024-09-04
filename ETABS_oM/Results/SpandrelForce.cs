@@ -30,7 +30,7 @@ using BH.oM.Base;
 
 namespace BH.oM.Adapters.ETABS.Results
 {
-    public class SpandrelForce : Structure.Results.BarResult, IImmutable
+    public class SpandrelForce : BarResult, IImmutable
     {
         /***************************************************/
         /**** Public Properties                         ****/
