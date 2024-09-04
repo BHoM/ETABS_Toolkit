@@ -330,7 +330,7 @@ namespace BH.Adapter.ETABS
                     List<MeshVonMises> stressVMTop = new List<MeshVonMises>();
                     List<MeshVonMises> stressVMBot = new List<MeshVonMises>();
                     int ret1, ret2, ret3;
-                    double[] panelThks = [];
+                    double[] panelThks = null;
                     double thkPatternSF = 0;
                     int thkType = 0;
                     string thkPattern = "";
