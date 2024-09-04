@@ -73,6 +73,7 @@ namespace BH.Adapter.ETABS
                 case MeshResultType.Stresses:
                     return ReadMeshStress(panelIds, cases, request.Smoothing, request.Layer);
                 case MeshResultType.VonMises:
+                    return ReadMeshVonMises(panelIds, request.Smoothing);
                 default:
                     Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
