@@ -70,6 +70,7 @@ namespace BH.Adapter.ETABS
                 case NodeResultType.NodeVelocity:
                     return ReadNodeVelocity(nodeIds);
                 case NodeResultType.NodeAcceleration:
+                    return ReadNodeAcceleration(nodeIds);
                 default:
                     Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
@@ -80,9 +81,42 @@ namespace BH.Adapter.ETABS
         /**** Private method - Extraction methods       ****/
         /***************************************************/
 
-        private List<NodeResult> ReadNodeAcceleration(IList ids = null, IList cases = null)
+        private List<NodeAcceleration> ReadNodeAcceleration(List<string> nodeIds)
         {
-            throw new NotImplementedException("Node Acceleration results is not supported yet!");
+
+            List<NodeAcceleration> nodeAccelerations = new List<NodeAcceleration>();
+
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] objects = null;
+            string[] elm = null;
+            string[] stepType = null;
+            double[] stepNum = null;
+            double[] ux = null;
+            double[] uy = null;
+            double[] uz = null;
+            double[] rx = null;
+            double[] ry = null;
+            double[] rz = null;
+
+            for (int i = 0; i < nodeIds.Count; i++)
+            {
+                int ret = m_model.Results.JointAccAbs(nodeIds[i].ToString(), eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm, ref loadcaseNames,
+                                                      ref stepType, ref stepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
+                if (ret == 0)
+                {
+                    for (int j = 0; j < resultCount; j++)
+                    {
+                        int mode;
+                        double timeStep;
+                        GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                        NodeAcceleration na = new NodeAcceleration(nodeIds[i], loadcaseNames[j], mode, timeStep, oM.Geometry.Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
+                        nodeAccelerations.Add(na);
+                    }
+                }
+            }
+
+            return nodeAccelerations;
         }
 
         /***************************************************/
