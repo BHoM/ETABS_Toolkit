@@ -329,14 +329,20 @@ namespace BH.Adapter.ETABS
 
                     List<MeshVonMises> stressVMTop = new List<MeshVonMises>();
                     List<MeshVonMises> stressVMBot = new List<MeshVonMises>();
-                    int ret = m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, 
+                    int ret1, ret2, ret3;
+                    string panelPropName="";
+
+                    ret1= m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, 
                         ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, 
                         ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
-                    ret = m_model.Results.AreaForceShell(panelIds[i], itemTypeElm, ref resultCount, 
+                    ret2 = m_model.Results.AreaForceShell(panelIds[i], itemTypeElm, ref resultCount, 
                         ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum,
                         ref f11, ref f22, ref f12, ref fMax, ref fMin, ref fAngle, ref fvm, 
                         ref m11, ref m22, ref m12, ref mMax, ref mMin, ref mAngle, 
                         ref v13, ref v23, ref vMax, ref vAngle);
+
+
+                    ret3 = m_model.AreaObj.GetProperty(panelIds[i], ref panelPropName);
 
 
                     if (ret == 0)
@@ -346,11 +352,14 @@ namespace BH.Adapter.ETABS
                         {
                             int mode;
                             double timeStep;
+
+                            double Mvm = ComputeVonMisesMoment(svmTop[j], svmBot[j], thk[i]);
+
                             GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
                             MeshVonMises mStressVMTop = new MeshVonMises(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, 
-                                MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, svmTop[j], fvm[j], 0);
+                                MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, svmTop[j], fvm[j], Mvm);
                             MeshVonMises mStressVMBot = new MeshVonMises(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, 
-                                MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, svmBot[j], fvm[j], 0);
+                                MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, svmBot[j], fvm[j], Mvm);
 
                             stressVMBot.Add(mStressVMBot);
                             stressVMTop.Add(mStressVMTop);
@@ -649,6 +658,16 @@ namespace BH.Adapter.ETABS
             }
 
             return smoothenedVMStresses;
+        }
+
+        /***************************************************/
+
+        private double ComputeVonMisesMoment(double svmTop, double svmBot, double thk)
+        {
+            double svmAvg = (svmTop + svmBot) / 2;
+            double vonMisesMoment = ((svmBot - svmAvg) * (thk / 2) * (1 / 2) * (thk - 2 * thk / 2 * 1 / 3)) / 1000;
+
+            return vonMisesMoment;
         }
 
         /***************************************************/
