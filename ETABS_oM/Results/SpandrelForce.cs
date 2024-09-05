@@ -74,19 +74,12 @@ namespace BH.oM.Adapters.ETABS.Results
             : base(objectId, resultCase, modeNumber, timeStep, position, divisions)
         {
             Location = location;
-                        FX = fx;
+                       FX = fx;
             FY = fy;
             FZ = fz;
             MX = mx;
             MY = my;
             MZ = mz;
-            fx = fx;
-            fy = fy;
-            fz = fz;
-            mx = mx;
-            my = my;
-            mz = mz;
-
         }
 
         /***************************************************/
