@@ -99,6 +99,18 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        protected virtual IEnumerable<IBHoMObject> Read(IRequest request, ActionConfig actionConfig = null)
+        {
+            // The implementation must:
+            // 1. extract all the needed info from the IRequest
+            // 2. return a call to the Basic Method Read() with the extracted info.
+
+            BH.Engine.Base.Compute.RecordError($"Read for {request.GetType().Name} is not implemented in {(this as dynamic).GetType().Name}.");
+            return new List<IBHoMObject>();
+        }
+
+        /***************************************************/
+
         public IEnumerable<IBHoMObject> Read(SelectionRequest request, ActionConfig actionConfig = null)
         {
             List<IBHoMObject> results = new List<IBHoMObject>();
