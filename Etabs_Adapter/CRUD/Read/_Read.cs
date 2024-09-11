@@ -99,15 +99,72 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        protected virtual IEnumerable<IBHoMObject> Read(IRequest request, ActionConfig actionConfig = null)
+        public IEnumerable<IBHoMObject> Read <T>(T request, ActionConfig actionConfig = null) where T : ILogicalRequest
         {
             // The implementation must:
             // 1. extract all the needed info from the IRequest
             // 2. return a call to the Basic Method Read() with the extracted info.
 
+            HashSet < IBHoMObject > bhomObjects= new HashSet<IBHoMObject >();
+
+            if (request is LogicalAndRequest)
+            {
+                List<IRequest> requests = (request as LogicalAndRequest).Requests;
+                
+                IRequest req = requests[0];
+                if (req.GetType() is FilterRequest) Read((FilterRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                if (req.GetType() is SelectionRequest) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                if (req.GetType() is ILogicalRequest) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);
+
+                for (int i = 1; i<requests.Count; i++)
+                {
+                    if (requests[i].GetType() is FilterRequest) bhomObjects=bhomObjects.Intersect(Read((FilterRequest)req, actionConfig)).ToHashSet();
+                    if (requests[i].GetType() is SelectionRequest) bhomObjects = bhomObjects.Intersect(Read((FilterRequest)req, actionConfig)).ToHashSet();
+                    if (requests[i].GetType() is ILogicalRequest) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);
+                }
+
+                return bhomObjects;
+
+            }
+
+            else if (request is LogicalOrRequest)
+
+            {
+                List<IRequest> requests = (request as LogicalOrRequest).Requests;
+                requests.ForEach(req => { if (req.GetType()==typeof(FilterRequest)) Read((FilterRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                                          if (req.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                                          if (req.GetType().IsSubclassOf(typeof(ILogicalRequest))) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);});
+                return bhomObjects;
+            }
+
+            //else if (request is LogicalNotRequest)
+            //{
+
+            //}
+
+            else
+            {
+                BH.Engine.Base.Compute.RecordError($"Requests of type {request?.GetType()} are not supported by the Excel adapter.");
+                return new List<IBHoMObject>();
+            }
+
             BH.Engine.Base.Compute.RecordError($"Read for {request.GetType().Name} is not implemented in {(this as dynamic).GetType().Name}.");
             return new List<IBHoMObject>();
         }
+
+
+        public IEnumerable<IBHoMObject> Read(FilterRequest filterRequest, ActionConfig actionConfig = null)
+        {
+            // Extract the Ids from the FilterRequest
+            IList objectIds = null;
+            object idObject;
+            if (filterRequest.Equalities.TryGetValue("ObjectIds", out idObject) && idObject is IList)
+                objectIds = idObject as IList;
+
+            return IRead(filterRequest.Type, objectIds, actionConfig);
+        }
+
+
 
         /***************************************************/
 
