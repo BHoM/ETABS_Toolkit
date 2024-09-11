@@ -26,6 +26,7 @@ using BH.oM.Adapters.ETABS;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Base;
@@ -110,17 +111,20 @@ namespace BH.Adapter.ETABS
             if (request is LogicalAndRequest)
             {
                 List<IRequest> requests = (request as LogicalAndRequest).Requests;
-                
+
+                DynamicComparer iBHoMETABSComparer = new DynamicComparer();
+
+
                 IRequest req = requests[0];
-                if (req.GetType() is FilterRequest) Read((FilterRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
-                if (req.GetType() is SelectionRequest) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
-                if (req.GetType() is ILogicalRequest) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);
+                if (req.GetType() == typeof(FilterRequest)) Read((FilterRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                if (req.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                if (req.GetType() == typeof(ILogicalRequest)) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);
 
                 for (int i = 1; i<requests.Count; i++)
                 {
-                    if (requests[i].GetType() is FilterRequest) bhomObjects=bhomObjects.Intersect(Read((FilterRequest)req, actionConfig)).ToHashSet();
-                    if (requests[i].GetType() is SelectionRequest) bhomObjects = bhomObjects.Intersect(Read((FilterRequest)req, actionConfig)).ToHashSet();
-                    if (requests[i].GetType() is ILogicalRequest) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);
+                    if (requests[i].GetType() == typeof(FilterRequest)) bhomObjects=bhomObjects.Intersect(Read((FilterRequest)req, actionConfig), iBHoMETABSComparer).ToHashSet();
+                    if (requests[i].GetType() == typeof(SelectionRequest)) bhomObjects = bhomObjects.Intersect(Read((FilterRequest)req, actionConfig), iBHoMETABSComparer).ToHashSet();
+                    if (requests[i].GetType() == typeof(ILogicalRequest)) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);
                 }
 
                 return bhomObjects;
@@ -240,6 +244,40 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
+        private class DynamicComparer : IEqualityComparer<IBHoMObject>
+        {
+            public bool Equals(IBHoMObject obj1, IBHoMObject obj2)
+            {
+                if (obj1 == null || obj2 == null) return false;
+                if (obj1.GetType() != obj2.GetType()) return false;
+
+                return getEtabsId(obj1).Id==getEtabsId(obj2).Id;
+
+            }
+
+            public int GetHashCode(IBHoMObject obj)
+            {
+                throw new NotImplementedException();
+            }
+
+            private ETABSId getEtabsId(IBHoMObject obj) 
+            {
+                // 1. Get the object Type
+                Type objsType = obj.GetType();
+                // 2. Get the Property Fragments - via REFLECTION
+                PropertyInfo fragmentsProperty = objsType.GetProperty("Fragments");
+                // 3. Downcast the Fragments Property to FragmentSet Class - via REFLECTION
+                FragmentSet fragments = (FragmentSet)fragmentsProperty.GetValue(obj);
+                // 4. Get the ETABSId object contained in the FragmentSet - via STREAMS
+                ETABSId etabsId = (ETABSId)(fragments.ToList().Find(frag => frag.GetType() == typeof(ETABSId)));
+                // 5. Return the Etabs Id of the object
+                return etabsId;
+            }
+
+
+        }
+
 
     }
 }
