@@ -122,8 +122,8 @@ namespace BH.Adapter.ETABS
 
                 for (int i = 1; i<requests.Count; i++)
                 {
-                    if (requests[i].GetType() == typeof(FilterRequest)) bhomObjects=bhomObjects.Intersect(Read((FilterRequest)requests[i], actionConfig), iBHoMETABSComparer).ToHashSet();
-                    if (requests[i].GetType() == typeof(SelectionRequest)) bhomObjects = bhomObjects.Intersect(Read((SelectionRequest)requests[i], actionConfig), iBHoMETABSComparer).ToHashSet();
+                    if (requests[i].GetType() == typeof(FilterRequest)) bhomObjects=(bhomObjects.ToList().Intersect(Read((FilterRequest)requests[i], actionConfig), iBHoMETABSComparer)).ToHashSet();
+                    if (requests[i].GetType() == typeof(SelectionRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read((SelectionRequest)requests[i], actionConfig), iBHoMETABSComparer)).ToHashSet();
                     if (requests[i].GetType() == typeof(ILogicalRequest)) Read<ILogicalRequest>((ILogicalRequest)requests[i], actionConfig);
                 }
 
