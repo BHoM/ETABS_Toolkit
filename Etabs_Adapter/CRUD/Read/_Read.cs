@@ -122,8 +122,8 @@ namespace BH.Adapter.ETABS
 
                 for (int i = 1; i<requests.Count; i++)
                 {
-                    if (requests[i].GetType() == typeof(FilterRequest)) bhomObjects=(bhomObjects.ToList().Intersect(Read((FilterRequest)requests[i], actionConfig), iBHoMETABSComparer)).ToHashSet();
-                    if (requests[i].GetType() == typeof(SelectionRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read((SelectionRequest)requests[i], actionConfig), iBHoMETABSComparer)).ToHashSet();
+                    if (requests[i].GetType() == typeof(FilterRequest)) bhomObjects=(bhomObjects.ToList().Intersect(Read((FilterRequest)requests[i], actionConfig).ToList(), iBHoMETABSComparer)).ToHashSet();
+                    if (requests[i].GetType() == typeof(SelectionRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read((SelectionRequest)requests[i], actionConfig).ToList(), iBHoMETABSComparer)).ToHashSet();
                     if (requests[i].GetType() == typeof(ILogicalRequest)) Read<ILogicalRequest>((ILogicalRequest)requests[i], actionConfig);
                 }
 
@@ -258,7 +258,7 @@ namespace BH.Adapter.ETABS
 
             public int GetHashCode(IBHoMObject obj)
             {
-                throw new NotImplementedException();
+                return obj.GetHashCode();
             }
 
             private ETABSId getEtabsId(IBHoMObject obj) 
