@@ -293,7 +293,7 @@ namespace BH.Adapter.ETABS
 
             // Use of STREAMS and REFLECTIONS
 
-            // 1. Equality based on ETABS obj Label
+            // 1. Equality based on ETABS obj Id or Name
             public bool Equals(IBHoMObject obj1, IBHoMObject obj2)
             {
                 if (obj1 == null || obj2 == null) return false;
@@ -302,8 +302,10 @@ namespace BH.Adapter.ETABS
 
                 Type objType = obj1.GetType();
 
+                // For physical objects, use Id as it is never null
                 if (objType == typeof(Node) || objType == typeof(Bar) || objType == typeof(Panel) || objType == typeof(RigidLink) || objType == typeof(FEMesh))
                     return getEtabsId(obj1).Id.ToString() == getEtabsId(obj2).Id.ToString();
+                // For all other items, use Name as it is never null
                 if (objType == typeof(ISectionProperty) || objType == typeof(IMaterialFragment) || objType == typeof(ISurfaceProperty) ||
                     objType == typeof(Loadcase) || objType == typeof(LoadCombination) || objType == typeof(ILoad) || objType == typeof(LinkConstraint) ||
                     objType == typeof(Level) || objType == typeof(Grid))
@@ -313,13 +315,15 @@ namespace BH.Adapter.ETABS
                 
             }
 
-            // 2. HashCode based on Hash function of ETABS obj PersistentId
+            // 2. HashCode based on Hash function of ETABS obj Id+Label or Type+Name
             public int GetHashCode(IBHoMObject obj)
             {
                 Type objType = obj.GetType();
                 
+                // For physical objects, use Id and Label as they are never null
                 if (objType == typeof(Node) || objType == typeof(Bar) || objType == typeof(Panel) || objType == typeof(RigidLink) || objType == typeof(FEMesh))
                     return (getEtabsId(obj).Id.ToString() + getEtabsId(obj).Label.ToString()).GetHashCode();
+                // For all other items, use Name as Id/Label can be null
                 else if (objType == typeof(ISectionProperty) || objType == typeof(IMaterialFragment) || objType == typeof(ISurfaceProperty) ||
                     objType == typeof(Loadcase) || objType == typeof(LoadCombination) || objType == typeof(ILoad) || objType == typeof(LinkConstraint) ||
                     objType == typeof(Level) || objType == typeof(Grid))
