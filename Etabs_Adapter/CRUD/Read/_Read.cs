@@ -40,6 +40,7 @@ using BH.oM.Analytical.Results;
 using BH.oM.Adapter;
 using System.ComponentModel;
 using BH.oM.Data.Requests;
+using BH.oM.Spatial.SettingOut;
 
 namespace BH.Adapter.ETABS
 {
@@ -123,7 +124,7 @@ namespace BH.Adapter.ETABS
                 // ...when it's a SelectionRequest...
                 if (req.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
                 // ...when it's a LogicalRequest...call the method recursively! - **RECURSION**
-                if (req.GetType() == typeof(ILogicalRequest)) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);
+                if (req is ILogicalRequest) bhomObjects=Read<ILogicalRequest>((ILogicalRequest)req, actionConfig).ToHashSet();
 
 
                 // 1.4 Add to bhomObjects List all objects abiding by ALL THE OTHER requests in the list... - **STREAMS**
@@ -134,7 +135,7 @@ namespace BH.Adapter.ETABS
                     // ...when they are SelectionRequests...
                     if (requests[i].GetType() == typeof(SelectionRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read((SelectionRequest)requests[i], actionConfig).ToList(), iBHoMETABSComparer)).ToHashSet();
                     // ...when they are LogicalRequests...call the method recursively! - **RECURSION**
-                    if (requests[i].GetType() == typeof(ILogicalRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read<ILogicalRequest>((ILogicalRequest)requests[i], actionConfig))).ToHashSet();
+                    if (requests[i] is ILogicalRequest) bhomObjects = (bhomObjects.ToList().Intersect(Read<ILogicalRequest>((ILogicalRequest)requests[i], actionConfig))).ToHashSet();
                 }
 
                 // 1.5 Return list of bhomObjects
@@ -153,7 +154,7 @@ namespace BH.Adapter.ETABS
                     // ...when they are SelectionRequests...                    
                     if (req.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
                     // ...when they are LogicalRequests...call the method recursively! - **RECURSION**                    
-                    if (req.GetType().IsSubclassOf(typeof(ILogicalRequest))) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig); });
+                    if (req is ILogicalRequest) bhomObjects=Read<ILogicalRequest>((ILogicalRequest)req, actionConfig).ToHashSet(); });
 
                 // 2.3 Return list of bhomObjects                
                 return bhomObjects;
@@ -173,7 +174,7 @@ namespace BH.Adapter.ETABS
                 // ...when it's a SelectionRequest...                
                 if (iRequest.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)iRequest, actionConfig).ToList().ForEach(bhomObj => notBhomObjects.Add(bhomObj));
                 // ...when it's a LogicalRequest...call the method recursively! - **RECURSION**               
-                if (iRequest.GetType().IsSubclassOf(typeof(ILogicalRequest))) Read<ILogicalRequest>((ILogicalRequest)iRequest, actionConfig).ToList().ForEach(bhomObj => notBhomObjects.Add(bhomObj));
+                if (iRequest is ILogicalRequest) Read<ILogicalRequest>((ILogicalRequest)iRequest, actionConfig).ToList().ForEach(bhomObj => notBhomObjects.Add(bhomObj));
 
 
                 // 3.3 Get all bhomObjects of ANY kind from ETABS Model... - **STREAMS**
@@ -298,14 +299,34 @@ namespace BH.Adapter.ETABS
                 if (obj1 == null || obj2 == null) return false;
                 if (obj1.GetType() != obj2.GetType()) return false;
 
-                return getEtabsId(obj1).Label.ToString()==getEtabsId(obj2).Label.ToString();
 
+                Type objType = obj1.GetType();
+
+                if (objType == typeof(Node) || objType == typeof(Bar) || objType == typeof(Panel) || objType == typeof(RigidLink) || objType == typeof(FEMesh))
+                    return getEtabsId(obj1).Id.ToString() == getEtabsId(obj2).Id.ToString();
+                if (objType == typeof(ISectionProperty) || objType == typeof(IMaterialFragment) || objType == typeof(ISurfaceProperty) ||
+                    objType == typeof(Loadcase) || objType == typeof(LoadCombination) || objType == typeof(ILoad) || objType == typeof(LinkConstraint) ||
+                    objType == typeof(Level) || objType == typeof(Grid))
+                    return obj1.Name.ToString() == obj2.Name.ToString();
+              
+                return false;
+                
             }
 
             // 2. HashCode based on Hash function of ETABS obj PersistentId
             public int GetHashCode(IBHoMObject obj)
             {
-                return (getEtabsId(obj).Id.ToString() + getEtabsId(obj).Label.ToString()).GetHashCode();
+                Type objType = obj.GetType();
+                
+                if (objType == typeof(Node) || objType == typeof(Bar) || objType == typeof(Panel) || objType == typeof(RigidLink) || objType == typeof(FEMesh))
+                    return (getEtabsId(obj).Id.ToString() + getEtabsId(obj).Label.ToString()).GetHashCode();
+                else if (objType == typeof(ISectionProperty) || objType == typeof(IMaterialFragment) || objType == typeof(ISurfaceProperty) ||
+                    objType == typeof(Loadcase) || objType == typeof(LoadCombination) || objType == typeof(ILoad) || objType == typeof(LinkConstraint) ||
+                    objType == typeof(Level) || objType == typeof(Grid))
+                    return (obj.GetType().ToString() + obj.Name.ToString()).GetHashCode();
+
+                return 0;
+
             }
 
             // 3. Get ETABS Id using REFLECTION - **REFLECTION**
