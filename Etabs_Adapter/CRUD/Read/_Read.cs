@@ -305,7 +305,7 @@ namespace BH.Adapter.ETABS
             // 2. HashCode based on Hash function of ETABS obj PersistentId
             public int GetHashCode(IBHoMObject obj)
             {
-                return getEtabsId(obj).PersistentId.GetHashCode();
+                return (getEtabsId(obj).Id.ToString() + getEtabsId(obj).Label.ToString()).GetHashCode();
             }
 
             // 3. Get ETABS Id using REFLECTION - **REFLECTION**
