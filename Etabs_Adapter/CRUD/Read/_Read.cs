@@ -120,11 +120,11 @@ namespace BH.Adapter.ETABS
                 if (req.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
                 if (req.GetType() == typeof(ILogicalRequest)) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);
 
-                for (int i = 1; i<requests.Count; i++)
+                for (int i = 1; i < requests.Count; i++)
                 {
-                    if (requests[i].GetType() == typeof(FilterRequest)) bhomObjects=(bhomObjects.ToList().Intersect(Read((FilterRequest)requests[i], actionConfig).ToList(), iBHoMETABSComparer)).ToHashSet();
+                    if (requests[i].GetType() == typeof(FilterRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read((FilterRequest)requests[i], actionConfig).ToList(), iBHoMETABSComparer)).ToHashSet();
                     if (requests[i].GetType() == typeof(SelectionRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read((SelectionRequest)requests[i], actionConfig).ToList(), iBHoMETABSComparer)).ToHashSet();
-                    if (requests[i].GetType() == typeof(ILogicalRequest)) Read<ILogicalRequest>((ILogicalRequest)requests[i], actionConfig);
+                    if (requests[i].GetType() == typeof(ILogicalRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read<ILogicalRequest>((ILogicalRequest)requests[i], actionConfig))).ToHashSet();
                 }
 
                 return bhomObjects;
@@ -135,16 +135,38 @@ namespace BH.Adapter.ETABS
 
             {
                 List<IRequest> requests = (request as LogicalOrRequest).Requests;
-                requests.ForEach(req => { if (req.GetType()==typeof(FilterRequest)) Read((FilterRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
-                                          if (req.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
-                                          if (req.GetType().IsSubclassOf(typeof(ILogicalRequest))) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);});
+                requests.ForEach(req => { if (req.GetType() == typeof(FilterRequest)) Read((FilterRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                    if (req.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                    if (req.GetType().IsSubclassOf(typeof(ILogicalRequest))) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig); });
                 return bhomObjects;
             }
 
-            //else if (request is LogicalNotRequest)
-            //{
+            else if (request is LogicalNotRequest)
+            {
+                IRequest iRequest = (request as LogicalNotRequest).Request;
 
-            //}
+                HashSet<IBHoMObject> notBhomObjects = new HashSet<IBHoMObject>();
+                List<IBHoMObject> allBhomObjects = new List<IBHoMObject>();
+
+                if (iRequest.GetType() == typeof(FilterRequest)) Read((FilterRequest)iRequest, actionConfig).ToList().ForEach(bhomObj => notBhomObjects.Add(bhomObj));
+                if (iRequest.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)iRequest, actionConfig).ToList().ForEach(bhomObj => notBhomObjects.Add(bhomObj));
+                if (iRequest.GetType().IsSubclassOf(typeof(ILogicalRequest))) Read<ILogicalRequest>((ILogicalRequest)iRequest, actionConfig).ToList().ForEach(bhomObj => notBhomObjects.Add(bhomObj));
+
+                Type[] bhomTypes = {typeof(Node),typeof(Bar),typeof(ISectionProperty), typeof(IMaterialFragment), typeof(Panel),
+                                   typeof(ISurfaceProperty), typeof(LoadCombination), typeof(Loadcase), typeof(ILoad), typeof(RigidLink),
+                                   typeof(LinkConstraint),typeof(oM.Spatial.SettingOut.Level),typeof(oM.Spatial.SettingOut.Grid),typeof(FEMesh)};
+
+                allBhomObjects = bhomTypes.ToList()
+                                          .Select(bhomType =>{ FilterRequest fr = new FilterRequest();
+                                                              fr.Type = bhomType;
+                                                              return fr;})
+                                          .Select(filtReq => Read(filtReq))
+                                          .SelectMany(x=>x)
+                                          .ToList();
+
+                return allBhomObjects.Except(notBhomObjects,new DynamicComparer());
+            }
+
 
             else
             {
@@ -191,7 +213,7 @@ namespace BH.Adapter.ETABS
             int numItems = 0;
             int[] objectTypes = new int[0];
             string[] objectIds = new string[0];
-
+            
             m_model.SelectObj.GetSelected(ref numItems, ref objectTypes, ref objectIds);
 
             Dictionary<int, List<string>> dict = objectTypes.Distinct().ToDictionary(x => x, x => new List<string>());
@@ -252,13 +274,13 @@ namespace BH.Adapter.ETABS
                 if (obj1 == null || obj2 == null) return false;
                 if (obj1.GetType() != obj2.GetType()) return false;
 
-                return getEtabsId(obj1).Id==getEtabsId(obj2).Id;
+                return getEtabsId(obj1).Label.ToString()==getEtabsId(obj2).Label.ToString();
 
             }
 
             public int GetHashCode(IBHoMObject obj)
             {
-                return obj.GetHashCode();
+                return getEtabsId(obj).PersistentId.GetHashCode();
             }
 
             private ETABSId getEtabsId(IBHoMObject obj) 
@@ -276,6 +298,16 @@ namespace BH.Adapter.ETABS
             }
 
 
+        }
+
+
+        /***************************************************/
+
+        public static List<Type> GetClassesInNamespace(Assembly assembly, string nameSpace)
+        {
+            return assembly.GetTypes()
+                           .Where(t => t.IsClass && t.Namespace == nameSpace)
+                           .ToList();
         }
 
 
