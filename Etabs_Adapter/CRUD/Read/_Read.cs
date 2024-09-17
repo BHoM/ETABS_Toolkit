@@ -100,58 +100,83 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public IEnumerable<IBHoMObject> Read <T>(T request, ActionConfig actionConfig = null) where T : ILogicalRequest
+        public IEnumerable<IBHoMObject> Read <T>(T request, ActionConfig actionConfig = null) where T : ILogicalRequest //- **GENERIC TYPES**
         {
-            // The implementation must:
-            // 1. extract all the needed info from the IRequest
-            // 2. return a call to the Basic Method Read() with the extracted info.
 
+            // Use of GENERIC TYPES, HASH TABLES, STREAMS and RECURSION
+
+            /* Use a HashSet data structure to make sure no collected elements are duplicate and to make access/search as fast as possible - **HASH TABLES ** */
             HashSet < IBHoMObject > bhomObjects= new HashSet<IBHoMObject >();
 
+            /* 1. Handle the LogicalANDRequest */
             if (request is LogicalAndRequest)
             {
+                // 1.1 Initialize List of Requests to be extracted from LogicalRequest
                 List<IRequest> requests = (request as LogicalAndRequest).Requests;
-
+                // 1.2 Initialize DynamicComparer class instance allowing to check equality between IBHoMObject class instances
                 DynamicComparer iBHoMETABSComparer = new DynamicComparer();
 
-
+                // 1.3 Add to bhomObjects List all objects abiding by the FIRST request in the list... - **STREAMS**
                 IRequest req = requests[0];
+                // ...when it's a FilterRequest...
                 if (req.GetType() == typeof(FilterRequest)) Read((FilterRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                // ...when it's a SelectionRequest...
                 if (req.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                // ...when it's a LogicalRequest...call the method recursively! - **RECURSION**
                 if (req.GetType() == typeof(ILogicalRequest)) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig);
 
+
+                // 1.4 Add to bhomObjects List all objects abiding by ALL THE OTHER requests in the list... - **STREAMS**
                 for (int i = 1; i < requests.Count; i++)
                 {
+                    // ...when they are FilterRequests...
                     if (requests[i].GetType() == typeof(FilterRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read((FilterRequest)requests[i], actionConfig).ToList(), iBHoMETABSComparer)).ToHashSet();
+                    // ...when they are SelectionRequests...
                     if (requests[i].GetType() == typeof(SelectionRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read((SelectionRequest)requests[i], actionConfig).ToList(), iBHoMETABSComparer)).ToHashSet();
+                    // ...when they are LogicalRequests...call the method recursively! - **RECURSION**
                     if (requests[i].GetType() == typeof(ILogicalRequest)) bhomObjects = (bhomObjects.ToList().Intersect(Read<ILogicalRequest>((ILogicalRequest)requests[i], actionConfig))).ToHashSet();
                 }
 
+                // 1.5 Return list of bhomObjects
                 return bhomObjects;
-
             }
 
+            /* 2. Handle the LogicalORRequest */
             else if (request is LogicalOrRequest)
-
             {
+                // 2.1 Initialize List of Requests to be extracted from LogicalRequest
                 List<IRequest> requests = (request as LogicalOrRequest).Requests;
+
+                // 2.2 Add to bhomObjects List all objects abiding by ALL requests in the list... - **STREAMS**
+                // ...when they are FilterRequests...
                 requests.ForEach(req => { if (req.GetType() == typeof(FilterRequest)) Read((FilterRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                    // ...when they are SelectionRequests...                    
                     if (req.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)req, actionConfig).ToList().ForEach(bhomObj => bhomObjects.Add(bhomObj));
+                    // ...when they are LogicalRequests...call the method recursively! - **RECURSION**                    
                     if (req.GetType().IsSubclassOf(typeof(ILogicalRequest))) Read<ILogicalRequest>((ILogicalRequest)req, actionConfig); });
+
+                // 2.3 Return list of bhomObjects                
                 return bhomObjects;
             }
 
+            /* 3. Handle the LogicalNOTRequest */
             else if (request is LogicalNotRequest)
             {
+                // 3.1 Initialize Lists and Hashsets for collecting all bhomObjects - **HASH TABLES **
                 IRequest iRequest = (request as LogicalNotRequest).Request;
-
                 HashSet<IBHoMObject> notBhomObjects = new HashSet<IBHoMObject>();
                 List<IBHoMObject> allBhomObjects = new List<IBHoMObject>();
 
+                // 3.2 Add to NOTbhomObjects HashSet all unique objects abiding by the Request input in the LogicalNOTRequest... - **STREAMS**
+                // ...when it's a FilterRequest...
                 if (iRequest.GetType() == typeof(FilterRequest)) Read((FilterRequest)iRequest, actionConfig).ToList().ForEach(bhomObj => notBhomObjects.Add(bhomObj));
+                // ...when it's a SelectionRequest...                
                 if (iRequest.GetType() == typeof(SelectionRequest)) Read((SelectionRequest)iRequest, actionConfig).ToList().ForEach(bhomObj => notBhomObjects.Add(bhomObj));
+                // ...when it's a LogicalRequest...call the method recursively! - **RECURSION**               
                 if (iRequest.GetType().IsSubclassOf(typeof(ILogicalRequest))) Read<ILogicalRequest>((ILogicalRequest)iRequest, actionConfig).ToList().ForEach(bhomObj => notBhomObjects.Add(bhomObj));
 
+
+                // 3.3 Get all bhomObjects of ANY kind from ETABS Model... - **STREAMS**
                 Type[] bhomTypes = {typeof(Node),typeof(Bar),typeof(ISectionProperty), typeof(IMaterialFragment), typeof(Panel),
                                    typeof(ISurfaceProperty), typeof(LoadCombination), typeof(Loadcase), typeof(ILoad), typeof(RigidLink),
                                    typeof(LinkConstraint),typeof(oM.Spatial.SettingOut.Level),typeof(oM.Spatial.SettingOut.Grid),typeof(FEMesh)};
@@ -161,12 +186,13 @@ namespace BH.Adapter.ETABS
                                                               fr.Type = bhomType;
                                                               return fr;})
                                           .Select(filtReq => Read(filtReq))
-                                          .SelectMany(x=>x)
+                                          .SelectMany(x=>x) // Streams function allowing to flatten multidimensional lists!
                                           .ToList();
 
+                // 3.4 Return the difference between ALL Objects and the ones NOT to be taken - **STREAMS**
+                // - .Except() Streams function returns the difference between two lists/data structures based on a specified EqualityComparer class)
                 return allBhomObjects.Except(notBhomObjects,new DynamicComparer());
             }
-
 
             else
             {
@@ -269,6 +295,10 @@ namespace BH.Adapter.ETABS
 
         private class DynamicComparer : IEqualityComparer<IBHoMObject>
         {
+
+            // Use of STREAMS and REFLECTIONS
+
+            // 1. Equality based on ETABS obj Label
             public bool Equals(IBHoMObject obj1, IBHoMObject obj2)
             {
                 if (obj1 == null || obj2 == null) return false;
@@ -278,11 +308,13 @@ namespace BH.Adapter.ETABS
 
             }
 
+            // 2. HashCode based on Hash function of ETABS obj PersistentId
             public int GetHashCode(IBHoMObject obj)
             {
                 return getEtabsId(obj).PersistentId.GetHashCode();
             }
 
+            // 3. Get ETABS Id using REFLECTION - **REFLECTION**
             private ETABSId getEtabsId(IBHoMObject obj) 
             {
                 // 1. Get the object Type
