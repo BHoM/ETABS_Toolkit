@@ -194,12 +194,6 @@ namespace BH.Adapter.ETABS
                 return allBhomObjects.Except(notBhomObjects,new DynamicComparer());
             }
 
-            else
-            {
-                BH.Engine.Base.Compute.RecordError($"Requests of type {request?.GetType()} are not supported by the Excel adapter.");
-                return new List<IBHoMObject>();
-            }
-
             BH.Engine.Base.Compute.RecordError($"Read for {request.GetType().Name} is not implemented in {(this as dynamic).GetType().Name}.");
             return new List<IBHoMObject>();
         }
