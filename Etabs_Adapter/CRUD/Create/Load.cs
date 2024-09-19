@@ -320,6 +320,22 @@ namespace BH.Adapter.ETABS
             BH.Engine.Base.Compute.RecordWarning("ETABS handles gravity loads via loadcases, why only one gravity load per loadcase can be used. THis gravity load will be applied to all objects");
         }
 
+        /***************************************************/
+
+        public void SetLoad(PointDisplacement pointDisplacementLoad, bool replace)
+        {
+            double[] pdValues = new double[] { pointDisplacementLoad.Translation.X, pointDisplacementLoad.Translation.Y, pointDisplacementLoad.Translation.Z,
+                                               pointDisplacementLoad.Rotation.X, pointDisplacementLoad.Rotation.Y, pointDisplacementLoad.Rotation.Z};
+            int ret = 0;
+
+            foreach (Node node in pointDisplacementLoad.Objects.Elements)
+            {
+                string caseName = GetAdapterId<string>(pointDisplacementLoad.Loadcase);
+                string nodeName = GetAdapterId<string>(node);
+                ret = m_model.PointObj.SetLoadDispl(nodeName, caseName, ref pdValues, replace);
+            }
+        }
+
 
         /***************************************************/
         /****       Helper Methods                      ****/
