@@ -59,6 +59,8 @@ namespace BH.Adapter.ETABS
             Dictionary<double, List<string>> Δz = new Dictionary<double, List<string>>();
 
 
+            // 1. GROUP NODES BY RELATIVE MOVEMENT IN X/Y/Z DIRECTION
+
             foreach (Node bhNode in nodes)
             {
                 string name = GetAdapterId<string>(bhNode);
@@ -74,16 +76,18 @@ namespace BH.Adapter.ETABS
 
                     if (!comparer.Equals(bhNode, (Node)p))
                     {
+                        // Get BHoM vs ETABS differences in nodes coordinates
                         x = bhNode.Position.X - x;
                         y = bhNode.Position.Y - y;
                         z = bhNode.Position.Z - z;
 
+                        // Add Node name and corresponding ΔX in Δx Hash Table
                         if (Δx.ContainsKey(x)) Δx[x].Add(name);
                         else Δx.Add(x, new List<string>() {name});
-
+                        // Add Node name and corresponding ΔY in Δy Hash Table
                         if (Δy.ContainsKey(y)) Δy[y].Add(name);
                         else Δy.Add(y, new List<string>() {name});
-
+                        // Add Node name and corresponding ΔZ in Δz Hash Table
                         if (Δz.ContainsKey(z)) Δz[z].Add(name);
                         else Δz.Add(z, new List<string>() {name});
 
@@ -93,24 +97,38 @@ namespace BH.Adapter.ETABS
 
 
 
+            // 2. MOVE NODES GROUP-BY-GROUP
+
+            // ΔX Movement
             Δx.ToList().ForEach(kvp =>
             {
+                // 1. Select all nodes belonging to same group
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), true));
-                m_model.EditGeneral.Move((double)kvp.Key * factor, 0, 0);
+                // 2. Move all selected nodes by same ΔX
+                m_model.EditGeneral.Move((double)kvp.Key, 0, 0);
+                // 3. Deselect all selected nodes
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), false));
             });
 
+            // ΔY Movement
             Δy.ToList().ForEach(kvp =>
             {
+                // 1. Select all nodes belonging to same group
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), true));
-                m_model.EditGeneral.Move(0, (double)kvp.Key * factor, 0);
+                // 2. Move all selected nodes by same ΔY
+                m_model.EditGeneral.Move(0, (double)kvp.Key, 0);
+                // 3. Deselect all selected nodes
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), false));
             });
 
+            // ΔZ Movement
             Δz.ToList().ForEach(kvp =>
             {
+                // 1. Select all nodes belonging to same group
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), true));
-                m_model.EditGeneral.Move(0, 0, (double)kvp.Key * factor);
+                // 2. Move all selected nodes by same ΔZ
+                m_model.EditGeneral.Move(0, 0, (double)kvp.Key);
+                // 3. Deselect all selected nodes
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), false));
             });
 
