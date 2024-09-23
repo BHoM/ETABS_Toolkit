@@ -59,7 +59,7 @@ namespace BH.Adapter.ETABS
             Dictionary<double, List<string>> Δz = new Dictionary<double, List<string>>();
 
 
-            // 1. GROUP NODES BY RELATIVE MOVEMENT IN X/Y/Z DIRECTION
+            // 1. GROUP NODES BY RELATIVE MOVEMENT IN X/Y/Z DIRECTION  -  ** HASH TABLES **
 
             foreach (Node bhNode in nodes)
             {
@@ -97,7 +97,7 @@ namespace BH.Adapter.ETABS
 
 
 
-            // 2. MOVE NODES GROUP-BY-GROUP
+            // 2. MOVE NODES GROUP-BY-GROUP  -  ** STREAMS **
 
             // ΔX Movement
             Δx.ToList().ForEach(kvp =>
