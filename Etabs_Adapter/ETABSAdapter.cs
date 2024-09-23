@@ -158,11 +158,14 @@ namespace BH.Adapter.ETABS
         {
             //Forcing refresh of the model by moving all elements in back and forward along the x-axis.
             //If a more elegant way can be found to do this, this should be changed.
-            m_model.SelectObj.All();
-            m_model.EditGeneral.Move(1, 0, 0);
-            m_model.SelectObj.All();
-            m_model.EditGeneral.Move(-1, 0, 0);
-            m_model.SelectObj.ClearSelection();
+            //m_model.SelectObj.All();
+            //m_model.EditGeneral.Move(1, 0, 0);
+            //m_model.SelectObj.All();
+            //m_model.EditGeneral.Move(-1, 0, 0);
+            //m_model.SelectObj.ClearSelection();
+
+            m_model.View.RefreshView();
+            m_model.View.RefreshWindow();
             return true;
         }
 
