@@ -29,6 +29,7 @@ using BH.oM.Structure.Constraints;
 using BH.Engine.Adapters.ETABS;
 using System.Collections;
 using System.Xml.Linq;
+using BH.oM.Physical.Elements;
 
 namespace BH.Adapter.ETABS
 {
@@ -62,8 +63,6 @@ namespace BH.Adapter.ETABS
             {
                 string name = GetAdapterId<string>(bhNode);
 
-                SetObject(bhNode, name);
-
                 // Update position
                 double x = 0;
                 double y = 0;
@@ -79,14 +78,14 @@ namespace BH.Adapter.ETABS
                         y = bhNode.Position.Y - y;
                         z = bhNode.Position.Z - z;
 
-                        if (Δx.ContainsKey(x)) Δx[x].Add(bhNode.Name);
-                        else Δx.Add(x, new List<string>());
+                        if (Δx.ContainsKey(x)) Δx[x].Add(name);
+                        else Δx.Add(x, new List<string>() {name});
 
-                        if (Δy.ContainsKey(y)) Δy[y].Add(bhNode.Name);
-                        else Δy.Add(y, new List<string>());
+                        if (Δy.ContainsKey(y)) Δy[y].Add(name);
+                        else Δy.Add(y, new List<string>() {name});
 
-                        if (Δz.ContainsKey(z)) Δz[z].Add(bhNode.Name);
-                        else Δz.Add(z, new List<string>());
+                        if (Δz.ContainsKey(z)) Δz[z].Add(name);
+                        else Δz.Add(z, new List<string>() {name});
 
                     }
                 }
