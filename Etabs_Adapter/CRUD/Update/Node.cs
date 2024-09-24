@@ -47,49 +47,50 @@ namespace BH.Adapter.ETABS
 
         private bool UpdateObjects(IEnumerable<Node> nodes)
         {
-            bool success = true;
-            m_model.SelectObj.ClearSelection();
+            bool success = true;                                                               // θ(1)
+            m_model.SelectObj.ClearSelection();                                                // θ(1)
 
-            double factor = DatabaseLengthUnitFactor();
+            double factor = DatabaseLengthUnitFactor();                                        // θ(1)
 
-            Engine.Structure.NodeDistanceComparer comparer = AdapterComparers[typeof(Node)] as Engine.Structure.NodeDistanceComparer;
+            Engine.Structure.NodeDistanceComparer comparer = AdapterComparers[typeof(Node)]    // θ(1)
+                as Engine.Structure.NodeDistanceComparer;
 
-            Dictionary<double, List<string>> Δx = new Dictionary<double, List<string>>();
-            Dictionary<double, List<string>> Δy = new Dictionary<double, List<string>>();
-            Dictionary<double, List<string>> Δz = new Dictionary<double, List<string>>();
+            Dictionary<double, List<string>> Δx = new Dictionary<double, List<string>>();      // θ(1)
+            Dictionary<double, List<string>> Δy = new Dictionary<double, List<string>>();      // θ(1)
+            Dictionary<double, List<string>> Δz = new Dictionary<double, List<string>>();      // θ(1)
 
 
             // 1. GROUP NODES BY RELATIVE MOVEMENT IN X/Y/Z DIRECTION  -  ** HASH TABLES **
 
-            foreach (Node bhNode in nodes)
+            foreach (Node bhNode in nodes)                                                     // n*θ(1) + θ(1)
             {
-                string name = GetAdapterId<string>(bhNode);
+                string name = GetAdapterId<string>(bhNode);                                    // θ(1)
 
                 // Update position
-                double x = 0;
-                double y = 0;
-                double z = 0;
+                double x = 0;                                                                  // θ(1)
+                double y = 0;                                                                  // θ(1)
+                double z = 0;                                                                  // θ(1)
 
-                if (m_model.PointObj.GetCoordCartesian(name, ref x, ref y, ref z) == 0)
+                if (m_model.PointObj.GetCoordCartesian(name, ref x, ref y, ref z) == 0)        // θ(1)
                 {
-                    oM.Geometry.Point p = new oM.Geometry.Point() { X = x, Y = y, Z = z };
+                    oM.Geometry.Point p = new oM.Geometry.Point() { X = x, Y = y, Z = z };     // θ(1)
 
-                    if (!comparer.Equals(bhNode, (Node)p))
+                    if (!comparer.Equals(bhNode, (Node)p))                                     // θ(1)
                     {
                         // Get BHoM vs ETABS differences in nodes coordinates
-                        x = bhNode.Position.X - x;
-                        y = bhNode.Position.Y - y;
-                        z = bhNode.Position.Z - z;
+                        x = bhNode.Position.X - x;                                             // θ(1)
+                        y = bhNode.Position.Y - y;                                             // θ(1)
+                        z = bhNode.Position.Z - z;                                             // θ(1)
 
                         // Add Node name and corresponding ΔX in Δx Hash Table
-                        if (Δx.ContainsKey(x)) Δx[x].Add(name);
-                        else Δx.Add(x, new List<string>() {name});
+                        if (Δx.ContainsKey(x)) Δx[x].Add(name);                                // θ(1)
+                        else Δx.Add(x, new List<string>() {name});                             // θ(1)
                         // Add Node name and corresponding ΔY in Δy Hash Table
-                        if (Δy.ContainsKey(y)) Δy[y].Add(name);
-                        else Δy.Add(y, new List<string>() {name});
+                        if (Δy.ContainsKey(y)) Δy[y].Add(name);                                // θ(1)
+                        else Δy.Add(y, new List<string>() {name});                             // θ(1)
                         // Add Node name and corresponding ΔZ in Δz Hash Table
-                        if (Δz.ContainsKey(z)) Δz[z].Add(name);
-                        else Δz.Add(z, new List<string>() {name});
+                        if (Δz.ContainsKey(z)) Δz[z].Add(name);                                // θ(1)
+                        else Δz.Add(z, new List<string>() {name});                             // θ(1)
 
                     }
                 }
@@ -100,7 +101,7 @@ namespace BH.Adapter.ETABS
             // 2. MOVE NODES GROUP-BY-GROUP  -  ** STREAMS **
 
             // ΔX Movement
-            Δx.ToList().ForEach(kvp =>
+            Δx.ToList().ForEach(kvp =>                                                         // θ(n)
             {
                 // 1. Select all nodes belonging to same group
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), true));
@@ -111,7 +112,7 @@ namespace BH.Adapter.ETABS
             });
 
             // ΔY Movement
-            Δy.ToList().ForEach(kvp =>
+            Δy.ToList().ForEach(kvp =>                                                         // θ(n)
             {
                 // 1. Select all nodes belonging to same group
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), true));
@@ -122,7 +123,7 @@ namespace BH.Adapter.ETABS
             });
 
             // ΔZ Movement
-            Δz.ToList().ForEach(kvp =>
+            Δz.ToList().ForEach(kvp =>                                                         // θ(n)
             {
                 // 1. Select all nodes belonging to same group
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), true));
@@ -134,6 +135,8 @@ namespace BH.Adapter.ETABS
 
             return success;
         }
+
+        /* Computational Cost: T(n)= θ(n) */
 
         /***************************************************/
     }
