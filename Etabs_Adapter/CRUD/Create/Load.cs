@@ -304,6 +304,8 @@ namespace BH.Adapter.ETABS
                 { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 3, tempDelta, "", replace);}
 
             }
+
+            Engine.Base.Compute.RecordWarning("The input Temperature Profile must be Linear. ETABS API doesn't allow to deal with Non-Linear temperature profiles.");
         }
 
         /***************************************************/
@@ -347,6 +349,8 @@ namespace BH.Adapter.ETABS
                         break;}
                 }
             }
+
+            Engine.Base.Compute.RecordWarning("The input Temperature Profile must be Linear. ETABS API doesn't allow to deal with Non-Linear temperature profiles.");
         }
 
 
