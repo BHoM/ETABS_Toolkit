@@ -140,7 +140,7 @@ namespace BH.Adapter.ETABS
                         m_model.File.NewBlank();
                 }
 
-                FilePath = m_model.GetModelFilepath()+m_model.GetModelFilename();
+                FilePath = m_model.GetModelFilename();
 
                 LoadSectionDatabaseNames();
             }
