@@ -42,6 +42,7 @@ using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.oM.Adapter;
 using BH.oM.Structure.Elements;
+using System.Xml.Linq;
 
 namespace BH.Adapter.ETABS
 {
@@ -73,6 +74,7 @@ namespace BH.Adapter.ETABS
                 case MeshResultType.Stresses:
                     return ReadMeshStress(panelIds, cases, request.Smoothing, request.Layer);
                 case MeshResultType.VonMises:
+                    return ReadMeshVonMises(panelIds, cases, request.Smoothing, request.Layer);
                 default:
                     Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
@@ -233,7 +235,9 @@ namespace BH.Adapter.ETABS
 
                     List<MeshStress> stressTop = new List<MeshStress>();
                     List<MeshStress> stressBot = new List<MeshStress>();
-                    int ret = m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
+                    int ret = m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, 
+                        ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, 
+                        ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
 
                     if (ret == 0)
                     {
@@ -243,8 +247,10 @@ namespace BH.Adapter.ETABS
                             int mode;
                             double timeStep;
                             GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
-                            MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], double.NaN);
-                            MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], double.NaN);
+                            MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, 
+                                oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], double.NaN);
+                            MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, 
+                                oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], double.NaN);
 
                             stressBot.Add(mStressBot);
                             stressTop.Add(mStressTop);
@@ -271,6 +277,124 @@ namespace BH.Adapter.ETABS
             return results;
         }
 
+        /***************************************************/
+
+        private List<MeshResult> ReadMeshVonMises(List<string> panelIds, List<string> cases, MeshResultSmoothingType smoothing, MeshResultLayer layer)
+        {
+            switch (smoothing)
+            {
+                case MeshResultSmoothingType.BySelection:
+                case MeshResultSmoothingType.Global:
+                case MeshResultSmoothingType.ByFiniteElementCentres:
+                    Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted");
+                    return new List<MeshResult>();
+            }
+
+            if (layer == MeshResultLayer.Upper || layer == MeshResultLayer.Lower)
+            {
+                Engine.Base.Compute.RecordWarning("Results for both bot and top layers will be extracted at the same time");
+            }
+            else
+            {
+                Engine.Base.Compute.RecordWarning("Stress extraction is currently only possible at bot and top layers. Please update the MeshResultLayer parameter");
+                return new List<MeshResult>();
+            }
+
+            eItemTypeElm itemTypeElm = eItemTypeElm.ObjectElm;
+            int resultCount = 0;
+            string[] obj = null, elm = null;
+            string[] pointElm = null, loadCase = null, stepType = null;
+            double[] stepNum = null;
+            double[] s11Top = null, s22Top = null, s12Top = null, sMaxTop = null, sMinTop = null, sAngTop = null, svmTop = null;
+            double[] s11Bot = null, s22Bot = null, s12Bot = null, sMaxBot = null, sMinBot = null, sAngBot = null, svmBot = null;
+            double[] s13Avg = null, s23Avg = null, sMaxAvg = null, sAngAvg = null;
+            double[] f11 = null, f22 = null, f12 = null, fMax = null, fMin = null, fAngle = null, fvm = null;
+            double[] m11 = null, m22 = null, m12 = null, mMax = null, mMin = null, mAngle = null; 
+            double[] v13 = null, v23 = null, vMax = null, vAngle=null;
+
+            List<MeshResult> results = new List<MeshResult>();
+
+
+            if (smoothing == MeshResultSmoothingType.ByPanel)
+                Engine.Base.Compute.RecordWarning("Stress values have been smoothed outside the API by averaging all force values in each node");
+
+            foreach (string caseName in cases)
+            {
+                m_model.Results.Setup.DeselectAllCasesAndCombosForOutput();
+                if (!SetUpCaseOrCombo(caseName))
+                    continue;
+
+                for (int i = 0; i < panelIds.Count; i++)
+                {
+
+                    List<MeshVonMises> stressVMTop = new List<MeshVonMises>();
+                    List<MeshVonMises> stressVMBot = new List<MeshVonMises>();
+                    int ret1, ret2, ret3;
+                    double panelThk;
+
+                    // Extract Von Mises Stresses
+                    ret1= m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, 
+                        ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, 
+                        ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
+                    
+                    // Extract Von Mises Resultant Axial Forces
+                    ret2 = m_model.Results.AreaForceShell(panelIds[i], itemTypeElm, ref resultCount, 
+                        ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum,
+                        ref f11, ref f22, ref f12, ref fMax, ref fMin, ref fAngle, ref fvm, 
+                        ref m11, ref m22, ref m12, ref mMax, ref mMin, ref mAngle, 
+                        ref v13, ref v23, ref vMax, ref vAngle);
+
+                    // Get the panel thickness
+                    panelThk = GetPanelThickness(panelIds[i]);
+
+
+                    if ((ret1 == 0) && (ret2 == 0))
+                    {
+
+                        for (int j = 0; j < resultCount; j++)
+                        {
+                            int mode;
+                            double timeStep;
+
+                            // Calculate Von Mises Moment
+                            double Mvm = ComputeVonMisesMoment(svmTop[j], svmBot[j], panelThk);
+
+                            GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                            MeshVonMises mStressVMTop = new MeshVonMises(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, 
+                                MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, svmTop[j], fvm[j], Mvm);
+                            MeshVonMises mStressVMBot = new MeshVonMises(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, 
+                                MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, svmBot[j], fvm[j], Mvm);
+
+                            stressVMBot.Add(mStressVMBot);
+                            stressVMTop.Add(mStressVMTop);
+                        }
+
+
+                        if (smoothing == MeshResultSmoothingType.ByPanel)
+                        {
+                            stressVMTop = SmoothenVonMisesStresses(stressVMTop);
+                            stressVMBot = SmoothenVonMisesStresses(stressVMBot);
+                        }
+
+                        results.AddRange(GroupMeshResults(stressVMTop));
+                        results.AddRange(GroupMeshResults(stressVMBot));
+
+                    }
+                    else
+                    {
+                        Engine.Base.Compute.RecordWarning("Failed to extract results for element " + panelIds[i] + " for case " + caseName);
+                    }
+                }
+            }
+
+            return results;
+
+        }
+
+
+        
+            
+            
         /***************************************************/
 
         //Method atempting to extract results using AreaStressLayered method. API call is currently never returning any results for this.
@@ -462,6 +586,70 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        private double GetPanelThickness(string panelId)
+        {
+
+            //Utility Variables
+
+            int ret;
+            string areaPropName="";
+
+            eDeckType deckType=eDeckType.Unfilled;
+            eSlabType slabType=eSlabType.Slab;
+            eShellType shellType=eShellType.ShellThin;
+            eWallPropType wallPropType=eWallPropType.Specified;
+            String matProp="";
+            Double thickness=0;
+            int color=0;
+            String notes="", guid="";
+
+            double slabDepth = 0, ribDepth = 0, ribWidthTop = 0, ribWidthBot = 0, ribSpacing = 0, shearThickness = 0;
+            double unitWeight = 0, shearStudDia = 0, shearStudHt = 0, shearStudFu = 0, bending = 0, matAng = 0;
+            double overallDepth = 0, slabThickness = 0, stemWidthTop=0, stemWidthBot=0, ribSpacingDir1=0, ribSpacingDir2=0;
+            int numLayers = 0, ribsParallelTo = 0, shellTypeInt = 0;
+            bool includeDrillingDOF=false;
+            string[] layerNames = null, matProps = null;
+            double[] dist=null, matAngs=null, shellThicknesses =null;
+            int[] myType=null, numIntegrationP=null, s11Type=null, s22Type=null, s12Type=null;
+
+
+            // 1. GET THE PANEL PROPERTY NAME
+
+            ret = m_model.AreaObj.GetProperty(panelId, ref areaPropName);
+
+
+            // 2. GET THE PANEL THICKNESS
+            
+            // Case 1 - Deck SolidSlab
+            if (m_model.PropArea.GetDeckSolidSlab(areaPropName, ref slabDepth, ref shearStudDia, ref shearStudHt, ref shearStudFu) == 0) return slabDepth;
+            // Case 2 - Deck Unfilled
+            if (m_model.PropArea.GetDeckUnfilled(areaPropName, ref ribDepth, ref ribWidthTop, ref ribWidthBot, ref ribSpacing, ref shearThickness, ref unitWeight) == 0) return Math.Round(ribDepth,3);
+            // Case 3 - Deck Filled
+            if (m_model.PropArea.GetDeckFilled(areaPropName, ref slabDepth, ref ribDepth, ref ribWidthTop, ref ribWidthBot, ref ribSpacing, ref shearThickness, ref unitWeight, ref shearStudDia, ref shearStudHt, ref shearStudFu) == 0) return Math.Round(slabDepth, 3);
+            // Case 4 - Deck
+            if (m_model.PropArea.GetDeck(areaPropName, ref deckType, ref shellType, ref matProp, ref thickness, ref color, ref notes, ref guid) == 0) return Math.Round(thickness, 3);
+            // Case 5 - Slab Waffle
+            if (m_model.PropArea.GetSlabWaffle(areaPropName, ref overallDepth, ref slabThickness, ref stemWidthTop, ref stemWidthBot, ref ribSpacingDir1, ref ribSpacingDir2) == 0) return Math.Round(overallDepth, 3);
+            // Case 6 - Slab Ribbed
+            if (m_model.PropArea.GetSlabRibbed(areaPropName, ref overallDepth, ref slabThickness, ref stemWidthTop, ref stemWidthBot, ref ribSpacing, ref ribsParallelTo) == 0) return Math.Round(overallDepth, 3);
+            // Case 7 - Slab
+            if (m_model.PropArea.GetSlab(areaPropName, ref slabType, ref shellType, ref matProp, ref slabThickness, ref color, ref notes, ref guid) == 0) return Math.Round(slabThickness, 3);
+            // Case 8 - Wall
+            if (m_model.PropArea.GetWall(areaPropName, ref wallPropType, ref shellType, ref matProp, ref thickness, ref color, ref notes, ref guid) == 0) return Math.Round(thickness, 3);
+
+            // Case else - No Thickness found...
+            return 0.0;
+
+
+        }
+
+
+
+
+
+
+        /***************************************************/
+
         private List<MeshForce> SmoothenForces(List<MeshForce> forces)
         {
             List<MeshForce> smoothenedForces = new List<MeshForce>();
@@ -481,7 +669,9 @@ namespace BH.Adapter.ETABS
                 double vx = group.Average(x => x.VX);
                 double vy = group.Average(x => x.VY);
 
-                smoothenedForces.Add(new MeshForce(first.ObjectId, first.NodeId, "", first.ResultCase, first.ModeNumber, first.TimeStep, first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, nxx, nyy, nxy, mxx, myy, mxy, vx, vy));
+                smoothenedForces.Add(new MeshForce(first.ObjectId, first.NodeId, "", first.ResultCase, first.ModeNumber, first.TimeStep, 
+                                                        first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, 
+                                                        nxx, nyy, nxy, mxx, myy, mxy, vx, vy));
             }
 
             return smoothenedForces;
@@ -508,10 +698,44 @@ namespace BH.Adapter.ETABS
                 double pr2 = group.Average(x => x.Principal_2);
                 double pr1_2 = group.Average(x => x.Principal_1_2);
 
-                smoothenedForces.Add(new MeshStress(first.ObjectId, first.NodeId, "", first.ResultCase, first.ModeNumber, first.TimeStep, first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, sxx, syy, sxy, txx, tyy, pr1, pr2, pr1_2));
+                smoothenedForces.Add(new MeshStress(first.ObjectId, first.NodeId, "", first.ResultCase, first.ModeNumber, first.TimeStep, 
+                                                        first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, 
+                                                        sxx, syy, sxy, txx, tyy, pr1, pr2, pr1_2));
             }
 
             return smoothenedForces;
+        }
+
+        /***************************************************/
+
+
+        private List<MeshVonMises> SmoothenVonMisesStresses(List<MeshVonMises> forces)
+        {
+            List<MeshVonMises> smoothenedVMStresses = new List<MeshVonMises>();
+
+            foreach (IEnumerable<MeshVonMises> group in forces.GroupBy(x => new { x.ResultCase, x.TimeStep, x.NodeId }))
+            {
+                MeshVonMises first = group.First();
+
+                double s = group.Average(x => x.S);
+                double n = group.Average(x => x.N);
+                double m = group.Average(x => x.M);
+
+                smoothenedVMStresses.Add(new MeshVonMises(first.ObjectId, first.NodeId, "", first.ResultCase, first.ModeNumber, first.TimeStep, 
+                                                            first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation,s,n,m));
+            }
+
+            return smoothenedVMStresses;
+        }
+
+        /***************************************************/
+
+        private double ComputeVonMisesMoment(double svmTop, double svmBot, double thk)
+        {
+            double svmAvg = (svmTop + svmBot) / 2;
+            double vonMisesMoment = ((svmBot - svmAvg) * (thk / 2) * (1 / 2) * (thk - 2 * thk / 2 * 1 / 3)) / 1000;
+
+            return vonMisesMoment;
         }
 
         /***************************************************/
