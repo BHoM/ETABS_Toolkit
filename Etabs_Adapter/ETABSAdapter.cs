@@ -59,6 +59,8 @@ namespace BH.Adapter.ETABS
 
         public const string ID = "ETABS_id";
 
+        public string FilePath;
+
         public EtabsSettings EtabsSettings { get; set; } = new EtabsSettings();
 
         /***************************************************/
@@ -137,6 +139,8 @@ namespace BH.Adapter.ETABS
                     else
                         m_model.File.NewBlank();
                 }
+
+                FilePath = m_model.GetModelFilepath();
 
                 LoadSectionDatabaseNames();
             }
