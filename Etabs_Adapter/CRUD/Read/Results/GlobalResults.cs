@@ -56,6 +56,9 @@ namespace BH.Adapter.ETABS
                 case GlobalResultType.Reactions:
                     return GetGlobalReactions();
                 case GlobalResultType.ModalDynamics:
+
+                case GlobalResultType.StoryDrifts:
+                    return GetStoryDrifts();
                 default:
                     Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
