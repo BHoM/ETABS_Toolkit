@@ -135,6 +135,39 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        private List<StoryDrift> GetStoryDrifts()
+        {
+            List<StoryDrift> storyDrifts = new List<StoryDrift>();
+
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] stepType = null; double[] stepNum = null;
+            string[] storyNames = null; string[] directions = null;
+            double[] drifts = null; string[] labels = null;
+            double[] x = null; double[] y= null; double[] z = null;
+
+            m_model.Results.StoryDrifts(ref resultCount, ref storyNames, ref loadcaseNames, ref stepType, ref stepNum, ref directions, ref drifts, ref labels, ref x, ref y, ref z);
+
+
+
+            for (int i = 0; i < resultCount; i++)
+            {
+                int mode;
+                double timeStep;
+                GetStepAndMode(stepType[i], stepNum[i], out timeStep, out mode);
+
+                StoryDrift stDrft = new StoryDrift("", loadcaseNames[i], mode, timeStep, storyNames[i], directions[i], drifts[i]);
+
+                storyDrifts.Add(stDrft);
+            }
+
+            return storyDrifts;
+
+        }
+
+        /***************************************************/
+
+
     }
 }
 
