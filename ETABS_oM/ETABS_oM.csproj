@@ -49,8 +49,8 @@
     </Reference>
     <Reference Include="Quantities_oM">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Quantities_oM.dll</HintPath>
-	  <Private>False</Private>
-	  <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Structure_oM">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Structure_oM.dll</HintPath>
@@ -71,6 +71,7 @@
     <Compile Include="Fragments\ShellTypeFragment.cs" />
     <Compile Include="Requests\Enum\PierAndSpandrelResultType.cs" />
     <Compile Include="Requests\PierAndSpandrelForceRequest.cs" />
+    <Compile Include="Results\BarDesign.cs" />
     <Compile Include="Settings\DataBaseSettings.cs" />
     <Compile Include="Settings\EtabsSettings.cs" />
     <Compile Include="Enums\SectionDatabase.cs" />
