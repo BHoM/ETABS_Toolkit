@@ -64,8 +64,10 @@ namespace BH.Adapter.ETABS
 
 
             bool isOpening = false;
-            openingNames=nameArr.Where(panelName => { m_model.AreaObj.GetOpening(panelName, ref isOpening);
-                                                      return isOpening;}).ToList();
+            openingNames = nameArr.Where(panelName => {
+                m_model.AreaObj.GetOpening(panelName, ref isOpening);
+                return isOpening;
+            }).ToList();
 
             ids = FilterIds(ids, openingNames);
 
@@ -77,7 +79,7 @@ namespace BH.Adapter.ETABS
                 Opening opening = new Opening();
                 Polyline pl = GetOpeningPerimeter(id);
 
-                opening.Edges=pl.SubParts().Select(x => new Edge { Curve = x }).ToList();
+                opening.Edges = pl.SubParts().Select(x => new Edge { Curve = x }).ToList();
 
                 //Label and story
                 string label = "";
