@@ -351,6 +351,7 @@
     <Compile Include="Convert\ToCSI\Vector.cs" />
     <Compile Include="CRUD\Create\Loadcase.cs" />
     <Compile Include="CRUD\Create\Diaphragm.cs" />
+    <Compile Include="CRUD\Create\Opening.cs" />
     <Compile Include="CRUD\Create\SurfaceProperty.cs" />
     <Compile Include="CRUD\Create\SectionProperty.cs" />
     <Compile Include="CRUD\Create\Panel.cs" />
@@ -365,6 +366,7 @@
     <Compile Include="CRUD\Delete\_Delete.cs" />
     <Compile Include="CRUD\Read\Grid.cs" />
     <Compile Include="CRUD\Read\Loadcase.cs" />
+    <Compile Include="CRUD\Read\Opening.cs" />
     <Compile Include="CRUD\Read\Results\PierAndSpandrelResults.cs" />
     <Compile Include="CRUD\Read\SectionProperty.cs" />
     <Compile Include="CRUD\Read\Results\BarResults.cs" />
