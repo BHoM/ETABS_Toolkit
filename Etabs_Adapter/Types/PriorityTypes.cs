@@ -48,23 +48,22 @@ namespace BH.Adapter.ETABS
 
         protected void SetupPriorities()
         {
-            Type[] types= new Type[]
-            {
-                typeof(Level),
-                typeof(Node),
-                typeof(ISectionProperty),
-                typeof(IMaterialFragment),
-                typeof(Bar),
-                typeof(ISurfaceProperty),
-                typeof(Panel),
-                typeof(RigidLink),
-                typeof(LinkConstraint),
-                typeof(Loadcase),
-                typeof(IElementLoad<Node>),
-                typeof(IElementLoad<Bar>)
-            };
 
-            PriorityTypes = new Queue<Type>(types);
+            PriorityTypes = new Dictionary<Type, int>
+            {
+                {typeof(Level),0 },
+                {typeof(Node),1 },
+                {typeof(ISectionProperty),2 },
+                {typeof(IMaterialFragment),3 },
+                {typeof(Bar),4 },
+                {typeof(ISurfaceProperty),5 },
+                {typeof(Panel),6 },
+                {typeof(RigidLink),7 },
+                {typeof(LinkConstraint),8 },
+                {typeof(Loadcase),9 },
+                {typeof(IElementLoad<Node>),10 },
+                {typeof(IElementLoad<Bar>),11 }
+            };
 
         }
 
