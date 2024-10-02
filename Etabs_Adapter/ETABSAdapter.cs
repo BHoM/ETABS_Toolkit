@@ -86,6 +86,7 @@ namespace BH.Adapter.ETABS
             SetupDependencies();
             SetupPriorities();
             SetupComparers();
+            m_AdapterSettings.HandlePriorities = true;
             m_AdapterSettings.DefaultPushType = oM.Adapter.PushType.CreateNonExisting;
 
 
