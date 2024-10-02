@@ -77,6 +77,12 @@ namespace BH.Adapter.ETABS
                 typeCouldBeRead = true;
             }
 
+            if (type.IsAssignableFrom(typeof(PointDisplacement)))
+            {
+                loads.AddRange(ReadPointDisplacementLoad(loadcaseList));
+                typeCouldBeRead = true;
+            }
+
             if (type.IsAssignableFrom(typeof(BarUniformlyDistributedLoad)))
             {
                 loads.AddRange(ReadBarLoad(loadcaseList));
