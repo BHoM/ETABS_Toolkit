@@ -228,9 +228,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>ETABS18_Adapter</AssemblyName>
   </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Adapter_Engine">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Adapter_Engine.dll</HintPath>
@@ -421,12 +418,7 @@
       xcopy "$(TargetDir)ETABS2016.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
 xcopy "$(TargetDir)ETABSv17.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
 xcopy "$(TargetDir)CSiAPIv1.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
-
 </PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
