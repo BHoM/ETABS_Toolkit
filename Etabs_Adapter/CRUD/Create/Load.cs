@@ -329,12 +329,13 @@ namespace BH.Adapter.ETABS
             int ret = 0;
             string caseName = GetAdapterId<string>(barDifferentialTemperatureLoad.Loadcase);
             DifferentialTemperatureLoadDirection loadDir= barDifferentialTemperatureLoad.LoadDirection;
+            Dictionary<double, double> tempProfile = barDifferentialTemperatureLoad.TemperatureProfile;
+            double tempMed = tempProfile.Average(kv => kv.Value);
+            double tempDelta = ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
+
 
             foreach (Bar bar in barDifferentialTemperatureLoad.Objects.Elements)
             {
-                Dictionary<double, double> tempProfile = barDifferentialTemperatureLoad.TemperatureProfile;
-                double tempMed = tempProfile.Average(kv => kv.Value);
-                double tempDelta = ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
 
                 if (tempMed != 0)
                 { ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 1, tempMed, "", replace); }
