@@ -334,7 +334,7 @@ namespace BH.Adapter.ETABS
             }
 
             // 3. Get ETABS Id using REFLECTION - **REFLECTION**
-            private ETABSId getEtabsId(IBHoMObject obj) 
+            private ETABSId GetEtabsId(IBHoMObject obj) 
             {
                 // 1. Get the object Type
                 Type objsType = obj.GetType();
