@@ -27,7 +27,8 @@ namespace BH.oM.Adapters.ETABS.Requests
     [Description("Defines the type of results that should be extracted for PierAndSpandrelForceRequest.")]
     public enum PierAndSpandrelResultType
     {
-        PierForce
+        PierForce,
+        SpandrelForce
     }
 }
 
