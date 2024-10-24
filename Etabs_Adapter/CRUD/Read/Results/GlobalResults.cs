@@ -57,8 +57,8 @@ namespace BH.Adapter.ETABS
                     return GetGlobalReactions();
                 case GlobalResultType.ModalDynamics:
 
-                case GlobalResultType.StoryDrifts:
-                    return GetStoryDrifts();
+                case GlobalResultType.StoreyDrifts:
+                    return GetStoreyDrifts();
                 default:
                     Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
@@ -138,18 +138,18 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private List<StoryDrift> GetStoryDrifts()
+        private List<StoreyDrift> GetStoreyDrifts()
         {
-            List<StoryDrift> storyDrifts = new List<StoryDrift>();
+            List<StoreyDrift> storeyDrifts = new List<StoreyDrift>();
 
             int resultCount = 0;
             string[] loadcaseNames = null;
             string[] stepType = null; double[] stepNum = null;
-            string[] storyNames = null; string[] directions = null;
+            string[] storeyNames = null; string[] directions = null;
             double[] drifts = null; string[] labels = null;
             double[] x = null; double[] y= null; double[] z = null;
 
-            m_model.Results.StoryDrifts(ref resultCount, ref storyNames, ref loadcaseNames, ref stepType, ref stepNum, ref directions, ref drifts, ref labels, ref x, ref y, ref z);
+            m_model.Results.StoryDrifts(ref resultCount, ref storeyNames, ref loadcaseNames, ref stepType, ref stepNum, ref directions, ref drifts, ref labels, ref x, ref y, ref z);
 
 
 
@@ -159,12 +159,12 @@ namespace BH.Adapter.ETABS
                 double timeStep;
                 GetStepAndMode(stepType[i], stepNum[i], out timeStep, out mode);
 
-                StoryDrift stDrft = new StoryDrift("", loadcaseNames[i], mode, timeStep, storyNames[i], directions[i], drifts[i]);
+                StoreyDrift stDrft = new StoreyDrift("", loadcaseNames[i], mode, timeStep, storeyNames[i], directions[i], drifts[i]);
 
-                storyDrifts.Add(stDrft);
+                storeyDrifts.Add(stDrft);
             }
 
-            return storyDrifts;
+            return storeyDrifts;
 
         }
 
