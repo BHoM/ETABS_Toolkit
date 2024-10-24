@@ -333,7 +333,7 @@ namespace BH.Adapter.ETABS
 
             if (tempProfile.Count > 2)
             {
-                Engine.Base.Compute.RecordWarning("The input Temperature Profile must be Linear. ETABS API doesn't allow to deal with Non-Linear temperature profiles.");
+                Engine.Base.Compute.RecordError("The BarDifferentialTemperature must be Linear. ETABS does not support nonlinear temperature profiles.");
                 return;
             }
                 
