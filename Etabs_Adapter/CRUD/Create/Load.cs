@@ -330,6 +330,13 @@ namespace BH.Adapter.ETABS
             string caseName = GetAdapterId<string>(barDifferentialTemperatureLoad.Loadcase);
             DifferentialTemperatureLoadDirection loadDir= barDifferentialTemperatureLoad.LoadDirection;
             Dictionary<double, double> tempProfile = barDifferentialTemperatureLoad.TemperatureProfile;
+
+            if (tempProfile.Count > 2)
+            {
+                Engine.Base.Compute.RecordWarning("The input Temperature Profile must be Linear. ETABS API doesn't allow to deal with Non-Linear temperature profiles.");
+                return;
+            }
+                
             double tempMed = tempProfile.Average(kv => kv.Value);
             double tempDelta = ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
 
@@ -351,7 +358,7 @@ namespace BH.Adapter.ETABS
                 }
             }
 
-            Engine.Base.Compute.RecordWarning("The input Temperature Profile must be Linear. ETABS API doesn't allow to deal with Non-Linear temperature profiles.");
+           
         }
 
 
