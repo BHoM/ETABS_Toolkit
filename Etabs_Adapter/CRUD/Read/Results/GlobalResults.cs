@@ -32,6 +32,7 @@ using BH.oM.Structure.Results;
 using BH.oM.Analytical.Results;
 using BH.oM.Structure.Requests;
 using BH.oM.Adapter;
+using BH.oM.Geometry;
 
 namespace BH.Adapter.ETABS
 {
@@ -151,13 +152,30 @@ namespace BH.Adapter.ETABS
 
             m_model.Results.StoryDrifts(ref resultCount, ref storeyNames, ref loadcaseNames, ref stepType, ref stepNum, ref directions, ref drifts, ref labels, ref x, ref y, ref z);
 
+            Vector[] dirVectors = directions.Select(dirStr =>
+                {
+                    switch (dirStr.ToUpper())
+                    {
+                        case "X":
+                            return Vector.XAxis;
+                            break;
+                        case "Y":
+                            return Vector.YAxis;
+                            break;
+                        default:
+                            return Vector.ZAxis;
+                            break;
+                    }
+                }).ToArray();
+
+
             for (int i = 0; i < resultCount; i++)
             {
                 int mode;
                 double timeStep;
                 GetStepAndMode(stepType[i], stepNum[i], out timeStep, out mode);
 
-                StoreyDrift stDrft = new StoreyDrift("", loadcaseNames[i], mode, timeStep, storeyNames[i], directions[i], drifts[i]);
+                StoreyDrift stDrft = new StoreyDrift("", loadcaseNames[i], mode, timeStep, storeyNames[i], dirVectors[i], drifts[i]);
 
                 storeyDrifts.Add(stDrft);
             }
