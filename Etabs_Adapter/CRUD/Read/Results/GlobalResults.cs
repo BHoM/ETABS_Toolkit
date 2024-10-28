@@ -151,8 +151,6 @@ namespace BH.Adapter.ETABS
 
             m_model.Results.StoryDrifts(ref resultCount, ref storeyNames, ref loadcaseNames, ref stepType, ref stepNum, ref directions, ref drifts, ref labels, ref x, ref y, ref z);
 
-
-
             for (int i = 0; i < resultCount; i++)
             {
                 int mode;
