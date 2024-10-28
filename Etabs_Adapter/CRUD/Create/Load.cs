@@ -291,21 +291,25 @@ namespace BH.Adapter.ETABS
         {
             int ret = 0;
             string caseName = GetAdapterId<string>(areaDifferentialTemperatureLoad.Loadcase);
+            Dictionary<double, double> tempProfile = areaDifferentialTemperatureLoad.TemperatureProfile;
+
+            if (tempProfile.Count > 2)
+            {
+                Engine.Base.Compute.RecordError("The AreaDifferentialTemperature must be Linear. ETABS does not support nonlinear temperature profiles.");
+                return;
+            }
+            
+            double tempMed = tempProfile.Average(kv => kv.Value);
+            double tempDelta = ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
+
             foreach (IAreaElement area in areaDifferentialTemperatureLoad.Objects.Elements)
             {
-                Dictionary<double, double> tempProfile = areaDifferentialTemperatureLoad.TemperatureProfile;
-                double tempMed = tempProfile.Average(kv => kv.Value);
-                double tempDelta= ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
-
                 if (tempMed!=0)
                 { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 1, tempMed, "", replace);}
 
                 if (tempDelta!=0)
                 { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 3, tempDelta, "", replace);}
-
             }
-
-            Engine.Base.Compute.RecordWarning("The input Temperature Profile must be Linear. ETABS API doesn't allow to deal with Non-Linear temperature profiles.");
         }
 
         /***************************************************/
