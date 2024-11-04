@@ -295,7 +295,7 @@ namespace BH.Adapter.ETABS
             }
             else
             {
-                Engine.Base.Compute.RecordWarning("Stress extraction is currently only possible at bot and top layers. Please update the MeshResultLayer parameter");
+                Engine.Base.Compute.RecordWarning("Stress extraction is currently only possible at bot and top layers. Please update the MeshResultLayer parameter.");
                 return new List<MeshResult>();
             }
 
