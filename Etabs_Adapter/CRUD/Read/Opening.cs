@@ -103,7 +103,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private Polyline GetOpeningPerimeter(string id)
+        private Polyline GetOpeningOutline(string id)
         {
             string[] pName = null;
             int pointCount = 0;
