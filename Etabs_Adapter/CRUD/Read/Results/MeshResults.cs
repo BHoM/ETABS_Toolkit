@@ -63,7 +63,6 @@ namespace BH.Adapter.ETABS
             CheckAndSetUpCases(request);
             List<string> panelIds = CheckGetPanelIds(request);
 
-            
             switch (request.ResultType)
             {
                 case MeshResultType.Forces:
@@ -88,7 +87,6 @@ namespace BH.Adapter.ETABS
 
         private List<MeshResult> ReadMeshForce(List<string> panelIds, MeshResultSmoothingType smoothing)
         {
-
             switch (smoothing)
             {
                 case MeshResultSmoothingType.BySelection:
@@ -131,7 +129,6 @@ namespace BH.Adapter.ETABS
 
             for (int i = 0; i < panelIds.Count; i++)
             {
-
                 List<MeshForce> forces = new List<MeshForce>();
                 
                 int ret = m_model.Results.AreaForceShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm,
@@ -143,7 +140,6 @@ namespace BH.Adapter.ETABS
                     int mode;
                     double timeStep;
                     
-
                     if (stepType[j] == "Single Value" || stepNum.Length < j)
                     {
                         mode = 0;
@@ -219,7 +215,6 @@ namespace BH.Adapter.ETABS
 
             List<MeshResult> results = new List<MeshResult>();
 
-
             if (smoothing == MeshResultSmoothingType.ByPanel)
                 Engine.Base.Compute.RecordWarning("Stress values have been smoothed outside the API by averaging all force values in each node");
 
@@ -231,7 +226,6 @@ namespace BH.Adapter.ETABS
 
                 for (int i = 0; i < panelIds.Count; i++)
                 {
-
                     List<MeshStress> stressTop = new List<MeshStress>();
                     List<MeshStress> stressBot = new List<MeshStress>();
                     int ret = m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, 
@@ -240,7 +234,6 @@ namespace BH.Adapter.ETABS
 
                     if (ret == 0)
                     {
-
                         for (int j = 0; j < resultCount; j++)
                         {
                             int mode;
@@ -254,7 +247,6 @@ namespace BH.Adapter.ETABS
                             stressBot.Add(mStressBot);
                             stressTop.Add(mStressTop);
                         }
-
 
                         if (smoothing == MeshResultSmoothingType.ByPanel)
                         {
@@ -272,7 +264,6 @@ namespace BH.Adapter.ETABS
                     }
                 }
             }
-
             return results;
         }
 
@@ -313,19 +304,18 @@ namespace BH.Adapter.ETABS
 
             List<MeshResult> results = new List<MeshResult>();
 
-
             if (smoothing == MeshResultSmoothingType.ByPanel)
                 Engine.Base.Compute.RecordWarning("Stress values have been smoothed outside the API by averaging all force values in each node");
 
             foreach (string caseName in cases)
             {
                 m_model.Results.Setup.DeselectAllCasesAndCombosForOutput();
+
                 if (!SetUpCaseOrCombo(caseName))
                     continue;
 
                 for (int i = 0; i < panelIds.Count; i++)
                 {
-
                     List<MeshVonMises> stressVMTop = new List<MeshVonMises>();
                     List<MeshVonMises> stressVMBot = new List<MeshVonMises>();
                     int ret1, ret2, ret3;
@@ -346,10 +336,8 @@ namespace BH.Adapter.ETABS
                     // Get the panel thickness
                     panelThk = GetPanelThickness(panelIds[i]);
 
-
                     if ((ret1 == 0) && (ret2 == 0))
                     {
-
                         for (int j = 0; j < resultCount; j++)
                         {
                             int mode;
@@ -368,7 +356,6 @@ namespace BH.Adapter.ETABS
                             stressVMTop.Add(mStressVMTop);
                         }
 
-
                         if (smoothing == MeshResultSmoothingType.ByPanel)
                         {
                             stressVMTop = SmoothenVonMisesStresses(stressVMTop);
@@ -385,15 +372,10 @@ namespace BH.Adapter.ETABS
                     }
                 }
             }
-
             return results;
 
         }
 
-
-        
-            
-            
         /***************************************************/
 
         //Method atempting to extract results using AreaStressLayered method. API call is currently never returning any results for this.
@@ -414,10 +396,8 @@ namespace BH.Adapter.ETABS
             string[] obj = null;
             string[] elm = null;
             string[] layer = null;
-
             int[] intPtNb = null;
             double[] layerPos = null;
-
             string[] pointElm = null;
             string[] loadCase = null;
             string[] stepType = null;
@@ -429,7 +409,6 @@ namespace BH.Adapter.ETABS
             double[] sMin = null;
             double[] sAng = null;
             double[] svm = null;
-
             double[] s13 = null;
             double[] s23 = null;
             double[] sMaxAvg = null;
@@ -437,10 +416,8 @@ namespace BH.Adapter.ETABS
 
             List<MeshResult> results = new List<MeshResult>();
 
-
             if (smoothing == MeshResultSmoothingType.ByPanel)
                 Engine.Base.Compute.RecordWarning("Stress values have been smoothened outside the API by averaging all force values in each node");
-
 
             foreach (string caseName in cases)
             {
@@ -450,28 +427,20 @@ namespace BH.Adapter.ETABS
 
                 for (int i = 0; i < panelIds.Count; i++)
                 {
-
                     List<MeshStress> stresses = new List<MeshStress>();
                     int ret = m_model.Results.AreaStressShellLayered(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref layer, ref intPtNb, ref layerPos, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11, ref s22, ref s12, ref sMax, ref sMin, ref sAng, ref svm, ref s13, ref s23, ref sMaxAvg, ref sAngAvg);
                     
                     if (ret == 0)
                     {
-
                         for (int j = 0; j < resultCount - 1; j++)
                         {
                             int mode;
                             double timeStep;
                             GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
                             MeshStress mStress = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Arbitrary, layerPos[j], MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11[j], s22[j], s12[j], s13[j], s23[j], sMax[j], sMin[j], sMaxAvg[j]);
-
-                            stresses.Add(mStress);
-                        }
-
-
-                        if (smoothing == MeshResultSmoothingType.ByPanel)
-                        {
-                            stresses = SmoothenStresses(stresses);
-                        }
+                            stresses.Add(mStress);}
+                        
+                        if (smoothing == MeshResultSmoothingType.ByPanel) stresses = SmoothenStresses(stresses);
 
                         results.AddRange(GroupMeshResults(stresses));
                     }
@@ -497,7 +466,6 @@ namespace BH.Adapter.ETABS
             string[] loadCase = null;
             string[] stepType = null;
             double[] stepNum = null;
-
             double[] ux = null;
             double[] uy = null;
             double[] uz = null;
@@ -509,11 +477,8 @@ namespace BH.Adapter.ETABS
 
             for (int i = 0; i < panelIds.Count; i++)
             {
-
                 List<MeshDisplacement> displacements = new List<MeshDisplacement>();
-
                 HashSet<string> ptNbs = new HashSet<string>();
-
                 int nbELem = 0;
                 string[] elemNames = new string[0];
                 m_model.AreaObj.GetElm(panelIds[i], ref nbELem, ref elemNames);
@@ -642,11 +607,6 @@ namespace BH.Adapter.ETABS
 
         }
 
-
-
-
-
-
         /***************************************************/
 
         private List<MeshForce> SmoothenForces(List<MeshForce> forces)
@@ -706,7 +666,6 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
-
 
         private List<MeshVonMises> SmoothenVonMisesStresses(List<MeshVonMises> forces)
         {
