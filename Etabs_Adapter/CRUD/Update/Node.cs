@@ -27,8 +27,6 @@ using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
 using BH.Engine.Adapters.ETABS;
-using System.Collections;
-using System.Xml.Linq;
 using BH.oM.Physical.Elements;
 
 namespace BH.Adapter.ETABS
@@ -55,9 +53,9 @@ namespace BH.Adapter.ETABS
             Engine.Structure.NodeDistanceComparer comparer = AdapterComparers[typeof(Node)]    // θ(1)
                 as Engine.Structure.NodeDistanceComparer;
 
-            Dictionary<double, List<string>> Δx = new Dictionary<double, List<string>>();      // θ(1)
-            Dictionary<double, List<string>> Δy = new Dictionary<double, List<string>>();      // θ(1)
-            Dictionary<double, List<string>> Δz = new Dictionary<double, List<string>>();      // θ(1)
+            Dictionary<double, List<string>> dx = new Dictionary<double, List<string>>();      // θ(1)
+            Dictionary<double, List<string>> dy = new Dictionary<double, List<string>>();      // θ(1)
+            Dictionary<double, List<string>> dz = new Dictionary<double, List<string>>();      // θ(1)
 
 
             // 1. GROUP NODES BY RELATIVE MOVEMENT IN X/Y/Z DIRECTION  -  ** HASH TABLES **
@@ -82,15 +80,15 @@ namespace BH.Adapter.ETABS
                         y = bhNode.Position.Y - y;                                             // θ(1)
                         z = bhNode.Position.Z - z;                                             // θ(1)
 
-                        // Add Node name and corresponding ΔX in Δx Hash Table
-                        if (Δx.ContainsKey(x)) Δx[x].Add(name);                                // θ(1)
-                        else Δx.Add(x, new List<string>() {name});                             // θ(1)
-                        // Add Node name and corresponding ΔY in Δy Hash Table
-                        if (Δy.ContainsKey(y)) Δy[y].Add(name);                                // θ(1)
-                        else Δy.Add(y, new List<string>() {name});                             // θ(1)
-                        // Add Node name and corresponding ΔZ in Δz Hash Table
-                        if (Δz.ContainsKey(z)) Δz[z].Add(name);                                // θ(1)
-                        else Δz.Add(z, new List<string>() {name});                             // θ(1)
+                        // Add Node name and corresponding dX in dx Hash Table
+                        if (dx.ContainsKey(x)) dx[x].Add(name);                                // θ(1)
+                        else dx.Add(x, new List<string>() {name});                             // θ(1)
+                        // Add Node name and corresponding dY in dy Hash Table
+                        if (dy.ContainsKey(y)) dy[y].Add(name);                                // θ(1)
+                        else dy.Add(y, new List<string>() {name});                             // θ(1)
+                        // Add Node name and corresponding dZ in dz Hash Table
+                        if (dz.ContainsKey(z)) dz[z].Add(name);                                // θ(1)
+                        else dz.Add(z, new List<string>() {name});                             // θ(1)
 
                     }
                 }
@@ -100,34 +98,34 @@ namespace BH.Adapter.ETABS
 
             // 2. MOVE NODES GROUP-BY-GROUP  -  ** STREAMS **
 
-            // ΔX Movement
-            Δx.ToList().ForEach(kvp =>                                                         // θ(n)
+            // dX Movement
+            dx.ToList().ForEach(kvp =>                                                         // θ(n)
             {
                 // 1. Select all nodes belonging to same group
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), true));
-                // 2. Move all selected nodes by same ΔX
+                // 2. Move all selected nodes by same dX
                 m_model.EditGeneral.Move((double)kvp.Key, 0, 0);
                 // 3. Deselect all selected nodes
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), false));
             });
 
-            // ΔY Movement
-            Δy.ToList().ForEach(kvp =>                                                         // θ(n)
+            // dY Movement
+            dy.ToList().ForEach(kvp =>                                                         // θ(n)
             {
                 // 1. Select all nodes belonging to same group
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), true));
-                // 2. Move all selected nodes by same ΔY
+                // 2. Move all selected nodes by same dY
                 m_model.EditGeneral.Move(0, (double)kvp.Key, 0);
                 // 3. Deselect all selected nodes
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), false));
             });
 
-            // ΔZ Movement
-            Δz.ToList().ForEach(kvp =>                                                         // θ(n)
+            // dZ Movement
+            dz.ToList().ForEach(kvp =>                                                         // θ(n)
             {
                 // 1. Select all nodes belonging to same group
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), true));
-                // 2. Move all selected nodes by same ΔZ
+                // 2. Move all selected nodes by same dZ
                 m_model.EditGeneral.Move(0, 0, (double)kvp.Key);
                 // 3. Deselect all selected nodes
                 kvp.Value.ForEach(pplbl => m_model.PointObj.SetSelected(pplbl.ToString(), false));
@@ -135,8 +133,6 @@ namespace BH.Adapter.ETABS
 
             return success;
         }
-
-        /* Computational Cost: T(n)= θ(n) */
 
         /***************************************************/
     }
