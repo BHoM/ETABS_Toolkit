@@ -79,7 +79,6 @@ namespace BH.Adapter.ETABS
         [Description("Creates an adapter to ETABS version 18 or later. For connection to ETABS v17 use the ETABS17Adapter. For connection to ETABS 2016 use the ETABS2016Adapter. Earlier versions not supported.")]
         public ETABSAdapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #endif
-        
         {
             //Initialisation
             AdapterIdFragmentType = typeof(ETABSId);
