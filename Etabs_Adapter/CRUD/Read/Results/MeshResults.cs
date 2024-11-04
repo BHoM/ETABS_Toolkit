@@ -42,7 +42,6 @@ using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.oM.Adapter;
 using BH.oM.Structure.Elements;
-using System.Xml.Linq;
 
 namespace BH.Adapter.ETABS
 {
