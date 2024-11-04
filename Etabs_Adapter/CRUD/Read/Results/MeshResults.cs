@@ -216,7 +216,7 @@ namespace BH.Adapter.ETABS
             List<MeshResult> results = new List<MeshResult>();
 
             if (smoothing == MeshResultSmoothingType.ByPanel)
-                Engine.Base.Compute.RecordWarning("Stress values have been smoothed outside the API by averaging all force values in each node");
+                Engine.Base.Compute.RecordWarning("Stress values have been smoothed outside the API by averaging all force values in each node.");
 
             foreach (string caseName in cases)
             {
@@ -305,7 +305,7 @@ namespace BH.Adapter.ETABS
             List<MeshResult> results = new List<MeshResult>();
 
             if (smoothing == MeshResultSmoothingType.ByPanel)
-                Engine.Base.Compute.RecordWarning("Stress values have been smoothed outside the API by averaging all force values in each node");
+                Engine.Base.Compute.RecordWarning("Stress values have been smoothed outside the API by averaging all force values in each node.");
 
             foreach (string caseName in cases)
             {
