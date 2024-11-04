@@ -83,6 +83,7 @@ namespace BH.Adapter.ETABS
 
         public bool RunCommand(SaveAs command)
         {
+            this.FilePath = command.FileName;
             return m_model.File.Save(command.FileName) == 0;
         }
 
@@ -92,6 +93,7 @@ namespace BH.Adapter.ETABS
         {
             if (System.IO.File.Exists(command.FileName))
             {
+                this.FilePath = command.FileName;
                 bool success = m_model.File.OpenFile(command.FileName) == 0;
                 success &= m_model.SetPresentUnits(eUnits.N_m_C) == 0;
                 return success;
