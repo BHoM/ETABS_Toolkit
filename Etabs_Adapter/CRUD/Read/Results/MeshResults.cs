@@ -228,9 +228,7 @@ namespace BH.Adapter.ETABS
                 {
                     List<MeshStress> stressTop = new List<MeshStress>();
                     List<MeshStress> stressBot = new List<MeshStress>();
-                    int ret = m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, 
-                        ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, 
-                        ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
+                    int ret = m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
 
                     if (ret == 0)
                     {
@@ -239,10 +237,8 @@ namespace BH.Adapter.ETABS
                             int mode;
                             double timeStep;
                             GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
-                            MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, 
-                                oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], double.NaN);
-                            MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, 
-                                oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], double.NaN);
+                            MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], double.NaN);
+                            MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], double.NaN);
 
                             stressBot.Add(mStressBot);
                             stressTop.Add(mStressTop);
