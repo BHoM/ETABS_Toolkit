@@ -339,14 +339,11 @@ namespace BH.Adapter.ETABS
                             int mode;
                             double timeStep;
 
-                            // Calculate Von Mises Moment
-                            double Mvm = ComputeVonMisesMoment(svmTop[j], svmBot[j], panelThk);
-
                             GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
                             MeshVonMises mStressVMTop = new MeshVonMises(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, 
-                                MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, svmTop[j], fvm[j], Mvm);
+                                MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, svmTop[j], fvm[j], double.NaN);
                             MeshVonMises mStressVMBot = new MeshVonMises(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, 
-                                MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, svmBot[j], fvm[j], Mvm);
+                                MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, svmBot[j], fvm[j], double.NaN);
 
                             stressVMBot.Add(mStressVMBot);
                             stressVMTop.Add(mStressVMTop);
@@ -669,23 +666,12 @@ namespace BH.Adapter.ETABS
 
                 double s = group.Average(x => x.S);
                 double n = group.Average(x => x.N);
-                double m = group.Average(x => x.M);
 
                 smoothenedVMStresses.Add(new MeshVonMises(first.ObjectId, first.NodeId, "", first.ResultCase, first.ModeNumber, first.TimeStep, 
-                                                            first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation,s,n,m));
+                                                            first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation,s,n,double.NaN));
             }
 
             return smoothenedVMStresses;
-        }
-
-        /***************************************************/
-
-        private double ComputeVonMisesMoment(double svmTop, double svmBot, double thk)
-        {
-            double svmAvg = (svmTop + svmBot) / 2;
-            double vonMisesMoment = ((svmBot - svmAvg) * (thk / 2) * (1 / 2) * (thk - 2 * thk / 2 * 1 / 3)) / 1000;
-
-            return vonMisesMoment;
         }
 
         /***************************************************/
