@@ -315,7 +315,6 @@ namespace BH.Adapter.ETABS
                     List<MeshVonMises> stressVMTop = new List<MeshVonMises>();
                     List<MeshVonMises> stressVMBot = new List<MeshVonMises>();
                     int ret1, ret2, ret3;
-                    double panelThk;
 
                     // Extract Von Mises Stresses
                     ret1= m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, 
@@ -328,9 +327,6 @@ namespace BH.Adapter.ETABS
                         ref f11, ref f22, ref f12, ref fMax, ref fMin, ref fAngle, ref fvm, 
                         ref m11, ref m22, ref m12, ref mMax, ref mMin, ref mAngle, 
                         ref v13, ref v23, ref vMax, ref vAngle);
-
-                    // Get the panel thickness
-                    panelThk = GetPanelThickness(panelIds[i]);
 
                     if ((ret1 == 0) && (ret2 == 0))
                     {
@@ -539,65 +535,6 @@ namespace BH.Adapter.ETABS
             }
           
             return panelIds;
-        }
-
-        /***************************************************/
-
-        private double GetPanelThickness(string panelId)
-        {
-
-            //Utility Variables
-
-            int ret;
-            string areaPropName="";
-
-            eDeckType deckType=eDeckType.Unfilled;
-            eSlabType slabType=eSlabType.Slab;
-            eShellType shellType=eShellType.ShellThin;
-            eWallPropType wallPropType=eWallPropType.Specified;
-            String matProp="";
-            Double thickness=0;
-            int color=0;
-            String notes="", guid="";
-
-            double slabDepth = 0, ribDepth = 0, ribWidthTop = 0, ribWidthBot = 0, ribSpacing = 0, shearThickness = 0;
-            double unitWeight = 0, shearStudDia = 0, shearStudHt = 0, shearStudFu = 0, bending = 0, matAng = 0;
-            double overallDepth = 0, slabThickness = 0, stemWidthTop=0, stemWidthBot=0, ribSpacingDir1=0, ribSpacingDir2=0;
-            int numLayers = 0, ribsParallelTo = 0, shellTypeInt = 0;
-            bool includeDrillingDOF=false;
-            string[] layerNames = null, matProps = null;
-            double[] dist=null, matAngs=null, shellThicknesses =null;
-            int[] myType=null, numIntegrationP=null, s11Type=null, s22Type=null, s12Type=null;
-
-
-            // 1. GET THE PANEL PROPERTY NAME
-
-            ret = m_model.AreaObj.GetProperty(panelId, ref areaPropName);
-
-
-            // 2. GET THE PANEL THICKNESS
-            
-            // Case 1 - Deck SolidSlab
-            if (m_model.PropArea.GetDeckSolidSlab(areaPropName, ref slabDepth, ref shearStudDia, ref shearStudHt, ref shearStudFu) == 0) return slabDepth;
-            // Case 2 - Deck Unfilled
-            if (m_model.PropArea.GetDeckUnfilled(areaPropName, ref ribDepth, ref ribWidthTop, ref ribWidthBot, ref ribSpacing, ref shearThickness, ref unitWeight) == 0) return Math.Round(ribDepth,3);
-            // Case 3 - Deck Filled
-            if (m_model.PropArea.GetDeckFilled(areaPropName, ref slabDepth, ref ribDepth, ref ribWidthTop, ref ribWidthBot, ref ribSpacing, ref shearThickness, ref unitWeight, ref shearStudDia, ref shearStudHt, ref shearStudFu) == 0) return Math.Round(slabDepth, 3);
-            // Case 4 - Deck
-            if (m_model.PropArea.GetDeck(areaPropName, ref deckType, ref shellType, ref matProp, ref thickness, ref color, ref notes, ref guid) == 0) return Math.Round(thickness, 3);
-            // Case 5 - Slab Waffle
-            if (m_model.PropArea.GetSlabWaffle(areaPropName, ref overallDepth, ref slabThickness, ref stemWidthTop, ref stemWidthBot, ref ribSpacingDir1, ref ribSpacingDir2) == 0) return Math.Round(overallDepth, 3);
-            // Case 6 - Slab Ribbed
-            if (m_model.PropArea.GetSlabRibbed(areaPropName, ref overallDepth, ref slabThickness, ref stemWidthTop, ref stemWidthBot, ref ribSpacing, ref ribsParallelTo) == 0) return Math.Round(overallDepth, 3);
-            // Case 7 - Slab
-            if (m_model.PropArea.GetSlab(areaPropName, ref slabType, ref shellType, ref matProp, ref slabThickness, ref color, ref notes, ref guid) == 0) return Math.Round(slabThickness, 3);
-            // Case 8 - Wall
-            if (m_model.PropArea.GetWall(areaPropName, ref wallPropType, ref shellType, ref matProp, ref thickness, ref color, ref notes, ref guid) == 0) return Math.Round(thickness, 3);
-
-            // Case else - No Thickness found...
-            return 0.0;
-
-
         }
 
         /***************************************************/
