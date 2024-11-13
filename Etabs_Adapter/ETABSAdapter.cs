@@ -84,7 +84,9 @@ namespace BH.Adapter.ETABS
             AdapterIdFragmentType = typeof(ETABSId);
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
             SetupDependencies();
+            SetupPriorities();
             SetupComparers();
+            m_AdapterSettings.HandlePriorities = true;
             m_AdapterSettings.DefaultPushType = oM.Adapter.PushType.CreateNonExisting;
 
 
