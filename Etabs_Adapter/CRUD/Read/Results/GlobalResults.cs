@@ -32,6 +32,7 @@ using BH.oM.Structure.Results;
 using BH.oM.Analytical.Results;
 using BH.oM.Structure.Requests;
 using BH.oM.Adapter;
+using BH.oM.Geometry;
 
 namespace BH.Adapter.ETABS
 {
@@ -56,6 +57,9 @@ namespace BH.Adapter.ETABS
                 case GlobalResultType.Reactions:
                     return GetGlobalReactions();
                 case GlobalResultType.ModalDynamics:
+
+                case GlobalResultType.StoreyDrifts:
+                    return GetStoreyDrifts();
                 default:
                     Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
@@ -134,6 +138,54 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
+        private List<StoreyDrift> GetStoreyDrifts()
+        {
+            List<StoreyDrift> storeyDrifts = new List<StoreyDrift>();
+
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] stepType = null; double[] stepNum = null;
+            string[] storeyNames = null; string[] directions = null;
+            double[] drifts = null; string[] labels = null;
+            double[] x = null; double[] y= null; double[] z = null;
+
+            m_model.Results.StoryDrifts(ref resultCount, ref storeyNames, ref loadcaseNames, ref stepType, ref stepNum, ref directions, ref drifts, ref labels, ref x, ref y, ref z);
+
+            Vector[] dirVectors = directions.Select(dirStr =>
+                {
+                    switch (dirStr.ToUpper())
+                    {
+                        case "X":
+                            return Vector.XAxis;
+                            break;
+                        case "Y":
+                            return Vector.YAxis;
+                            break;
+                        default:
+                            return Vector.ZAxis;
+                            break;
+                    }
+                }).ToArray();
+
+
+            for (int i = 0; i < resultCount; i++)
+            {
+                int mode;
+                double timeStep;
+                GetStepAndMode(stepType[i], stepNum[i], out timeStep, out mode);
+
+                StoreyDrift stDrft = new StoreyDrift("", loadcaseNames[i], mode, timeStep, storeyNames[i], dirVectors[i], drifts[i]);
+
+                storeyDrifts.Add(stDrft);
+            }
+
+            return storeyDrifts;
+
+        }
+
+        /***************************************************/
+
 
     }
 }
