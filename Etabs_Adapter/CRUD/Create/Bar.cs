@@ -140,6 +140,7 @@ namespace BH.Adapter.ETABS
                 ret++;
             }
 
+
             Offset offset = bhBar.Offset;
 
             double[] offset1 = new double[3];
@@ -153,11 +154,15 @@ namespace BH.Adapter.ETABS
                 offset2[2] = offset.End.Y;
             }
 
+
+#if Debug21 == false && Release21 == false
+
             if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
             {
                 CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
                 ret++;
             }
+#endif
 
             if (bhBar.Release != null && bhBar.Release.StartRelease != null && bhBar.Release.EndRelease != null) 
             {
