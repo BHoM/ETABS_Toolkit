@@ -59,6 +59,8 @@ namespace BH.Adapter.ETABS
 
         public const string ID = "ETABS_id";
 
+        public string FilePath { get; set; }
+
         public EtabsSettings EtabsSettings { get; set; } = new EtabsSettings();
 
         /***************************************************/
@@ -84,7 +86,9 @@ namespace BH.Adapter.ETABS
             AdapterIdFragmentType = typeof(ETABSId);
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
             SetupDependencies();
+            SetupPriorities();
             SetupComparers();
+            m_AdapterSettings.HandlePriorities = true;
             m_AdapterSettings.DefaultPushType = oM.Adapter.PushType.CreateNonExisting;
 
 
@@ -138,6 +142,8 @@ namespace BH.Adapter.ETABS
                         m_model.File.NewBlank();
                 }
 
+                FilePath = m_model.GetModelFilename();
+
                 LoadSectionDatabaseNames();
             }
         }
@@ -156,13 +162,8 @@ namespace BH.Adapter.ETABS
 
         private bool ForceRefresh()
         {
-            //Forcing refresh of the model by moving all elements in back and forward along the x-axis.
-            //If a more elegant way can be found to do this, this should be changed.
-            m_model.SelectObj.All();
-            m_model.EditGeneral.Move(1, 0, 0);
-            m_model.SelectObj.All();
-            m_model.EditGeneral.Move(-1, 0, 0);
-            m_model.SelectObj.ClearSelection();
+            m_model.View.RefreshView();
+            m_model.View.RefreshWindow();
             return true;
         }
 

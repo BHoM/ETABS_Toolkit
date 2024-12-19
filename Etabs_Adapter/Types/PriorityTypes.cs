@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -20,16 +20,44 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+using BH.oM.Structure.MaterialFragments;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.SurfaceProperties;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.Loads;
+using System;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
+using System.Collections.Generic;
+using BH.oM.Spatial.SettingOut;
 
-namespace BH.oM.Adapters.ETABS.Requests
+namespace BH.Adapter.ETABS
 {
-    [Description("Defines the type of results that should be extracted for PierAndSpandrelForceRequest.")]
-    public enum PierAndSpandrelResultType
+#if Debug16 || Release16
+    public partial class ETABS2016Adapter : BHoMAdapter
+#elif Debug17 || Release17
+   public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABSAdapter : BHoMAdapter
+#endif
     {
-        PierForce,
-        SpandrelForce
+        /***************************************************/
+        /**** Protected methods                         ****/
+        /***************************************************/
+
+        protected void SetupPriorities()
+        {
+
+            PriorityTypes = new List<Type>
+            {
+                {typeof(Level)},
+            };
+        }
+
+        /***************************************************/
     }
+
 }
 
 
