@@ -65,7 +65,7 @@ namespace BH.Adapter.ETABS
             // Evaluate if the bar is alinged as Etabs wants it
             if (bhBar.CheckFlipBar())
             {
-                FlipEndPoints(bhBar);      //CloneBeforePush means this is fine
+                BH.Engine.Structure.Modify.Flip(bhBar);      //CloneBeforePush means this is fine
                 FlipInsertionPoint(bhBar); //ETABS specific operation
                 Engine.Base.Compute.RecordNote("Some bars has been flipped to comply with ETABS API, asymmetric sections will suffer");
             }
@@ -203,56 +203,6 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
 #if Debug16 || Release16
-
-        [Description("Returns a bar where the endpoints have been flipped without cloning the object")]
-        private static void FlipEndPoints(Bar bar)
-        {
-            // Flip the endpoints
-            Node tempNode = bar.Start;
-            bar.Start = bar.End;
-            bar.End = tempNode;
-
-            // Flip orientationAngle
-            bar.OrientationAngle = -bar.OrientationAngle;
-            if (bar.IsVertical())
-                bar.OrientationAngle += Math.PI;
-
-            // Flip Offsets
-            if (bar.Offset != null)
-            {
-                Vector tempV = bar.Offset.Start;
-                bar.Offset.Start = bar.Offset.End;
-                bar.Offset.End = tempV;
-
-                if(bar.Offset.Start != null)
-                    bar.Offset.Start.X *= -1;
-
-                if(bar.Offset.End != null)
-                    bar.Offset.End.X *= -1;
-
-                if (!bar.IsVertical())
-                {
-                    if(bar.Offset.Start != null)
-                        bar.Offset.Start.Y *= -1;
-
-                    if(bar.Offset.End != null)
-                        bar.Offset.End.Y *= -1;
-                }
-            }
-            // mirror the section 
-            // not possible to push to ETABS afterwards if we did
-            // warning for asymetric sections?
-
-            // Flip Release
-            if (bar.Release != null)
-            {
-                Constraint6DOF tempC = bar.Release.StartRelease;
-                bar.Release.StartRelease = bar.Release.EndRelease;
-                bar.Release.EndRelease = tempC;
-            }
-        }
-
-        /***************************************************/
 
         private static void FlipInsertionPoint(Bar bar)
         {
