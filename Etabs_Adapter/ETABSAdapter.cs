@@ -48,6 +48,9 @@ namespace BH.Adapter.ETABS
 #elif Debug17 || Release17
     [Description("Class for handling connection to ETABS version 17.")]
    public partial class ETABS17Adapter : BHoMAdapter
+#elif Debug21 || Release21
+    [Description("Class for handling connection to ETABS version 21.")]
+    public partial class ETABS21Adapter : BHoMAdapter
 #else
     [Description("Class for handling connection to ETABS version 18 and later.")]
     public partial class ETABSAdapter : BHoMAdapter
@@ -72,11 +75,14 @@ namespace BH.Adapter.ETABS
         [Input("etabsSetting", "Controling various settings of the adapter.")]
         [Input("active", "Toggle to true to activate the adapter. If ETABS is running, the adapter will connect to the running instance. If ETABS is not running, the adapter will start up a new instance of ETABS.")]
 #if Debug16 || Release16
-       [Description("Creates an adapter to ETABS 2016. For connection to ETABS v18 or later use the ETABSAdapter.  For connection to ETABS v17 use the ETABS17Adapter. Earlier versions not supported.")]
+       [Description("Creates an adapter to ETABS 2016. For connection to ETABS v21 use ETABS21Adapter. For connection to ETABS v18 to v20 use the ETABSAdapter.  For connection to ETABS v17 use the ETABS17Adapter. Earlier versions not supported.")]
         public ETABS2016Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #elif Debug17 || Release17
-        [Description("Creates an adapter to ETABS v17. For connection to ETABS v18 or later use the ETABSAdapter. For connection to ETABS 2016 use the ETABS2016Adapter. Earlier versions not supported.")]
+        [Description("Creates an adapter to ETABS v17. For connection to ETABS v21 use ETABS21Adapter. For connection to ETABS v18 to v20 use the ETABSAdapter. For connection to ETABS 2016 use the ETABS2016Adapter. Earlier versions not supported.")]
         public ETABS17Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
+#elif Debug21 || Release21
+        [Description("Creates an adapter to ETABS v21. For connection to ETABS v18 to v20 use the ETABSAdapter. For connection to ETABS 2016 use the ETABS2016Adapter. Earlier versions not supported.")]
+        public ETABS21Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #else
         [Description("Creates an adapter to ETABS version 18 or later. For connection to ETABS v17 use the ETABS17Adapter. For connection to ETABS 2016 use the ETABS2016Adapter. Earlier versions not supported.")]
         public ETABSAdapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)

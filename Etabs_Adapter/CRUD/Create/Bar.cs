@@ -42,6 +42,8 @@ namespace BH.Adapter.ETABS
     public partial class ETABS2016Adapter : BHoMAdapter
 #elif Debug17 || Release17
    public partial class ETABS17Adapter : BHoMAdapter
+#elif Debug21 || Release21
+    public partial class ETABS21Adapter : BHoMAdapter
 #else
     public partial class ETABSAdapter : BHoMAdapter
 #endif
@@ -120,7 +122,7 @@ namespace BH.Adapter.ETABS
             string name = GetAdapterId<string>(bhBar);
 
             // Needed rigth after create as well as AddByPoint flipps the Bar if it feels like it
-#if Debug16 == false && Release16 == false
+#if !Debug16 && !Release16
             m_model.EditFrame.ChangeConnectivity(name, GetAdapterId<string>(bhBar.Start), GetAdapterId<string>(bhBar.End));
 #endif
 
@@ -155,7 +157,7 @@ namespace BH.Adapter.ETABS
             }
 
 
-#if Debug21 == false && Release21 == false
+#if !Debug21 && !Release21
 
             if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
             {

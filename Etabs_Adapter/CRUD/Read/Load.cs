@@ -49,6 +49,8 @@ namespace BH.Adapter.ETABS
     public partial class ETABS2016Adapter : BHoMAdapter
 #elif Debug17 || Release17
    public partial class ETABS17Adapter : BHoMAdapter
+#elif Debug21 || Release21
+    public partial class ETABS21Adapter : BHoMAdapter
 #else
     public partial class ETABSAdapter : BHoMAdapter
 #endif
