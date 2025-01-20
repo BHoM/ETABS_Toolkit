@@ -52,6 +52,7 @@ namespace BH.Adapter.ETABS
                 {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
                 {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
                 {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } },
+                {typeof(Opening), new List<Type> {typeof(Edge) } },
                 {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
                 {typeof(RigidLink), new List<Type> { typeof(Node), typeof(LinkConstraint) } },
                 {typeof(ILoad), new List<Type> {typeof(Loadcase) } },
