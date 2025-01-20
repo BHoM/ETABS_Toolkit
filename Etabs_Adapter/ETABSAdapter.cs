@@ -60,6 +60,7 @@ namespace BH.Adapter.ETABS
         public const string ID = "ETABS_id";
 
         public string FilePath { get; set; }
+        public string etabsVersion;
 
         public EtabsSettings EtabsSettings { get; set; } = new EtabsSettings();
 
@@ -143,9 +144,8 @@ namespace BH.Adapter.ETABS
                 }
 
                 // Get ETABS Model Version
-                string modelVersion = "";
                 double doubleVer = 0;
-                m_app.SapModel.GetVersion(ref modelVersion, ref doubleVer);
+                m_app.SapModel.GetVersion(ref etabsVersion, ref doubleVer);
 
                 // Get ETABS Model FilePath
                 FilePath = m_model.GetModelFilename();
