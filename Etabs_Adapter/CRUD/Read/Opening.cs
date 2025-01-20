@@ -77,7 +77,7 @@ namespace BH.Adapter.ETABS
                 etabsId.Id = id;
 
                 Opening opening = new Opening();
-                Polyline pl = GetOpeningPerimeter(id);
+                Polyline pl = GetOpeningOutline(id);
 
                 opening.Edges = pl.SubParts().Select(x => new Edge { Curve = x }).ToList();
 

@@ -61,28 +61,20 @@ namespace BH.Adapter.ETABS
             string[] nameArr = { };
             m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
 
-            ids = FilterIds(ids, nameArr);
-
-            //get openings, if any
-            m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+            //Remove the Opening Objects from the Panels List
             bool isOpening = false;
-            Dictionary<string, Polyline> openingDict = new Dictionary<string, Polyline>();
-            foreach (string name in nameArr)
-            {
-                m_model.AreaObj.GetOpening(name, ref isOpening);
-                if (isOpening)
-                {
-                    openingDict.Add(name, GetPanelPerimeter(name));
-                }
-            }
+            nameArr.Where(panelName => {
+                m_model.AreaObj.GetOpening(panelName, ref isOpening);
+                return !isOpening;});
+            //Update number of Panels removing Opening Objects from it
+            nameCount = nameArr.Length;
+
+            ids = FilterIds(ids, nameArr);
 
             foreach (string id in ids)
             {
                 ETABSId etabsId = new ETABSId();
                 etabsId.Id = id;
-
-                if (openingDict.ContainsKey(id))
-                    continue;
 
                 string propertyName = "";
 
@@ -98,16 +90,6 @@ namespace BH.Adapter.ETABS
                 Polyline pl = GetPanelPerimeter(id);
 
                 panel.ExternalEdges = pl.SubParts().Select(x => new Edge { Curve = x }).ToList();
-
-                foreach (KeyValuePair<string, Polyline> kvp in openingDict)
-                {
-                    if (pl.IsContaining(kvp.Value.ControlPoints))
-                    {
-                        Opening opening = new Opening();
-                        opening.Edges = kvp.Value.SubParts().Select(x => new Edge { Curve = x }).ToList();
-                        panel.Openings.Add(opening);
-                    }
-                }
 
                 panel.Property = panelProperty;
                 string PierName = "";
