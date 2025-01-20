@@ -63,13 +63,13 @@ namespace BH.Adapter.ETABS
 
             //Remove the Opening Objects from the Panels List
             bool isOpening = false;
-            nameArr.Where(panelName => {
+            List<string> nameList=nameArr.Where(panelName => {
                 m_model.AreaObj.GetOpening(panelName, ref isOpening);
-                return !isOpening;});
+                return !isOpening;}).ToList();
             //Update number of Panels removing Opening Objects from it
-            nameCount = nameArr.Length;
+            nameCount = nameList.Count;
 
-            ids = FilterIds(ids, nameArr);
+            ids = FilterIds(ids, nameList);
 
             foreach (string id in ids)
             {
