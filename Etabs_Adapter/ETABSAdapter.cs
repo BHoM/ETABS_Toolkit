@@ -142,6 +142,12 @@ namespace BH.Adapter.ETABS
                         m_model.File.NewBlank();
                 }
 
+                // Get ETABS Model Version
+                string modelVersion = "";
+                double doubleVer = 0;
+                m_app.SapModel.GetVersion(ref modelVersion, ref doubleVer);
+
+                // Get ETABS Model FilePath
                 FilePath = m_model.GetModelFilename();
 
                 LoadSectionDatabaseNames();
