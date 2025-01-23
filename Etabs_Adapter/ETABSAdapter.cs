@@ -60,7 +60,7 @@ namespace BH.Adapter.ETABS
         public const string ID = "ETABS_id";
 
         public string FilePath { get; set; }
-        public string etabsVersion;
+        public string EtabsVersion { get; set; }
 
         public EtabsSettings EtabsSettings { get; set; } = new EtabsSettings();
 
