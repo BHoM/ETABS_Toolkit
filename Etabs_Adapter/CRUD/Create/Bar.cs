@@ -155,8 +155,8 @@ namespace BH.Adapter.ETABS
 
             // Avoid following operation if ETABS Version is ETABS21...
             string majorVersion = "";
-            if(this.etabsVersion != null && this.etabsVersion.Contains("."))
-                majorVersion = this.etabsVersion.Split('.')[0];
+            if(this.EtabsVersion != null && this.EtabsVersion.Contains("."))
+                majorVersion = this.EtabsVersion.Split('.')[0];
 
             if (majorVersion != "21") 
             {
@@ -166,6 +166,10 @@ namespace BH.Adapter.ETABS
                     CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
                     ret++;
                 }
+            }
+            else if (bhBar.FindFragment<InsertionPoint>() != null)
+            {
+                CreatePropertyWarning("Insertion point pushing is unsupported for ETABS 21", "Bar", name);
             }
 
             if (bhBar.Release != null && bhBar.Release.StartRelease != null && bhBar.Release.EndRelease != null) 
