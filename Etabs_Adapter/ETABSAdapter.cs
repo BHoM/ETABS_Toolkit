@@ -145,7 +145,9 @@ namespace BH.Adapter.ETABS
 
                 // Get ETABS Model Version
                 double doubleVer = 0;
-                m_app.SapModel.GetVersion(ref etabsVersion, ref doubleVer);
+                string version = "";
+                m_app.SapModel.GetVersion(ref version, ref doubleVer);
+                this.EtabsVersion = version;
 
                 // Get ETABS Model FilePath
                 FilePath = m_model.GetModelFilename();
