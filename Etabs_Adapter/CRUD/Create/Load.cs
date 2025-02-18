@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -273,13 +273,13 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public void SetLoad(AreaUniformTemperatureLoad areaTempratureLoad, bool replace)
+        public void SetLoad(AreaUniformTemperatureLoad areaTemperatureLoad, bool replace)
         {
             int ret = 0;
-            string caseName = GetAdapterId<string>(areaTempratureLoad.Loadcase);
-            foreach (IAreaElement area in areaTempratureLoad.Objects.Elements)
+            string caseName = GetAdapterId<string>(areaTemperatureLoad.Loadcase);
+            foreach (IAreaElement area in areaTemperatureLoad.Objects.Elements)
             {
-                double val = areaTempratureLoad.TemperatureChange;
+                double val = areaTemperatureLoad.TemperatureChange;
                 if (val != 0)
                     ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 1, val, "", replace);
             }
@@ -287,17 +287,86 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        public void SetLoad(BarUniformTemperatureLoad barTempratureLoad, bool replace)
+        public void SetLoad(AreaDifferentialTemperatureLoad areaDifferentialTemperatureLoad, bool replace)
         {
             int ret = 0;
-            string caseName = GetAdapterId<string>(barTempratureLoad.Loadcase);
-            foreach (Bar bar in barTempratureLoad.Objects.Elements)
+            string caseName = GetAdapterId<string>(areaDifferentialTemperatureLoad.Loadcase);
+            Dictionary<double, double> tempProfile = areaDifferentialTemperatureLoad.TemperatureProfile;
+
+            if (tempProfile.Count > 2)
             {
-                double val = barTempratureLoad.TemperatureChange;
+                Engine.Base.Compute.RecordError("The AreaDifferentialTemperature must be Linear. ETABS does not support nonlinear temperature profiles.");
+                return;
+            }
+            
+            double tempMed = tempProfile.Average(kv => kv.Value);
+            double tempDelta = ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
+
+            foreach (IAreaElement area in areaDifferentialTemperatureLoad.Objects.Elements)
+            {
+                if (tempMed!=0)
+                { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 1, tempMed, "", replace);}
+
+                if (tempDelta!=0)
+                { ret = m_model.AreaObj.SetLoadTemperature(GetAdapterId<string>(area), caseName, 3, tempDelta, "", replace);}
+            }
+        }
+
+        /***************************************************/
+
+        public void SetLoad(BarUniformTemperatureLoad barTemperatureLoad, bool replace)
+        {
+            int ret = 0;
+            string caseName = GetAdapterId<string>(barTemperatureLoad.Loadcase);
+            foreach (Bar bar in barTemperatureLoad.Objects.Elements)
+            {
+                double val = barTemperatureLoad.TemperatureChange;
                 if (val != 0)
                     ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 1, val, "", replace);
             }
         }
+
+        /***************************************************/
+
+        public void SetLoad(BarDifferentialTemperatureLoad barDifferentialTemperatureLoad, bool replace)
+        {
+            int ret = 0;
+            string caseName = GetAdapterId<string>(barDifferentialTemperatureLoad.Loadcase);
+            DifferentialTemperatureLoadDirection loadDir= barDifferentialTemperatureLoad.LoadDirection;
+            Dictionary<double, double> tempProfile = barDifferentialTemperatureLoad.TemperatureProfile;
+
+            if (tempProfile.Count > 2)
+            {
+                Engine.Base.Compute.RecordError("The BarDifferentialTemperature must be Linear. ETABS does not support nonlinear temperature profiles.");
+                return;
+            }
+                
+            double tempMed = tempProfile.Average(kv => kv.Value);
+            double tempDelta = ((tempProfile[0] - tempMed) - (tempProfile[1] - tempMed));
+
+
+            foreach (Bar bar in barDifferentialTemperatureLoad.Objects.Elements)
+            {
+
+                if (tempMed != 0)
+                { ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 1, tempMed, "", replace); }
+
+                if (tempDelta != 0)
+                { switch (loadDir) { 
+                    case DifferentialTemperatureLoadDirection.LocalY:
+                        ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 2, tempDelta, "", replace);
+                        break;
+                    case DifferentialTemperatureLoadDirection.LocalZ:
+                        ret = m_model.FrameObj.SetLoadTemperature(GetAdapterId<string>(bar), caseName, 3, tempDelta, "", replace);
+                        break;}
+                }
+            }
+
+           
+        }
+
+
+
 
         /***************************************************/
 
@@ -366,6 +435,7 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 
 
 

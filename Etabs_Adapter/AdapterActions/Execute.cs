@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -83,6 +83,7 @@ namespace BH.Adapter.ETABS
 
         public bool RunCommand(SaveAs command)
         {
+            this.FilePath = command.FileName;
             return m_model.File.Save(command.FileName) == 0;
         }
 
@@ -92,6 +93,7 @@ namespace BH.Adapter.ETABS
         {
             if (System.IO.File.Exists(command.FileName))
             {
+                this.FilePath = command.FileName;
                 bool success = m_model.File.OpenFile(command.FileName) == 0;
                 success &= m_model.SetPresentUnits(eUnits.N_m_C) == 0;
                 return success;
@@ -225,6 +227,7 @@ namespace BH.Adapter.ETABS
         /***************************************************/
     }
 }
+
 
 
 

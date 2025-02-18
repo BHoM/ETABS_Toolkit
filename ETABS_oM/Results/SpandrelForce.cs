@@ -20,28 +20,67 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Structure.Results;
 using BH.oM.Base;
-using BH.oM.Base.Attributes;
+using BH.oM.Quantities.Attributes;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.ETABS
+
+namespace BH.oM.Adapters.ETABS.Results
 {
-    public class EtabsSettings : IObject
+    public class SpandrelForce : BarResult, IImmutable
     {
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/
 
-        [Description("Sets whether the loads being pushed should overwrite existing loads on the same object within the same loadcase")]
-        public virtual bool ReplaceLoads { get; set; } = false;
+        //Just using this for the name
+        public virtual string Location { get; } = "";
+        [Force]
+        [Description("Axial force along the local x-axis. Positive for tension, negative for compression.")]
+        public virtual double FX { get; }
 
-        [Description("")]
-        public virtual DatabaseSettings DatabaseSettings { get; set; } = new DatabaseSettings();
+        [Force]
+        [Description("Shear force along the local y-axis. Generally minor axis shear force.")]
+        public virtual double FY { get; }
+
+        [Force]
+        [Description("Shear force along the local z-axis. Generally major axis shear force.")]
+        public virtual double FZ { get; }
+
+        [Moment]
+        [Description("Torsional moment.")]
+        public virtual double MX { get; }
+
+        [Moment]
+        [Description("Bending moment about the local y-axis. Generally major axis bending moment.")]
+        public virtual double MY { get; }
+
+        [Moment]
+        [Description("Bending moment about the local z-axis. Generally minor axis bending moment.")]
+        public virtual double MZ { get; }
+        /***************************************************/
+        /**** Constructors                              ****/
+        /***************************************************/
+
+        public SpandrelForce(IComparable objectId, IComparable resultCase, string location, int modeNumber, double timeStep, double position, int divisions, double fx, double fy, double fz, double mx, double my, double mz)
+            : base(objectId, resultCase, modeNumber, timeStep, position, divisions)
+        {
+            Location = location;
+            FX = fx;
+            FY = fy;
+            FZ = fz;
+            MX = mx;
+            MY = my;
+            MZ = mz;
+        }
 
         /***************************************************/
     }

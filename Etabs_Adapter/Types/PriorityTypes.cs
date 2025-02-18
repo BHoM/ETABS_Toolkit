@@ -20,34 +20,46 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Elements;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.SurfaceProperties;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.Loads;
+using System;
+using BH.Engine.Adapter;
 using BH.oM.Adapters.ETABS;
-using BH.Engine.Structure;
-using BH.Engine.Geometry;
+using System.Collections.Generic;
+using BH.oM.Spatial.SettingOut;
 
-namespace BH.Engine.Adapters.ETABS
+namespace BH.Adapter.ETABS
 {
-    public static partial class Create
+#if Debug16 || Release16
+    public partial class ETABS2016Adapter : BHoMAdapter
+#elif Debug17 || Release17
+   public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABSAdapter : BHoMAdapter
+#endif
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /**** Protected methods                         ****/
         /***************************************************/
 
-        public static Pier Pier(string name)
+        protected void SetupPriorities()
         {
-            return new Pier { Name = name };
+
+            PriorityTypes = new List<Type>
+            {
+                {typeof(Level)},
+            };
         }
 
         /***************************************************/
     }
+
 }
+
 
 
 

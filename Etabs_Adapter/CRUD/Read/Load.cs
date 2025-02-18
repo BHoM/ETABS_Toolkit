@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -74,6 +74,12 @@ namespace BH.Adapter.ETABS
             if (type.IsAssignableFrom(typeof(PointLoad)))
             {
                 loads.AddRange(ReadPointLoad(loadcaseList));
+                typeCouldBeRead = true;
+            }
+
+            if (type.IsAssignableFrom(typeof(PointDisplacement)))
+            {
+                loads.AddRange(ReadPointDisplacementLoad(loadcaseList));
                 typeCouldBeRead = true;
             }
 
@@ -625,6 +631,7 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 
 
 

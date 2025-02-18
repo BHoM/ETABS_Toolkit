@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -57,6 +57,8 @@ namespace BH.Adapter.ETABS
             {
                 case PierAndSpandrelResultType.PierForce:
                     return GetPierForce(request.ObjectIds);
+                case PierAndSpandrelResultType.SpandrelForce:
+                    return GetSpandrelForce(request.ObjectIds);
                 default:
                     Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
@@ -67,6 +69,7 @@ namespace BH.Adapter.ETABS
         /**** Private method - Extraction methods       ****/
         /***************************************************/
 
+        /* Pier Forces */
         private List<PierForce> GetPierForce(IList ids = null)
         {
             List<PierForce> pierForces = new List<PierForce>();
@@ -105,10 +108,53 @@ namespace BH.Adapter.ETABS
         }
 
 
+        /* Spandrel Forces */
+        private List<SpandrelForce> GetSpandrelForce(IList ids = null)
+        {
+            List<SpandrelForce> spandrelForces = new List<SpandrelForce>();
+
+            string[] loadcaseNames = null;
+
+            int numberResults = 0;
+            string[] storyName = null;
+            string[] spandrelName = null;
+            string[] location = null;
+
+            double[] p = null;
+            double[] v2 = null;
+            double[] v3 = null;
+            double[] t = null;
+            double[] m2 = null;
+            double[] m3 = null;
+
+            int ret = m_model.Results.SpandrelForce(ref numberResults, ref storyName, ref spandrelName, ref loadcaseNames, ref location, ref p, ref v2, ref v3, ref t, ref m2, ref m3);
+            if (ret == 0)
+            {
+                for (int j = 0; j < numberResults; j++)
+                {
+                    int position = 0;
+                    if (location[j].ToUpper().Contains("RIGHT"))
+                    {
+                        position = 1;
+                    }
+
+                    SpandrelForce sf = new SpandrelForce(spandrelName[j],loadcaseNames[j], storyName[j], 0, 0, position, 2, p[j], v2[j], v3[j], t[j], m2[j], m3[j]);
+
+                    spandrelForces.Add(sf);
+                }
+
+            }
+            return spandrelForces;
+
+        }
+
+
+
         /***************************************************/
 
     }
 }
+
 
 
 
