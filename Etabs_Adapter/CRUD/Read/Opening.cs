@@ -52,58 +52,34 @@ namespace BH.Adapter.ETABS
         /***    Read Methods                             ***/
         /***************************************************/
 
-        private List<Panel> ReadPanel(List<string> ids = null)
+        private List<Opening> ReadOpening(List<string> ids = null)
         {
-            List<Panel> panelList = new List<Panel>();
 
-            Dictionary<string, ISurfaceProperty> bhomProperties = GetCachedOrReadAsDictionary<string, ISurfaceProperty>();
+            List<string> openingNames = new List<string>();
+            List<Opening> openingList = new List<Opening>();
+
             int nameCount = 0;
             string[] nameArr = { };
             m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
 
-            //Remove the Opening Objects from the Panels List
-            bool isOpening = false;
-            List<string> nameList=nameArr.Where(panelName => {
-                m_model.AreaObj.GetOpening(panelName, ref isOpening);
-                return !isOpening;}).ToList();
-            //Update number of Panels removing Opening Objects from it
-            nameCount = nameList.Count;
 
-            ids = FilterIds(ids, nameList);
+            bool isOpening = false;
+            openingNames = nameArr.Where(panelName => {
+                m_model.AreaObj.GetOpening(panelName, ref isOpening);
+                return isOpening;
+            }).ToList();
+
+            ids = FilterIds(ids, openingNames);
 
             foreach (string id in ids)
             {
                 ETABSId etabsId = new ETABSId();
                 etabsId.Id = id;
 
-                string propertyName = "";
+                Opening opening = new Opening();
+                Polyline pl = GetOpeningOutline(id);
 
-                m_model.AreaObj.GetProperty(id, ref propertyName);
-
-                ISurfaceProperty panelProperty = null;
-                if (propertyName != "None")
-                {
-                    panelProperty = bhomProperties[propertyName];
-                }
-
-                Panel panel = new Panel();
-                Polyline pl = GetPanelPerimeter(id);
-
-                panel.ExternalEdges = pl.SubParts().Select(x => new Edge { Curve = x }).ToList();
-
-                panel.Property = panelProperty;
-                string PierName = "";
-                string SpandrelName = "";
-                m_model.AreaObj.GetPier(id, ref PierName);
-                m_model.AreaObj.GetSpandrel(id, ref SpandrelName);
-                panel = panel.SetSpandrel(new Spandrel { Name = SpandrelName });
-                panel = panel.SetPier(new Pier { Name = PierName });
-
-                double orientation = 0;
-                bool advanced = false;
-                m_model.AreaObj.GetLocalAxes(id, ref orientation, ref advanced);
-
-                panel = panel.SetLocalOrientation(Convert.FromCSILocalX(panel.Normal(), orientation));
+                opening.Edges = pl.SubParts().Select(x => new Edge { Curve = x }).ToList();
 
                 //Label and story
                 string label = "";
@@ -118,16 +94,16 @@ namespace BH.Adapter.ETABS
                 if (m_model.AreaObj.GetGUID(id, ref guid) == 0)
                     etabsId.PersistentId = guid;
 
-                panel.SetAdapterId(etabsId);
-                panelList.Add(panel);
+                opening.SetAdapterId(etabsId);
+                openingList.Add(opening);
             }
 
-            return panelList;
+            return openingList;
         }
 
         /***************************************************/
 
-        private Polyline GetPanelPerimeter(string id)
+        private Polyline GetOpeningOutline(string id)
         {
             string[] pName = null;
             int pointCount = 0;
@@ -152,9 +128,4 @@ namespace BH.Adapter.ETABS
 
     }
 }
-
-
-
-
-
 

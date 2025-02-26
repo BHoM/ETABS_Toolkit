@@ -70,6 +70,8 @@ namespace BH.Adapter.ETABS
                 return ReadMaterial(listIds);
             else if (type == typeof(Panel))
                 return ReadPanel(listIds);
+            else if (type == typeof(Opening))
+                return ReadOpening(listIds);
             else if (type == typeof(ISurfaceProperty) || type.GetInterfaces().Contains(typeof(ISurfaceProperty)))
                 return ReadSurfaceProperty(listIds);
             else if (type == typeof(LoadCombination))
@@ -121,6 +123,18 @@ namespace BH.Adapter.ETABS
 
             m_model.SelectObj.GetSelected(ref numItems, ref objectTypes, ref objectIds);
 
+            // Replace Panels' type numbers with Openings' type numbers
+            
+            for (int i=0; i<numItems; i++)
+            {
+                if (objectTypes[i]==5)
+                {
+                    bool isOpening=false;
+                    m_model.AreaObj.GetOpening(objectIds[i], ref isOpening);
+                    if (isOpening) objectTypes[i] = 8;
+                }
+            }
+
             Dictionary<int, List<string>> dict = objectTypes.Distinct().ToDictionary(x => x, x => new List<string>());
 
             for (int i = 0; i < numItems; i++)
@@ -144,6 +158,8 @@ namespace BH.Adapter.ETABS
                         return null;
                     case 7: // Link Object
                         return typeof(RigidLink);
+                    case 8: // Opening Object (not api-native)
+                        return typeof(Opening);
                     default:
                         return null;
                 }
