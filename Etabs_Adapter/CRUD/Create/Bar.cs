@@ -153,10 +153,23 @@ namespace BH.Adapter.ETABS
                 offset2[2] = offset.End.Y;
             }
 
-            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+            // Avoid following operation if ETABS Version is ETABS21...
+            string majorVersion = "";
+            if(this.EtabsVersion != null && this.EtabsVersion.Contains("."))
+                majorVersion = this.EtabsVersion.Split('.')[0];
+
+            if (majorVersion != "21") 
             {
-                CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
-                ret++;
+                if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, 
+                    bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+                {
+                    CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
+                    ret++;
+                }
+            }
+            else if (bhBar.FindFragment<InsertionPoint>() != null)
+            {
+                CreatePropertyWarning("Insertion point pushing is unsupported for ETABS 21", "Bar", name);
             }
 
             if (bhBar.Release != null && bhBar.Release.StartRelease != null && bhBar.Release.EndRelease != null) 
