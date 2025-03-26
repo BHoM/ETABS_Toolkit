@@ -16,7 +16,7 @@ CSI ETABS 18
 CSI ETABS 20
 CSI ETABS 21
 
-#### Build set up, untested:
+#### Not supported:
 CSI ETABS 22
 
 
