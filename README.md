@@ -11,11 +11,13 @@ https://www.csiamerica.com/products/etabs
 
 #### Built and tested:
 CSI ETABS 2016
-
 CSI ETABS 17
+CSI ETABS 18
+CSI ETABS 20
+CSI ETABS 21
 
 #### Build set up, untested:
-CSI ETABS 18
+CSI ETABS 22
 
 
 ### Documentation
