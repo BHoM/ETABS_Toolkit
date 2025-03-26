@@ -119,7 +119,7 @@ namespace BH.Adapter.ETABS
 
                 if (processes > 0)
                 {
-                    object runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject(programId);
+                    object runningInstance = Query.GetActiveObject(programId);
 
                     m_app = (cOAPI)runningInstance;
                     m_model = m_app.SapModel;
