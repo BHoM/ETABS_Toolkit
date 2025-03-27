@@ -83,6 +83,14 @@ namespace BH.Adapter.ETABS
         public ETABSAdapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #endif
         {
+            if (Environment.Version.Major > 4)
+            {
+                BH.Engine.Base.Compute.RecordError($"The ETABSAdapter is currently not supported in net runtimes above NETFramework due to internal errors in the ETABS API. A fix for this is being worked on.\n" +
+                                                   $"If you are running this Adapter from Grasshopper in Rhino 8, you can change the runtime being used by Rhino to NETFramework. To do this please follow the instructions here: https://www.rhino3d.com/en/docs/guides/netcore/");
+                return;
+            }
+
+
             //Initialisation
             AdapterIdFragmentType = typeof(ETABSId);
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
@@ -148,6 +156,15 @@ namespace BH.Adapter.ETABS
                 string version = "";
                 m_app.SapModel.GetVersion(ref version, ref doubleVer);
                 this.EtabsVersion = version;
+
+                if (EtabsVersion != null && EtabsVersion.Split('.').First() == "22")
+                {
+                    BH.Engine.Base.Compute.RecordError($"The ETABSAdapter is currently not supported to be used with ETABS 22 due to internal errors in the ETABS API. A fix for this is being worked on.");
+                    m_model = null;
+                    m_app = null;
+                    return;
+
+                }
 
                 // Get ETABS Model FilePath
                 FilePath = m_model.GetModelFilename();
