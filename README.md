@@ -17,7 +17,15 @@ CSI ETABS 20
 CSI ETABS 21
 
 #### Not supported:
-CSI ETABS 22
+CSI ETABS 22 due to internal failures of the ETABS API. A fix for this is being worked on.
+
+### Net runtime issues
+
+There are currently some internal failures in the ETABS API when called in a NET Core environment. For this reason, running the ETABSAdapter in runtimes above net 4 is disabled.
+
+If you are using the ETABS Adapter with Grasshopper in Rhino 8 you can change the runtime used by Rhino to framework. To do this, please see this link: https://www.rhino3d.com/en/docs/guides/netcore/#to-change-rhino-to-always-use-net-framework
+
+A fix to allow for higher net runtimes is being worked on.
 
 
 ### Documentation
