@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -52,7 +52,8 @@ namespace BH.Adapter.ETABS
             {
                 {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node)} },
                 {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
-                {typeof(Panel), new List<Type> { typeof(ISurfaceProperty)} },
+                {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } },
+                {typeof(Opening), new List<Type> {typeof(Edge) } },
                 {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
                 {typeof(RigidLink), new List<Type> { typeof(Node), typeof(LinkConstraint)} },
                 {typeof(ILoad), new List<Type> {typeof(Loadcase) } },
@@ -65,6 +66,7 @@ namespace BH.Adapter.ETABS
     }
 
 }
+
 
 
 

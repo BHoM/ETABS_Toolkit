@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -153,10 +153,23 @@ namespace BH.Adapter.ETABS
                 offset2[2] = offset.End.Y;
             }
 
-            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+            // Avoid following operation if ETABS Version is ETABS21...
+            string majorVersion = "";
+            if(this.EtabsVersion != null && this.EtabsVersion.Contains("."))
+                majorVersion = this.EtabsVersion.Split('.')[0];
+
+            if (majorVersion != "21") 
             {
-                CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
-                ret++;
+                if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, 
+                    bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+                {
+                    CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
+                    ret++;
+                }
+            }
+            else if (bhBar.FindFragment<InsertionPoint>() != null)
+            {
+                CreatePropertyWarning("Insertion point pushing is unsupported for ETABS 21", "Bar", name);
             }
 
             if (bhBar.Release != null && bhBar.Release.StartRelease != null && bhBar.Release.EndRelease != null) 
@@ -292,6 +305,7 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 
 
 

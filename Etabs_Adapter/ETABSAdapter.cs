@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -60,6 +60,7 @@ namespace BH.Adapter.ETABS
         public const string ID = "ETABS_id";
 
         public string FilePath { get; set; }
+        public string EtabsVersion { get; set; }
 
         public EtabsSettings EtabsSettings { get; set; } = new EtabsSettings();
 
@@ -82,6 +83,14 @@ namespace BH.Adapter.ETABS
         public ETABSAdapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #endif
         {
+            if (Environment.Version.Major > 4)
+            {
+                BH.Engine.Base.Compute.RecordError($"The ETABSAdapter is currently not supported in net runtimes above NETFramework due to internal errors in the ETABS API. A fix for this is being worked on.\n" +
+                                                   $"If you are running this Adapter from Grasshopper in Rhino 8, you can change the runtime being used by Rhino to NETFramework. To do this please follow the instructions here: https://www.rhino3d.com/en/docs/guides/netcore/");
+                return;
+            }
+
+
             //Initialisation
             AdapterIdFragmentType = typeof(ETABSId);
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
@@ -118,7 +127,7 @@ namespace BH.Adapter.ETABS
 
                 if (processes > 0)
                 {
-                    object runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject(programId);
+                    object runningInstance = Query.GetActiveObject(programId);
 
                     m_app = (cOAPI)runningInstance;
                     m_model = m_app.SapModel;
@@ -142,6 +151,22 @@ namespace BH.Adapter.ETABS
                         m_model.File.NewBlank();
                 }
 
+                // Get ETABS Model Version
+                double doubleVer = 0;
+                string version = "";
+                m_app.SapModel.GetVersion(ref version, ref doubleVer);
+                this.EtabsVersion = version;
+
+                if (EtabsVersion != null && EtabsVersion.Split('.').First() == "22")
+                {
+                    BH.Engine.Base.Compute.RecordError($"The ETABSAdapter is currently not supported to be used with ETABS 22 due to internal errors in the ETABS API. A fix for this is being worked on.");
+                    m_model = null;
+                    m_app = null;
+                    return;
+
+                }
+
+                // Get ETABS Model FilePath
                 FilePath = m_model.GetModelFilename();
 
                 LoadSectionDatabaseNames();
@@ -226,6 +251,7 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 
 
 
