@@ -157,14 +157,14 @@ namespace BH.Adapter.ETABS
                 m_app.SapModel.GetVersion(ref version, ref doubleVer);
                 this.EtabsVersion = version;
 
-                if (EtabsVersion != null && EtabsVersion.Split('.').First() == "22")
-                {
-                    BH.Engine.Base.Compute.RecordError($"The ETABSAdapter is currently not supported to be used with ETABS 22 due to internal errors in the ETABS API. A fix for this is being worked on.");
-                    m_model = null;
-                    m_app = null;
-                    return;
+                //if (EtabsVersion != null && EtabsVersion.Split('.').First() == "22")
+                //{
+                //    BH.Engine.Base.Compute.RecordError($"The ETABSAdapter is currently not supported to be used with ETABS 22 due to internal errors in the ETABS API. A fix for this is being worked on.");
+                //    m_model = null;
+                //    m_app = null;
+                //    return;
 
-                }
+                //}
 
                 // Get ETABS Model FilePath
                 FilePath = m_model.GetModelFilename();
