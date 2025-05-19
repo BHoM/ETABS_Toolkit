@@ -34,7 +34,7 @@ using ETABS2016;
 #elif Debug17 || Release17
 using ETABSv17;
 #else
-using CSiAPIv1;
+using ETABSv1;
 #endif
 
 
