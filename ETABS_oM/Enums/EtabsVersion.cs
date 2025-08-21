@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -25,33 +25,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Base;
-using BH.oM.Base.Attributes;
-using System.ComponentModel;
 
 namespace BH.oM.Adapters.ETABS
 {
-    public class EtabsSettings : IObject
+    public enum EtabsVersion
     {
-        /***************************************************/
-        /**** Public Properties                         ****/
-        /***************************************************/
-
-        [Description("Sets whether the loads being pushed should overwrite existing loads on the same object within the same loadcase")]
-        public virtual bool ReplaceLoads { get; set; } = false;
-
-        [Description("")]
-        public virtual DatabaseSettings DatabaseSettings { get; set; } = new DatabaseSettings();
-
-        [Description("Sets/gets the version number of the attached ETABS application")]
-        public virtual EtabsVersion EtabsVersion { get; set; } = new EtabsVersion();
-
-        /***************************************************/
+        v18,
+        v20,
+        v21,
+        v22,
     }
 }
-
-
-
-
-
-

@@ -265,7 +265,8 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="CSiAPIv1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8a93c9e72eabf762, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSiAPIv1.1.0.0\lib\net\CSiAPIv1.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\ETABS 22\CSiAPIv1.dll</HintPath>
     </Reference>
     <Reference Include="Data_oM">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Data_oM.dll</HintPath>
