@@ -110,6 +110,28 @@ namespace BH.Adapter.ETABS
 
 #elif Debug17 || Release17
                 string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 17\ETABS.exe";
+
+#else
+                string pathToETABS = "";
+
+                switch (EtabsSettings.EtabsVersion)
+                {
+                    case oM.Adapters.ETABS.EtabsVersion.v18:
+                        pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 18\ETABS.exe";
+                        break;
+                    case oM.Adapters.ETABS.EtabsVersion.v20:
+                        pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 20\ETABS.exe";
+                        break;
+                    case oM.Adapters.ETABS.EtabsVersion.v21:
+                        pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 21\ETABS.exe";
+                        break;
+                    case oM.Adapters.ETABS.EtabsVersion.v22:
+                        pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 22\ETABS.exe";
+                        break;
+                    default:
+                        pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 22\ETABS.exe";
+                        break;
+                }
 #endif
 
 
@@ -140,7 +162,7 @@ namespace BH.Adapter.ETABS
 #if Debug16 || Release16 || Debug17 || Release17
                     m_app = helper.CreateObject(pathToETABS);
 #else
-                    m_app = helper.CreateObjectProgID(programId); //Starts the latest installed version of ETABS
+                    m_app = helper.CreateObject(pathToETABS);
 #endif
                     m_app.ApplicationStart();
                     m_model = m_app.SapModel;
