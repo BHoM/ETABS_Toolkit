@@ -69,7 +69,7 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
 
-        [Input("filePath","Optional file path. If empty, or not a valid file path. If empty, a new file will be created unless ETABS is already running.",typeof(FilePathAttribute))]
+        [Input("filePath", "Optional file path. If empty, or not a valid file path. If empty, a new file will be created unless ETABS is already running.", typeof(FilePathAttribute))]
         [Input("etabsSetting", "Controling various settings of the adapter.")]
         [Input("active", "Toggle to true to activate the adapter. If ETABS is running, the adapter will connect to the running instance. If ETABS is not running, the adapter will start up a new instance of ETABS.")]
 #if Debug16 || Release16
