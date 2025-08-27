@@ -90,7 +90,6 @@ namespace BH.Adapter.ETABS
                 return;
             }
 
-
             //Initialisation
             AdapterIdFragmentType = typeof(ETABSId);
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
