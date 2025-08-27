@@ -264,9 +264,9 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="CSiAPIv1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8a93c9e72eabf762, processorArchitecture=MSIL">
+    <Reference Include="CSiAPIv1, Version=2.10.0.0, Culture=neutral, PublicKeyToken=8a93c9e72eabf762, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\ETABS 22\CSiAPIv1.dll</HintPath>
+      <HintPath>..\libs\Version 2.10.0\CSiAPIv1.dll</HintPath>
     </Reference>
     <Reference Include="Data_oM">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Data_oM.dll</HintPath>
@@ -420,8 +420,7 @@
     <PostBuildEvent>
       xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y
       xcopy "$(TargetDir)ETABS2016.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
-xcopy "$(TargetDir)ETABSv17.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
-xcopy "$(TargetDir)CSiAPIv1.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
+	  xcopy "$(TargetDir)ETABSv17.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
