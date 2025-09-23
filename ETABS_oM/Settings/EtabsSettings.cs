@@ -43,7 +43,7 @@ namespace BH.oM.Adapters.ETABS
         [Description("")]
         public virtual DatabaseSettings DatabaseSettings { get; set; } = new DatabaseSettings();
 
-        [Description("Sets/gets the version number of the attached ETABS application")]
+        [Description("Sets the version of ETABS to launch when running the adapter.")]
         public virtual EtabsVersion EtabsVersion { get; set; } = new EtabsVersion();
 
         /***************************************************/
