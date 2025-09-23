@@ -22,12 +22,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BH.oM.Adapters.ETABS
 {
+    [Description("The ETABS version number used in the adapter to select the path of the corresponding executable.")]
     public enum EtabsVersion
     {
         v18,
