@@ -421,6 +421,7 @@
       xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y
       xcopy "$(TargetDir)ETABS2016.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
 	  xcopy "$(TargetDir)ETABSv17.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
+	  xcopy "$(TargetDir)CSiAPIv1.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
