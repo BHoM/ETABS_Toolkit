@@ -69,7 +69,7 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
 
-        [Input("filePath","Optional file path. If empty, or not a valid file path. If empty, a new file will be created unless ETABS is already running.",typeof(FilePathAttribute))]
+        [Input("filePath", "Optional file path. If empty, or not a valid file path. If empty, a new file will be created unless ETABS is already running.", typeof(FilePathAttribute))]
         [Input("etabsSetting", "Controling various settings of the adapter.")]
         [Input("active", "Toggle to true to activate the adapter. If ETABS is running, the adapter will connect to the running instance. If ETABS is not running, the adapter will start up a new instance of ETABS.")]
 #if Debug16 || Release16
@@ -90,7 +90,6 @@ namespace BH.Adapter.ETABS
                 return;
             }
 
-
             //Initialisation
             AdapterIdFragmentType = typeof(ETABSId);
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
@@ -110,6 +109,28 @@ namespace BH.Adapter.ETABS
 
 #elif Debug17 || Release17
                 string pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 17\ETABS.exe";
+
+#else
+                string pathToETABS = "";
+
+                switch (EtabsSettings.EtabsVersion)
+                {
+                    case oM.Adapters.ETABS.EtabsVersion.v18:
+                        pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 18\ETABS.exe";
+                        break;
+                    case oM.Adapters.ETABS.EtabsVersion.v20:
+                        pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 20\ETABS.exe";
+                        break;
+                    case oM.Adapters.ETABS.EtabsVersion.v21:
+                        pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 21\ETABS.exe";
+                        break;
+                    case oM.Adapters.ETABS.EtabsVersion.v22:
+                        pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 22\ETABS.exe";
+                        break;
+                    default:
+                        pathToETABS = @"C:\Program Files\Computers and Structures\ETABS 22\ETABS.exe";
+                        break;
+                }
 #endif
 
 
@@ -140,7 +161,7 @@ namespace BH.Adapter.ETABS
 #if Debug16 || Release16 || Debug17 || Release17
                     m_app = helper.CreateObject(pathToETABS);
 #else
-                    m_app = helper.CreateObjectProgID(programId); //Starts the latest installed version of ETABS
+                    m_app = helper.CreateObject(pathToETABS);
 #endif
                     m_app.ApplicationStart();
                     m_model = m_app.SapModel;
@@ -156,15 +177,6 @@ namespace BH.Adapter.ETABS
                 string version = "";
                 m_app.SapModel.GetVersion(ref version, ref doubleVer);
                 this.EtabsVersion = version;
-
-                if (EtabsVersion != null && EtabsVersion.Split('.').First() == "22")
-                {
-                    BH.Engine.Base.Compute.RecordError($"The ETABSAdapter is currently not supported to be used with ETABS 22 due to internal errors in the ETABS API. A fix for this is being worked on.");
-                    m_model = null;
-                    m_app = null;
-                    return;
-
-                }
 
                 // Get ETABS Model FilePath
                 FilePath = m_model.GetModelFilename();
