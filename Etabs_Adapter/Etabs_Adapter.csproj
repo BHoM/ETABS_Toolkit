@@ -381,6 +381,7 @@
     <Compile Include="CRUD\Update\Node.cs" />
     <Compile Include="CRUD\Update\Material.cs" />
     <Compile Include="CRUD\Update\Panel.cs" />
+    <Compile Include="Types\DynamicComparer.cs" />
     <Compile Include="Types\NextIndex.cs" />
     <Compile Include="CRUD\Read\Link.cs" />
     <Compile Include="CRUD\Read\Material.cs" />
