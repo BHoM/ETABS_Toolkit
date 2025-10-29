@@ -45,6 +45,37 @@ namespace BH.Adapter.ETABS
     {
         /***************************************************/
 
+#if Debug16 || Release16 || Debug17 || Release17
+        private List<Level> ReadLevel(List<string> ids = null)
+        {
+            List<Level> levellist = new List<Level>();
+            int numberNames = 0;
+            string[] names = null;
+            m_model.Story.GetNameList(ref numberNames, ref names);
+
+            ids = FilterIds(ids, names);
+
+            foreach (string id in ids)
+            {
+                ETABSId etabsid = new ETABSId();
+                etabsid.Id = id;
+
+                double elevation = 0;
+                int ret = m_model.Story.GetElevation(id, ref elevation);
+
+                string guid = null;
+                m_model.Story.GetGUID(id, ref guid);
+                etabsid.PersistentId = guid;
+
+                Level lvl = new Level() { Elevation = elevation, Name = id };
+
+                lvl.SetAdapterId(etabsid);
+                levellist.Add(lvl);
+            }
+
+            return levellist;
+        }
+#else
         private List<Level> ReadLevel(List<string> ids = null)
         {
             List<Level> levellist = new List<Level>();
@@ -120,12 +151,10 @@ namespace BH.Adapter.ETABS
                     lvl.SetAdapterId(etabsid);
                     levellist.Add(lvl);
                 }
-
             }
-
             return levellist;
         }
-
+#endif
         /***************************************************/
     }
 }
