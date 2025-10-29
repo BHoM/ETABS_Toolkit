@@ -77,7 +77,7 @@ namespace BH.Adapter.ETABS
                 }
 #endif
 
-                if (SetObject(bhBar))
+                if (SetObject(bhBar) && UpdateGroup(bhBar))
                     ret++;
 
             }
@@ -91,6 +91,31 @@ namespace BH.Adapter.ETABS
             ForceRefresh();
 #endif
 
+
+            return true;
+        }
+
+        /***************************************************/
+
+        private bool UpdateGroup(Bar bhBar)
+        {
+            return ResetGroup(bhBar) && SetGroup(bhBar);
+        }
+
+        /***************************************************/
+
+        private bool ResetGroup(Bar bhBar)
+        {
+            /* Get the ETABS name of the Bar */
+            string name = GetAdapterId<string>(bhBar);
+
+            /* Get the names of all groups currently assigned to the bar */
+            int numGroups = 0;
+            string[] groupNames = null;
+            m_model.FrameObj.GetGroupAssign(name, ref numGroups, ref groupNames);
+
+            /* Remove the Bar from each group in the list */
+            groupNames.ToList().ForEach(groupName => m_model.FrameObj.SetGroupAssign(name, groupName, true));
 
             return true;
         }
