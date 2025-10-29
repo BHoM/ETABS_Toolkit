@@ -1,0 +1,105 @@
+/*
+ * This file is part of the Buildings and Habitats object Model (BHoM)
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ *
+ * Each contributor holds copyright over their respective contributions.
+ * The project versioning (Git) records all such contribution source information.
+ *                                           
+ *                                                                              
+ * The BHoM is free software: you can redistribute it and/or modify         
+ * it under the terms of the GNU Lesser General Public License as published by  
+ * the Free Software Foundation, either version 3.0 of the License, or          
+ * (at your option) any later version.                                          
+ *                                                                              
+ * The BHoM is distributed in the hope that it will be useful,              
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of               
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
+ * GNU Lesser General Public License for more details.                          
+ *                                                                             
+ * You should have received a copy of the GNU Lesser General Public License    
+ * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
+ */
+
+using System.Collections.Generic;
+using System.Linq;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.ETABS;
+using BH.oM.Structure.Elements;
+
+
+namespace BH.Adapter.ETABS
+{
+#if Debug16 || Release16
+    public partial class ETABS2016Adapter : BHoMAdapter
+#elif Debug17 || Release17
+   public partial class ETABS17Adapter : BHoMAdapter
+#else
+    public partial class ETABSAdapter : BHoMAdapter
+#endif
+    {
+        /***************************************************/
+        /**** Update Openings                            ****/
+        /***************************************************/
+
+        private bool UpdateObjects(IEnumerable<Opening> bhOpenings)
+        {
+            bool success = true;
+
+            int nameCount = 0;
+            string[] names = { };
+            m_model.AreaObj.GetNameList(ref nameCount, ref names);
+
+            foreach (Opening bhOpening in bhOpenings)
+            {
+                string id = bhOpening.AdapterId<string>(typeof(ETABSId));
+                if (id == null)
+                {
+                    Engine.Base.Compute.RecordWarning("The Opening must have an ETABS adapter id to be updated.");
+                    continue;
+                }
+
+                if (!names.Contains(id))
+                {
+                    Engine.Base.Compute.RecordWarning("The Opening must be present in ETABS to be updated.");
+                    continue;
+                }
+
+                // ETABS API does not allow updating of opening geometry. Only group assignment can be updated.
+                Engine.Base.Compute.RecordWarning("The Etabs API does not allow for updating of the geometry of openings. To change opening geometry delete and recreate the opening.");
+
+                if (UpdateGroup(bhOpening))
+                    ; // nothing to count specifically
+            }
+
+            return success;
+        }
+
+        /***************************************************/
+
+        private bool UpdateGroup(Opening bhOpening)
+        {
+            return ResetGroup(bhOpening) && SetGroup(bhOpening);
+        }
+
+        /***************************************************/
+
+        private bool ResetGroup(Opening bhOpening)
+        {
+            /* Get the ETABS name of the Opening */
+            string name = GetAdapterId<string>(bhOpening);
+
+            /* Get the names of all groups currently assigned to the opening */
+            int numGroups = 0;
+            string[] groupNames = null;
+            m_model.AreaObj.GetGroupAssign(name, ref numGroups, ref groupNames);
+
+            /* Remove the Opening from each group in the list */
+            groupNames.ToList().ForEach(groupName => m_model.AreaObj.SetGroupAssign(name, groupName, true));
+
+            return true;
+        }
+
+        /***************************************************/
+
+    }
+}
