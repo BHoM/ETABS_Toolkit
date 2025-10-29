@@ -125,6 +125,18 @@ namespace BH.Adapter.ETABS
 
                 bhLink.Constraint = new LinkConstraint { Name = propName }; //Dummy constraint to be populated in later loop
 
+                /* Get the ETABS name of the Rigid Link */
+                string name = GetAdapterId<string>(bhLink);
+
+                // Get the groups the link is assigned to
+                int numGroups = 0;
+                string[] groupNames = new string[0];
+                if (m_model.LinkObj.GetGroupAssign(name, ref numGroups, ref groupNames) == 0)
+                {
+                    foreach (string grpName in groupNames)
+                        bhLink.Tags.Add(grpName);
+                }
+
                 linkList.Add(bhLink);
             }
 

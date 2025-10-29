@@ -20,14 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Adapter;
+using BH.Engine.Adapters.ETABS;
+using BH.Engine.Structure;
+using BH.oM.Adapters.ETABS;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.Elements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.Constraints;
-using BH.Engine.Structure;
-using BH.Engine.Adapters.ETABS;
 
 
 namespace BH.Adapter.ETABS
@@ -70,6 +71,8 @@ namespace BH.Adapter.ETABS
             multiId.Id = linkIds;
             bhLink.SetAdapterId(multiId);
 
+            SetGroup(bhLink);
+
             return success;
         }
 
@@ -103,6 +106,49 @@ namespace BH.Adapter.ETABS
 
             return ret == 0;
 
+        }
+
+        /***************************************************/
+
+        private bool SetGroup(RigidLink bhLink)
+        {
+            int ret = 0;
+            /* Get the ETABS name of the Link */
+            string name = GetAdapterId<string>(bhLink);
+
+            try
+            {
+                /* Get the list of unique groupNames assigned to the BHoM Link */
+                List<string> groupNames = bhLink.Tags.Distinct().ToList();
+                /* Get the list of existing group names in the ETABS model */
+                int modelNumGroups = 0;
+                string[] modelGroupNames = null;
+                m_model.GroupDef.GetNameList(ref modelNumGroups, ref modelGroupNames);
+
+                /* Create any groups that do not already exist in the ETABS model */
+                foreach (string groupName in groupNames)
+                {
+                    if (!modelGroupNames.Contains(groupName))
+                    {
+                        ret = m_model.GroupDef.SetGroup_1(groupName);
+                        if (ret != 0)
+                        {
+                            Engine.Base.Compute.RecordError("Could not create the Group <" + groupName + "> assigned to the Link. Group not created.");
+                            return false;
+                        }
+                    }
+                }
+
+                /* Assign the Link to each group in the list */
+                groupNames.ToList().ForEach(groupName => m_model.LinkObj.SetGroupAssign(name, groupName));
+            }
+            catch (Exception e)
+            {
+                Engine.Base.Compute.RecordError("Could not assign input groups to the link. Groups not assigned.");
+                return false;
+            }
+
+            return true;
         }
 
         /***************************************************/
