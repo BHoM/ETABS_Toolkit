@@ -67,7 +67,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Elements\ETABSGroup.cs" />
     <Compile Include="Enums\EtabsVersion.cs" />
     <Compile Include="Fragments\ETABSId.cs" />
     <Compile Include="Fragments\ShellTypeFragment.cs" />
