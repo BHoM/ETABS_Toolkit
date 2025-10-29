@@ -113,8 +113,8 @@ namespace BH.Adapter.ETABS
         private bool SetGroup(RigidLink bhLink)
         {
             int ret = 0;
-            /* Get the ETABS name of the Link */
-            string name = GetAdapterId<string>(bhLink);
+            /* Get the ETABS names of all the Links */
+            List<string> names = ((ETABSId)bhLink.Fragments[0]).Id as List<string>;
 
             try
             {
@@ -139,8 +139,10 @@ namespace BH.Adapter.ETABS
                     }
                 }
 
-                /* Assign the Link to each group in the list */
-                groupNames.ToList().ForEach(groupName => m_model.LinkObj.SetGroupAssign(name, groupName));
+                /* Assign the Links to each group in the list */
+                foreach (string name in names) { 
+                    groupNames.ToList().ForEach(groupName => m_model.LinkObj.SetGroupAssign(name, groupName));
+                }
             }
             catch (Exception e)
             {

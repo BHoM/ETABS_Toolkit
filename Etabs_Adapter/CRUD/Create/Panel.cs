@@ -176,6 +176,10 @@ namespace BH.Adapter.ETABS
             {
                 m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
             }
+
+            //Set Groups Assignment
+            SetGroup(bhPanel);
+
             return success;
         }
 

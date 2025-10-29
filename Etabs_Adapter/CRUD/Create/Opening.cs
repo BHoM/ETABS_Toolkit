@@ -106,6 +106,9 @@ namespace BH.Adapter.ETABS
 
             m_model.AreaObj.SetOpening(openingName, true);
 
+            //Set Groups Assignment
+            SetGroup(bhOpening);
+
             return success;
         }
 
