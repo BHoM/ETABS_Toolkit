@@ -85,12 +85,41 @@ namespace BH.Adapter.ETABS
                 {
                     m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
                 }
+
+                //Update Groups Assignment
+                UpdateGroup(bhPanel);
+
             }
 
             //Force refresh to make sure panel local orientation are set correctly
             ForceRefresh();
 
             return success;
+        }
+
+        /***************************************************/
+
+        private bool UpdateGroup(Panel bhPanel)
+        {
+            return ResetGroup(bhPanel) && SetGroup(bhPanel);
+        }
+
+        /***************************************************/
+
+        private bool ResetGroup(Panel bhPanel)
+        {
+            /* Get the ETABS name of the Panel */
+            string name = GetAdapterId<string>(bhPanel);
+
+            /* Get the names of all groups currently assigned to the panel */
+            int numGroups = 0;
+            string[] groupNames = null;
+            m_model.AreaObj.GetGroupAssign(name, ref numGroups, ref groupNames);
+
+            /* Remove the Panel from each group in the list */
+            groupNames.ToList().ForEach(groupName => m_model.AreaObj.SetGroupAssign(name, groupName, true));
+
+            return true;
         }
 
         /***************************************************/
