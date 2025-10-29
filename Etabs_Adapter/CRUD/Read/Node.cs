@@ -84,7 +84,18 @@ namespace BH.Adapter.ETABS
                     etabsIdFragment.Story = story;
                 }
 
-                if(m_model.PointObj.GetGUID(id, ref guid) == 0)
+
+                // Get the groups the bar is assigned to
+                int numGroups = 0;
+                string[] groupNames = new string[0];
+                if (m_model.PointObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
+                {
+                    foreach (string grpName in groupNames)
+                        bhNode.Tags.Add(grpName);
+                }
+
+
+                if (m_model.PointObj.GetGUID(id, ref guid) == 0)
                     etabsIdFragment.PersistentId = guid;
 
                 bhNode.SetAdapterId(etabsIdFragment);
