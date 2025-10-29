@@ -20,17 +20,18 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.Elements;
-using BH.Engine.Structure;
+using BH.Engine.Adapters.ETABS;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
-using BH.Engine.Adapters.ETABS;
+using BH.Engine.Structure;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Geometry;
+using BH.oM.Structure.Elements;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace BH.Adapter.ETABS
@@ -196,6 +197,49 @@ namespace BH.Adapter.ETABS
             if (isNonLinear)
                 Engine.Base.Compute.RecordWarning("Non-linear edges will be pushed using the control points of the underlying curves. It is recomended that you subsegment all edge curves into linear segements before you push to ETABS. Try using the CollapseToPolyline method. Please check the result of the push in the ETABS model!");
 
+        }
+
+        /***************************************************/
+
+        private bool SetGroup(Panel bhPanel)
+        {
+            int ret = 0;
+            /* Get the ETABS name of the Panel */
+            string name = GetAdapterId<string>(bhPanel);
+
+            try
+            {
+                /* Get the list of unique groupNames assigned to the BHoM Panel */
+                List<string> groupNames = bhPanel.Tags.Distinct().ToList();
+                /* Get the list of existing group names in the ETABS model */
+                int modelNumGroups = 0;
+                string[] modelGroupNames = null;
+                m_model.GroupDef.GetNameList(ref modelNumGroups, ref modelGroupNames);
+
+                /* Create any groups that do not already exist in the ETABS model */
+                foreach (string groupName in groupNames)
+                {
+                    if (!modelGroupNames.Contains(groupName))
+                    {
+                        ret = m_model.GroupDef.SetGroup_1(groupName);
+                        if (ret != 0)
+                        {
+                            Engine.Base.Compute.RecordError("Could not create the Group <" + groupName + "> assigned to the Panel. Group not created.");
+                            return false;
+                        }
+                    }
+                }
+
+                /* Assign the Panel to each group in the list */
+                groupNames.ToList().ForEach(groupName => m_model.AreaObj.SetGroupAssign(name, groupName));
+            }
+            catch (Exception e)
+            {
+                Engine.Base.Compute.RecordError("Could not assign input groups to the panel. Groups not assigned.");
+                return false;
+            }
+
+            return true;
         }
 
         /***************************************************/
