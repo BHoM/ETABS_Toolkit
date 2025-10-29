@@ -248,7 +248,7 @@ namespace BH.Adapter.ETABS
                 } 
             catch (Exception e)
                 {
-                    Engine.Base.Compute.RecordError("Could not assign input groups to the bar. Bar not created.");
+                    Engine.Base.Compute.RecordError("Could not assign input groups to the bar. Groups not assigned.");
                     return false;
                 }
 
