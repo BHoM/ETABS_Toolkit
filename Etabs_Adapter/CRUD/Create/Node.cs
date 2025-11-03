@@ -20,15 +20,18 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.Elements;
-using BH.Engine.Structure;
 using BH.Engine.Adapters.ETABS;
 using BH.Engine.Geometry;
+using BH.Engine.Structure;
+using BH.oM.Adapters.ETABS;
+using BH.oM.Analytical.Elements;
 using BH.oM.Geometry;
+using BH.oM.Structure.Elements;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Adapter.ETABS
 {
@@ -52,7 +55,11 @@ namespace BH.Adapter.ETABS
             oM.Geometry.Point position = bhNode.Position;
             if (m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name) == 0)
             {
-                etabsid.Id = name;
+
+                // Assign the Unique Name to the ETABS Element
+                if (SetUniqueName(bhNode, name) == false) return false;
+
+                etabsid.Id = bhNode.Name;
 
                 //Label and story
                 string label = "";
@@ -64,11 +71,11 @@ namespace BH.Adapter.ETABS
                 }
 
                 string guid = null;
-                if (m_model.PointObj.GetGUID(name, ref guid) == 0)
+                if (m_model.PointObj.GetGUID(bhNode.Name, ref guid) == 0)
                     etabsid.PersistentId = guid;
 
                 bhNode.SetAdapterId(etabsid);
-                SetObject(bhNode, name);
+                SetObject(bhNode, bhNode.Name);
             }
 
             return true;
@@ -101,6 +108,33 @@ namespace BH.Adapter.ETABS
             {
                 Engine.Base.Compute.RecordWarning("ETABS does not support local coordinate systems other than the global one. Any nodes pushed will have been so as if they had the global coordinatesystem.");
             }
+
+            return true;
+        }
+
+        /***************************************************/
+
+        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Node Name to get the Unique Name to assign to the ETABS Element.")]
+        private bool SetUniqueName(Node bhNode, string name)
+        {
+
+            int ret01, ret02;
+            string guid = null;
+
+            ret01 = m_model.PointObj.GetGUID(name, ref guid);
+
+            if (bhNode.Name == "")
+            {
+                bhNode.Name = guid.Substring(guid.Length - 7);
+            }
+            else
+            {
+                bhNode.Name = guid.Substring(guid.Length - 7) + "::" + bhNode.Name;
+            }
+
+            ret02 = m_model.PointObj.ChangeName(name, bhNode.Name);
+
+            if (!(ret01 == 0 && ret02 == 0)) return false;
 
             return true;
         }
