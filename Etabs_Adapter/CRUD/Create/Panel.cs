@@ -20,17 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.Elements;
-using BH.Engine.Structure;
+using BH.Engine.Adapters.ETABS;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
-using BH.Engine.Adapters.ETABS;
+using BH.Engine.Structure;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Geometry;
+using BH.oM.Structure.Elements;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 
 namespace BH.Adapter.ETABS
@@ -88,21 +90,25 @@ namespace BH.Adapter.ETABS
             }
 
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
+
+            // Assign the Unique Name to the ETABS Element
+            if (SetUniqueName(bhPanel, name) == false) return false;
+
             ETABSId etabsid = new ETABSId();
-            etabsid.Id = name;
+            etabsid.Id = bhPanel.Name;
 
             //Label and story
             string label = "";
             string story = "";
             string guid = null;
 
-            if (m_model.AreaObj.GetLabelFromName(name, ref label, ref story) == 0)
+            if (m_model.AreaObj.GetLabelFromName(bhPanel.Name, ref label, ref story) == 0)
             {
                 etabsid.Label = label;
                 etabsid.Story = story;
             }
 
-            if (m_model.AreaObj.GetGUID(name, ref guid) == 0)
+            if (m_model.AreaObj.GetGUID(bhPanel.Name, ref guid) == 0)
                 etabsid.PersistentId = guid;
 
             bhPanel.SetAdapterId(etabsid);
@@ -145,7 +151,7 @@ namespace BH.Adapter.ETABS
                         z[j] = boundaryPoints[j].Z;
                     }
 
-                    string openingName = name + "_Opening_" + i;
+                    string openingName = bhPanel.Name + "_Opening_" + i;
                     m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "");//<-- setting panel property to empty string, verify that this is correct
                     m_model.AreaObj.SetOpening(openingName, true);
 
@@ -155,7 +161,7 @@ namespace BH.Adapter.ETABS
 
             //Set local orientations:
             Basis orientation = bhPanel.LocalOrientation();
-            m_model.AreaObj.SetLocalAxes(name, Convert.ToEtabsPanelOrientation(orientation.Z, orientation.Y));
+            m_model.AreaObj.SetLocalAxes(bhPanel.Name, Convert.ToEtabsPanelOrientation(orientation.Z, orientation.Y));
 
             Pier pier = bhPanel.Pier();
             Spandrel spandrel = bhPanel.Spandrel();
@@ -164,17 +170,18 @@ namespace BH.Adapter.ETABS
             if (pier != null)
             {
                 int ret = m_model.PierLabel.SetPier(pier.Name);
-                ret = m_model.AreaObj.SetPier(name, pier.Name);
+                ret = m_model.AreaObj.SetPier(bhPanel.Name, pier.Name);
             }
             if (spandrel != null)
             {
                 int ret = m_model.SpandrelLabel.SetSpandrel(spandrel.Name, false);
-                ret = m_model.AreaObj.SetSpandrel(name, spandrel.Name);
+                ret = m_model.AreaObj.SetSpandrel(bhPanel.Name, spandrel.Name);
             }
             if (diaphragm != null)
             {
-                m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
+                m_model.AreaObj.SetDiaphragm(bhPanel.Name, diaphragm.Name);
             }
+
             return success;
         }
 
@@ -196,6 +203,30 @@ namespace BH.Adapter.ETABS
             if (isNonLinear)
                 Engine.Base.Compute.RecordWarning("Non-linear edges will be pushed using the control points of the underlying curves. It is recomended that you subsegment all edge curves into linear segements before you push to ETABS. Try using the CollapseToPolyline method. Please check the result of the push in the ETABS model!");
 
+        }
+
+
+        /***************************************************/
+
+        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Panel Name to get the Unique Name to assign to the ETABS Element.")]
+        private bool SetUniqueName(Panel bhPanel, string name)
+        {
+            int ret01, ret02;
+            string guid = null;
+
+            ret01 = m_model.AreaObj.GetGUID(name, ref guid);
+
+            if (bhPanel.Name=="") { 
+                bhPanel.Name = guid.Substring(guid.Length - 7);
+            } else {
+                bhPanel.Name = guid.Substring(guid.Length - 7) + "::" + bhPanel.Name;
+            }
+
+            ret02 = m_model.AreaObj.ChangeName(name, bhPanel.Name);
+
+            if (!(ret01 == 0 && ret02 == 0)) return false;
+
+            return true;
         }
 
         /***************************************************/
