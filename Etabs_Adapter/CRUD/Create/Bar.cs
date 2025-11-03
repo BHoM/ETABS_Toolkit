@@ -95,15 +95,18 @@ namespace BH.Adapter.ETABS
             string story = "";
             string guid = null;
 
-            ETABSId etabsIdFragment = new ETABSId { Id = name };
+            // Assign the Unique Name to the ETABS Element
+            if (SetUniqueName(bhBar, name) == false) return false;
 
-            if (m_model.FrameObj.GetLabelFromName(name, ref label, ref story) == 0)
+            ETABSId etabsIdFragment = new ETABSId { Id = bhBar.Name };
+
+            if (m_model.FrameObj.GetLabelFromName(bhBar.Name, ref label, ref story) == 0)
             {
                 etabsIdFragment.Label = label;
                 etabsIdFragment.Story = story;
             }
 
-            if (m_model.AreaObj.GetGUID(name, ref guid) == 0)
+            if (m_model.FrameObj.GetGUID(bhBar.Name, ref guid) == 0)
                 etabsIdFragment.PersistentId = guid;
 
             bhBar.SetAdapterId(etabsIdFragment);
@@ -209,6 +212,32 @@ namespace BH.Adapter.ETABS
                     ret++;
                 }
             }
+
+            return true;
+        }
+
+        /***************************************************/
+
+        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Bar Name to get the Unique Name to assign to the ETABS Element.")]
+        private bool SetUniqueName(Bar bhBar, string name) {
+            
+            int ret01, ret02;
+            string guid = null;
+            
+            ret01 = m_model.FrameObj.GetGUID(name, ref guid);
+
+            if (bhBar.Name == "")
+            {
+                bhBar.Name = guid.Substring(guid.Length - 7);
+            }
+            else
+            {
+                bhBar.Name = guid.Substring(guid.Length - 7) + "::" + bhBar.Name;
+            }
+
+            ret02 = m_model.FrameObj.ChangeName(name, bhBar.Name);
+
+            if (!(ret01 == 0 && ret02 == 0)) return false;
 
             return true;
         }
