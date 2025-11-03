@@ -20,18 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.Elements;
-using BH.Engine.Structure;
+using BH.Engine.Adapters.ETABS;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
-using BH.Engine.Adapters.ETABS;
+using BH.Engine.Structure;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
-using BH.oM.Geometry;
 using BH.oM.Analytical.Elements;
+using BH.oM.Geometry;
+using BH.oM.Structure.Elements;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Xml.Linq;
 
 
 namespace BH.Adapter.ETABS
@@ -84,28 +86,58 @@ namespace BH.Adapter.ETABS
 
             string openingName = GetAdapterId<string>(bhOpening);
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "Default");
+
+            // Assign the Unique Name to the ETABS Element
+            if (SetUniqueName(bhOpening, openingName) == false) return false;
+
             ETABSId etabsid = new ETABSId();
-            etabsid.Id = openingName;
+            etabsid.Id = bhOpening.Name;
 
             //Label and story
             string label = "";
             string story = "";
             string guid = null;
 
-            if (m_model.AreaObj.GetLabelFromName(openingName, ref label, ref story) == 0)
+            if (m_model.AreaObj.GetLabelFromName(bhOpening.Name, ref label, ref story) == 0)
             {
                 etabsid.Label = label;
                 etabsid.Story = story;
             }
 
-            if (m_model.AreaObj.GetGUID(openingName, ref guid) == 0)
+            if (m_model.AreaObj.GetGUID(bhOpening.Name, ref guid) == 0)
                 etabsid.PersistentId = guid;
 
             bhOpening.SetAdapterId(etabsid);
 
-            m_model.AreaObj.SetOpening(openingName, true);
+            m_model.AreaObj.SetOpening(bhOpening.Name, true);
 
             return success;
+        }
+
+        /***************************************************/
+
+        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Opening Name to get the Unique Name to assign to the ETABS Element.")]
+        private bool SetUniqueName(Opening bhOpening, string name)
+        {
+            int ret01, ret02;
+            string guid = null;
+
+            ret01 = m_model.AreaObj.GetGUID(name, ref guid);
+
+            if (bhOpening.Name == "")
+            {
+                bhOpening.Name = guid.Substring(guid.Length - 7);
+            }
+            else
+            {
+                bhOpening.Name = guid.Substring(guid.Length - 7) + "::" + bhOpening.Name;
+            }
+
+            ret02 = m_model.AreaObj.ChangeName(name, bhOpening.Name);
+
+            if (!(ret01 == 0 && ret02 == 0)) return false;
+
+            return true;
         }
 
         /***************************************************/
