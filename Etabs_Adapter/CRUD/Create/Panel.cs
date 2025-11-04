@@ -92,23 +92,25 @@ namespace BH.Adapter.ETABS
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
 
             // Assign the Unique Name to the ETABS Element
-            if (SetUniqueName(bhPanel, name) == false) return false;
+            string newName = SetUniqueName(bhPanel, name);
+
+            if (newName == null) return false;
 
             ETABSId etabsid = new ETABSId();
-            etabsid.Id = bhPanel.Name;
+            etabsid.Id = newName;
 
             //Label and story
             string label = "";
             string story = "";
             string guid = null;
 
-            if (m_model.AreaObj.GetLabelFromName(bhPanel.Name, ref label, ref story) == 0)
+            if (m_model.AreaObj.GetLabelFromName(newName, ref label, ref story) == 0)
             {
                 etabsid.Label = label;
                 etabsid.Story = story;
             }
 
-            if (m_model.AreaObj.GetGUID(bhPanel.Name, ref guid) == 0)
+            if (m_model.AreaObj.GetGUID(newName, ref guid) == 0)
                 etabsid.PersistentId = guid;
 
             bhPanel.SetAdapterId(etabsid);
@@ -161,7 +163,7 @@ namespace BH.Adapter.ETABS
 
             //Set local orientations:
             Basis orientation = bhPanel.LocalOrientation();
-            m_model.AreaObj.SetLocalAxes(bhPanel.Name, Convert.ToEtabsPanelOrientation(orientation.Z, orientation.Y));
+            m_model.AreaObj.SetLocalAxes(newName, Convert.ToEtabsPanelOrientation(orientation.Z, orientation.Y));
 
             Pier pier = bhPanel.Pier();
             Spandrel spandrel = bhPanel.Spandrel();
@@ -170,16 +172,16 @@ namespace BH.Adapter.ETABS
             if (pier != null)
             {
                 int ret = m_model.PierLabel.SetPier(pier.Name);
-                ret = m_model.AreaObj.SetPier(bhPanel.Name, pier.Name);
+                ret = m_model.AreaObj.SetPier(newName, pier.Name);
             }
             if (spandrel != null)
             {
                 int ret = m_model.SpandrelLabel.SetSpandrel(spandrel.Name, false);
-                ret = m_model.AreaObj.SetSpandrel(bhPanel.Name, spandrel.Name);
+                ret = m_model.AreaObj.SetSpandrel(newName, spandrel.Name);
             }
             if (diaphragm != null)
             {
-                m_model.AreaObj.SetDiaphragm(bhPanel.Name, diaphragm.Name);
+                m_model.AreaObj.SetDiaphragm(newName, diaphragm.Name);
             }
 
             return success;
@@ -209,24 +211,25 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
         [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Panel Name to get the Unique Name to assign to the ETABS Element.")]
-        private bool SetUniqueName(Panel bhPanel, string name)
+        private string SetUniqueName(Panel bhPanel, string name)
         {
             int ret01, ret02;
             string guid = null;
+            string tempPanelName = "";
 
             ret01 = m_model.AreaObj.GetGUID(name, ref guid);
 
-            if (bhPanel.Name=="") { 
-                bhPanel.Name = guid.Substring(guid.Length - 7);
+            if (bhPanel.Name=="") {
+                tempPanelName = guid.Substring(guid.Length - 7);
             } else {
-                bhPanel.Name = guid.Substring(guid.Length - 7) + "::" + bhPanel.Name;
+                tempPanelName = guid.Substring(guid.Length - 7) + "::" + bhPanel.Name;
             }
 
-            ret02 = m_model.AreaObj.ChangeName(name, bhPanel.Name);
+            ret02 = m_model.AreaObj.ChangeName(name, tempPanelName);
 
-            if (!(ret01 == 0 && ret02 == 0)) return false;
+            if (!(ret01 == 0 && ret02 == 0)) return null;
 
-            return true;
+            return tempPanelName;
         }
 
         /***************************************************/

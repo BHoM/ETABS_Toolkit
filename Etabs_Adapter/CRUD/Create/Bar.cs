@@ -96,17 +96,19 @@ namespace BH.Adapter.ETABS
             string guid = null;
 
             // Assign the Unique Name to the ETABS Element
-            if (SetUniqueName(bhBar, name) == false) return false;
+            string newName = SetUniqueName(bhBar, name);
 
-            ETABSId etabsIdFragment = new ETABSId { Id = bhBar.Name };
+            if (newName == null) return false;
 
-            if (m_model.FrameObj.GetLabelFromName(bhBar.Name, ref label, ref story) == 0)
+            ETABSId etabsIdFragment = new ETABSId { Id = newName };
+
+            if (m_model.FrameObj.GetLabelFromName(newName, ref label, ref story) == 0)
             {
                 etabsIdFragment.Label = label;
                 etabsIdFragment.Story = story;
             }
 
-            if (m_model.FrameObj.GetGUID(bhBar.Name, ref guid) == 0)
+            if (m_model.FrameObj.GetGUID(newName, ref guid) == 0)
                 etabsIdFragment.PersistentId = guid;
 
             bhBar.SetAdapterId(etabsIdFragment);
@@ -219,27 +221,28 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
         [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Bar Name to get the Unique Name to assign to the ETABS Element.")]
-        private bool SetUniqueName(Bar bhBar, string name) {
+        private string SetUniqueName(Bar bhBar, string name) {
             
             int ret01, ret02;
             string guid = null;
-            
+            string tempBarName = "";
+
             ret01 = m_model.FrameObj.GetGUID(name, ref guid);
 
             if (bhBar.Name == "")
             {
-                bhBar.Name = guid.Substring(guid.Length - 7);
+                tempBarName = guid.Substring(guid.Length - 7);
             }
             else
             {
-                bhBar.Name = guid.Substring(guid.Length - 7) + "::" + bhBar.Name;
+                tempBarName = guid.Substring(guid.Length - 7) + "::" + bhBar.Name;
             }
 
-            ret02 = m_model.FrameObj.ChangeName(name, bhBar.Name);
+            ret02 = m_model.FrameObj.ChangeName(name, tempBarName);
 
-            if (!(ret01 == 0 && ret02 == 0)) return false;
+            if (!(ret01 == 0 && ret02 == 0)) return null;
 
-            return true;
+            return tempBarName;
         }
 
         /***************************************************/

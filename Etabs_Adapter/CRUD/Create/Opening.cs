@@ -28,6 +28,7 @@ using BH.Engine.Structure;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Analytical.Elements;
+using BH.oM.Data.Collections;
 using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
 using System.Collections.Generic;
@@ -88,28 +89,30 @@ namespace BH.Adapter.ETABS
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "Default");
 
             // Assign the Unique Name to the ETABS Element
-            if (SetUniqueName(bhOpening, openingName) == false) return false;
+            string newName = SetUniqueName(bhOpening, openingName);
+
+            if (newName == null) return false;
 
             ETABSId etabsid = new ETABSId();
-            etabsid.Id = bhOpening.Name;
+            etabsid.Id = newName;
 
             //Label and story
             string label = "";
             string story = "";
             string guid = null;
 
-            if (m_model.AreaObj.GetLabelFromName(bhOpening.Name, ref label, ref story) == 0)
+            if (m_model.AreaObj.GetLabelFromName(newName, ref label, ref story) == 0)
             {
                 etabsid.Label = label;
                 etabsid.Story = story;
             }
 
-            if (m_model.AreaObj.GetGUID(bhOpening.Name, ref guid) == 0)
+            if (m_model.AreaObj.GetGUID(newName, ref guid) == 0)
                 etabsid.PersistentId = guid;
 
             bhOpening.SetAdapterId(etabsid);
 
-            m_model.AreaObj.SetOpening(bhOpening.Name, true);
+            m_model.AreaObj.SetOpening(newName, true);
 
             return success;
         }
@@ -117,27 +120,28 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
         [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Opening Name to get the Unique Name to assign to the ETABS Element.")]
-        private bool SetUniqueName(Opening bhOpening, string name)
+        private string SetUniqueName(Opening bhOpening, string name)
         {
             int ret01, ret02;
             string guid = null;
+            string tempOpeningName = "";
 
             ret01 = m_model.AreaObj.GetGUID(name, ref guid);
 
             if (bhOpening.Name == "")
             {
-                bhOpening.Name = guid.Substring(guid.Length - 7);
+                tempOpeningName = guid.Substring(guid.Length - 7);
             }
             else
             {
-                bhOpening.Name = guid.Substring(guid.Length - 7) + "::" + bhOpening.Name;
+                tempOpeningName = guid.Substring(guid.Length - 7) + "::" + bhOpening.Name;
             }
 
-            ret02 = m_model.AreaObj.ChangeName(name, bhOpening.Name);
+            ret02 = m_model.AreaObj.ChangeName(name, tempOpeningName);
 
-            if (!(ret01 == 0 && ret02 == 0)) return false;
+            if (!(ret01 == 0 && ret02 == 0)) return null;
 
-            return true;
+            return tempOpeningName;
         }
 
         /***************************************************/

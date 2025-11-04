@@ -57,25 +57,27 @@ namespace BH.Adapter.ETABS
             {
 
                 // Assign the Unique Name to the ETABS Element
-                if (SetUniqueName(bhNode, name) == false) return false;
+                string newName = SetUniqueName(bhNode, name);
 
-                etabsid.Id = bhNode.Name;
+                if (newName == null) return false;
+
+                etabsid.Id = newName;
 
                 //Label and story
                 string label = "";
                 string story = "";
-                if (m_model.PointObj.GetLabelFromName(name, ref label, ref story) == 0)
+                if (m_model.PointObj.GetLabelFromName(newName, ref label, ref story) == 0)
                 {
                     etabsid.Label = label;
                     etabsid.Story = story;
                 }
 
                 string guid = null;
-                if (m_model.PointObj.GetGUID(bhNode.Name, ref guid) == 0)
+                if (m_model.PointObj.GetGUID(newName, ref guid) == 0)
                     etabsid.PersistentId = guid;
 
                 bhNode.SetAdapterId(etabsid);
-                SetObject(bhNode, bhNode.Name);
+                SetObject(bhNode, newName);
             }
 
             return true;
@@ -115,28 +117,29 @@ namespace BH.Adapter.ETABS
         /***************************************************/
 
         [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Node Name to get the Unique Name to assign to the ETABS Element.")]
-        private bool SetUniqueName(Node bhNode, string name)
+        private string SetUniqueName(Node bhNode, string name)
         {
 
             int ret01, ret02;
             string guid = null;
+            string tempNodeName = "";
 
             ret01 = m_model.PointObj.GetGUID(name, ref guid);
 
             if (bhNode.Name == "")
             {
-                bhNode.Name = guid.Substring(guid.Length - 7);
+                tempNodeName = guid.Substring(guid.Length - 7);
             }
             else
             {
-                bhNode.Name = guid.Substring(guid.Length - 7) + "::" + bhNode.Name;
+                tempNodeName = guid.Substring(guid.Length - 7) + "::" + bhNode.Name;
             }
 
-            ret02 = m_model.PointObj.ChangeName(name, bhNode.Name);
+            ret02 = m_model.PointObj.ChangeName(name, tempNodeName);
 
-            if (!(ret01 == 0 && ret02 == 0)) return false;
+            if (!(ret01 == 0 && ret02 == 0)) return null;
 
-            return true;
+            return tempNodeName;
         }
 
         /***************************************************/
