@@ -84,7 +84,7 @@ namespace BH.Adapter.ETABS
                     etabsIdFragment.Story = story;
                 }
 
-
+#if !(Debug16 || Release16 || Debug17 || Release17)
                 // Get the groups the bar is assigned to
                 int numGroups = 0;
                 string[] groupNames = new string[0];
@@ -93,7 +93,7 @@ namespace BH.Adapter.ETABS
                     foreach (string grpName in groupNames)
                         bhNode.Tags.Add(grpName);
                 }
-
+#endif
 
                 if (m_model.PointObj.GetGUID(id, ref guid) == 0)
                     etabsIdFragment.PersistentId = guid;

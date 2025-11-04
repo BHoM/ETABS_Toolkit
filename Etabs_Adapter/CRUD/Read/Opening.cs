@@ -92,6 +92,7 @@ namespace BH.Adapter.ETABS
                     etabsId.Story = story;
                 }
 
+#if !(Debug16 || Release16 || Debug17 || Release17)
                 // Get the groups the opening is assigned to
                 int numGroups = 0;
                 string[] groupNames = new string[0];
@@ -100,6 +101,7 @@ namespace BH.Adapter.ETABS
                     foreach (string grpName in groupNames)
                         opening.Tags.Add(grpName);
                 }
+#endif
 
                 if (m_model.AreaObj.GetGUID(id, ref guid) == 0)
                     etabsId.PersistentId = guid;

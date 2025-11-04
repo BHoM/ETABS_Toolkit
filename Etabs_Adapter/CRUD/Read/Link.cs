@@ -128,6 +128,7 @@ namespace BH.Adapter.ETABS
                 /* Get the ETABS name of the Rigid Link */
                 string name = GetAdapterId<string>(bhLink);
 
+#if !(Debug16 || Release16 || Debug17 || Release17)
                 // Get the groups the link is assigned to
                 int numGroups = 0;
                 string[] groupNames = new string[0];
@@ -136,7 +137,7 @@ namespace BH.Adapter.ETABS
                     foreach (string grpName in groupNames)
                         bhLink.Tags.Add(grpName);
                 }
-
+#endif
                 linkList.Add(bhLink);
             }
 
