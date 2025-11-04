@@ -66,7 +66,9 @@ namespace BH.Adapter.ETABS
 
                 try
                 {
-                    Bar bhBar = new Bar() { Name = id };
+                    string bhomName = GetBhomNameFromEtabsId(id);
+
+                    Bar bhBar = new Bar() { Name = bhomName };
 
                     string startId = "";
                     string endId = "";

@@ -86,7 +86,9 @@ namespace BH.Adapter.ETABS
                     panelProperty = bhomProperties[propertyName];
                 }
 
-                Panel panel = new Panel() { Name = id };
+                string bhomName = GetBhomNameFromEtabsId(id);
+
+                Panel panel = new Panel() { Name = bhomName };
                 Polyline pl = GetPanelPerimeter(id);
 
                 panel.ExternalEdges = pl.SubParts().Select(x => new Edge { Curve = x }).ToList();

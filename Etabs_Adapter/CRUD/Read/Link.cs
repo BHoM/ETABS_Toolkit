@@ -87,7 +87,10 @@ namespace BH.Adapter.ETABS
 
             foreach (KeyValuePair<string, List<string>> kvp in idDict)
             {
-                RigidLink bhLink = new RigidLink();
+                string bhomName = GetBhomNameFromEtabsId(kvp.Key);
+
+                RigidLink bhLink = new RigidLink() { Name = bhomName};
+
                 SetAdapterId(bhLink, kvp.Key);
 
                 if (kvp.Value == null)

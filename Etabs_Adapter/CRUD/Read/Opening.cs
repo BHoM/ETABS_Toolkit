@@ -76,7 +76,9 @@ namespace BH.Adapter.ETABS
                 ETABSId etabsId = new ETABSId();
                 etabsId.Id = id;
 
-                Opening opening = new Opening() { Name = id };
+                string bhomName = GetBhomNameFromEtabsId(id);
+
+                Opening opening = new Opening() { Name = bhomName };
                 Polyline pl = GetOpeningOutline(id);
 
                 opening.Edges = pl.SubParts().Select(x => new Edge { Curve = x }).ToList();
