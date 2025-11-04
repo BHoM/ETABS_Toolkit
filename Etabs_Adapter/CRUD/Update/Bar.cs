@@ -77,7 +77,7 @@ namespace BH.Adapter.ETABS
                 }
 #endif
 #if Debug16 || Release16 || Debug17 || Release17
-                if SetObject(bhBar)
+                if (SetObject(bhBar))
                     ret++;
 #else
                 if (SetObject(bhBar) && UpdateGroup(bhBar))
