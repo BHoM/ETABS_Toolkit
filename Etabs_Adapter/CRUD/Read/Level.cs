@@ -115,7 +115,6 @@ namespace BH.Adapter.ETABS
 
             for (int i = 0; i < towersNum; i++)
             {
-
                 m_model.Tower.SetActiveTower(towerNames[i]);
 
                 m_model.Story.GetStories_2(ref baseElevation, ref numberStories, ref storyNames, ref storyElevations, ref storyHeights,
