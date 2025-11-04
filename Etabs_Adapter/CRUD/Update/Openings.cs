@@ -67,8 +67,11 @@ namespace BH.Adapter.ETABS
                 // ETABS API does not allow updating of opening geometry. Only group assignment can be updated.
                 Engine.Base.Compute.RecordWarning("The Etabs API does not allow for updating of the geometry of openings. To change opening geometry delete and recreate the opening.");
 
-                if (UpdateGroup(bhOpening))
-                    ; // nothing to count specifically
+ #if !(Debug16 || Release16 || Debug17 || Release17)
+                if (!UpdateGroup(bhOpening)) success = false;
+
+#endif
+
             }
 
             return success;
@@ -76,6 +79,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+#if !(Debug16 || Release16 || Debug17 || Release17)
         private bool UpdateGroup(Opening bhOpening)
         {
             return ResetGroup(bhOpening) && SetGroup(bhOpening);
@@ -100,6 +104,6 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
-
+#endif
     }
 }

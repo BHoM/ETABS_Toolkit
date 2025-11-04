@@ -76,9 +76,14 @@ namespace BH.Adapter.ETABS
                                                             "To update the connectivity or position of a Bar, delete the existing Bar you want to update and create a new one.");
                 }
 #endif
-
+#if Debug16 || Release16 || Debug17 || Release17
+                if SetObject(bhBar)
+                    ret++;
+#else
                 if (SetObject(bhBar) && UpdateGroup(bhBar))
                     ret++;
+#endif
+
 
             }
 
@@ -97,6 +102,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+#if !(Debug16 || Release16 || Debug17 || Release17)
         private bool UpdateGroup(Bar bhBar)
         {
             return ResetGroup(bhBar) && SetGroup(bhBar);
@@ -121,6 +127,7 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+#endif
 
     }
 }

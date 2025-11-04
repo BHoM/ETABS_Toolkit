@@ -28,6 +28,7 @@ using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace BH.Adapter.ETABS
@@ -49,8 +50,10 @@ namespace BH.Adapter.ETABS
             bool success = true;                                                               // θ(1)
             m_model.SelectObj.ClearSelection();                                                // θ(1)
 
+#if !(Debug16 || Release16 || Debug17 || Release17)
             // 1. UPDATE GROUP ASSIGNMENT
             nodes.ToList().ForEach(node => UpdateGroup(node));                                 // n*θ(1) + θ(1)
+#endif
 
 
             // 2. UDPATE LOCATION
@@ -140,7 +143,7 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
-
+#if !(Debug16 || Release16 || Debug17 || Release17)
         private bool UpdateGroup(Node bhNode)
         {
             return ResetGroup(bhNode) && SetGroup(bhNode);
@@ -165,6 +168,7 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+#endif
     }
 }
 

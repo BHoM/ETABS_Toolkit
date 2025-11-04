@@ -69,9 +69,9 @@ namespace BH.Adapter.ETABS
 
                 // ETABS does not support updating of link connectivity or constraints here - only group assignment
                 Engine.Base.Compute.RecordWarning("The Etabs API does not allow for updating of the geometry or constraint details of links. To change these, delete and recreate the link.");
-
-                if (!UpdateGroup(bhLink))
-                    success = false;
+#if !(Debug16 || Release16 || Debug17 || Release17)
+                if (!UpdateGroup(bhLink)) success = false;
+#endif
             }
 
             return success;
@@ -113,6 +113,8 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+#if !(Debug16 || Release16 || Debug17 || Release17)
+
         private bool UpdateGroup(RigidLink bhLink)
         {
             return ResetGroup(bhLink) && SetGroup(bhLink);
@@ -140,6 +142,7 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+#endif
 
     }
 }
