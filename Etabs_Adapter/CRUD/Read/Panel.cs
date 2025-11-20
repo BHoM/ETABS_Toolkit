@@ -116,13 +116,16 @@ namespace BH.Adapter.ETABS
                 }
 
 #if !(Debug16 || Release16 || Debug17 || Release17)
-                // Get the groups the panel is assigned to
-                int numGroups = 0;
-                string[] groupNames = new string[0];
-                if (m_model.AreaObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
-                {
-                    foreach (string grpName in groupNames)
-                        panel.Tags.Add(grpName);
+
+                if (panel != null) {
+                    // Get the groups the panel is assigned to
+                    int numGroups = 0;
+                    string[] groupNames = new string[0];
+                    if (m_model.AreaObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
+                    {
+                        foreach (string grpName in groupNames)
+                            panel.Tags.Add(grpName);
+                    }
                 }
 #endif
 
