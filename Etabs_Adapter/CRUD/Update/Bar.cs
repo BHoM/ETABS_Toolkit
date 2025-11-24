@@ -20,11 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using BH.Engine.Adapter;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection.Emit;
+using System.Xml.Linq;
 
 
 namespace BH.Adapter.ETABS
@@ -77,7 +81,7 @@ namespace BH.Adapter.ETABS
                 }
 #endif
 
-                if (SetObject(bhBar))
+                if (SetObject(bhBar) && UpdateUniqueName(bhBar))
                     ret++;
 
             }
@@ -97,6 +101,38 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Bar Name to get the Unique Name to assign to the ETABS Element.")]
+        private bool UpdateUniqueName(Bar bhBar)
+        {
+            int ret01, ret02;
+            string guid = null;
+            string tempBarName = "";
+
+            string uniqueName = GetAdapterId<string>(bhBar);
+
+            ret01 = m_model.FrameObj.GetGUID(uniqueName, ref guid);
+            
+            if (bhBar.Name == "")
+            {
+                tempBarName = guid.Substring(guid.Length - 7);
+            }
+            else
+            {
+                tempBarName = guid.Substring(guid.Length - 7) + "::" + bhBar.Name;
+            }
+
+            ret02 = m_model.FrameObj.ChangeName(uniqueName, tempBarName);
+
+            if (!(ret01 == 0 && ret02 == 0)) return false;
+
+            ETABSId etabsIdFragment = new ETABSId { Id = tempBarName };
+
+            bhBar.SetAdapterId(etabsIdFragment);
+
+            return true;
+        }
+
+        /***************************************************/
     }
 }
 
