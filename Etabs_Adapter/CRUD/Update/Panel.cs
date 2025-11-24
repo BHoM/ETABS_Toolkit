@@ -20,16 +20,17 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.Elements;
 using BH.Engine.Adapters.ETABS;
-using BH.oM.Adapters.ETABS.Elements;
-using BH.oM.Adapter;
-using BH.oM.Geometry;
 using BH.Engine.Structure;
+using BH.oM.Adapter;
+using BH.oM.Adapters.ETABS;
+using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Geometry;
+using BH.oM.Structure.Elements;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Adapter.ETABS
 {
@@ -85,12 +86,48 @@ namespace BH.Adapter.ETABS
                 {
                     m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
                 }
+
+                //Update Unique Name
+                UpdateUniqueName(bhPanel);
             }
 
             //Force refresh to make sure panel local orientation are set correctly
             ForceRefresh();
 
             return success;
+        }
+
+        /***************************************************/
+
+        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Panel Name to get the Unique Name to assign to the ETABS Element.")]
+        private bool UpdateUniqueName(Panel bhPanel)
+        {
+            int ret01, ret02;
+            string guid = null;
+            string tempPanelName = "";
+
+            string uniqueName = GetAdapterId<string>(bhPanel);
+
+            ret01 = m_model.AreaObj.GetGUID(uniqueName, ref guid);
+
+            if (bhPanel.Name == "")
+            {
+                tempPanelName = guid.Substring(guid.Length - 7);
+            }
+            else
+            {
+                tempPanelName = guid.Substring(guid.Length - 7) + "::" + bhPanel.Name;
+            }
+
+            ret02 = m_model.AreaObj.ChangeName(uniqueName, tempPanelName);
+
+            if (!(ret01 == 0 && ret02 == 0)) return false;
+
+            ETABSId etabsIdFragment = new ETABSId { Id = tempPanelName };
+
+            bhPanel.SetAdapterId(etabsIdFragment);
+
+            return true;
         }
 
         /***************************************************/
