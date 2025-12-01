@@ -145,7 +145,7 @@ namespace BH.Adapter.ETABS
                     etabsid.PersistentId = guid;
 
                     Level lvl = new Level() { Elevation = storyElevations[j], Name = ids[j] };
-                    lvl.Fragments.Add( new BH.oM.Adapters.ETABS.Elements.Tower  { Name = towerNames[i] } );
+                    lvl.Fragments.Add( new BH.oM.Adapters.ETABS.Fragments.Tower  { Name = towerNames[i] } );
 
                     lvl.SetAdapterId(etabsid);
                     levellist.Add(lvl);

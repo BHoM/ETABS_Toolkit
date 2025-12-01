@@ -67,7 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Elements\Tower.cs" />
+    <Compile Include="Fragments\Tower.cs" />
     <Compile Include="Enums\EtabsVersion.cs" />
     <Compile Include="Fragments\ETABSId.cs" />
     <Compile Include="Fragments\ShellTypeFragment.cs" />
