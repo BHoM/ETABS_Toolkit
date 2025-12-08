@@ -215,47 +215,6 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private bool SetGroup(Bar bhBar)
-        {
-            int ret = 0;
-            /* Get the ETABS name of the Bar */
-            string name = GetAdapterId<string>(bhBar);
-
-            try {
-                /* Get the list of unique groupNames assigned to the BHoM Bar */
-                List<string> groupNames = bhBar.Tags.Distinct().ToList();
-                /* Get the list of existing group names in the ETABS model */
-                int modelNumGroups = 0;
-                string[] modelGroupNames = null;
-                m_model.GroupDef.GetNameList(ref modelNumGroups, ref modelGroupNames);
-
-                /* Create any groups that do not already exist in the ETABS model */
-                foreach (string groupName in groupNames)
-                {
-                    if (!modelGroupNames.Contains(groupName))
-                    {
-                        ret = m_model.GroupDef.SetGroup_1(groupName);
-                        if (ret != 0)
-                        {
-                            Engine.Base.Compute.RecordError("Could not create the Group <" + groupName + "> assigned to the Bar. Group not created.");
-                            return false;
-                        }
-                    }
-                }
-
-                /* Assign the Bar to each group in the list */
-                groupNames.ToList().ForEach(groupName => m_model.FrameObj.SetGroupAssign(name, groupName));
-                } 
-            catch (Exception e)
-                {
-                    Engine.Base.Compute.RecordError("Could not assign input groups to the bar. Groups not assigned.");
-                    return false;
-                }
-
-            return true;
-        }
-
-        /***************************************************/
 
 #if Debug16 || Release16
 

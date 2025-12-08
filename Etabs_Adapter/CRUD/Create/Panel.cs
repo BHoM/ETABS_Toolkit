@@ -205,49 +205,6 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        private bool SetGroup(Panel bhPanel)
-        {
-            int ret = 0;
-            /* Get the ETABS name of the Panel */
-            string name = GetAdapterId<string>(bhPanel);
-
-            try
-            {
-                /* Get the list of unique groupNames assigned to the BHoM Panel */
-                List<string> groupNames = bhPanel.Tags.Distinct().ToList();
-                /* Get the list of existing group names in the ETABS model */
-                int modelNumGroups = 0;
-                string[] modelGroupNames = null;
-                m_model.GroupDef.GetNameList(ref modelNumGroups, ref modelGroupNames);
-
-                /* Create any groups that do not already exist in the ETABS model */
-                foreach (string groupName in groupNames)
-                {
-                    if (!modelGroupNames.Contains(groupName))
-                    {
-                        ret = m_model.GroupDef.SetGroup_1(groupName);
-                        if (ret != 0)
-                        {
-                            Engine.Base.Compute.RecordError("Could not create the Group <" + groupName + "> assigned to the Panel. Group not created.");
-                            return false;
-                        }
-                    }
-                }
-
-                /* Assign the Panel to each group in the list */
-                groupNames.ToList().ForEach(groupName => m_model.AreaObj.SetGroupAssign(name, groupName));
-            }
-            catch (Exception e)
-            {
-                Engine.Base.Compute.RecordError("Could not assign input groups to the panel. Groups not assigned.");
-                return false;
-            }
-
-            return true;
-        }
-
-        /***************************************************/
-
     }
 }
 
