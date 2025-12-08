@@ -113,36 +113,5 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-#if !(Debug16 || Release16 || Debug17 || Release17)
-
-        private bool UpdateGroup(RigidLink bhLink)
-        {
-            return ResetGroup(bhLink) && SetGroup(bhLink);
-        }
-
-        /***************************************************/
-
-        private bool ResetGroup(RigidLink bhLink)
-        {
-            List<string> names = GetEtabsNamesForLink(bhLink);
-
-            foreach (string name in names)
-            {
-                /* Get the names of all groups currently assigned to the link */
-                int numGroups = 0;
-                string[] groupNames = null;
-                m_model.LinkObj.GetGroupAssign(name, ref numGroups, ref groupNames);
-
-                /* Remove the Link from each group in the list */
-                if (groupNames != null)
-                    groupNames.ToList().ForEach(groupName => m_model.LinkObj.SetGroupAssign(name, groupName, true));
-            }
-
-            return true;
-        }
-
-        /***************************************************/
-#endif
-
     }
 }

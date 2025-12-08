@@ -79,31 +79,5 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-#if !(Debug16 || Release16 || Debug17 || Release17)
-        private bool UpdateGroup(Opening bhOpening)
-        {
-            return ResetGroup(bhOpening) && SetGroup(bhOpening);
-        }
-
-        /***************************************************/
-
-        private bool ResetGroup(Opening bhOpening)
-        {
-            /* Get the ETABS name of the Opening */
-            string name = GetAdapterId<string>(bhOpening);
-
-            /* Get the names of all groups currently assigned to the opening */
-            int numGroups = 0;
-            string[] groupNames = null;
-            m_model.AreaObj.GetGroupAssign(name, ref numGroups, ref groupNames);
-
-            /* Remove the Opening from each group in the list */
-            groupNames.ToList().ForEach(groupName => m_model.AreaObj.SetGroupAssign(name, groupName, true));
-
-            return true;
-        }
-
-        /***************************************************/
-#endif
     }
 }

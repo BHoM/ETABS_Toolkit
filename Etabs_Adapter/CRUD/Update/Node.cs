@@ -143,32 +143,7 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
-#if !(Debug16 || Release16 || Debug17 || Release17)
-        private bool UpdateGroup(Node bhNode)
-        {
-            return ResetGroup(bhNode) && SetGroup(bhNode);
-        }
 
-        /***************************************************/
-
-        private bool ResetGroup(Node bhNode)
-        {   
-            /* Get the ETABS name of the Node */
-            string name = GetAdapterId<string>(bhNode);
-
-            /* Get the names of all groups currently assigned to the node */
-            int numGroups = 0;
-            string[] groupNames = null;
-            m_model.PointObj.GetGroupAssign(name, ref numGroups, ref groupNames);
-
-            /* Remove the Node from each group in the list */
-            groupNames.ToList().ForEach(groupName => m_model.PointObj.SetGroupAssign(name, groupName,true));
-
-            return true;
-        }
-
-        /***************************************************/
-#endif
     }
 }
 
