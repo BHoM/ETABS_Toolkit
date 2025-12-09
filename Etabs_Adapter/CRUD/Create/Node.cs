@@ -116,33 +116,6 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Node Name to get the Unique Name to assign to the ETABS Element.")]
-        private string SetUniqueName(Node bhNode, string name)
-        {
-
-            int ret01, ret02;
-            string guid = null;
-            string tempNodeName = "";
-
-            ret01 = m_model.PointObj.GetGUID(name, ref guid);
-
-            if (bhNode.Name == "")
-            {
-                tempNodeName = guid.Substring(guid.Length - 7);
-            }
-            else
-            {
-                tempNodeName = guid.Substring(guid.Length - 7) + "::" + bhNode.Name;
-            }
-
-            ret02 = m_model.PointObj.ChangeName(name, tempNodeName);
-
-            if (!(ret01 == 0 && ret02 == 0)) return null;
-
-            return tempNodeName;
-        }
-
-        /***************************************************/
     }
 }
 

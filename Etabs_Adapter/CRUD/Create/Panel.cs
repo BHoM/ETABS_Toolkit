@@ -210,30 +210,6 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Panel Name to get the Unique Name to assign to the ETABS Element.")]
-        private string SetUniqueName(Panel bhPanel, string name)
-        {
-            int ret01, ret02;
-            string guid = null;
-            string tempPanelName = "";
-
-            ret01 = m_model.AreaObj.GetGUID(name, ref guid);
-
-            if (bhPanel.Name=="") {
-                tempPanelName = guid.Substring(guid.Length - 7);
-            } else {
-                tempPanelName = guid.Substring(guid.Length - 7) + "::" + bhPanel.Name;
-            }
-
-            ret02 = m_model.AreaObj.ChangeName(name, tempPanelName);
-
-            if (!(ret01 == 0 && ret02 == 0)) return null;
-
-            return tempPanelName;
-        }
-
-        /***************************************************/
-
     }
 }
 

@@ -126,9 +126,11 @@ namespace BH.Adapter.ETABS
 
             foreach (string name in names) {
 
+                /* 1. GET THE ETABS ELEMENT GUID */
                 tempLinkName = "";
                 ret01 = m_model.LinkObj.GetGUID(name, ref guid);
 
+                /* 2. CREATE THE NEW UNIQUE NAME */
                 if (bhLink.Name == "")
                 {
                     tempLinkName = guid.Substring(guid.Length - 7);
@@ -138,8 +140,10 @@ namespace BH.Adapter.ETABS
                     tempLinkName = guid.Substring(guid.Length - 7) + "::" + bhLink.Name;
                 }
 
+                /* 3. ASSIGN THE NEW UNIQUE NAME TO THE ETABS ELEMENT */
                 ret02 = m_model.LinkObj.ChangeName(name, tempLinkName);
 
+                /* 4. ADD THE NEW NAME TO THE LIST */
                 newLinkNames.Add(tempLinkName);
 
                 if (!(ret01 == 0 && ret02 == 0)) return null;

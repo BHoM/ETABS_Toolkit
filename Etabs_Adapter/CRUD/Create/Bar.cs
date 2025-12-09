@@ -220,33 +220,6 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Bar Name to get the Unique Name to assign to the ETABS Element.")]
-        private string SetUniqueName(Bar bhBar, string name) {
-            
-            int ret01, ret02;
-            string guid = null;
-            string tempBarName = "";
-
-            ret01 = m_model.FrameObj.GetGUID(name, ref guid);
-
-            if (bhBar.Name == "")
-            {
-                tempBarName = guid.Substring(guid.Length - 7);
-            }
-            else
-            {
-                tempBarName = guid.Substring(guid.Length - 7) + "::" + bhBar.Name;
-            }
-
-            ret02 = m_model.FrameObj.ChangeName(name, tempBarName);
-
-            if (!(ret01 == 0 && ret02 == 0)) return null;
-
-            return tempBarName;
-        }
-
-        /***************************************************/
-
 #if Debug16 || Release16
 
         [Description("Returns a bar where the endpoints have been flipped without cloning the object")]

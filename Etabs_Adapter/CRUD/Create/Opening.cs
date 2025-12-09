@@ -119,32 +119,5 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
-        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Opening Name to get the Unique Name to assign to the ETABS Element.")]
-        private string SetUniqueName(Opening bhOpening, string name)
-        {
-            int ret01, ret02;
-            string guid = null;
-            string tempOpeningName = "";
-
-            ret01 = m_model.AreaObj.GetGUID(name, ref guid);
-
-            if (bhOpening.Name == "")
-            {
-                tempOpeningName = guid.Substring(guid.Length - 7);
-            }
-            else
-            {
-                tempOpeningName = guid.Substring(guid.Length - 7) + "::" + bhOpening.Name;
-            }
-
-            ret02 = m_model.AreaObj.ChangeName(name, tempOpeningName);
-
-            if (!(ret01 == 0 && ret02 == 0)) return null;
-
-            return tempOpeningName;
-        }
-
-        /***************************************************/
-
     }
 }
