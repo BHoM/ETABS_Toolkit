@@ -128,7 +128,7 @@ namespace BH.Adapter.ETABS
             /* 1. CHECK ASSIGNED GROUPS */
 
             /* Get the list of unique groupNames assigned to the BHoM Bar */
-            List<string> groupNames = obj.Tags.Distinct().ToList();
+            List<string> groupNames = obj.Tags.ToList();
             /* Get the list of existing group names in the ETABS model */
             int modelNumGroups = 0;
             string[] modelGroupNames = null;
