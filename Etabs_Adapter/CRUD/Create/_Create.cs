@@ -159,8 +159,8 @@ namespace BH.Adapter.ETABS
                 /* Get the ETABS name of the Object */
                 objName = GetAdapterId<string>(obj);
                 /* Assign the Object to each group in the list */
-                if (type == typeof(Node)) groupNames.ToList().ForEach(groupName => m_model.FrameObj.SetGroupAssign(objName, groupName));
-                if (type == typeof(Bar)) groupNames.ToList().ForEach(groupName => m_model.PointObj.SetGroupAssign(objName, groupName));
+                if (type == typeof(Node)) groupNames.ToList().ForEach(groupName => m_model.PointObj.SetGroupAssign(objName, groupName));
+                if (type == typeof(Bar)) groupNames.ToList().ForEach(groupName => m_model.FrameObj.SetGroupAssign(objName, groupName));
                 if (type == typeof(Panel) || type == typeof(Opening)) groupNames.ToList().ForEach(groupName => m_model.AreaObj.SetGroupAssign(objName, groupName));
 
             }
