@@ -15,9 +15,10 @@ CSI ETABS 17
 CSI ETABS 18
 CSI ETABS 20
 CSI ETABS 21
+CSI ETABS 22.7.0
 
 #### Not supported:
-CSI ETABS 22 due to internal failures of the ETABS API. A fix for this is being worked on.
+CSI ETABS versions 22.0.0 to 22.6.0.
 
 ### Net runtime issues
 

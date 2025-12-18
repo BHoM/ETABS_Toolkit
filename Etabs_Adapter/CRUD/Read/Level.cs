@@ -30,6 +30,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Spatial.SettingOut;
 using BH.Engine.Adapters.ETABS;
+using BH.oM.Base;
 
 
 namespace BH.Adapter.ETABS
@@ -44,6 +45,7 @@ namespace BH.Adapter.ETABS
     {
         /***************************************************/
 
+#if Debug16 || Release16 || Debug17 || Release17
         private List<Level> ReadLevel(List<string> ids = null)
         {
             List<Level> levellist = new List<Level>();
@@ -73,7 +75,85 @@ namespace BH.Adapter.ETABS
 
             return levellist;
         }
+#else
+        private List<Level> ReadLevel(List<string> ids = null)
+        {
+            List<Level> levellist = new List<Level>();
 
+            int towersNum = 0;
+            string[] towerNames = null;
+            m_model.Tower.GetNameList(ref towersNum, ref towerNames);
+
+            // Prepare variables
+            string tableKey = "Tower and Base Story Definitions";
+            string[] fieldKeyList = null;
+            string groupName = "All";
+            int tableVersion = 0;
+            string[] fieldsKeysIncluded = null;
+            int numberRecords = 0;
+            string[] tableData = null;
+
+            // Get table data
+            m_model.DatabaseTables.GetTableForDisplayArray(tableKey, ref fieldKeyList, groupName, ref tableVersion, 
+                                                                 ref fieldsKeysIncluded, ref numberRecords, ref tableData);
+
+
+            double baseElevation = 0;
+            int numberStories = 0;
+            bool[] isMasterStory = null;
+            bool[] spliceAbove = null;
+            double[] storyElevations = null;
+            double[] storyHeights = null;
+            double[] spliceHeight = null;
+            string[] storyNames = null;
+            string[] similarToStory = null;
+            int[] color = null;
+
+            List<string> storyNamesList;
+            List<double> storyElevationsList;
+
+
+            for (int i = 0; i < towersNum; i++)
+            {
+                m_model.Tower.SetActiveTower(towerNames[i]);
+
+                m_model.Story.GetStories_2(ref baseElevation, ref numberStories, ref storyNames, ref storyElevations, ref storyHeights,
+                            ref isMasterStory, ref similarToStory, ref spliceAbove, ref spliceHeight, ref color);
+
+                int i_baseLevelName = fieldsKeysIncluded.ToList().IndexOf("BSName")+i*fieldsKeysIncluded.Count();
+                int i_baseLevelElev = fieldsKeysIncluded.ToList().IndexOf("BSElev")+i*fieldsKeysIncluded.Count();
+                string baseLevelName = tableData[i_baseLevelName];
+                double baseLevelElev = Double.Parse(tableData[i_baseLevelElev]);
+                
+                storyNamesList = storyNames.ToList();
+                storyNamesList.Insert(0, baseLevelName);
+                storyNames = storyNamesList.ToArray();
+
+                storyElevationsList = storyElevations.ToList();
+                storyElevationsList.Insert(0, baseLevelElev);
+                storyElevations = storyElevationsList.ToArray();
+
+                ids = FilterIds(ids, storyNames);
+
+                for (int j = 0; j < ids.Count; j++)
+                {
+                    ETABSId etabsid = new ETABSId();
+                    etabsid.Id = ids[j];
+
+                    string guid = null;
+                    m_model.Story.GetGUID(ids[j], ref guid);
+                    etabsid.PersistentId = guid;
+
+                    Level lvl = new Level() { Elevation = storyElevations[j], Name = ids[j] };
+                    lvl.Fragments.Add( new BH.oM.Adapters.ETABS.Fragments.Tower  { Name = towerNames[i] } );
+
+                    lvl.SetAdapterId(etabsid);
+                    levellist.Add(lvl);
+                }
+            }
+            return levellist;
+        }
+#endif
         /***************************************************/
     }
 }
