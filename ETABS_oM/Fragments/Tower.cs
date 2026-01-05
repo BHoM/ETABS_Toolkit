@@ -20,35 +20,30 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-
+using BH.oM.Base;
+using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Structure.Elements;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Adapters.ETABS.Elements;
 
-namespace BH.Engine.Adapters.ETABS
+namespace BH.oM.Adapters.ETABS.Fragments
 {
-    public static partial class Modify
+    public class Tower : BHoMObject, IFragment
     {
-
         /***************************************************/
-        /**** Public Methods                            ****/
+        /**** Public Properties                         ****/
         /***************************************************/
 
-        public static Panel SetPier(this Panel panel, Pier pier)
-        {
-            panel.Fragments.AddOrReplace(pier);
-
-            return panel;
-        }
+        [Description("Name of the Tower the element belongs to.")]
+        public virtual string Name { get; set; }
 
         /***************************************************/
     }
 }
+
 
 
 
