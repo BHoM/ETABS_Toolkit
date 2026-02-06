@@ -20,18 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.Elements;
-using BH.Engine.Structure;
+using BH.Engine.Adapters.ETABS;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
-using BH.Engine.Adapters.ETABS;
+using BH.Engine.Structure;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
-using BH.oM.Geometry;
 using BH.oM.Analytical.Elements;
+using BH.oM.Geometry;
+using BH.oM.Structure.Elements;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace BH.Adapter.ETABS
@@ -104,6 +105,9 @@ namespace BH.Adapter.ETABS
             bhOpening.SetAdapterId(etabsid);
 
             m_model.AreaObj.SetOpening(openingName, true);
+
+            //Set Groups Assignment
+            SetGroup(bhOpening);
 
             return success;
         }

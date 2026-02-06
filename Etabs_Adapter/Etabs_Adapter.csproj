@@ -376,6 +376,8 @@
     <Compile Include="CRUD\Read\Results\MeshResults.cs" />
     <Compile Include="CRUD\Read\SurfaceProperty.cs" />
     <Compile Include="CRUD\Update\Bar.cs" />
+    <Compile Include="CRUD\Update\Link.cs" />
+    <Compile Include="CRUD\Update\Openings.cs" />
     <Compile Include="CRUD\Update\SurfaceProperty.cs" />
     <Compile Include="CRUD\Update\SectionProperty.cs" />
     <Compile Include="CRUD\Update\Node.cs" />

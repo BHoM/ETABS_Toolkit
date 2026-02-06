@@ -20,14 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Adapter;
+using BH.Engine.Adapters.ETABS;
+using BH.Engine.Structure;
+using BH.oM.Adapters.ETABS;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.Elements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.Constraints;
-using BH.Engine.Structure;
-using BH.Engine.Adapters.ETABS;
 
 
 namespace BH.Adapter.ETABS
@@ -70,6 +71,8 @@ namespace BH.Adapter.ETABS
             multiId.Id = linkIds;
             bhLink.SetAdapterId(multiId);
 
+            SetGroup(bhLink);
+
             return success;
         }
 
@@ -106,6 +109,7 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
     }
 }
 

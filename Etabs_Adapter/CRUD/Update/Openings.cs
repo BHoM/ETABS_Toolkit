@@ -15,8 +15,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of               
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
  * GNU Lesser General Public License for more details.                          
- *                                                                            
- * You should have received a copy of the GNU Lesser General Public License     
+ *                                                                             
+ * You should have received a copy of the GNU Lesser General Public License    
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
@@ -38,75 +38,47 @@ namespace BH.Adapter.ETABS
 #endif
     {
         /***************************************************/
-        /**** Update Panel                              ****/
+        /**** Update Openings                            ****/
         /***************************************************/
-        
-        private bool UpdateObjects(IEnumerable<Bar> bhBars)
+
+        private bool UpdateObjects(IEnumerable<Opening> bhOpenings)
         {
-            int ret = 0;
+            bool success = true;
 
             int nameCount = 0;
             string[] names = { };
-            m_model.FrameObj.GetNameList(ref nameCount, ref names);
+            m_model.AreaObj.GetNameList(ref nameCount, ref names);
 
-            foreach (Bar bhBar in bhBars)
+            foreach (Opening bhOpening in bhOpenings)
             {
-                string id = bhBar.AdapterId<string>(typeof(ETABSId));
+                string id = bhOpening.AdapterId<string>(typeof(ETABSId));
                 if (id == null)
                 {
-                    Engine.Base.Compute.RecordWarning("The Bar must have an ETABS adapter id to be updated.");
+                    Engine.Base.Compute.RecordWarning("The Opening must have an ETABS adapter id to be updated.");
                     continue;
                 }
 
                 if (!names.Contains(id))
                 {
-                    Engine.Base.Compute.RecordWarning("The Bar must be present in ETABS to be updated.");
+                    Engine.Base.Compute.RecordWarning("The Opening must be present in ETABS to be updated.");
                     continue;
                 }
 
-#if Debug16 || Release16
-                string start = "";
-                string end = "";
-                m_model.FrameObj.GetPoints(id, ref start, ref end);
+                // ETABS API does not allow updating of opening geometry. Only group assignment can be updated.
+                Engine.Base.Compute.RecordWarning("The Etabs API does not allow for updating of the geometry of openings. To change opening geometry delete and recreate the opening.");
 
-                if (GetAdapterId<string>(bhBar.Start) != start ||
-                    GetAdapterId<string>(bhBar.End) != end)
-                {
-                    Engine.Base.Compute.RecordWarning("ETABS16 does not support Update of Bar connectivity, which means the geometry can not be updated. \n" + 
-                                                            "To update the connectivity or position of a Bar, delete the existing Bar you want to update and create a new one.");
-                }
-#endif
-#if Debug16 || Release16 || Debug17 || Release17
-                if (SetObject(bhBar))
-                    ret++;
-#else
-                if (SetObject(bhBar) && UpdateGroup(bhBar))
-                    ret++;
-#endif
+ #if !(Debug16 || Release16 || Debug17 || Release17)
+                if (!UpdateGroup(bhOpening)) success = false;
 
+#endif
 
             }
 
-#if Debug16 || Release16
-            // Not a problem in 2016 since it can't move them at all.
-#else
-            // ETABS refuses to update the location of Bars unless a edit command for them is run.
-            // Mainly a UI bug, but seem to contain other artifacts as well.
-            // Does not count as a command if the movment is zero.
-            ForceRefresh();
-#endif
-
-
-            return true;
+            return success;
         }
 
         /***************************************************/
 
     }
 }
-
-
-
-
-
 

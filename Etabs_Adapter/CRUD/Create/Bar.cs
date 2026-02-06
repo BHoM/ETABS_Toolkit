@@ -108,7 +108,7 @@ namespace BH.Adapter.ETABS
 
             bhBar.SetAdapterId(etabsIdFragment);
 
-            return SetObject(bhBar);
+            return SetObject(bhBar) && SetGroup(bhBar);
         }
 
         /***************************************************/
@@ -214,6 +214,7 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
 
 #if Debug16 || Release16
 

@@ -85,6 +85,10 @@ namespace BH.Adapter.ETABS
                 {
                     m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
                 }
+#if !(Debug16 || Release16 || Debug17 || Release17)
+                //Update Groups Assignment
+                if (!UpdateGroup(bhPanel)) success = false;
+#endif
             }
 
             //Force refresh to make sure panel local orientation are set correctly
