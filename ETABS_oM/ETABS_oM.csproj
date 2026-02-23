@@ -7,7 +7,7 @@
     <AssemblyTitle>ETABS_oM</AssemblyTitle>
     <Description>https://github.com/BHoM/ETABS_Toolkit</Description>
     <Product>ETABS_oM</Product>
-    <Copyright>Copyright © https://github.com/BHoM</Copyright>
+    <Copyright>Copyright ï¿½ https://github.com/BHoM</Copyright>
     <AssemblyVersion>9.0.0.0</AssemblyVersion>
     <FileVersion>9.1.0.0</FileVersion>
   </PropertyGroup>
@@ -51,9 +51,5 @@
     </Reference>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Versioning_40.json" />
-    <None Include="Versioning_33.json" />
   </ItemGroup>
 </Project>

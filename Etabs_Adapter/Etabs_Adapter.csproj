@@ -228,7 +228,4 @@
     <ProjectReference Include="..\ETABS_Engine\ETABS_Engine.csproj" />
     <ProjectReference Include="..\ETABS_oM\ETABS_oM.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Versioning_51.json" />
-  </ItemGroup>
 </Project>

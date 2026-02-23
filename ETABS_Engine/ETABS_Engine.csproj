@@ -7,7 +7,7 @@
     <AssemblyTitle>ETABS_Engine</AssemblyTitle>
     <Description>https://github.com/BHoM/ETABS_Toolkit</Description>
     <Product>ETABS_Engine</Product>
-    <Copyright>Copyright © https://github.com/BHoM</Copyright>
+    <Copyright>Copyright ï¿½ https://github.com/BHoM</Copyright>
     <AssemblyVersion>9.0.0.0</AssemblyVersion>
     <FileVersion>9.1.0.0</FileVersion>
   </PropertyGroup>
@@ -96,9 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ETABS_oM\ETABS_oM.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Versioning_51.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Compute\" />
