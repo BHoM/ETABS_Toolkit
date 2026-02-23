@@ -10,7 +10,7 @@
     <AssemblyTitle>ETABS_Adapter</AssemblyTitle>
     <Description>https://github.com/BHoM/ETABS_Toolkit</Description>
     <Product>ETABS_Adapter</Product>
-    <Copyright>Copyright © https://github.com/BHoM</Copyright>
+    <Copyright>Copyright ï¿½ https://github.com/BHoM</Copyright>
     <AssemblyVersion>9.0.0.0</AssemblyVersion>
     <FileVersion>9.1.0.0</FileVersion>
   </PropertyGroup>
@@ -69,6 +69,7 @@
     <OutputPath>..\Build\</OutputPath>
     <DefineConstants>TRACE;Release18</DefineConstants>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AssemblyName>ETABS_Adapter</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug16|x64'">
     <DebugSymbols>true</DebugSymbols>
