@@ -158,13 +158,10 @@ namespace BH.Adapter.ETABS
                     {
                         case "X":
                             return Vector.XAxis;
-                            break;
                         case "Y":
                             return Vector.YAxis;
-                            break;
                         default:
                             return Vector.ZAxis;
-                            break;
                     }
                 }).ToArray();
 

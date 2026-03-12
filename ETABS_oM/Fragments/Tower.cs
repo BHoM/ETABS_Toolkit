@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.ETABS.Fragments
         /***************************************************/
 
         [Description("Name of the Tower the element belongs to.")]
-        public virtual string Name { get; set; }
+        public override string Name { get; set; }
 
         /***************************************************/
     }
