@@ -31,7 +31,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.ETABS
 {
-    public class DatabaseSettings : IObject
+    public class DataBaseSettings : IObject
     {
         /***************************************************/
         /**** Public Properties                         ****/

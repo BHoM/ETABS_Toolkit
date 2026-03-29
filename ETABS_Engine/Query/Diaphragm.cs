@@ -27,7 +27,9 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base.Attributes;
 using BH.Engine.Base;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -38,6 +40,9 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Gets the ETABS Diaphragm fragment from a Panel, if one has been assigned.")]
+        [Input("panel", "The panel to get the diaphragm fragment from.")]
+        [Output("diaphragm", "The Diaphragm fragment of the panel, or null if none is assigned.")]
         public static Diaphragm Diaphragm(this Panel panel)
         {
             return panel.FindFragment<Diaphragm>();

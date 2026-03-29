@@ -29,6 +29,8 @@ using BH.Engine.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -39,6 +41,10 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Sets the insertion point on a Bar, with stiffness modification enabled by default.")]
+        [Input("bar", "The bar to set the insertion point on.")]
+        [Input("barInsertionPoint", "The insertion point to assign to the bar.")]
+        [Output("bar", "The bar with the insertion point fragment set.")]
         public static Bar SetInsertionPoint(this Bar bar, BarInsertionPoint barInsertionPoint = BarInsertionPoint.Centroid)
         {
             return bar.SetInsertionPoint(barInsertionPoint, true);
@@ -46,6 +52,11 @@ namespace BH.Engine.Adapters.ETABS
 
         /***************************************************/
 
+        [Description("Sets the insertion point on a Bar with an option to modify stiffness.")]
+        [Input("bar", "The bar to set the insertion point on.")]
+        [Input("barInsertionPoint", "The insertion point to assign to the bar.")]
+        [Input("modifyStiffness", "If true, stiffness is modified to account for the insertion point offset.")]
+        [Output("bar", "The bar with the insertion point fragment set.")]
         public static Bar SetInsertionPoint(this Bar bar, BarInsertionPoint barInsertionPoint = BarInsertionPoint.Centroid, bool modifyStiffness = true)
         {
             return (Bar)bar.AddFragment(new InsertionPoint() { BarInsertionPoint = barInsertionPoint, ModifyStiffness = modifyStiffness }, true);

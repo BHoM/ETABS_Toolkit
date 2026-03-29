@@ -29,6 +29,8 @@ using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -39,6 +41,10 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Assigns an ETABS Pier fragment to a Panel.")]
+        [Input("panel", "The panel to assign the pier label to.")]
+        [Input("pier", "The pier label to assign to the panel.")]
+        [Output("panel", "The panel with the pier fragment assigned.")]
         public static Panel SetPier(this Panel panel, Pier pier)
         {
             panel.Fragments.AddOrReplace(pier);

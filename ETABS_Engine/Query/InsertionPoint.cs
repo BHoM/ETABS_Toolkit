@@ -29,6 +29,8 @@ using BH.Engine.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -39,6 +41,9 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Gets the ETABS insertion point of a Bar. Returns Centroid if no insertion point fragment is assigned.")]
+        [Input("bar", "The bar to get the insertion point from.")]
+        [Output("insertionPoint", "The insertion point of the bar, defaulting to Centroid if no fragment is assigned.")]
         public static BarInsertionPoint InsertionPoint(this Bar bar)
         {
             InsertionPoint o = bar?.FindFragment<InsertionPoint>();

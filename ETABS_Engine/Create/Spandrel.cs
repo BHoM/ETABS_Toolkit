@@ -29,8 +29,10 @@ using System.Threading.Tasks;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
+using BH.oM.Base.Attributes;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -40,6 +42,9 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Creates an ETABS Spandrel label with the specified name.")]
+        [Input("name", "The name of the spandrel label.")]
+        [Output("spandrel", "The created ETABS Spandrel.")]
         public static Spandrel Spandrel(string name)
         {
             return new Spandrel { Name = name };
