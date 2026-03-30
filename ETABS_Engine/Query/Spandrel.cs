@@ -28,7 +28,9 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base.Attributes;
 using BH.Engine.Base;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -39,6 +41,9 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Gets the ETABS Spandrel fragment from a Panel, if one has been assigned.")]
+        [Input("panel", "The panel to get the spandrel fragment from.")]
+        [Output("spandrel", "The Spandrel fragment of the panel, or null if none is assigned.")]
         public static Spandrel Spandrel(this Panel panel)
         {
             return panel.FindFragment<Spandrel>();

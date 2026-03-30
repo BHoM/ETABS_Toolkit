@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -38,6 +40,10 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Assigns an ETABS Diaphragm fragment to a Panel.")]
+        [Input("panel", "The panel to assign the diaphragm to.")]
+        [Input("diaphragm", "The diaphragm to assign to the panel.")]
+        [Output("panel", "The panel with the diaphragm fragment assigned.")]
         public static Panel SetDiaphragm(this Panel panel, Diaphragm diaphragm)
         {
             panel.Fragments.AddOrReplace(diaphragm);

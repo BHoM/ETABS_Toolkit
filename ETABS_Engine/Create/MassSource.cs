@@ -26,6 +26,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Loads;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 
 namespace BH.Engine.Adapters.ETABS.Structure
@@ -36,6 +38,12 @@ namespace BH.Engine.Adapters.ETABS.Structure
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Creates an ETABS MassSource defining how mass is distributed across load cases.")]
+        [Input("elementSelfWeight", "If true, element self-weight is included in the mass source.")]
+        [Input("additionalMass", "If true, additional assigned mass is included in the mass source.")]
+        [Input("loadCases", "Optional list of load cases contributing to the mass source.")]
+        [Input("caseFactors", "Factors corresponding to each load case. Must match the number of load cases provided.")]
+        [Output("massSource", "The created ETABS MassSource.")]
         public static MassSource MassSource(bool elementSelfWeight, bool additionalMass, List<Loadcase> loadCases = null, List<double> caseFactors = null)
         {
             List<Tuple<Loadcase, double>> factoredCases = new List<Tuple<Loadcase, double>>();

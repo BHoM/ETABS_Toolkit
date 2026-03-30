@@ -28,8 +28,10 @@ using System.Threading.Tasks;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
+using BH.oM.Base.Attributes;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -39,6 +41,10 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Creates an ETABS Diaphragm with the specified name and rigidity type.")]
+        [Input("name", "The name of the diaphragm.")]
+        [Input("type", "The rigidity type of the diaphragm.")]
+        [Output("diaphragm", "The created ETABS Diaphragm.")]
         public static Diaphragm Diaphragm(/*List<Panel> panels,*/ string name, DiaphragmType type = DiaphragmType.RigidDiaphragm)
         {
             //List<double> zvals = panels.SelectMany(x => x.AllEdgeCurves().SelectMany(y => y.IControlPoints().Select(z => z.Z))).ToList();

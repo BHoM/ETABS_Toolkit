@@ -23,6 +23,8 @@
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Fragments;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -32,6 +34,10 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Assigns an ETABS shell type fragment to a surface property.")]
+        [Input("property", "The surface property to assign the shell type to.")]
+        [Input("shellType", "The ETABS shell type to assign.")]
+        [Output("property", "The surface property with the shell type fragment assigned.")]
         public static ISurfaceProperty SetShellType(this ISurfaceProperty property, ShellType shellType)
         {
             property.Fragments.AddOrReplace(new ShellTypeFragment { ShellType = shellType });
