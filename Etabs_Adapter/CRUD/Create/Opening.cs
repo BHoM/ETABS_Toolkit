@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,18 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.Elements;
-using BH.Engine.Structure;
+using BH.Engine.Adapters.ETABS;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
-using BH.Engine.Adapters.ETABS;
+using BH.Engine.Structure;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
-using BH.oM.Geometry;
 using BH.oM.Analytical.Elements;
+using BH.oM.Geometry;
+using BH.oM.Structure.Elements;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace BH.Adapter.ETABS
@@ -105,6 +106,9 @@ namespace BH.Adapter.ETABS
 
             m_model.AreaObj.SetOpening(openingName, true);
 
+            //Set Groups Assignment
+            SetGroup(bhOpening);
+
             return success;
         }
 
@@ -112,3 +116,4 @@ namespace BH.Adapter.ETABS
 
     }
 }
+

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -27,7 +27,9 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base.Attributes;
 using BH.Engine.Base;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -38,6 +40,10 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Sets the auto length offset on a Bar, using a default rigid zone factor of 1.0.")]
+        [Input("bar", "The bar to set the auto length offset on.")]
+        [Input("autoLengthOffset", "If true, auto length offset is enabled for the bar.")]
+        [Output("bar", "The bar with the auto length offset fragment set.")]
         public static Bar SetAutoLengthOffset(this Bar bar, bool autoLengthOffset)
         {
             return SetAutoLengthOffset(bar, autoLengthOffset, 1.0);
@@ -45,6 +51,11 @@ namespace BH.Engine.Adapters.ETABS
 
         /***************************************************/
 
+        [Description("Sets the auto length offset on a Bar with a specified rigid zone factor.")]
+        [Input("bar", "The bar to set the auto length offset on.")]
+        [Input("autoLengthOffset", "If true, auto length offset is enabled for the bar.")]
+        [Input("rigidZoneFactor", "The rigid zone factor, clamped to the range [0, 1].")]
+        [Output("bar", "The bar with the auto length offset fragment set.")]
         public static Bar SetAutoLengthOffset(this Bar bar, bool autoLengthOffset, double rigidZoneFactor)
         {
             if (rigidZoneFactor < 0 || rigidZoneFactor > 1.0)
@@ -59,6 +70,7 @@ namespace BH.Engine.Adapters.ETABS
         /***************************************************/
     }
 }
+
 
 
 

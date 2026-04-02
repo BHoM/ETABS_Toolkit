@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -314,7 +314,7 @@ namespace BH.Adapter.ETABS
                 {
                     List<MeshVonMises> stressVMTop = new List<MeshVonMises>();
                     List<MeshVonMises> stressVMBot = new List<MeshVonMises>();
-                    int ret1, ret2, ret3;
+                    int ret1, ret2;
 
                     // Extract Von Mises Stresses
                     ret1= m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, 
@@ -615,6 +615,7 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 
 
 

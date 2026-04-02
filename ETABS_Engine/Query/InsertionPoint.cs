@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -29,6 +29,8 @@ using BH.Engine.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -39,6 +41,9 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Gets the ETABS insertion point of a Bar. Returns Centroid if no insertion point fragment is assigned.")]
+        [Input("bar", "The bar to get the insertion point from.")]
+        [Output("insertionPoint", "The insertion point of the bar, defaulting to Centroid if no fragment is assigned.")]
         public static BarInsertionPoint InsertionPoint(this Bar bar)
         {
             InsertionPoint o = bar?.FindFragment<InsertionPoint>();
@@ -50,6 +55,7 @@ namespace BH.Engine.Adapters.ETABS
 
     }
 }
+
 
 
 

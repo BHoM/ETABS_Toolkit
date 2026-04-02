@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -108,7 +108,7 @@ namespace BH.Adapter.ETABS
 
             bhBar.SetAdapterId(etabsIdFragment);
 
-            return SetObject(bhBar);
+            return SetObject(bhBar) && SetGroup(bhBar);
         }
 
         /***************************************************/
@@ -215,6 +215,7 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+
 #if Debug16 || Release16
 
         [Description("Returns a bar where the endpoints have been flipped without cloning the object")]
@@ -305,6 +306,7 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 
 
 

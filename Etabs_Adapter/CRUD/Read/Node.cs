@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -84,7 +84,18 @@ namespace BH.Adapter.ETABS
                     etabsIdFragment.Story = story;
                 }
 
-                if(m_model.PointObj.GetGUID(id, ref guid) == 0)
+#if !(Debug16 || Release16 || Debug17 || Release17)
+                // Get the groups the bar is assigned to
+                int numGroups = 0;
+                string[] groupNames = new string[0];
+                if (m_model.PointObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
+                {
+                    foreach (string grpName in groupNames)
+                        bhNode.Tags.Add(grpName);
+                }
+#endif
+
+                if (m_model.PointObj.GetGUID(id, ref guid) == 0)
                     etabsIdFragment.PersistentId = guid;
 
                 bhNode.SetAdapterId(etabsIdFragment);
@@ -120,6 +131,7 @@ namespace BH.Adapter.ETABS
         /***************************************************/
     }
 }
+
 
 
 
