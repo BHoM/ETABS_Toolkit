@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -38,6 +40,10 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Assigns an ETABS Diaphragm fragment to a Panel.")]
+        [Input("panel", "The panel to assign the diaphragm to.")]
+        [Input("diaphragm", "The diaphragm to assign to the panel.")]
+        [Output("panel", "The panel with the diaphragm fragment assigned.")]
         public static Panel SetDiaphragm(this Panel panel, Diaphragm diaphragm)
         {
             panel.Fragments.AddOrReplace(diaphragm);
@@ -47,6 +53,7 @@ namespace BH.Engine.Adapters.ETABS
         /***************************************************/
     }
 }
+
 
 
 

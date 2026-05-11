@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -128,6 +128,19 @@ namespace BH.Adapter.ETABS
 
                 bhLink.Constraint = new LinkConstraint { Name = propName }; //Dummy constraint to be populated in later loop
 
+                /* Get the ETABS name of the Rigid Link */
+                string name = GetAdapterId<string>(bhLink);
+
+#if !(Debug16 || Release16 || Debug17 || Release17)
+                // Get the groups the link is assigned to
+                int numGroups = 0;
+                string[] groupNames = new string[0];
+                if (m_model.LinkObj.GetGroupAssign(name, ref numGroups, ref groupNames) == 0)
+                {
+                    foreach (string grpName in groupNames)
+                        bhLink.Tags.Add(grpName);
+                }
+#endif
                 linkList.Add(bhLink);
             }
 
@@ -256,4 +269,5 @@ namespace BH.Adapter.ETABS
         /***************************************************/
     }
 }
+
 

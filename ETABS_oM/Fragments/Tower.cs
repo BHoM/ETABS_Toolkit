@@ -20,39 +20,30 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-
+using BH.oM.Base;
+using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Structure.Elements;
-using BH.oM.Adapters.ETABS.Elements;
-using BH.oM.Base.Attributes;
-using BH.Engine.Base;
-using System.ComponentModel;
 
-namespace BH.Engine.Adapters.ETABS
+namespace BH.oM.Adapters.ETABS.Fragments
 {
-    public static partial class Query
+    public class Tower : BHoMObject, IFragment
     {
-
         /***************************************************/
-        /**** Public Methods                            ****/
-        /***************************************************/
-
-        [Description("Gets the ETABS Pier fragment from a Panel, if one has been assigned.")]
-        [Input("panel", "The panel to get the pier fragment from.")]
-        [Output("pier", "The Pier fragment of the panel, or null if none is assigned.")]
-        public static Pier Pier(this Panel panel)
-        {
-            return panel.FindFragment<Pier>();
-        }
-
+        /**** Public Properties                         ****/
         /***************************************************/
 
+        [Description("Name of the Tower the element belongs to.")]
+        public override string Name { get; set; }
+
+        /***************************************************/
     }
 }
+
 
 
 

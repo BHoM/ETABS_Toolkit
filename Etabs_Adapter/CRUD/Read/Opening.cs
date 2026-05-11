@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,22 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using BH.Engine.Adapter;
+using BH.Engine.Adapters.ETABS;
+using BH.Engine.Geometry;
+using BH.Engine.Spatial;
+using BH.Engine.Structure;
 using BH.oM.Adapters.ETABS;
+using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Analytical.Elements;
+using BH.oM.Geometry;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.SurfaceProperties;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.SurfaceProperties;
-using BH.Engine.Adapters.ETABS;
-using BH.oM.Geometry;
-using BH.Engine.Geometry;
-using BH.oM.Adapters.ETABS.Elements;
-using BH.Engine.Structure;
-using BH.Engine.Spatial;
 
 
 namespace BH.Adapter.ETABS
@@ -93,6 +94,17 @@ namespace BH.Adapter.ETABS
                     etabsId.Story = story;
                 }
 
+#if !(Debug16 || Release16 || Debug17 || Release17)
+                // Get the groups the opening is assigned to
+                int numGroups = 0;
+                string[] groupNames = new string[0];
+                if (m_model.AreaObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
+                {
+                    foreach (string grpName in groupNames)
+                        opening.Tags.Add(grpName);
+                }
+#endif
+
                 if (m_model.AreaObj.GetGUID(id, ref guid) == 0)
                     etabsId.PersistentId = guid;
 
@@ -130,4 +142,5 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 

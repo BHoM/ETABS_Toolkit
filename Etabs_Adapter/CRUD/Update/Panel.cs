@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -89,6 +89,11 @@ namespace BH.Adapter.ETABS
 
                 //Update Unique Name
                 UpdateUniqueName(bhPanel);
+                
+#if !(Debug16 || Release16 || Debug17 || Release17)
+                //Update Groups Assignment
+                if (!UpdateGroup(bhPanel)) success = false;
+#endif
             }
 
             //Force refresh to make sure panel local orientation are set correctly
@@ -101,6 +106,7 @@ namespace BH.Adapter.ETABS
 
     }
 }
+
 
 
 

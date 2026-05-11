@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -29,6 +29,8 @@ using BH.Engine.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.ETABS
 {
@@ -39,6 +41,9 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Gets whether stiffness modification is enabled for the insertion point of a Bar. Returns true if no insertion point fragment is assigned.")]
+        [Input("bar", "The bar to query the stiffness modification flag from.")]
+        [Output("modifyStiffness", "True if stiffness modification is enabled, or if no insertion point fragment is assigned.")]
         public static bool ModifyStiffnessInsertionPoint(this Bar bar)
         {
             InsertionPoint o = bar?.FindFragment<InsertionPoint>();
@@ -50,6 +55,7 @@ namespace BH.Engine.Adapters.ETABS
 
     }
 }
+
 
 
 

@@ -15,8 +15,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of               
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
  * GNU Lesser General Public License for more details.                          
- *                                                                            
- * You should have received a copy of the GNU Lesser General Public License     
+ *                                                                             
+ * You should have received a copy of the GNU Lesser General Public License    
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
@@ -24,10 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.Engine.Adapter;
 using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.SectionProperties;
-using BH.Engine.Structure;
-using BH.oM.Structure.Fragments;
-using BH.Engine.Base;
+using BH.oM.Structure.Elements;
 
 
 namespace BH.Adapter.ETABS
@@ -41,47 +38,40 @@ namespace BH.Adapter.ETABS
 #endif
     {
         /***************************************************/
-        /**** Update Panel                              ****/
+        /**** Update Openings                            ****/
         /***************************************************/
-        
-        private bool UpdateObjects(IEnumerable<ISectionProperty> bhSections)
+
+        private bool UpdateObjects(IEnumerable<Opening> bhOpenings)
         {
             bool success = true;
 
             int nameCount = 0;
             string[] names = { };
-            m_model.PropFrame.GetNameList(ref nameCount, ref names);
+            m_model.AreaObj.GetNameList(ref nameCount, ref names);
 
-            foreach (ISectionProperty bhSection in bhSections)
+            foreach (Opening bhOpening in bhOpenings)
             {
-                string propertyName = bhSection.DescriptionOrName();
-
-                if (!names.Contains(propertyName))
+                string id = bhOpening.AdapterId<string>(typeof(ETABSId));
+                if (id == null)
                 {
-                    Engine.Base.Compute.RecordWarning($"Failed to update SectionPoperty: { propertyName }, no section with that name found in ETABS.");
+                    Engine.Base.Compute.RecordWarning("The Opening must have an ETABS adapter id to be updated.");
                     continue;
                 }
 
-                // The API clamis that the Set methods for PropFrame are both initiasers and modifiers
-                SetSection(bhSection as dynamic);
-
-                SectionModifier modifier = bhSection.FindFragment<SectionModifier>();
-
-                if (modifier != null)
+                if (!names.Contains(id))
                 {
-                    double[] etabsMods = new double[8];
-
-                    etabsMods[0] = modifier.Area;   //Area
-                    etabsMods[1] = modifier.Asz;    //Major axis shear
-                    etabsMods[2] = modifier.Asy;    //Minor axis shear
-                    etabsMods[3] = modifier.J;      //Torsion
-                    etabsMods[4] = modifier.Iz;     //Minor bending
-                    etabsMods[5] = modifier.Iy;     //Major bending
-                    etabsMods[6] = 1;               //Mass, not currently implemented
-                    etabsMods[7] = 1;               //Weight, not currently implemented
-
-                    m_model.PropFrame.SetModifiers(propertyName, ref etabsMods);
+                    Engine.Base.Compute.RecordWarning("The Opening must be present in ETABS to be updated.");
+                    continue;
                 }
+
+                // ETABS API does not allow updating of opening geometry. Only group assignment can be updated.
+                Engine.Base.Compute.RecordWarning("The Etabs API does not allow for updating of the geometry of openings. To change opening geometry delete and recreate the opening.");
+
+ #if !(Debug16 || Release16 || Debug17 || Release17)
+                if (!UpdateGroup(bhOpening)) success = false;
+
+#endif
+
             }
 
             return success;
@@ -91,9 +81,4 @@ namespace BH.Adapter.ETABS
 
     }
 }
-
-
-
-
-
 
