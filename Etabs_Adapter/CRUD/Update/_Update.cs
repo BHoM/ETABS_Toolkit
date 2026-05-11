@@ -104,8 +104,6 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
-    }
-}
 
 #if !(Debug16 || Release16 || Debug17 || Release17)
         private bool UpdateGroup(BHoMObject obj)
