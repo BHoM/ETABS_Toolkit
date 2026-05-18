@@ -20,11 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using BH.Engine.Adapter;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection.Emit;
+using System.Xml.Linq;
 
 
 namespace BH.Adapter.ETABS
@@ -76,11 +80,12 @@ namespace BH.Adapter.ETABS
                                                             "To update the connectivity or position of a Bar, delete the existing Bar you want to update and create a new one.");
                 }
 #endif
+
 #if Debug16 || Release16 || Debug17 || Release17
                 if (SetObject(bhBar))
                     ret++;
 #else
-                if (SetObject(bhBar) && UpdateGroup(bhBar))
+                if (SetObject(bhBar) && UpdateGroup(bhBar) && UpdateUniqueName(bhBar))
                     ret++;
 #endif
 

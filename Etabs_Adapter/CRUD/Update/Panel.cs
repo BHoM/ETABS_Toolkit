@@ -20,16 +20,17 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using BH.oM.Structure.Elements;
 using BH.Engine.Adapters.ETABS;
-using BH.oM.Adapters.ETABS.Elements;
-using BH.oM.Adapter;
-using BH.oM.Geometry;
 using BH.Engine.Structure;
+using BH.oM.Adapter;
+using BH.oM.Adapters.ETABS;
+using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Geometry;
+using BH.oM.Structure.Elements;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Adapter.ETABS
 {
@@ -85,6 +86,10 @@ namespace BH.Adapter.ETABS
                 {
                     m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
                 }
+
+                //Update Unique Name
+                UpdateUniqueName(bhPanel);
+                
 #if !(Debug16 || Release16 || Debug17 || Release17)
                 //Update Groups Assignment
                 if (!UpdateGroup(bhPanel)) success = false;

@@ -31,8 +31,9 @@ using BH.oM.Structure.Elements;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.SurfaceProperties;
-using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System;
 using System.Linq;
 
 namespace BH.Adapter.ETABS
@@ -59,6 +60,47 @@ namespace BH.Adapter.ETABS
         private bool UpdateObjects(IEnumerable<IBHoMObject> objects)
         {
             return base.IUpdate(objects, null);
+        }
+
+        /***************************************************/
+
+        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Node Name to get the Unique Name to assign to the ETABS Element.")]
+        private bool UpdateUniqueName(BHoMObject obj)
+        {
+            int ret01 = 1;
+            int ret02 = 1;
+            string guid = null;
+            string tempObjName = "";
+
+            /* 1. GET THE ETABS ELEMENT GUID */
+            string uniqueName = GetAdapterId<string>(obj);
+
+            if (obj.GetType() == typeof(Node)) ret01 = m_model.PointObj.GetGUID(uniqueName, ref guid);
+            if (obj.GetType() == typeof(Bar)) ret01 = m_model.FrameObj.GetGUID(uniqueName, ref guid);
+            if (obj.GetType() == typeof(Panel) || obj.GetType() == typeof(Opening)) ret01 = m_model.AreaObj.GetGUID(uniqueName, ref guid);
+
+            /* 2. CREATE THE NEW UNIQUE NAME */
+            if (obj.Name == "")
+            {
+                tempObjName = guid.Substring(guid.Length - 7);
+            }
+            else
+            {
+                tempObjName = guid.Substring(guid.Length - 7) + "::" + obj.Name;
+            }
+
+            /* 3. ASSIGN THE NEW UNIQUE NAME TO THE ETABS ELEMENT */
+            if (obj.GetType() == typeof(Node)) ret02 = m_model.PointObj.ChangeName(uniqueName, tempObjName);
+            if (obj.GetType() == typeof(Bar)) ret02 = m_model.FrameObj.ChangeName(uniqueName, tempObjName);
+            if (obj.GetType() == typeof(Panel) || obj.GetType() == typeof(Opening)) ret02 = m_model.AreaObj.ChangeName(uniqueName, tempObjName);
+
+            if (!(ret01 == 0 && ret02 == 0)) return false;
+
+            ETABSId etabsIdFragment = new ETABSId { Id = tempObjName };
+
+            obj.SetAdapterId(etabsIdFragment);
+
+            return true;
         }
 
         /***************************************************/
