@@ -1,0 +1,105 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<RootNamespace>AddSupportForNonLinearSpring_Tests</RootNamespace>
+		<AssemblyName>AddSupportForNonLinearSpring_Tests</AssemblyName>
+		<LangVersion>latest</LangVersion>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+		<PackageReference Include="NUnit" Version="3.14.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Etabs_Adapter\Etabs_Adapter.csproj" />
+		<ProjectReference Include="..\ETABS_Engine\ETABS_Engine.csproj" />
+		<ProjectReference Include="..\ETABS_oM\ETABS_oM.csproj" />
+	</ItemGroup>
+
+	<!-- Copy BHoM assemblies to test output (Private=True). Required for adapter ctor + ModuleLoader. -->
+	<ItemGroup>
+		<Reference Include="Adapter_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Adapter_Engine.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Adapter_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Adapter_oM.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Analytical_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Analytical_oM.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="BHoM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\BHoM.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="BHoM_Adapter">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\BHoM_Adapter.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="BHoM_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Data_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Data_oM.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Dimensional_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Geometry_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_oM.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Geometry_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Physical_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Physical_oM.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Structure_AdapterModules">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Structure_AdapterModules.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Structure_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Structure_Engine.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Structure_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Structure_oM.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="CSiAPIv1">
+			<HintPath>..\libs\CSiAPIv1.dll</HintPath>
+			<Private>True</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+	</ItemGroup>
+
+</Project>

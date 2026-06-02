@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
@@ -8,6 +7,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETABS_Engine", "ETABS_Engine\ETABS_Engine.csproj", "{9552D636-D903-4492-944E-0CD392D7BFE3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETABS_oM", "ETABS_oM\ETABS_oM.csproj", "{0F1B6828-633E-420D-BB61-00C16056BA8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddSupportForNonLinearSpring_Tests", "AddSupportForNonLinearSpring_Tests\AddSupportForNonLinearSpring_Tests.csproj", "{586024DD-310E-4633-BFD6-213E7DB7160C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +126,38 @@ Global
 		{0F1B6828-633E-420D-BB61-00C16056BA8D}.Release18|Any CPU.Build.0 = Release|Any CPU
 		{0F1B6828-633E-420D-BB61-00C16056BA8D}.Release18|x64.ActiveCfg = Release|Any CPU
 		{0F1B6828-633E-420D-BB61-00C16056BA8D}.Release18|x64.Build.0 = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug|x64.Build.0 = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug16|Any CPU.ActiveCfg = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug16|Any CPU.Build.0 = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug16|x64.ActiveCfg = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug16|x64.Build.0 = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug17|Any CPU.ActiveCfg = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug17|Any CPU.Build.0 = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug17|x64.ActiveCfg = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug17|x64.Build.0 = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug18|Any CPU.ActiveCfg = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug18|Any CPU.Build.0 = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug18|x64.ActiveCfg = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Debug18|x64.Build.0 = Debug|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release|x64.ActiveCfg = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release|x64.Build.0 = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release16|Any CPU.ActiveCfg = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release16|Any CPU.Build.0 = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release16|x64.ActiveCfg = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release16|x64.Build.0 = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release17|Any CPU.ActiveCfg = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release17|Any CPU.Build.0 = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release17|x64.ActiveCfg = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release17|x64.Build.0 = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release18|Any CPU.ActiveCfg = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release18|Any CPU.Build.0 = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release18|x64.ActiveCfg = Release|Any CPU
+		{586024DD-310E-4633-BFD6-213E7DB7160C}.Release18|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

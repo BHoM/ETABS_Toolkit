@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
@@ -20,57 +20,48 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Structure.MaterialFragments;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.SectionProperties;
-using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.Constraints;
-using BH.oM.Structure.Loads;
-using System;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.ETABS;
-using System.Collections.Generic;
-using BH.oM.Spatial.SettingOut;
-using BH.oM.Structure.Springs;
 
-namespace BH.Adapter.ETABS
+using BH.oM.Adapters.ETABS;
+using BH.oM.Adapters.ETABS.Fragments;
+using BH.oM.Base.Attributes;
+using BH.oM.Structure.Springs;
+using System.ComponentModel;
+
+namespace BH.Engine.Adapters.ETABS
 {
-#if Debug16 || Release16
-    public partial class ETABS2016Adapter : BHoMAdapter
-#elif Debug17 || Release17
-   public partial class ETABS17Adapter : BHoMAdapter
-#else
-    public partial class ETABSAdapter : BHoMAdapter
-#endif
+    public static partial class Modify
     {
         /***************************************************/
-        /**** Protected methods                         ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        protected void SetupDependencies()
+        [Description("Sets ETABS-specific nonlinear spring properties on a NonLinearSpring. Defaults to MultiLinearElastic and Kinematic if not called.")]
+        [Input("nonLinearSpring", "The NonLinearSpring to set properties on.")]
+        [Input("springType", "Elastic or plastic multilinear behaviour. Defaults to MultiLinearElastic.")]
+        [Input("hysteresisType", "Hysteresis model for plastic springs. Defaults to Kinematic.")]
+        [Output("nonLinearSpring", "The modified NonLinearSpring.")]
+        public static NonLinearSpring SetNonLinearSpringProperties(
+            this NonLinearSpring nonLinearSpring,
+            NonLinearSpringType springType = NonLinearSpringType.MultiLinearElastic,
+            NonLinearSpringHysteresisType hysteresisType = NonLinearSpringHysteresisType.Kinematic)
         {
-            DependencyTypes = new Dictionary<Type, List<Type>>
+            if (nonLinearSpring == null)
             {
-                {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node)} },
-                {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
-                {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } },
-                {typeof(Opening), new List<Type> {typeof(Edge) } },
-                {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
-                {typeof(RigidLink), new List<Type> { typeof(Node), typeof(LinkConstraint)} },
-                {typeof(ILoad), new List<Type> {typeof(Loadcase) } },
-                {typeof(IElementLoad<Bar>), new List<Type>{ typeof(Bar)} },
-                {typeof(IElementLoad<Node>), new List<Type>{ typeof(Node)} },
-            };
+                BH.Engine.Base.Compute.RecordError(
+                    "Cannot set nonlinear spring properties on a null ForceDeformationData.");
+                return null;
+            }
+
+            nonLinearSpring.Fragments.AddOrReplace(new NonLinearSpringProperties
+            {
+                SpringType = springType,
+                SpringHysteresisType = hysteresisType
+            });
+
+            return nonLinearSpring;
         }
 
         /***************************************************/
     }
-
 }
-
-
-
-
-
-
 
