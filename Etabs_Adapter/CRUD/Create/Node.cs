@@ -189,7 +189,10 @@ namespace BH.Adapter.ETABS
                 }
 
 
-                int hysteresisInt = springType == NonLinearSpringType.MultiLinearPlastic ? (int)hysteresisType : 0;
+                // MyType for SetMultiLinearPoints must be 1, 2 or 3 (1 = Kinematic). It only affects
+                // MultiLinearPlastic, but passing 0 (out of range) causes the call to fail for the
+                // MultiLinearElastic case, leaving the link without a force-deformation curve.
+                int hysteresisInt = springType == NonLinearSpringType.MultiLinearPlastic ? (int)hysteresisType : 1;
 
                 // Set translational curve on U1 (dof index 1)
                 if (hasTranslation)
