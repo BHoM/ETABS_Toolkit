@@ -34,6 +34,7 @@ using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Base.Objects;
 using BH.Engine.Structure;
+using BH.oM.Structure.Springs;
 
 namespace BH.Adapter.ETABS
 {
@@ -59,6 +60,7 @@ namespace BH.Adapter.ETABS
                 {typeof(ISectionProperty), new NameOrDescriptionComparer() },
                 {typeof(IMaterialFragment), new NameOrDescriptionComparer() },
                 {typeof(ISurfaceProperty), new NameOrDescriptionComparer() },
+                {typeof(ISpringProperty), new NameOrDescriptionComparer() },
                 {typeof(BH.oM.Adapters.ETABS.Elements.Diaphragm), new BHoMObjectNameComparer() },
             };
         }

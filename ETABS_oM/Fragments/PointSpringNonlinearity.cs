@@ -5,6 +5,7 @@
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
  *
+ *
  * The BHoM is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3.0 of the License, or
@@ -19,17 +20,18 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
  */
 
+using BH.oM.Base;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.ETABS
+namespace BH.oM.Adapters.ETABS.Fragments
 {
-    [Description("Defines whether a nonlinear spring DOF behaves as multilinear elastic or multilinear plastic.")]
-    public enum NonLinearSpringType
+    [Description("ETABS-specific nonlinear behaviour settings for a point spring. Attach to a PointSpringProperty to control multilinear type and hysteresis model.")]
+    public class PointSpringNonlinearity : IFragment
     {
-        [Description("No permanent deformation after unloading.")]
-        MultiLinearElastic = 0,
+        [Description("Defines whether the point spring is multilinear elastic or plastic.")]
+        public virtual PointSpringNonlinearType SpringType { get; set; } = PointSpringNonlinearType.MultiLinearElastic;
 
-        [Description("Hysteretic behaviour — dissipates energy under cyclic loading.")]
-        MultiLinearPlastic = 1
+        [Description("Hysteresis model for plastic point springs. Only used when SpringType is MultiLinearPlastic.")]
+        public virtual HysteresisType SpringHysteresisType { get; set; } = HysteresisType.Kinematic;
     }
 }

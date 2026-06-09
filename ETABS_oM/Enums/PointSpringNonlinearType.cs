@@ -5,7 +5,6 @@
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
  *
- *
  * The BHoM is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3.0 of the License, or
@@ -24,16 +23,13 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.ETABS
 {
-    [Description("Hysteresis type for a MultiLinearPlastic nonlinear spring DOF. Only applicable when NonLinearSpringType is MultiLinearPlastic.")]
-    public enum NonLinearSpringHysteresisType
+    [Description("Defines whether a nonlinear point spring DOF behaves as multilinear elastic or multilinear plastic.")]
+    public enum PointSpringNonlinearType
     {
-        [Description("Kinematic hysteresis model.")]
-        Kinematic = 1,
+        [Description("No permanent deformation after unloading.")]
+        MultiLinearElastic = 0,
 
-        [Description("Takeda hysteresis model for reinforced concrete.")]
-        Takeda = 2,
-
-        [Description("Pivot hysteresis model.")]
-        Pivot = 3
+        [Description("Hysteretic behaviour — dissipates energy under cyclic loading.")]
+        MultiLinearPlastic = 1
     }
 }

@@ -32,6 +32,7 @@ using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.SurfaceProperties;
+using BH.oM.Structure.Springs;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.MaterialFragments;
@@ -74,6 +75,8 @@ namespace BH.Adapter.ETABS
                 return ReadOpening(listIds);
             else if (type == typeof(ISurfaceProperty) || type.GetInterfaces().Contains(typeof(ISurfaceProperty)))
                 return ReadSurfaceProperty(listIds);
+            else if (type == typeof(ISpringProperty) || type.GetInterfaces().Contains(typeof(ISpringProperty)))
+                return ReadSpringProperty(listIds);
             else if (type == typeof(LoadCombination))
                 return ReadLoadCombination(listIds);
             else if (type == typeof(Loadcase))

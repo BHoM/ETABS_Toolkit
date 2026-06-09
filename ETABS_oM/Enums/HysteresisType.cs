@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
@@ -20,18 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
  */
 
-using BH.oM.Base;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.ETABS.Fragments
+namespace BH.oM.Adapters.ETABS
 {
-    [Description("ETABS-specific nonlinear spring behaviour settings. Attach to a NonLinearSpring to control multilinear type and hysteresis model.")]
-    public class NonLinearSpringProperties : IFragment
+    [Description("ETABS hysteresis model used by multilinear-plastic nonlinear behaviour (e.g. plastic links and point springs).")]
+    public enum HysteresisType
     {
-        [Description("Defines whether the spring is multilinear elastic or plastic.")]
-        public virtual NonLinearSpringType SpringType { get; set; } = NonLinearSpringType.MultiLinearElastic;
+        [Description("Kinematic hysteresis model.")]
+        Kinematic = 1,
 
-        [Description("Hysteresis model for plastic springs. Only used when SpringType is MultiLinearPlastic.")]
-        public virtual NonLinearSpringHysteresisType SpringHysteresisType { get; set; } = NonLinearSpringHysteresisType.Kinematic;
+        [Description("Takeda hysteresis model for reinforced concrete.")]
+        Takeda = 2,
+
+        [Description("Pivot hysteresis model.")]
+        Pivot = 3
     }
 }

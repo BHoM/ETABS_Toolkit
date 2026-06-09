@@ -44,8 +44,10 @@ namespace AddSupportForNonLinearSpring_Tests
         [Test, Order(1)]
         public void PushNonLinearSpringToETABS()
         {
-            NonLinearSpring nonLinearSpring = new NonLinearSpring
+            PointSpringProperty pointSpring = new PointSpringProperty
             {
+                Name = "TestPointSpring",
+
                 TranslationalStiffnessX = 5000,
                 TranslationalStiffnessY = 5000,
                 TranslationalStiffnessZ = 5000,
@@ -55,11 +57,12 @@ namespace AddSupportForNonLinearSpring_Tests
 
                 ForceDeformationCurves = new ForceDeformationCurves
                 {
+
                     TranslationX = new List<ForceDeformationPoint>
                     {
-                        new ForceDeformationPoint { Deformation = -0.10, Force = -5000 },
+                        new ForceDeformationPoint { Deformation = -0.10, Force = -2000 },
                         new ForceDeformationPoint { Deformation =  0.00, Force =     0 },
-                        new ForceDeformationPoint { Deformation =  0.10, Force =  5000 }
+                        new ForceDeformationPoint { Deformation =  0.10, Force =  2000 }
                     },
 
 
@@ -86,12 +89,12 @@ namespace AddSupportForNonLinearSpring_Tests
                 }
             };
 
-            nonLinearSpring = nonLinearSpring.SetNonLinearSpringProperties(NonLinearSpringType.MultiLinearElastic, NonLinearSpringHysteresisType.Kinematic);
+            pointSpring = pointSpring.SetPointSpringNonlinearity(PointSpringNonlinearType.MultiLinearElastic, HysteresisType.Kinematic);
 
             Node node = new Node
             {
                 Position = new Point { X = 0, Y = 0, Z = 3 },
-                NonLinearSpring = nonLinearSpring
+                SpringProperty = pointSpring
             };
 
             List<object> pushed = m_Adapter.Push(
@@ -113,11 +116,11 @@ namespace AddSupportForNonLinearSpring_Tests
             List<object> pulled = m_Adapter.Pull(request: filterRequest).ToList();
             Node nodePulled = (Node)pulled[0];
 
-            NonLinearSpring spring = nodePulled.NonLinearSpring;
+            PointSpringProperty spring = nodePulled.SpringProperty;
 
             if (spring == null)
             {
-                TestContext.WriteLine("No NonLinearSpring on this node.");
+                TestContext.WriteLine("No PointSpringProperty on this node.");
                 return;
             }
 

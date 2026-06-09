@@ -74,6 +74,11 @@ namespace BH.Adapter.ETABS
             {
                 string name = GetAdapterId<string>(bhNode);                                    // θ(1)
 
+                // Re-apply node assignments (restraint, support spring, and spring property). These are
+                // otherwise only applied at create, so adding or changing them on an existing node would
+                // never reach ETABS through the update path.
+                SetObject(bhNode, name);
+
                 // Update position
                 double x = 0;                                                                  // θ(1)
                 double y = 0;                                                                  // θ(1)
