@@ -80,6 +80,8 @@ namespace BH.Adapter.ETABS
             {
                 string name = GetAdapterId<string>(bhNode);                                    // θ(1)
                 success = UpdatePosition(name, comparer, bhNode);                              // θ(1)
+                // Update support before the name change below, as UpdateUniqueName renames the point.
+                success = UpdateSupport(name, bhNode);                                         // θ(1)
                 success = UpdateUniqueName(bhNode);                                            // θ(1)
             }
 
@@ -160,6 +162,64 @@ namespace BH.Adapter.ETABS
 
                 return true;
             }
+
+        /***************************************************/
+
+        // Updates the restraint and spring assignments on an existing point. Only the assignments
+        // are touched here; the spring is referenced by name and its stiffness is never modified -
+        // defining or modifying spring properties is handled by the spring property feature.
+        private bool UpdateSupport(string name, Node bhNode)
+        {
+            // Default support matches ETABS' default for a new point: Ux, Uy, Uz fixed, rotations free,
+            // and no spring stiffness. A null Support keeps these defaults (and the spring is cleared below).
+            bool[] restraint = new bool[6] { true, true, true, false, false, false };
+            double[] spring = new double[6];
+
+            if (bhNode.Support != null)
+            {
+                bhNode.Support.ToCSI(ref restraint, ref spring);
+
+            }
+
+            // Restraints always reflect the support (SetRestraint overwrites, setting and releasing DOFs).
+            if (m_model.PointObj.SetRestraint(name, ref restraint) != 0)
+            {
+                CreatePropertyWarning("Node Restraint", "Node", name);
+            }
+
+            // The spring is assigned by property name; its stiffness is never modified here.
+            // A null Support (no support) clears any spring assignment on the point.
+            string propName = bhNode.Support == null ? null : bhNode.Support.Name;
+
+            if (String.IsNullOrEmpty(propName))
+            {
+                if (m_model.PointObj.DeleteSpring(name) == 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    CreatePropertyWarning("Node Spring", "Node", name);
+                    return false;
+                }
+            }
+
+            // Otherwise only assign a property that already exists; if not found, leave the current assignment and warn.
+            int numberNames = 0;
+            string[] propNames = null;
+            bool propExists = m_model.PropPointSpring.GetNameList(ref numberNames, ref propNames) == 0 && propNames != null && propNames.Contains(propName);
+
+            if (!propExists)
+            {
+                Engine.Base.Compute.RecordWarning($"Spring property '{propName}' has not been created in ETABS yet; the spring assignment on node '{name}' was left unchanged.");
+                return true;
+            }
+
+            if (m_model.PointObj.SetSpringAssignment(name, propName) != 0)
+                CreatePropertyWarning("Node Spring", "Node", name);
+
+            return true;
+        }
 
         /***************************************************/
 
