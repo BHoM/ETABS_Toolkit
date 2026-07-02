@@ -25,10 +25,12 @@ using BH.Engine.Adapters.ETABS;
 using BH.Engine.Geometry;
 using BH.Engine.Structure;
 using BH.oM.Adapters.ETABS;
+using BH.oM.Analytical.Elements;
 using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Adapter.ETABS
@@ -53,23 +55,29 @@ namespace BH.Adapter.ETABS
             oM.Geometry.Point position = bhNode.Position;
             if (m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name) == 0)
             {
-                etabsid.Id = name;
+
+                // Assign the Unique Name to the ETABS Element
+                string newName = SetUniqueName(bhNode, name);
+
+                if (newName == null) return false;
+
+                etabsid.Id = newName;
 
                 //Label and story
                 string label = "";
                 string story = "";
-                if (m_model.PointObj.GetLabelFromName(name, ref label, ref story) == 0)
+                if (m_model.PointObj.GetLabelFromName(newName, ref label, ref story) == 0)
                 {
                     etabsid.Label = label;
                     etabsid.Story = story;
                 }
 
                 string guid = null;
-                if (m_model.PointObj.GetGUID(name, ref guid) == 0)
+                if (m_model.PointObj.GetGUID(newName, ref guid) == 0)
                     etabsid.PersistentId = guid;
 
                 bhNode.SetAdapterId(etabsid);
-                SetObject(bhNode, name);
+                SetObject(bhNode, newName);
                 SetGroup(bhNode);
             }
 

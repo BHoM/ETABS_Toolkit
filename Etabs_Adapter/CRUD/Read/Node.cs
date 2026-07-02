@@ -20,17 +20,18 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using BH.Engine.Adapter;
 using BH.oM.Adapters.ETABS;
+using BH.oM.Base;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.Elements;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Base;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.Constraints;
 
 
 namespace BH.Adapter.ETABS
@@ -72,7 +73,9 @@ namespace BH.Adapter.ETABS
 
                 Constraint6DOF support = GetConstraint6DOF(restraint, spring);
 
-                Node bhNode = new Node { Position = new oM.Geometry.Point() { X = x, Y = y, Z = z }, Support = support };
+                string bhomName = GetBhomNameFromEtabsId(id);
+
+                Node bhNode = new Node { Name = bhomName, Position = new oM.Geometry.Point() { X = x, Y = y, Z = z }, Support = support };
 
                 //Label and story
                 string label = "";
@@ -128,7 +131,6 @@ namespace BH.Adapter.ETABS
             return bhConstraint;
         }
 
-        /***************************************************/
     }
 }
 

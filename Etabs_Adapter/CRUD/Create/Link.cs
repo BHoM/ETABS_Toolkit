@@ -24,11 +24,13 @@ using BH.Engine.Adapter;
 using BH.Engine.Adapters.ETABS;
 using BH.Engine.Structure;
 using BH.oM.Adapters.ETABS;
+using BH.oM.Analytical.Elements;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Elements;
-using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Xml.Linq;
 
 
 namespace BH.Adapter.ETABS
@@ -68,7 +70,12 @@ namespace BH.Adapter.ETABS
                 linkIds.Add(name);
             }
 
-            multiId.Id = linkIds;
+            // Assign the Unique Name to the ETABS Element
+            List<string> newLinkNames = SetUniqueName(bhLink, linkIds);
+
+            if (newLinkNames == null) return false;
+
+            multiId.Id = newLinkNames;
             bhLink.SetAdapterId(multiId);
 
             SetGroup(bhLink);
@@ -110,6 +117,45 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
 
+        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the Link Name to get the Unique Name to assign to the ETABS Element.")]
+        private List<string> SetUniqueName(RigidLink bhLink, List<string> names)
+        {
+
+            int ret01, ret02;
+            string guid = null;
+            string tempLinkName = "";
+            List<string> newLinkNames = new List<string>();
+
+            foreach (string name in names) {
+
+                /* 1. GET THE ETABS ELEMENT GUID */
+                tempLinkName = "";
+                ret01 = m_model.LinkObj.GetGUID(name, ref guid);
+
+                /* 2. CREATE THE NEW UNIQUE NAME */
+                if (bhLink.Name == "")
+                {
+                    tempLinkName = guid.Substring(guid.Length - 7);
+                }
+                else
+                {
+                    tempLinkName = guid.Substring(guid.Length - 7) + "::" + bhLink.Name;
+                }
+
+                /* 3. ASSIGN THE NEW UNIQUE NAME TO THE ETABS ELEMENT */
+                ret02 = m_model.LinkObj.ChangeName(name, tempLinkName);
+
+                /* 4. ADD THE NEW NAME TO THE LIST */
+                newLinkNames.Add(tempLinkName);
+
+                if (!(ret01 == 0 && ret02 == 0)) return null;
+
+            }
+
+            return newLinkNames;
+        }
+
+        /***************************************************/
     }
 }
 

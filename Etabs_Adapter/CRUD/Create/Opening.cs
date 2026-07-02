@@ -28,11 +28,13 @@ using BH.Engine.Structure;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
 using BH.oM.Analytical.Elements;
+using BH.oM.Data.Collections;
 using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
-using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Xml.Linq;
 
 
 namespace BH.Adapter.ETABS
@@ -85,26 +87,32 @@ namespace BH.Adapter.ETABS
 
             string openingName = GetAdapterId<string>(bhOpening);
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "Default");
+
+            // Assign the Unique Name to the ETABS Element
+            string newName = SetUniqueName(bhOpening, openingName);
+
+            if (newName == null) return false;
+
             ETABSId etabsid = new ETABSId();
-            etabsid.Id = openingName;
+            etabsid.Id = newName;
 
             //Label and story
             string label = "";
             string story = "";
             string guid = null;
 
-            if (m_model.AreaObj.GetLabelFromName(openingName, ref label, ref story) == 0)
+            if (m_model.AreaObj.GetLabelFromName(newName, ref label, ref story) == 0)
             {
                 etabsid.Label = label;
                 etabsid.Story = story;
             }
 
-            if (m_model.AreaObj.GetGUID(openingName, ref guid) == 0)
+            if (m_model.AreaObj.GetGUID(newName, ref guid) == 0)
                 etabsid.PersistentId = guid;
 
             bhOpening.SetAdapterId(etabsid);
 
-            m_model.AreaObj.SetOpening(openingName, true);
+            m_model.AreaObj.SetOpening(newName, true);
 
             //Set Groups Assignment
             SetGroup(bhOpening);
