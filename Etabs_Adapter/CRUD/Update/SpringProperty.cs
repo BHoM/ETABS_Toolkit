@@ -51,9 +51,26 @@ namespace BH.Adapter.ETABS
 
             foreach (PointSpringProperty spring in springProperties)
             {
-                if (!nameArr.Contains(spring.DescriptionOrName()))
+                string newName = spring.DescriptionOrName();
+
+                // Handle a rename: the property was read/created under one ETABS name (its stored adapter id)
+                // and the object's name has since changed. Rename it (and its links) in place so the update
+                // targets the right property and existing node assignments follow it - ETABS updates all
+                // references on ChangeName. Skip if the new name is already taken by a different property.
+                string oldName = spring.AdapterId<string>(AdapterIdFragmentType, false);
+                if (!string.IsNullOrEmpty(oldName) && oldName != newName
+                    && nameArr.Contains(oldName) && !nameArr.Contains(newName))
                 {
-                    Engine.Base.Compute.RecordWarning($"Failed to update PointSpringProperty: { spring.DescriptionOrName() }, no point spring property with that name found in ETABS.");
+                    RenamePointSpringProperty(oldName, newName);
+                    SetAdapterId(spring, newName);
+
+                    // Refresh the name list so the existence check below sees the renamed property.
+                    m_model.PropPointSpring.GetNameList(ref nameCount, ref nameArr);
+                }
+
+                if (!nameArr.Contains(newName))
+                {
+                    Engine.Base.Compute.RecordWarning($"Failed to update PointSpringProperty: { newName }, no point spring property with that name found in ETABS.");
                     continue;
                 }
 
@@ -62,6 +79,36 @@ namespace BH.Adapter.ETABS
             }
 
             return success;
+        }
+
+        /***************************************************/
+
+        // Renames an existing point spring property and its per-axis nonlinear links from oldName to newName.
+        // Link names follow the "<propName>_<axis>" convention used on creation, so they are renamed with the
+        // same prefix; renaming them first keeps the property referencing them and avoids orphaned links.
+        private void RenamePointSpringProperty(string oldName, string newName)
+        {
+            int nLinks = 0;
+            string[] linkNames = null;
+            int[] axialDirs = null;
+            double[] angles = null;
+
+            if (m_model.PropPointSpring.GetLinks(oldName, ref nLinks, ref linkNames, ref axialDirs, ref angles) == 0
+                && linkNames != null)
+            {
+                foreach (string linkName in linkNames)
+                {
+                    if (string.IsNullOrEmpty(linkName) || !linkName.StartsWith(oldName + "_"))
+                        continue;
+
+                    string newLinkName = newName + linkName.Substring(oldName.Length);
+                    if (m_model.PropLink.ChangeName(linkName, newLinkName) != 0)
+                        Engine.Base.Compute.RecordWarning($"Failed to rename spring link '{linkName}' to '{newLinkName}'.");
+                }
+            }
+
+            if (m_model.PropPointSpring.ChangeName(oldName, newName) != 0)
+                Engine.Base.Compute.RecordWarning($"Failed to rename point spring property '{oldName}' to '{newName}'.");
         }
 
         /***************************************************/

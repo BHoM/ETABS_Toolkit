@@ -383,5 +383,38 @@ namespace AddSupportForNonLinearSpring_Tests
             Assert.That(pulledNode.Support.Name, Is.EqualTo("NodeSupportGap2"),
                 "Node support was not re-pointed to the new spring property.");
         }
+
+        [Test, Order(30)]
+        public void RenameSpringPropertyOnUpdate()
+        {
+            PointSpringProperty spring = new PointSpringProperty
+            {
+                Name = "RenameSpringA",
+                TranslationalStiffnessX = 5000,
+                NonlinearBehaviour = new GapBehaviour
+                {
+                    InitialStiffness = new NonlinearSpringValues { TranslationX = 750 },
+                    InitialOpening = new NonlinearSpringValues { TranslationX = 0.01 }
+                }
+            };
+
+            m_Adapter.Push(new List<ISpringProperty> { spring }, pushType: PushType.CreateOnly);
+
+            // Pull it back (so it carries its adapter id = "RenameSpringA"), rename it, and push an update.
+            PointSpringProperty pulled = PullSpringByName("RenameSpringA");
+            Assert.That(pulled, Is.Not.Null, "Precondition: the spring should have been created.");
+
+            pulled.Name = "RenameSpringB";
+            m_Adapter.Push(new List<ISpringProperty> { pulled }, pushType: PushType.UpdateOnly);
+
+            // The property is now under the new name, still a valid gap (its links were renamed with it)...
+            PointSpringProperty renamed = PullSpringByName("RenameSpringB");
+            Assert.That(renamed, Is.Not.Null, "Spring was not renamed to the new name.");
+            Assert.That(renamed.NonlinearBehaviour, Is.TypeOf<GapBehaviour>(),
+                "Nonlinear behaviour was lost through the rename (links not renamed with the property?).");
+
+            // ...and the old name no longer exists.
+            Assert.That(PullSpringByName("RenameSpringA"), Is.Null, "Old spring name still exists after rename.");
+        }
     }
 }
