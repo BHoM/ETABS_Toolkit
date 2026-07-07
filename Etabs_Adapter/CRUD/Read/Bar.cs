@@ -66,7 +66,10 @@ namespace BH.Adapter.ETABS
 
                 try
                 {
-                    Bar bhBar = new Bar();
+                    string bhomName = GetBhomNameFromEtabsId(id);
+
+                    Bar bhBar = new Bar() { Name = bhomName };
+
                     string startId = "";
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
@@ -22,18 +22,15 @@
 
 using BH.Engine.Adapter;
 using BH.oM.Adapters.ETABS;
-using BH.oM.Adapters.ETABS.Fragments;
-using BH.oM.Analytical.Elements;
 using BH.oM.Base;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Springs;
-using CSiAPIv1;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -75,10 +72,38 @@ namespace BH.Adapter.ETABS
                 m_model.PointObj.GetRestraint(id, ref restraint);
                 m_model.PointObj.GetSpring(id, ref spring);
 
-                Constraint6DOF support = GetConstraint6DOF(restraint, spring);
+                // Resolve the assigned point spring property. A blank/"None" result means no spring is assigned.
+                string springProp = null;
+                bool hasSpring = m_model.PointObj.GetSpringAssignment(id, ref springProp) == 0
+                                 && !string.IsNullOrEmpty(springProp) && springProp != "None";
 
-                Node bhNode = new Node { Position = new oM.Geometry.Point() { X = x, Y = y, Z = z }, Support = support };
+                Constraint6DOF support;
+                if (hasSpring)
+                {
+                    // Reconstruct the full point spring property (incl. any nonlinear behaviour) as the support,
+                    // then overlay the point's restraints - ReadPointSpringProperty does not set the DOFTypes.
+                    PointSpringProperty psp = ReadPointSpringProperty(springProp);
+                    if (psp != null)
+                    {
+                        ApplyRestraint(psp, restraint);
+                        support = psp;
+                    }
+                    else
+                    {
+                        // Property could not be read back; fall back to a plain constraint that still carries the
+                        // assignment name so it round-trips on a pull -> push.
+                        support = GetConstraint6DOF(restraint, spring);
+                        support.Name = springProp;
+                    }
+                }
+                else
+                {
+                    support = GetConstraint6DOF(restraint, spring);
+                }
 
+                string bhomName = GetBhomNameFromEtabsId(id);
+
+                Node bhNode = new Node { Name = bhomName, Position = new oM.Geometry.Point() { X = x, Y = y, Z = z }, Support = support };
 
                 //Label and story
                 string label = "";
@@ -104,15 +129,6 @@ namespace BH.Adapter.ETABS
                 if (m_model.PointObj.GetGUID(id, ref guid) == 0)
                     etabsIdFragment.PersistentId = guid;
 
-                string springPropName = "";
-                if (m_model.PointObj.GetSpringAssignment(id, ref springPropName) == 0
-                    && !string.IsNullOrEmpty(springPropName))
-                {
-                    PointSpringProperty nlSpring = ReadPointSpringProperty(springPropName);
-                    if (nlSpring != null)
-                        bhNode.SpringProperty = nlSpring;
-                }
-
                 bhNode.SetAdapterId(etabsIdFragment);
                 nodeList.Add(bhNode);
             }
@@ -126,12 +142,7 @@ namespace BH.Adapter.ETABS
         public static Constraint6DOF GetConstraint6DOF(bool[] restraint, double[] springs)
         {
             Constraint6DOF bhConstraint = new Constraint6DOF();
-            bhConstraint.TranslationX = restraint[0] == true ? DOFType.Fixed : DOFType.Free;
-            bhConstraint.TranslationY = restraint[1] == true ? DOFType.Fixed : DOFType.Free;
-            bhConstraint.TranslationZ = restraint[2] == true ? DOFType.Fixed : DOFType.Free;
-            bhConstraint.RotationX = restraint[3] == true ? DOFType.Fixed : DOFType.Free;
-            bhConstraint.RotationY = restraint[4] == true ? DOFType.Fixed : DOFType.Free;
-            bhConstraint.RotationZ = restraint[5] == true ? DOFType.Fixed : DOFType.Free;
+            ApplyRestraint(bhConstraint, restraint);
 
             bhConstraint.TranslationalStiffnessX = springs[0];
             bhConstraint.TranslationalStiffnessY = springs[1];
@@ -144,6 +155,19 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+
+        // Sets the six DOFType (Fixed/Free) fields on a Constraint6DOF from an ETABS restraint bool array.
+        // Works for any Constraint6DOF, including a PointSpringProperty support reconstructed on read.
+        public static void ApplyRestraint(Constraint6DOF constraint, bool[] restraint)
+        {
+            constraint.TranslationX = restraint[0] ? DOFType.Fixed : DOFType.Free;
+            constraint.TranslationY = restraint[1] ? DOFType.Fixed : DOFType.Free;
+            constraint.TranslationZ = restraint[2] ? DOFType.Fixed : DOFType.Free;
+            constraint.RotationX = restraint[3] ? DOFType.Fixed : DOFType.Free;
+            constraint.RotationY = restraint[4] ? DOFType.Fixed : DOFType.Free;
+            constraint.RotationZ = restraint[5] ? DOFType.Fixed : DOFType.Free;
+        }
+
     }
 }
 

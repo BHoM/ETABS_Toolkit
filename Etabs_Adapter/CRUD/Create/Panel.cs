@@ -31,6 +31,7 @@ using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 
@@ -89,21 +90,27 @@ namespace BH.Adapter.ETABS
             }
 
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
+
+            // Assign the Unique Name to the ETABS Element
+            string newName = SetUniqueName(bhPanel, name);
+
+            if (newName == null) return false;
+
             ETABSId etabsid = new ETABSId();
-            etabsid.Id = name;
+            etabsid.Id = newName;
 
             //Label and story
             string label = "";
             string story = "";
             string guid = null;
 
-            if (m_model.AreaObj.GetLabelFromName(name, ref label, ref story) == 0)
+            if (m_model.AreaObj.GetLabelFromName(newName, ref label, ref story) == 0)
             {
                 etabsid.Label = label;
                 etabsid.Story = story;
             }
 
-            if (m_model.AreaObj.GetGUID(name, ref guid) == 0)
+            if (m_model.AreaObj.GetGUID(newName, ref guid) == 0)
                 etabsid.PersistentId = guid;
 
             bhPanel.SetAdapterId(etabsid);
@@ -146,7 +153,7 @@ namespace BH.Adapter.ETABS
                         z[j] = boundaryPoints[j].Z;
                     }
 
-                    string openingName = name + "_Opening_" + i;
+                    string openingName = bhPanel.Name + "_Opening_" + i;
                     m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "");//<-- setting panel property to empty string, verify that this is correct
                     m_model.AreaObj.SetOpening(openingName, true);
 
@@ -156,7 +163,7 @@ namespace BH.Adapter.ETABS
 
             //Set local orientations:
             Basis orientation = bhPanel.LocalOrientation();
-            m_model.AreaObj.SetLocalAxes(name, Convert.ToEtabsPanelOrientation(orientation.Z, orientation.Y));
+            m_model.AreaObj.SetLocalAxes(newName, Convert.ToEtabsPanelOrientation(orientation.Z, orientation.Y));
 
             Pier pier = bhPanel.Pier();
             Spandrel spandrel = bhPanel.Spandrel();
@@ -165,16 +172,16 @@ namespace BH.Adapter.ETABS
             if (pier != null)
             {
                 int ret = m_model.PierLabel.SetPier(pier.Name);
-                ret = m_model.AreaObj.SetPier(name, pier.Name);
+                ret = m_model.AreaObj.SetPier(newName, pier.Name);
             }
             if (spandrel != null)
             {
                 int ret = m_model.SpandrelLabel.SetSpandrel(spandrel.Name, false);
-                ret = m_model.AreaObj.SetSpandrel(name, spandrel.Name);
+                ret = m_model.AreaObj.SetSpandrel(newName, spandrel.Name);
             }
             if (diaphragm != null)
             {
-                m_model.AreaObj.SetDiaphragm(name, diaphragm.Name);
+                m_model.AreaObj.SetDiaphragm(newName, diaphragm.Name);
             }
 
             //Set Groups Assignment
@@ -202,6 +209,7 @@ namespace BH.Adapter.ETABS
                 Engine.Base.Compute.RecordWarning("Non-linear edges will be pushed using the control points of the underlying curves. It is recomended that you subsegment all edge curves into linear segements before you push to ETABS. Try using the CollapseToPolyline method. Please check the result of the push in the ETABS model!");
 
         }
+
 
         /***************************************************/
 

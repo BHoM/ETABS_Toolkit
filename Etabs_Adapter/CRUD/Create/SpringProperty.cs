@@ -25,9 +25,12 @@ using BH.Engine.Base;
 using BH.Engine.Structure;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Fragments;
+using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Springs;
+using BH.oM.Structure.Springs.NonLinearBehaviour;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Schema;
 
 
 namespace BH.Adapter.ETABS
@@ -90,53 +93,68 @@ namespace BH.Adapter.ETABS
             // same name via GetAdapterId, rather than re-deriving it independently.
             SetAdapterId(spring, propName);
 
-            // Read ETABS-specific settings from fragment.
-            PointSpringNonlinearity settings = spring.FindFragment<PointSpringNonlinearity>();
-            PointSpringNonlinearType springType = settings?.SpringType ?? PointSpringNonlinearType.MultiLinearElastic;
-            HysteresisType hysteresisType = settings?.SpringHysteresisType ?? HysteresisType.Kinematic;
-
-            // Convert stiffness from SI (N/m, N·m/rad) to ETABS units (kN/m, kN·m/rad).
-            double[] k = new double[]
+            // Linear point spring: all effective stiffness lives on the property. ETABS present units are set
+            // to N, m (see ETABSAdapter), so the SI stiffnesses are passed through unconverted.
+            if (spring.NonlinearBehaviour == null)
             {
-                spring.TranslationalStiffnessX / 1000.0,
-                spring.TranslationalStiffnessY / 1000.0,
-                spring.TranslationalStiffnessZ / 1000.0,
-                spring.RotationalStiffnessX    / 1000.0,
-                spring.RotationalStiffnessY    / 1000.0,
-                spring.RotationalStiffnessZ    / 1000.0,
-            };
+                double[] kLinear =
+                {
+                    spring.TranslationalStiffnessX,
+                    spring.TranslationalStiffnessY,
+                    spring.TranslationalStiffnessZ,
+                    spring.RotationalStiffnessX,
+                    spring.RotationalStiffnessY,
+                    spring.RotationalStiffnessZ,
+                };
 
-            // Create the named, link-based point spring property (SpringOption 1).
-            if (m_model.PropPointSpring.SetPointSpringProp(propName, 1, ref k) != 0)
-                CreatePropertyWarning("NonLinear Point Spring", "PointSpringProperty", propName);
+                if (m_model.PropPointSpring.SetPointSpringProp(propName, 1, ref kLinear) != 0)
+                    CreatePropertyWarning("Point Spring", "PointSpringProperty", propName);
 
-            // Group by axis direction — one link per axis, handling both translation and rotation.
-            // LinkAxialDir 1=+X, 2=+Y, 3=+Z. U1 = translation, R1 = rotation about same axis.
-            var axisMap = new (List<ForceDeformationPoint> Translation, List<ForceDeformationPoint> Rotation, string Suffix, int AxialDir)[]
-            {
-                (spring.ForceDeformationCurves.TranslationX, spring.ForceDeformationCurves.RotationX, "_X", 1),
-                (spring.ForceDeformationCurves.TranslationY, spring.ForceDeformationCurves.RotationY, "_Y", 2),
-                (spring.ForceDeformationCurves.TranslationZ, spring.ForceDeformationCurves.RotationZ, "_Z", 3),
-            };
+                return true;
+            }
 
+            // Nonlinear behaviour is realised as one single-joint link per axis (X, Y, Z), each carrying the
+            // translational (U1) and rotational (R1) behaviour for that axis. LinkAxialDir 1=+X, 2=+Y, 3=+Z.
+            // Track which of the 6 DOFs a link ends up carrying, so the property stiffness is not duplicated
+            // on those DOFs (the link holds their Ke); DOFs no link carries keep their Ke on the property.
             List<string> linkNames = new List<string>();
             List<int> axialDirs = new List<int>();
             List<double> linkAngles = new List<double>();
+            bool[] linkCoversDof = new bool[6];
 
-            foreach (var (translation, rotation, suffix, axialDir) in axisMap)
+            for (int axis = 0; axis < 3; axis++)
             {
-                string linkName = propName + suffix;
+                string linkName = propName + "_" + "XYZ"[axis];
 
-                // Layer 1: create the link property carrying the force-deformation behaviour for this axis.
-                if (!CreateSpringLinkProperty(linkName, translation, rotation, springType, hysteresisType))
+                // Layer 1: create the link property for this axis, dispatched by behaviour type.
+                (bool coversTranslation, bool coversRotation) = CreateBehaviourLink(linkName, spring, axis);
+                if (!coversTranslation && !coversRotation)
                     continue;
 
                 linkNames.Add(linkName);
-                axialDirs.Add(axialDir);
+                axialDirs.Add(axis + 1);
                 linkAngles.Add(0.0);
+
+                if (coversTranslation) linkCoversDof[axis] = true;      // U1..U3 -> indices 0,1,2
+                if (coversRotation) linkCoversDof[axis + 3] = true;     // R1..R3 -> indices 3,4,5
             }
 
-            // Wire the created links into the point spring property.
+            // Property carries Ke only for DOFs no link took over (keeps linear-only DOFs); DOFs carried by a
+            // link are zeroed here to avoid duplicating their stiffness.
+            double[] k =
+            {
+                linkCoversDof[0] ? 0.0 : spring.TranslationalStiffnessX,
+                linkCoversDof[1] ? 0.0 : spring.TranslationalStiffnessY,
+                linkCoversDof[2] ? 0.0 : spring.TranslationalStiffnessZ,
+                linkCoversDof[3] ? 0.0 : spring.RotationalStiffnessX,
+                linkCoversDof[4] ? 0.0 : spring.RotationalStiffnessY,
+                linkCoversDof[5] ? 0.0 : spring.RotationalStiffnessZ,
+            };
+
+            if (m_model.PropPointSpring.SetPointSpringProp(propName, 1, ref k) != 0)
+                CreatePropertyWarning("Point Spring", "PointSpringProperty", propName);
+
+            // Wire the created links into the point spring property (the property must exist first).
             if (linkNames.Count > 0)
             {
                 string[] linkNamesArr = linkNames.ToArray();
@@ -151,68 +169,281 @@ namespace BH.Adapter.ETABS
         }
 
         /***************************************************/
+        /***    Behaviour dispatch                       ***/
+        /***************************************************/
+
+        // Creates the link property for a single axis (0=X, 1=Y, 2=Z), dispatched to the matching PropLink
+        // type. Returns which DOFs (U1 translation, R1 rotation) the created link carries, so the caller can
+        // avoid duplicating their stiffness on the point spring property. (false, false) => nothing created.
+        private (bool Translation, bool Rotation) CreateBehaviourLink(string linkName, PointSpringProperty spring, int axis)
+        {
+            INonLinearBehaviour behaviour = spring.NonlinearBehaviour;
+
+            if (behaviour is MultiLinearElasticBehaviour || behaviour is MultiLinearPlasticBehaviour)
+                return CreateMultiLinearSpringProperty(linkName, spring, axis);
+
+            if (behaviour is GapBehaviour || behaviour is HookBehaviour)
+                return CreateGapOrHookLinkProperty(linkName, spring, axis);
+
+            if (behaviour is DamperBehaviour)
+                return CreateDamperLinkProperty(linkName, spring, axis);
+
+            // No PropLink mapping for this behaviour type. Warn once (first axis only).
+            if (axis == 0)
+                Engine.Base.Compute.RecordWarning($"Nonlinear spring behaviour '{behaviour.GetType().Name}' is not yet supported by the ETABS adapter and was skipped.");
+
+            return (false, false);
+        }
+
+        /***************************************************/
+
+        // Per-axis accessors for the two per-DOF representations. axis: 0=X, 1=Y, 2=Z.
+        private static (List<ForceDeformationPoint> Translation, List<ForceDeformationPoint> Rotation) CurvesForAxis(ForceDeformationCurves c, int axis)
+        {
+            switch (axis)
+            {
+                case 0: return (c.TranslationX, c.RotationX);
+                case 1: return (c.TranslationY, c.RotationY);
+                default: return (c.TranslationZ, c.RotationZ);
+            }
+        }
+
+        private static (double Translation, double Rotation) ValuesForAxis(NonlinearSpringValues v, int axis)
+        {
+            switch (axis)
+            {
+                case 0: return (v.TranslationX, v.RotationX);
+                case 1: return (v.TranslationY, v.RotationY);
+                default: return (v.TranslationZ, v.RotationZ);
+            }
+        }
+
+        private static (double Translation, double Rotation) ValuesForAxis(PointSpringProperty p, int axis)
+        {
+            switch (axis)
+            {
+                case 0: return (p.TranslationalStiffnessX, p.RotationalStiffnessX);
+                case 1: return (p.TranslationalStiffnessY, p.RotationalStiffnessY);
+                default: return (p.TranslationalStiffnessZ, p.RotationalStiffnessZ);
+            }
+        }
+
+        /***************************************************/
+
+        // Builds the ETABS link DOF / fixity / nonlinearity flag arrays for one axis (U1 = translation,
+        // R1 = rotation), from the Constraint6DOF restraints and whether the behaviour defines nonlinear
+        // data on each DOF. A fixed DOF is activated and marked fixed (its nonlinear data discarded, with a
+        // warning); a free DOF with nonlinear data is activated as nonlinear; a free DOF with no data stays
+        // inactive. Nonlinearity cannot coexist with a fixed DOF in ETABS.
+        private (bool[] Dof, bool[] Fix, bool[] NonLin) LinkDofFlags(PointSpringProperty spring, int axis, bool translationHasData, bool rotationHasData, string linkName)
+        {
+            bool fixedT, fixedR;
+            switch (axis)
+            {
+                case 0: fixedT = spring.TranslationX == DOFType.Fixed; fixedR = spring.RotationX == DOFType.Fixed; break;
+                case 1: fixedT = spring.TranslationY == DOFType.Fixed; fixedR = spring.RotationY == DOFType.Fixed; break;
+                default: fixedT = spring.TranslationZ == DOFType.Fixed; fixedR = spring.RotationZ == DOFType.Fixed; break;
+            }
+
+            char axisName = "XYZ"[axis];
+
+            if (translationHasData && fixedT)
+            {
+                Engine.Base.Compute.RecordWarning($"The translational DOF along {axisName} is fixed on '{linkName}', so its nonlinear spring behaviour was discarded - nonlinearity cannot exist on a fixed degree of freedom.");
+                translationHasData = false;
+            }
+
+            if (rotationHasData && fixedR)
+            {
+                Engine.Base.Compute.RecordWarning($"The rotational DOF about {axisName} is fixed on '{linkName}', so its nonlinear spring behaviour was discarded - nonlinearity cannot exist on a fixed degree of freedom.");
+                rotationHasData = false;
+            }
+
+            // A DOF is active if it is fixed (rigid) or carries nonlinear behaviour.
+            bool[] dof = { fixedT || translationHasData, false, false, fixedR || rotationHasData, false, false };
+            bool[] fix = { fixedT, false, false, fixedR, false, false };
+            bool[] nonLin = { translationHasData, false, false, rotationHasData, false, false };
+
+            return (dof, fix, nonLin);
+        }
+
+        /***************************************************/
         /***    Layer 1 - Link property                  ***/
         /***************************************************/
 
-        // Creates a single ETABS link property (cPropLink) carrying the force-deformation behaviour
-        // for one axis. U1 (index 0) carries translation, R1 (index 3) carries rotation.
-        // Returns true if a link was created, false if there were no curves to define one (or creation failed).
-        // NOTE: This is the shared "Layer 1" seam. Link.cs's LinkConstraint -> SetLinear path is a
-        //       different link type and is intentionally left untouched; it can be absorbed here later
-        //       once a shared BHoM link-property concept exists.
-        private bool CreateSpringLinkProperty(string linkName, List<ForceDeformationPoint> translation, List<ForceDeformationPoint> rotation, PointSpringNonlinearType springType, HysteresisType hysteresisType)
+        // Creates a single ETABS multilinear (elastic or plastic) link property for one axis, in the same
+        // shape as the gap creator: effective terms (Ke, Ce) come from the PointSpringProperty, and the
+        // nonlinear response comes from the behaviour's force-deformation curves. U1 (index 0) carries
+        // translation, R1 (index 3) carries rotation about the same axis.
+        // Returns which DOFs (U1 translation, R1 rotation) the link carries; (false, false) if none.
+        private (bool Translation, bool Rotation) CreateMultiLinearSpringProperty(string linkName, PointSpringProperty spring, int axis)
         {
-            bool hasTranslation = translation?.Count >= 2;
-            bool hasRotation = rotation?.Count >= 2;
+            bool isPlastic;
+            ForceDeformationCurves curves;
+            switch (spring.NonlinearBehaviour)
+            {
+                case MultiLinearElasticBehaviour e: curves = e.ForceDeformationCurves; isPlastic = false; break;
+                case MultiLinearPlasticBehaviour p: curves = p.ForceDeformationCurves; isPlastic = true; break;
+                default: return (false, false);
+            }
 
-            if (!hasTranslation && !hasRotation)
-                return false;
+            (List<ForceDeformationPoint> translation, List<ForceDeformationPoint> rotation) = CurvesForAxis(curves, axis);
 
-            // Activate U1 (index 0) for translation, R1 (index 3) for rotation.
-            bool[] dof = { hasTranslation, false, false, hasRotation, false, false };
-            bool[] fix = { false, false, false, false, false, false };
-            bool[] nonLin = { hasTranslation, false, false, hasRotation, false, false };
-            double[] stiff = { 0, 0, 0, 0, 0, 0 };
-            double[] damp = { 0, 0, 0, 0, 0, 0 };
+            // DOF activation, fixity (from the Constraint6DOF restraints) and nonlinearity flags for this axis.
+            (bool[] dof, bool[] fix, bool[] nonLin) = LinkDofFlags(spring, axis, translation?.Count >= 2, rotation?.Count >= 2, linkName);
 
-            int ret;
-            if (springType == PointSpringNonlinearType.MultiLinearElastic)
-                ret = m_model.PropLink.SetMultiLinearElastic(linkName, ref dof, ref fix, ref nonLin, ref stiff, ref damp, 0, 0);
-            else
-                ret = m_model.PropLink.SetMultiLinearPlastic(linkName, ref dof, ref fix, ref nonLin, ref stiff, ref damp, 0, 0);
+            // Only create a link when the axis actually has nonlinear behaviour. A fixed DOF alone must not
+            // spawn a rigid link; its fixity belongs on the node restraint, not a spring link.
+            if (!nonLin[0] && !nonLin[3])
+                return (false, false);
+
+            // Effective (linear-analysis) terms from the point spring property.
+            (double effStiffT, double effStiffR) = ValuesForAxis(spring, axis);                 // Ke
+            (double effDampT, double effDampR) = ValuesForAxis(spring.EffectiveDamping, axis);   // Ce
+
+            // ETABS present units are N, m, so SI terms are passed through unconverted.
+            double[] ke = { effStiffT, 0, 0, effStiffR, 0, 0 };
+            double[] ce = { effDampT, 0, 0, effDampR, 0, 0 };
+
+            int ret = isPlastic
+                ? m_model.PropLink.SetMultiLinearPlastic(linkName, ref dof, ref fix, ref nonLin, ref ke, ref ce, 0, 0)
+                : m_model.PropLink.SetMultiLinearElastic(linkName, ref dof, ref fix, ref nonLin, ref ke, ref ce, 0, 0);
 
             if (ret != 0)
             {
-                CreatePropertyWarning("NonLinear Link", "PointSpringProperty", linkName);
-                return false;
+                CreatePropertyWarning("MultiLinear Link", "PointSpringProperty", linkName);
+                return (false, false);
             }
 
-            // MyType for SetMultiLinearPoints must be 1, 2 or 3 (1 = Kinematic). It only affects
-            // MultiLinearPlastic, but passing 0 (out of range) causes the call to fail for the
-            // MultiLinearElastic case, leaving the link without a force-deformation curve.
-            int hysteresisInt = springType == PointSpringNonlinearType.MultiLinearPlastic ? (int)hysteresisType : 1;
+            // MyType for SetMultiLinearPoints must be 1, 2 or 3 (1 = Kinematic). It only affects the plastic
+            // case; for elastic any valid value works, so pass 1 (passing 0 would fail the call).
+            HysteresisType hysteresisType = spring.FindFragment<PointSpringNonlinearity>()?.SpringHysteresisType ?? HysteresisType.Kinematic;
+            int hysteresisInt = isPlastic ? (int)hysteresisType : 1;
 
-            // Set translational curve on U1 (dof index 1).
-            if (hasTranslation)
+            // Translational curve on U1. Forces are SI (N) and passed through; deformations are in metres.
+            if (nonLin[0])
             {
-                double[] F = translation.Select(p => p.Force / 1000.0).ToArray();
+                double[] F = translation.Select(p => p.Force).ToArray();
                 double[] D = translation.Select(p => p.Deformation).ToArray();
 
                 if (m_model.PropLink.SetMultiLinearPoints(linkName, 1, translation.Count, ref F, ref D, hysteresisInt) != 0)
-                    CreatePropertyWarning("NonLinear Link Translation Points", "PointSpringProperty", linkName);
+                    CreatePropertyWarning("MultiLinear Link Translation Points", "PointSpringProperty", linkName);
             }
 
-            // Set rotational curve on R1 (dof index 4).
-            if (hasRotation)
+            // Rotational curve on R1. Forces are SI (N·m) and passed through; deformations are in radians.
+            if (nonLin[3])
             {
-                double[] F = rotation.Select(p => p.Force / 1000.0).ToArray();
+                double[] F = rotation.Select(p => p.Force).ToArray();
                 double[] D = rotation.Select(p => p.Deformation).ToArray();
 
                 if (m_model.PropLink.SetMultiLinearPoints(linkName, 4, rotation.Count, ref F, ref D, hysteresisInt) != 0)
-                    CreatePropertyWarning("NonLinear Link Rotation Points", "PointSpringProperty", linkName);
+                    CreatePropertyWarning("MultiLinear Link Rotation Points", "PointSpringProperty", linkName);
             }
 
-            return true;
+            return (dof[0], dof[3]);
+        }
+
+        /***************************************************/
+
+        // Creates a single ETABS gap (compression-only) or hook (tension-only) link property for one axis.
+        // The two behaviours share an identical PropLink shape (Ke, Ce, K, Dis), differing only in the CSI
+        // call used, so they are handled together. U1 (index 0) carries translation, R1 (index 3) carries
+        // rotation about the same axis. Effective terms (Ke, Ce) come from the PointSpringProperty
+        // (Constraint6DOF stiffness and EffectiveDamping); the nonlinear stiffness K and initial opening Dis
+        // come from the behaviour. Returns false if the axis has no gap/hook defined (or creation failed).
+        private (bool Translation, bool Rotation) CreateGapOrHookLinkProperty(string linkName, PointSpringProperty spring, int axis)
+        {
+            NonlinearSpringValues initialStiffness;
+            NonlinearSpringValues initialOpening;
+            bool isHook;
+            switch (spring.NonlinearBehaviour)
+            {
+                case GapBehaviour g: initialStiffness = g.InitialStiffness; initialOpening = g.InitialOpening; isHook = false; break;
+                case HookBehaviour h: initialStiffness = h.InitialStiffness; initialOpening = h.InitialOpening; isHook = true; break;
+                default: return (false, false);
+            }
+
+            // Nonlinear gap/hook parameters from the behaviour.
+            (double stiffnessT, double stiffnessR) = ValuesForAxis(initialStiffness, axis);       // K
+            (double openingT, double openingR) = ValuesForAxis(initialOpening, axis);             // Dis
+
+            // Effective (linear-analysis) terms from the point spring property.
+            (double effStiffT, double effStiffR) = ValuesForAxis(spring, axis);                   // Ke (Constraint6DOF)
+            (double effDampT, double effDampR) = ValuesForAxis(spring.EffectiveDamping, axis);    // Ce
+
+            // DOF activation, fixity (from the Constraint6DOF restraints) and nonlinearity flags for this axis.
+            (bool[] dof, bool[] fix, bool[] nonLin) = LinkDofFlags(spring, axis, stiffnessT != 0 || openingT != 0, stiffnessR != 0 || openingR != 0, linkName);
+
+            // Only create a link when the axis actually has nonlinear behaviour. A fixed DOF alone must not
+            // spawn a rigid link; its fixity belongs on the node restraint, not a spring link.
+            if (!nonLin[0] && !nonLin[3])
+                return (false, false);
+
+            // ETABS present units are N, m, so SI terms are passed through unconverted; the initial opening is
+            // a deformation (m / rad) and is likewise unchanged.
+            double[] ke = { effStiffT, 0, 0, effStiffR, 0, 0 };
+            double[] ce = { effDampT, 0, 0, effDampR, 0, 0 };
+            double[] k = { stiffnessT, 0, 0, stiffnessR, 0, 0 };
+            double[] dis = { openingT, 0, 0, openingR, 0, 0 };
+
+            int ret = isHook
+                ? m_model.PropLink.SetHook(linkName, ref dof, ref fix, ref nonLin, ref ke, ref ce, ref k, ref dis, 0, 0)
+                : m_model.PropLink.SetGap(linkName, ref dof, ref fix, ref nonLin, ref ke, ref ce, ref k, ref dis, 0, 0);
+
+            if (ret != 0)
+            {
+                CreatePropertyWarning(isHook ? "Hook Link" : "Gap Link", "PointSpringProperty", linkName);
+                return (false, false);
+            }
+
+            return (dof[0], dof[3]);
+        }
+
+        /***************************************************/
+
+        // Creates a single ETABS damper (viscous) link property for one axis. U1 (index 0) carries
+        // translation, R1 (index 3) carries rotation about the same axis. Effective terms (Ke, Ce) come from
+        // the PointSpringProperty (Constraint6DOF stiffness and EffectiveDamping); the nonlinear spring
+        // stiffness K, damping coefficient C and damping exponent CExp come from the behaviour.
+        // Returns false if the axis has no damper defined (or creation failed).
+        private (bool Translation, bool Rotation) CreateDamperLinkProperty(string linkName, PointSpringProperty spring, int axis)
+        {
+            if (!(spring.NonlinearBehaviour is DamperBehaviour damper))
+                return (false, false);
+
+            // Nonlinear damper parameters from the behaviour.
+            (double stiffnessT, double stiffnessR) = ValuesForAxis(damper.InitialStiffness, axis);    // K
+            (double dampCoeffT, double dampCoeffR) = ValuesForAxis(damper.DampingCoefficient, axis);  // C
+            (double dampExpT, double dampExpR) = ValuesForAxis(damper.DampingExponent, axis);         // CExp
+
+            // Effective (linear-analysis) terms from the point spring property.
+            (double effStiffT, double effStiffR) = ValuesForAxis(spring, axis);                   // Ke (Constraint6DOF)
+            (double effDampT, double effDampR) = ValuesForAxis(spring.EffectiveDamping, axis);    // Ce
+
+            // DOF activation, fixity (from the Constraint6DOF restraints) and nonlinearity flags for this axis.
+            // A damper DOF is nonlinear when it defines a damping coefficient or a parallel spring stiffness.
+            (bool[] dof, bool[] fix, bool[] nonLin) = LinkDofFlags(spring, axis, dampCoeffT != 0 || stiffnessT != 0, dampCoeffR != 0 || stiffnessR != 0, linkName);
+
+            // Only create a link when the axis actually has nonlinear behaviour. A fixed DOF alone must not
+            // spawn a rigid link; its fixity belongs on the node restraint, not a spring link.
+            if (!nonLin[0] && !nonLin[3])
+                return (false, false);
+
+            // ETABS present units are N, m, so SI terms are passed through unconverted; the damping exponent is
+            // unitless and is likewise unchanged.
+            double[] ke = { effStiffT, 0, 0, effStiffR, 0, 0 };
+            double[] ce = { effDampT, 0, 0, effDampR, 0, 0 };
+            double[] k = { stiffnessT, 0, 0, stiffnessR, 0, 0 };
+            double[] c = { dampCoeffT, 0, 0, dampCoeffR, 0, 0 };
+            double[] cexp = { dampExpT, 0, 0, dampExpR, 0, 0 };
+
+            if (m_model.PropLink.SetDamper(linkName, ref dof, ref fix, ref nonLin, ref ke, ref ce, ref k, ref c, ref cexp, 0, 0) != 0)
+            {
+                CreatePropertyWarning("Damper Link", "PointSpringProperty", linkName);
+                return (false, false);
+            }
+
+            return (dof[0], dof[3]);
         }
 
         /***************************************************/

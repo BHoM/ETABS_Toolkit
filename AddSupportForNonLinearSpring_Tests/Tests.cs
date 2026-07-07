@@ -14,6 +14,7 @@ using BH.oM.Structure.Constraints;
 using BH.Engine.Base;
 using BH.oM.Adapters.ETABS.Fragments;
 using BH.Engine.Adapters.ETABS;
+using BH.oM.Structure.Springs.NonLinearBehaviour;
 
 namespace AddSupportForNonLinearSpring_Tests
 {
@@ -42,99 +43,345 @@ namespace AddSupportForNonLinearSpring_Tests
         }
 
         [Test, Order(1)]
-        public void PushNonLinearSpringToETABS()
+        public void PushElasticSpringPropertyToETABS()
         {
-            PointSpringProperty pointSpring = new PointSpringProperty
+            ForceDeformationCurves forceDeformationCurves = new ForceDeformationCurves
             {
-                Name = "TestPointSpring",
-
-                TranslationalStiffnessX = 5000,
-                TranslationalStiffnessY = 5000,
-                TranslationalStiffnessZ = 5000,
-                RotationalStiffnessX = 100,
-                RotationalStiffnessY = 100,
-                RotationalStiffnessZ = 100,
-
-                ForceDeformationCurves = new ForceDeformationCurves
+                TranslationX = new List<ForceDeformationPoint>
                 {
-
-                    TranslationX = new List<ForceDeformationPoint>
+                    new ForceDeformationPoint
                     {
-                        new ForceDeformationPoint { Deformation = -0.10, Force = -2000 },
-                        new ForceDeformationPoint { Deformation =  0.00, Force =     0 },
-                        new ForceDeformationPoint { Deformation =  0.10, Force =  2000 }
+                        Deformation = -0.1,
+                        Force = -5000
                     },
-
-
-                    TranslationY = new List<ForceDeformationPoint>
+                    new ForceDeformationPoint
                     {
-                        new ForceDeformationPoint { Deformation = -0.10, Force = -5000 },
-                        new ForceDeformationPoint { Deformation =  0.00, Force =     0 },
-                        new ForceDeformationPoint { Deformation =  0.10, Force =  5000 }
+                        Deformation = 0,
+                        Force = 0
                     },
-
-                    TranslationZ = new List<ForceDeformationPoint>
+                    new ForceDeformationPoint
                     {
-                        new ForceDeformationPoint { Deformation = -0.10, Force = -5000 },
-                        new ForceDeformationPoint { Deformation =  0.00, Force =     0 },
-                        new ForceDeformationPoint { Deformation =  0.10, Force =  5000 }
-                    },
-
-                    RotationX = new List<ForceDeformationPoint>
-                    {
-                        new ForceDeformationPoint { Deformation = -0.10, Force = -5000 },
-                        new ForceDeformationPoint { Deformation =  0.00, Force =     0 },
-                        new ForceDeformationPoint { Deformation =  0.10, Force =  5000 }
+                        Deformation = 0.1,
+                        Force = 5000
                     }
                 }
             };
 
-            pointSpring = pointSpring.SetPointSpringNonlinearity(PointSpringNonlinearType.MultiLinearElastic, HysteresisType.Kinematic);
-
-            Node node = new Node
+            PointSpringProperty pointSpring = new PointSpringProperty
             {
-                Position = new Point { X = 0, Y = 0, Z = 3 },
-                SpringProperty = pointSpring
+                Name = "TestElasticPointSpring",
+
+                TranslationalStiffnessX = 5000,
+                TranslationalStiffnessY = 5000,
+                TranslationalStiffnessZ = 5000,
+
+                TranslationX = DOFType.Free,
+                TranslationY = DOFType.Fixed,
+                TranslationZ = DOFType.Fixed,
+
+                NonlinearBehaviour = new MultiLinearElasticBehaviour
+                {
+                    ForceDeformationCurves = forceDeformationCurves
+                }
             };
 
+
             List<object> pushed = m_Adapter.Push(
-                new List<Node> { node },
+                new List<ISpringProperty> { pointSpring },
                 pushType: PushType.CreateOnly);
 
             Assert.That(pushed.Count, Is.EqualTo(1), "Node was not pushed.");
         }
 
         [Test, Order(2)]
-        public void PullNonLinearSpringFromETABS()
+        public void PushPlasticSpringPropertyToETABS()
         {
-
-            FilterRequest filterRequest = new FilterRequest()
+            ForceDeformationCurves forceDeformationCurves = new ForceDeformationCurves
             {
-                Type = typeof(Node)
+                TranslationX = new List<ForceDeformationPoint>
+                {
+                    new ForceDeformationPoint
+                    {
+                        Deformation = -0.1,
+                        Force = -5000
+                    },
+                    new ForceDeformationPoint
+                    {
+                        Deformation = 0,
+                        Force = 0
+                    },
+                    new ForceDeformationPoint
+                    {
+                        Deformation = 0.1,
+                        Force = 5000
+                    }
+                }
             };
 
-            List<object> pulled = m_Adapter.Pull(request: filterRequest).ToList();
-            Node nodePulled = (Node)pulled[0];
-
-            PointSpringProperty spring = nodePulled.SpringProperty;
-
-            if (spring == null)
+            PointSpringProperty pointSpring = new PointSpringProperty
             {
-                TestContext.WriteLine("No PointSpringProperty on this node.");
-                return;
-            }
+                Name = "TestPlasticPointSpring",
 
-            foreach (ForceDeformationPoint point in spring.ForceDeformationCurves.TranslationX)
-                TestContext.WriteLine($"X - Deformation: {point.Deformation}, Force: {point.Force}");
+                TranslationalStiffnessX = 5000,
 
-            foreach (ForceDeformationPoint point in spring.ForceDeformationCurves.TranslationY)
-                TestContext.WriteLine($"Y - Deformation: {point.Deformation}, Force: {point.Force}");
+                NonlinearBehaviour = new MultiLinearPlasticBehaviour
+                {
+                    ForceDeformationCurves = forceDeformationCurves
+                }
+            };
+            
 
-            foreach (ForceDeformationPoint point in spring.ForceDeformationCurves.TranslationZ)
-                TestContext.WriteLine($"Z - Deformation: {point.Deformation}, Force: {point.Force}");
+            List<object> pushed = m_Adapter.Push(
+                new List<ISpringProperty> { pointSpring },
+                pushType: PushType.CreateOnly);
 
-            Assert.That(pulled, Is.Not.Null);
+            Assert.That(pushed.Count, Is.EqualTo(1), "Node was not pushed.");
+        }
 
+        [Test, Order(3)]
+        public void PushGapSpringPropertyToETABS()
+        {
+
+            PointSpringProperty pointSpring = new PointSpringProperty
+            {
+                Name = "TestGapPointSpring",
+
+                TranslationalStiffnessX = 5000,
+
+                NonlinearBehaviour = new GapBehaviour
+                {
+                    InitialStiffness = new NonlinearSpringValues
+                    {
+                        TranslationX = 500
+                    },
+                    InitialOpening = new NonlinearSpringValues
+                    {
+                        TranslationX = 500
+                    }
+                }
+
+
+            };
+
+            List<object> pushed = m_Adapter.Push(
+                new List<ISpringProperty> { pointSpring },
+                pushType: PushType.CreateOnly);
+
+            Assert.That(pushed.Count, Is.EqualTo(1), "Node was not pushed.");
+        }
+
+        /***************************************************/
+        /**** Round-trip tests (push then pull)         ****/
+        /***************************************************/
+
+        // Pulls every PointSpringProperty back from ETABS and returns the one with the given name.
+        private PointSpringProperty PullSpringByName(string name)
+        {
+            FilterRequest request = new FilterRequest { Type = typeof(PointSpringProperty) };
+            return m_Adapter.Pull(request)
+                .OfType<PointSpringProperty>()
+                .FirstOrDefault(s => s.Name == name);
+        }
+
+        [Test, Order(10)]
+        public void RoundTripGapSpringProperty()
+        {
+            PointSpringProperty pointSpring = new PointSpringProperty
+            {
+                Name = "RT_GapPointSpring",
+                TranslationalStiffnessX = 5000,
+                NonlinearBehaviour = new GapBehaviour
+                {
+                    InitialStiffness = new NonlinearSpringValues { TranslationX = 750 },
+                    InitialOpening = new NonlinearSpringValues { TranslationX = 0.01 }
+                }
+            };
+
+            m_Adapter.Push(new List<ISpringProperty> { pointSpring }, pushType: PushType.CreateOnly);
+
+            PointSpringProperty pulled = PullSpringByName("RT_GapPointSpring");
+
+            Assert.That(pulled, Is.Not.Null, "Spring was not pulled back.");
+            Assert.That(pulled.NonlinearBehaviour, Is.TypeOf<GapBehaviour>(),
+                "Nonlinear behaviour did not round-trip - the link was not attached to the point spring property.");
+
+            GapBehaviour gap = (GapBehaviour)pulled.NonlinearBehaviour;
+            Assert.That(gap.InitialStiffness.TranslationX, Is.EqualTo(750).Within(1e-3), "Gap initial stiffness did not round-trip.");
+            Assert.That(gap.InitialOpening.TranslationX, Is.EqualTo(0.01).Within(1e-6), "Gap initial opening did not round-trip.");
+            Assert.That(pulled.TranslationalStiffnessX, Is.EqualTo(5000).Within(1e-3), "Effective stiffness (Ke) did not round-trip.");
+        }
+
+        [Test, Order(11)]
+        public void RoundTripHookSpringProperty()
+        {
+            PointSpringProperty pointSpring = new PointSpringProperty
+            {
+                Name = "RT_HookPointSpring",
+                TranslationalStiffnessX = 5000,
+                NonlinearBehaviour = new HookBehaviour
+                {
+                    InitialStiffness = new NonlinearSpringValues { TranslationX = 750 },
+                    InitialOpening = new NonlinearSpringValues { TranslationX = 0.02 }
+                }
+            };
+
+            m_Adapter.Push(new List<ISpringProperty> { pointSpring }, pushType: PushType.CreateOnly);
+
+            PointSpringProperty pulled = PullSpringByName("RT_HookPointSpring");
+
+            Assert.That(pulled, Is.Not.Null, "Spring was not pulled back.");
+            Assert.That(pulled.NonlinearBehaviour, Is.TypeOf<HookBehaviour>(),
+                "Nonlinear behaviour did not round-trip - the link was not attached to the point spring property.");
+
+            HookBehaviour hook = (HookBehaviour)pulled.NonlinearBehaviour;
+            Assert.That(hook.InitialStiffness.TranslationX, Is.EqualTo(750).Within(1e-3), "Hook initial stiffness did not round-trip.");
+            Assert.That(hook.InitialOpening.TranslationX, Is.EqualTo(0.02).Within(1e-6), "Hook initial opening did not round-trip.");
+        }
+
+        [Test, Order(12)]
+        public void RoundTripDamperSpringProperty()
+        {
+            PointSpringProperty pointSpring = new PointSpringProperty
+            {
+                Name = "RT_DamperPointSpring",
+                TranslationalStiffnessX = 5000,
+                NonlinearBehaviour = new DamperBehaviour
+                {
+                    InitialStiffness = new NonlinearSpringValues { TranslationX = 750 },
+                    DampingCoefficient = new NonlinearSpringValues { TranslationX = 100 },
+                    DampingExponent = new NonlinearSpringValues { TranslationX = 1.0 }
+                }
+            };
+
+            m_Adapter.Push(new List<ISpringProperty> { pointSpring }, pushType: PushType.CreateOnly);
+
+            PointSpringProperty pulled = PullSpringByName("RT_DamperPointSpring");
+
+            Assert.That(pulled, Is.Not.Null, "Spring was not pulled back.");
+            Assert.That(pulled.NonlinearBehaviour, Is.TypeOf<DamperBehaviour>(),
+                "Nonlinear behaviour did not round-trip - the link was not attached to the point spring property.");
+
+            DamperBehaviour damper = (DamperBehaviour)pulled.NonlinearBehaviour;
+            Assert.That(damper.DampingCoefficient.TranslationX, Is.EqualTo(100).Within(1e-3), "Damper coefficient did not round-trip.");
+            Assert.That(damper.DampingExponent.TranslationX, Is.EqualTo(1.0).Within(1e-6), "Damper exponent did not round-trip.");
+        }
+
+        [Test, Order(13)]
+        public void RoundTripMultiLinearElasticSpringProperty()
+        {
+            ForceDeformationCurves curves = new ForceDeformationCurves
+            {
+                TranslationX = new List<ForceDeformationPoint>
+                {
+                    new ForceDeformationPoint { Deformation = -0.1, Force = -5000 },
+                    new ForceDeformationPoint { Deformation = 0, Force = 0 },
+                    new ForceDeformationPoint { Deformation = 0.1, Force = 5000 }
+                }
+            };
+
+            PointSpringProperty pointSpring = new PointSpringProperty
+            {
+                Name = "RT_ElasticPointSpring",
+                TranslationalStiffnessX = 5000,
+                NonlinearBehaviour = new MultiLinearElasticBehaviour { ForceDeformationCurves = curves }
+            };
+
+            m_Adapter.Push(new List<ISpringProperty> { pointSpring }, pushType: PushType.CreateOnly);
+
+            PointSpringProperty pulled = PullSpringByName("RT_ElasticPointSpring");
+
+            Assert.That(pulled, Is.Not.Null, "Spring was not pulled back.");
+            Assert.That(pulled.NonlinearBehaviour, Is.TypeOf<MultiLinearElasticBehaviour>(),
+                "Nonlinear behaviour did not round-trip - the link was not attached to the point spring property.");
+
+            MultiLinearElasticBehaviour ml = (MultiLinearElasticBehaviour)pulled.NonlinearBehaviour;
+            Assert.That(ml.ForceDeformationCurves.TranslationX, Is.Not.Null.And.Count.EqualTo(3),
+                "Force-deformation curve did not round-trip.");
+        }
+
+        /***************************************************/
+        /**** Node <-> PointSpringProperty support      ****/
+        /***************************************************/
+
+        // Pulls every Node back from ETABS and returns the one with the given name.
+        private Node PullNodeByName(string name)
+        {
+            FilterRequest request = new FilterRequest { Type = typeof(Node) };
+            return m_Adapter.Pull(request)
+                .OfType<Node>()
+                .FirstOrDefault(n => n.Name == name);
+        }
+
+        [Test, Order(20)]
+        public void PushNodeWithNonlinearSpringSupportCreatesAndAssigns()
+        {
+            PointSpringProperty support = new PointSpringProperty
+            {
+                Name = "NodeSupportGap",
+                TranslationalStiffnessX = 5000,
+                NonlinearBehaviour = new GapBehaviour
+                {
+                    InitialStiffness = new NonlinearSpringValues { TranslationX = 750 },
+                    InitialOpening = new NonlinearSpringValues { TranslationX = 0.01 }
+                }
+            };
+
+            Node node = new Node
+            {
+                Name = "NodeWithGapSupport",
+                Position = new Point { X = 13, Y = 7, Z = 0 },
+                Support = support
+            };
+
+            m_Adapter.Push(new List<Node> { node }, pushType: PushType.CreateOnly);
+
+            // The node push should have created the spring property in ETABS...
+            PointSpringProperty pulledSpring = PullSpringByName("NodeSupportGap");
+            Assert.That(pulledSpring, Is.Not.Null, "Spring property was not created by the node push.");
+            Assert.That(pulledSpring.NonlinearBehaviour, Is.TypeOf<GapBehaviour>());
+
+            // ...and assigned it to the point, so the node pulls back with a PointSpringProperty support.
+            Node pulledNode = PullNodeByName("NodeWithGapSupport");
+            Assert.That(pulledNode, Is.Not.Null, "Node was not pulled back.");
+            Assert.That(pulledNode.Support, Is.TypeOf<PointSpringProperty>(),
+                "Node support did not round-trip as a PointSpringProperty - the spring was not assigned/read.");
+
+            PointSpringProperty nodeSupport = (PointSpringProperty)pulledNode.Support;
+            Assert.That(nodeSupport.Name, Is.EqualTo("NodeSupportGap"));
+            Assert.That(nodeSupport.NonlinearBehaviour, Is.TypeOf<GapBehaviour>(),
+                "Nonlinear behaviour did not round-trip onto the node support.");
+        }
+
+        [Test, Order(21)]
+        public void UpdateNodeToDifferentSpringSupport()
+        {
+            // A second spring property, pushed on its own.
+            PointSpringProperty support2 = new PointSpringProperty
+            {
+                Name = "NodeSupportGap2",
+                TranslationalStiffnessX = 8000,
+                NonlinearBehaviour = new GapBehaviour
+                {
+                    InitialStiffness = new NonlinearSpringValues { TranslationX = 1200 },
+                    InitialOpening = new NonlinearSpringValues { TranslationX = 0.02 }
+                }
+            };
+            m_Adapter.Push(new List<ISpringProperty> { support2 }, pushType: PushType.CreateOnly);
+
+            // Pull the node from the previous test (carries its adapter id), re-point its support to the new
+            // property by name, and push an update.
+            Node node = PullNodeByName("NodeWithGapSupport");
+            Assert.That(node, Is.Not.Null, "Precondition: the node from the create test should exist.");
+            Assert.That(node.Support, Is.Not.Null);
+
+            node.Support.Name = "NodeSupportGap2";
+            m_Adapter.Push(new List<Node> { node }, pushType: PushType.UpdateOnly);
+
+            Node pulledNode = PullNodeByName("NodeWithGapSupport");
+            Assert.That(pulledNode, Is.Not.Null);
+            Assert.That(pulledNode.Support, Is.Not.Null);
+            Assert.That(pulledNode.Support.Name, Is.EqualTo("NodeSupportGap2"),
+                "Node support was not re-pointed to the new spring property.");
         }
     }
 }

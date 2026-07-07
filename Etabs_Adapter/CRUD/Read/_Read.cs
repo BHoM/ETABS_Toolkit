@@ -189,6 +189,20 @@ namespace BH.Adapter.ETABS
             }
         }
 
+
+        /***************************************************/
+
+        [Description("Extracts the String Name of the BHoM object from the corresponding ETABS Unique Name.")]
+        public string GetBhomNameFromEtabsId(string id)
+        {
+            if (id.Contains("::"))
+            {
+                string[] splitName = id.Split(new string[] { "::" }, StringSplitOptions.None);
+                return splitName[splitName.Length - 1];
+            }
+            return id;
+        }
+
         /***************************************************/
 
     }

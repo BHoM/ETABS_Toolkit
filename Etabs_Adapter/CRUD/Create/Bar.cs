@@ -95,15 +95,20 @@ namespace BH.Adapter.ETABS
             string story = "";
             string guid = null;
 
-            ETABSId etabsIdFragment = new ETABSId { Id = name };
+            // Assign the Unique Name to the ETABS Element
+            string newName = SetUniqueName(bhBar, name);
 
-            if (m_model.FrameObj.GetLabelFromName(name, ref label, ref story) == 0)
+            if (newName == null) return false;
+
+            ETABSId etabsIdFragment = new ETABSId { Id = newName };
+
+            if (m_model.FrameObj.GetLabelFromName(newName, ref label, ref story) == 0)
             {
                 etabsIdFragment.Label = label;
                 etabsIdFragment.Story = story;
             }
 
-            if (m_model.AreaObj.GetGUID(name, ref guid) == 0)
+            if (m_model.FrameObj.GetGUID(newName, ref guid) == 0)
                 etabsIdFragment.PersistentId = guid;
 
             bhBar.SetAdapterId(etabsIdFragment);

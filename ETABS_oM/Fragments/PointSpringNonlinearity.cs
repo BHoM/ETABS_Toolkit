@@ -25,13 +25,13 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.ETABS.Fragments
 {
-    [Description("ETABS-specific nonlinear behaviour settings for a point spring. Attach to a PointSpringProperty to control multilinear type and hysteresis model.")]
+    [Description("ETABS-specific settings for a nonlinear point spring, attached to a PointSpringProperty. Holds only " +
+                 "the CSI-specific extras that the general nonlinear behaviour does not capture. The behaviour type itself " +
+                 "(multilinear elastic/plastic, gap, hook, damper, plastic) is defined by PointSpringProperty.NonlinearBehaviour.")]
     public class PointSpringNonlinearity : IFragment
     {
-        [Description("Defines whether the point spring is multilinear elastic or plastic.")]
-        public virtual PointSpringNonlinearType SpringType { get; set; } = PointSpringNonlinearType.MultiLinearElastic;
-
-        [Description("Hysteresis model for plastic point springs. Only used when SpringType is MultiLinearPlastic.")]
+        [Description("Hysteresis model governing the unload/reload rule for plastic point spring behaviours " +
+                     "(e.g. MultiLinearPlastic, PlasticWen). Ignored for elastic behaviours.")]
         public virtual HysteresisType SpringHysteresisType { get; set; } = HysteresisType.Kinematic;
     }
 }

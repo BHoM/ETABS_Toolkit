@@ -35,14 +35,13 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Sets ETABS-specific nonlinear behaviour on a PointSpringProperty. Defaults to MultiLinearElastic and Kinematic if not called.")]
-        [Input("pointSpring", "The PointSpringProperty to set the nonlinear behaviour on.")]
-        [Input("springType", "Elastic or plastic multilinear behaviour. Defaults to MultiLinearElastic.")]
-        [Input("hysteresisType", "Hysteresis model for plastic point springs. Defaults to Kinematic.")]
+        [Description("Sets ETABS-specific nonlinear settings on a PointSpringProperty. The nonlinear behaviour type itself " +
+                     "is defined by PointSpringProperty.NonlinearBehaviour; this only adds the CSI-specific hysteresis model.")]
+        [Input("pointSpring", "The PointSpringProperty to set the ETABS-specific nonlinear settings on.")]
+        [Input("hysteresisType", "Hysteresis model for plastic point spring behaviours. Defaults to Kinematic.")]
         [Output("pointSpring", "The modified PointSpringProperty.")]
         public static PointSpringProperty SetPointSpringNonlinearity(
             this PointSpringProperty pointSpring,
-            PointSpringNonlinearType springType = PointSpringNonlinearType.MultiLinearElastic,
             HysteresisType hysteresisType = HysteresisType.Kinematic)
         {
             if (pointSpring == null)
@@ -54,7 +53,6 @@ namespace BH.Engine.Adapters.ETABS
 
             pointSpring.Fragments.AddOrReplace(new PointSpringNonlinearity
             {
-                SpringType = springType,
                 SpringHysteresisType = hysteresisType
             });
 

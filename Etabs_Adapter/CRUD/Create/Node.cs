@@ -22,19 +22,18 @@
 
 using BH.Engine.Adapter;
 using BH.Engine.Adapters.ETABS;
-using BH.Engine.Base;
 using BH.Engine.Geometry;
 using BH.Engine.Structure;
 using BH.oM.Adapters.ETABS;
-using BH.oM.Adapters.ETABS.Fragments;
+using BH.oM.Analytical.Elements;
 using BH.oM.Geometry;
+using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Springs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Xml;
 
 namespace BH.Adapter.ETABS
 {
@@ -58,68 +57,77 @@ namespace BH.Adapter.ETABS
             oM.Geometry.Point position = bhNode.Position;
             if (m_model.PointObj.AddCartesian(position.X, position.Y, position.Z, ref name) == 0)
             {
-                etabsid.Id = name;
+
+                // Assign the Unique Name to the ETABS Element
+                string newName = SetUniqueName(bhNode, name);
+
+                if (newName == null) return false;
+
+                etabsid.Id = newName;
 
                 //Label and story
                 string label = "";
                 string story = "";
-                if (m_model.PointObj.GetLabelFromName(name, ref label, ref story) == 0)
+                if (m_model.PointObj.GetLabelFromName(newName, ref label, ref story) == 0)
                 {
                     etabsid.Label = label;
                     etabsid.Story = story;
                 }
 
                 string guid = null;
-                if (m_model.PointObj.GetGUID(name, ref guid) == 0)
+                if (m_model.PointObj.GetGUID(newName, ref guid) == 0)
                     etabsid.PersistentId = guid;
 
                 bhNode.SetAdapterId(etabsid);
-                SetObject(bhNode, name);
+                SetObject(bhNode, newName);
                 SetGroup(bhNode);
             }
 
             return true;
         }
-        
+
         /***************************************************/
 
         private bool SetObject(Node bhNode, string name)
         {
-            if (bhNode.SpringProperty != null)
-            {
-                // Layer 2: create the named point spring property (+ its links). This sets the adapter id
-                // on the spring, which is the single source of truth for its ETABS name.
-                if (CreatePointSpringProperty(bhNode.SpringProperty))
-                {
-                    // Layer 3: assign the property to this node by the name stored on it.
-                    string springPropName = GetAdapterId<string>(bhNode.SpringProperty);
-                    if (m_model.PointObj.SetSpringAssignment(name, springPropName) != 0)
-                        CreatePropertyWarning("NonLinear Spring Assignment", "Node", name);
-                }
-            }
-            else
-            {
-                m_model.PointObj.DeleteSpring(name);
-            }
+            // Defaults release the node Ux, Uy & Uz fixed, rotations free.
+            // Spring stiffness defaults to zero for all translations and rotations.
+            bool[] restraint = new bool[6] { true, true, true, false, false, false };
+            double[] spring = new double[6];
 
             if (bhNode.Support != null)
-            {
-                bool[] restraint = new bool[6];
-                double[] spring = new double[6];
-
                 bhNode.Support.ToCSI(ref restraint, ref spring);
 
-                if (m_model.PointObj.SetRestraint(name, ref restraint) == 0) { }
-                else
-                {
-                    CreatePropertyWarning("Node Restraint", "Node", name);
-                }
-                if (m_model.PointObj.SetSpring(name, ref spring) == 0) { }
-                else
-                {
-                    CreatePropertyWarning("Node Spring", "Node", name);
-                }
+            if (m_model.PointObj.SetRestraint(name, ref restraint) == 0) { }
+            else
+            {
+                CreatePropertyWarning("Node Restraint", "Node", name);
+            }
 
+            // Spring handling, dispatched on the support type (not just "has stiffness"): a nonlinear
+            // PointSpringProperty can have zero effective stiffness yet still need its links, so the concrete
+            // type decides the path.
+            if (bhNode.Support is PointSpringProperty psp)
+            {
+                // Reuse the full (nonlinear-capable) point spring creator, then assign it to this point by the
+                // same name the creator stored (PointSpringProperty.DescriptionOrName()).
+                if (CreatePointSpringProperty(psp))
+                {
+                    string propName = psp.DescriptionOrName();
+                    if (m_model.PointObj.SetSpringAssignment(name, propName) != 0)
+                        CreatePropertyWarning("Node Spring", "Node", name);
+                }
+            }
+            else if (spring.Any(x => x != 0))
+            {
+                // Plain Constraint6DOF support with stiffness: create a linear point spring property inline.
+                string propName = bhNode.Support.DescriptionOrName();
+
+                if (m_model.PropPointSpring.SetPointSpringProp(propName, 1, ref spring) != 0)
+                    CreatePropertyWarning("Node Spring", "Node", propName);
+
+                if (m_model.PointObj.SetSpringAssignment(name, propName) != 0)
+                    CreatePropertyWarning("Node Spring", "Node", name);
             }
 
             if (bhNode.Orientation != null && !bhNode.Orientation.IsEqual(Basis.XY))

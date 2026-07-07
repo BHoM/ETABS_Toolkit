@@ -22,8 +22,13 @@
 
 using BH.Engine.Adapters.ETABS;
 using BH.oM.Adapter;
-using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Elements;
+using BH.oM.Base;
+using BH.oM.Structure.Elements;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using BH.oM.Adapters.ETABS;
 using BH.oM.Analytical.Elements;
 using BH.oM.Analytical.Results;
 using BH.oM.Base;
@@ -115,6 +120,50 @@ namespace BH.Adapter.ETABS
         {
             Engine.Base.Compute.RecordWarning($"Objects of type {obj.GetType()} are not supported by the ETABSAdapter.");
             return false;
+        }
+
+        /***************************************************/
+
+        [Description("Concatenates the last 7 characters of the ETABS Element GUID and the BHoM Object Name to get the Unique Name to assign to the ETABS Element.")]
+        private string SetUniqueName(BHoMObject obj, string name)
+        {
+            /* 1. CHECK OBJECT TYPE IS ACCEPTABLE */
+            if (!(obj.GetType() == typeof(Node) || 
+                  obj.GetType() == typeof(Bar) || 
+                  obj.GetType() == typeof(Panel) || 
+                  obj.GetType() == typeof(Opening)))
+            {
+                return null;
+            }
+
+            /* 2. GET THE ETABS ELEMENT GUID */
+            int ret01 = 1;
+            int ret02 = 1;
+            string guid = null;
+            string tempObjName = "";
+
+            if (obj.GetType() == typeof(Node)) ret01 = m_model.PointObj.GetGUID(name, ref guid);
+            if (obj.GetType()== typeof(Bar)) ret01 = m_model.FrameObj.GetGUID(name, ref guid);
+            if (obj.GetType() == typeof(Panel) || obj.GetType() == typeof(Opening)) ret01 = m_model.AreaObj.GetGUID(name, ref guid);
+
+            /* 3. CREATE THE NEW UNIQUE NAME */
+            if (obj.Name == "")
+            {
+                tempObjName = guid.Substring(guid.Length - 7);
+            }
+            else
+            {
+                tempObjName = guid.Substring(guid.Length - 7) + "::" + obj.Name;
+            }
+
+            /* 4. ASSIGN THE NEW UNIQUE NAME TO THE ETABS ELEMENT */
+            if (obj.GetType() == typeof(Node)) ret02 = m_model.PointObj.ChangeName(name, tempObjName);
+            if (obj.GetType() == typeof(Bar)) ret02 = m_model.FrameObj.ChangeName(name, tempObjName);
+            if (obj.GetType() == typeof(Panel) || obj.GetType() == typeof(Opening)) ret02 = m_model.AreaObj.ChangeName(name, tempObjName);
+
+            if (!(ret01 == 0 && ret02 == 0)) return null;
+
+            return tempObjName;
         }
 
         /***************************************************/
