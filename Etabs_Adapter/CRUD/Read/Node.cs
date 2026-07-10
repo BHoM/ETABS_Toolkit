@@ -73,6 +73,12 @@ namespace BH.Adapter.ETABS
 
                 Constraint6DOF support = GetConstraint6DOF(restraint, spring);
 
+                // Capture the assigned point spring property name so it round-trips on a pull -> push.
+                // A "None"/blank result means no spring is assigned, so the support name is left blank.
+                string springProp = null;
+                if (m_model.PointObj.GetSpringAssignment(id, ref springProp) == 0 && !string.IsNullOrEmpty(springProp) && springProp != "None")
+                    support.Name = springProp;
+
                 string bhomName = GetBhomNameFromEtabsId(id);
 
                 Node bhNode = new Node { Name = bhomName, Position = new oM.Geometry.Point() { X = x, Y = y, Z = z }, Support = support };
