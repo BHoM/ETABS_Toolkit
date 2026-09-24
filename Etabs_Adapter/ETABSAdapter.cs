@@ -148,7 +148,7 @@ namespace BH.Adapter.ETABS
 
                 if (processes > 0)
                 {
-                    object runningInstance = Query.GetActiveObject(programId);
+                    object runningInstance = BH.Engine.Adapter.Query.GetActiveObject(programId);
 
                     m_app = (cOAPI)runningInstance;
                     m_model = m_app.SapModel;
