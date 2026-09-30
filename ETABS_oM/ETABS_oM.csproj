@@ -24,6 +24,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Analytical_oM">
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Analytical_oM.dll</HintPath>
+    </Reference>
     <Reference Include="BHoM">
       <HintPath>$(ProgramData)\BHoM\Assemblies\BHoM.dll</HintPath>
       <Private>False</Private>
