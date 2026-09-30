@@ -165,6 +165,8 @@ namespace BH.Adapter.ETABS
                 requestType = typeof(GlobalResultRequest);
             else if (typeof(NodeResult).IsAssignableFrom(resultType))
                 requestType = typeof(NodeResultRequest);
+            else if (typeof(SectionCutResultRequest).IsAssignableFrom(resultType))
+                requestType = typeof(SectionCutResultRequest);
 
             Modules.Structure.ErrorMessages.ReadResultsError(resultType, requestType);
         }
