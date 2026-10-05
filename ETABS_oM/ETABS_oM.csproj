@@ -26,6 +26,8 @@
   <ItemGroup>
     <Reference Include="Analytical_oM">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Analytical_oM.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BHoM">
       <HintPath>$(ProgramData)\BHoM\Assemblies\BHoM.dll</HintPath>
