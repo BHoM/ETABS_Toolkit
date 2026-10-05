@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug16</Configuration>
     <OutputType>Library</OutputType>
     <RootNamespace>BH.Adapter.ETABS</RootNamespace>
-    <AssemblyName>ETABS17_Adapter</AssemblyName>
+    <AssemblyName>ETABS_Adapter</AssemblyName>
     <Configurations>Debug;Debug16;Debug17;Debug18;Release;Release16;Release17;Release18</Configurations>
     <Configuration>Release18</Configuration>
     <AssemblyTitle>ETABS_Adapter</AssemblyTitle>
