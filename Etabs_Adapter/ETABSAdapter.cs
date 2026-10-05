@@ -83,13 +83,6 @@ namespace BH.Adapter.ETABS
         public ETABSAdapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
 #endif
         {
-            if (Environment.Version.Major > 4)
-            {
-                BH.Engine.Base.Compute.RecordError($"The ETABSAdapter is currently not supported in net runtimes above NETFramework due to internal errors in the ETABS API. A fix for this is being worked on.\n" +
-                                                   $"If you are running this Adapter from Grasshopper in Rhino 8, you can change the runtime being used by Rhino to NETFramework. To do this please follow the instructions here: https://www.rhino3d.com/en/docs/guides/netcore/");
-                return;
-            }
-
             //Initialisation
             AdapterIdFragmentType = typeof(ETABSId);
             BH.Adapter.Modules.Structure.ModuleLoader.LoadModules(this);
@@ -133,6 +126,18 @@ namespace BH.Adapter.ETABS
                 }
 #endif
 
+#if Debug16 || Release16 || Debug17 || Release17
+                // ETABS 2016 and 17 are .NET Framework applications, so their API cannot be reached from .NET Core.
+                if (IsNetCoreRuntime())
+                {
+#if Debug16 || Release16
+                    BH.Engine.Base.Compute.RecordError(NetCoreUnsupportedMessage("2016"));
+#else
+                    BH.Engine.Base.Compute.RecordError(NetCoreUnsupportedMessage("17"));
+#endif
+                    return;
+                }
+#endif
 
                 cHelper helper = new Helper();
                 string programId = "CSI.ETABS.API.ETABSObject";
@@ -142,46 +147,72 @@ namespace BH.Adapter.ETABS
 
                 if (processes > 1)
                 {
-                    Engine.Base.Compute.RecordWarning("More than one ETABS instance is open. BHoM has attached to the most recently updated process, " +
-                        "but you should only work with one ETABS instance at a time with BHoM.");
+                    Engine.Base.Compute.RecordWarning("More than one ETABS instance is open. BHoM has attached to the instance that is active for the API, which by default is the one that was opened first. " +
+                        "The active instance can be changed in ETABS through Tools > Active Instance for API, but you should only work with one ETABS instance at a time with BHoM.");
                 }
 
-                if (processes > 0)
+                try
                 {
-                    object runningInstance = BH.Engine.Adapter.Query.GetActiveObject(programId);
+                    if (processes > 0)
+                    {
+                        m_app = BH.Engine.Adapter.Query.GetActiveObject(programId) as cOAPI;
 
-                    m_app = (cOAPI)runningInstance;
-                    m_model = m_app.SapModel;
-                    if (System.IO.File.Exists(filePath))
-                        m_model.File.OpenFile(filePath);
-                    m_model.SetPresentUnits(eUnits.N_m_C);
-                }
-                else
-                {
-#if Debug16 || Release16 || Debug17 || Release17
-                    m_app = helper.CreateObject(pathToETABS);
-#else
-                    m_app = helper.CreateObject(pathToETABS);
-#endif
-                    m_app.ApplicationStart();
-                    m_model = m_app.SapModel;
-                    m_model.InitializeNewModel(eUnits.N_m_C);
-                    if (System.IO.File.Exists(filePath))
-                        m_model.File.OpenFile(filePath);
+                        if (m_app == null)
+                        {
+                            BH.Engine.Base.Compute.RecordError("ETABS is running but BHoM could not attach to it. Make sure that the ETABS API is registered by running RegisterETABS.exe, found in the ETABS installation folder, as administrator.");
+                            return;
+                        }
+
+                        m_model = m_app.SapModel;
+
+                        if (!CheckVersionSupported())
+                            return;
+
+                        if (System.IO.File.Exists(filePath))
+                            m_model.File.OpenFile(filePath);
+                        m_model.SetPresentUnits(eUnits.N_m_C);
+                    }
                     else
-                        m_model.File.NewBlank();
+                    {
+#if !(Debug16 || Release16 || Debug17 || Release17)
+                        // Fail before starting ETABS, as versions older than 22 cannot be driven from .NET Core.
+                        if (IsNetCoreRuntime() && EtabsSettings.EtabsVersion != oM.Adapters.ETABS.EtabsVersion.v22)
+                        {
+                            BH.Engine.Base.Compute.RecordError(NetCoreUnsupportedMessage(EtabsSettings.EtabsVersion.ToString()));
+                            return;
+                        }
+#endif
+                        if (!System.IO.File.Exists(pathToETABS))
+                        {
+                            BH.Engine.Base.Compute.RecordError($"No ETABS executable found at {pathToETABS}. Make sure that the EtabsVersion in the EtabsSettings matches the version of ETABS installed, or open ETABS before activating the adapter.");
+                            return;
+                        }
+
+                        m_app = helper.CreateObject(pathToETABS);
+                        m_app.ApplicationStart();
+                        m_model = m_app.SapModel;
+
+                        if (!CheckVersionSupported())
+                            return;
+
+                        m_model.InitializeNewModel(eUnits.N_m_C);
+                        if (System.IO.File.Exists(filePath))
+                            m_model.File.OpenFile(filePath);
+                        else
+                            m_model.File.NewBlank();
+                    }
+
+                    // Get ETABS Model FilePath
+                    FilePath = m_model.GetModelFilename();
+
+                    LoadSectionDatabaseNames();
                 }
-
-                // Get ETABS Model Version
-                double doubleVer = 0;
-                string version = "";
-                m_app.SapModel.GetVersion(ref version, ref doubleVer);
-                this.EtabsVersion = version;
-
-                // Get ETABS Model FilePath
-                FilePath = m_model.GetModelFilename();
-
-                LoadSectionDatabaseNames();
+                catch (Exception e)
+                {
+                    BH.Engine.Base.Compute.RecordError($"Failed to connect to ETABS: {e.Message}");
+                    m_app = null;
+                    m_model = null;
+                }
             }
         }
 
@@ -195,6 +226,53 @@ namespace BH.Adapter.ETABS
 
         /***************************************************/
         /**** Private Methods                           ****/
+        /***************************************************/
+
+        // Reads the version of the connected ETABS instance and checks that it can be driven from the current .NET runtime.
+        // Records an error and releases the connection if it cannot.
+        private bool CheckVersionSupported()
+        {
+            double doubleVer = 0;
+            string version = "";
+            m_model.GetVersion(ref version, ref doubleVer);
+            this.EtabsVersion = version;
+
+            Version parsed;
+            if (!Version.TryParse(version, out parsed))
+                return true;
+
+            bool before227 = parsed.Major < 22 || (parsed.Major == 22 && parsed.Minor < 7);
+
+            if (before227 && IsNetCoreRuntime())
+            {
+                BH.Engine.Base.Compute.RecordError(NetCoreUnsupportedMessage(version));
+                m_app = null;
+                m_model = null;
+                return false;
+            }
+
+            if (parsed.Major == 22 && parsed.Minor < 7)
+                BH.Engine.Base.Compute.RecordWarning($"ETABS {version} is not supported, as versions 22.0 to 22.6 contain errors in their API. Please update to ETABS 22.7 or later.");
+
+            return true;
+        }
+
+        /***************************************************/
+
+        private static bool IsNetCoreRuntime()
+        {
+            return Environment.Version.Major > 4;
+        }
+
+        /***************************************************/
+
+        private static string NetCoreUnsupportedMessage(string etabsVersion)
+        {
+            return $"ETABS {etabsVersion} cannot be used from a .NET Core runtime, such as Rhino 8 in its default mode. " +
+                   "ETABS 21 and earlier run on .NET Framework, and their API depends on .NET Remoting, which is not available in .NET Core. ETABS 22.0 to 22.6 contain errors in their API.\n" +
+                   "Please use ETABS 22.7 or later, or run the adapter from a .NET Framework host. To change the runtime used by Rhino 8 to .NET Framework, follow the instructions here: https://www.rhino3d.com/en/docs/guides/netcore/";
+        }
+
         /***************************************************/
 
         private bool ForceRefresh()
