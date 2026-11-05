@@ -20,13 +20,13 @@ CSI ETABS 22.7.0
 #### Not supported:
 CSI ETABS versions 22.0.0 to 22.6.0.
 
-### Net runtime issues
+### .NET runtimes
 
-There are currently some internal failures in the ETABS API when called in a NET Core environment. For this reason, running the ETABSAdapter in runtimes above net 4 is disabled.
+The ETABSAdapter can be run from both .NET Framework and .NET Core (.NET 8) hosts, for example Rhino 7, Rhino 8 in either runtime, or a .NET 8 desktop application.
 
-If you are using the ETABS Adapter with Grasshopper in Rhino 8 you can change the runtime used by Rhino to framework. To do this, please see this link: https://www.rhino3d.com/en/docs/guides/netcore/#to-change-rhino-to-always-use-net-framework
+From a .NET Core host, only ETABS 22.7.0 and later are supported. ETABS 21 and earlier run on .NET Framework, and their API depends on .NET Remoting, which is not available in .NET Core; the adapter will report an error instead of connecting to them.
 
-A fix to allow for higher net runtimes is being worked on.
+To use an older version of ETABS with Grasshopper in Rhino 8, change the runtime used by Rhino to .NET Framework. To do this, please see this link: https://www.rhino3d.com/en/docs/guides/netcore/#to-change-rhino-to-always-use-net-framework
 
 
 ### Documentation
