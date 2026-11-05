@@ -72,6 +72,7 @@ namespace BH.Adapter.ETABS
         [Input("filePath", "Optional file path. If empty, or not a valid file path. If empty, a new file will be created unless ETABS is already running.", typeof(FilePathAttribute))]
         [Input("etabsSetting", "Controling various settings of the adapter.")]
         [Input("active", "Toggle to true to activate the adapter. If ETABS is running, the adapter will connect to the running instance. If ETABS is not running, the adapter will start up a new instance of ETABS.")]
+        [Output("adapter", "The created ETABS adapter. When active is true it is connected to ETABS, either attached to the running instance or to a newly started one.")]
 #if Debug16 || Release16
        [Description("Creates an adapter to ETABS 2016. For connection to ETABS v18 or later use the ETABSAdapter.  For connection to ETABS v17 use the ETABS17Adapter. Earlier versions not supported.")]
         public ETABS2016Adapter(string filePath = "", EtabsSettings etabsSetting = null, bool active = false)
