@@ -21,8 +21,10 @@
  */
 
 using BH.Engine.Adapter;
+using BH.oM.Adapter;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Structure.Elements;
+using BH.oM.Structure.SectionProperties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -48,6 +50,12 @@ namespace BH.Adapter.ETABS
         private bool UpdateObjects(IEnumerable<Bar> bhBars)
         {
             int ret = 0;
+
+            // Get the list of sections assigned to the input bars
+            List<ISectionProperty> sections = bhBars.Select(x => x.SectionProperty).Where(x => x != null).ToList();
+            /* Create/Update new/existing section properties in etabs
+               Step required to allow section properties to be assigned to pushed bars in SetObject(bhbar) */
+            this.FullCRUD(sections, PushType.FullPush);
 
             int nameCount = 0;
             string[] names = { };
