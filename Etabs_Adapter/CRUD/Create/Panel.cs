@@ -91,10 +91,20 @@ namespace BH.Adapter.ETABS
 
             retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
 
+            if (retA != 0)
+            {
+                Engine.Base.Compute.RecordError($"ETABS failed to create Panel '{bhPanel.Name}' (BHoM_Guid: {bhPanel.BHoM_Guid}). AddByCoord returned error code {retA}.");
+                return false;
+            }
+
             // Assign the Unique Name to the ETABS Element
             string newName = SetUniqueName(bhPanel, name);
 
-            if (newName == null) return false;
+            if (newName == null)
+            {
+                Engine.Base.Compute.RecordError($"Failed to assign a unique name to Panel '{bhPanel.Name}' (BHoM_Guid: {bhPanel.BHoM_Guid}). The object may not have been created in ETABS.");
+                return false;
+            }
 
             ETABSId etabsid = new ETABSId();
             etabsid.Id = newName;
@@ -114,9 +124,6 @@ namespace BH.Adapter.ETABS
                 etabsid.PersistentId = guid;
 
             bhPanel.SetAdapterId(etabsid);
-            
-            if (retA != 0)
-                return false;
 
             if (bhPanel.Openings != null)
             {
