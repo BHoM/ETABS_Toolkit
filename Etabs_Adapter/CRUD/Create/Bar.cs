@@ -125,8 +125,16 @@ namespace BH.Adapter.ETABS
             string name = GetAdapterId<string>(bhBar);
 
             // Needed rigth after create as well as AddByPoint flipps the Bar if it feels like it
+            bool reversed = false;
 #if Debug16 == false && Release16 == false
             m_model.EditFrame.ChangeConnectivity(name, GetAdapterId<string>(bhBar.Start), GetAdapterId<string>(bhBar.End));
+
+            // ETABS can still keep the frame reversed, with end I on the bar's end node. Beams are ordered by coordinate.
+            // Read back the end ETABS holds as I, so releases and length offsets land on the end they belong to.
+            string pointI = "";
+            string pointJ = "";
+            if (m_model.FrameObj.GetPoints(name, ref pointI, ref pointJ) == 0)
+                reversed = pointI == GetAdapterId<string>(bhBar.End) && pointJ == GetAdapterId<string>(bhBar.Start);
 #endif
 
             if (CheckPropertyWarning(bhBar, b => b.SectionProperty))
@@ -186,6 +194,16 @@ namespace BH.Adapter.ETABS
 
                 if (bhBar.Release.ToCSI(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd))
                 {
+                    if (reversed)
+                    {
+                        bool[] restraint = restraintStart;
+                        restraintStart = restraintEnd;
+                        restraintEnd = restraint;
+                        double[] spring = springStart;
+                        springStart = springEnd;
+                        springEnd = spring;
+                    }
+
                     if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
                     {
                         CreatePropertyWarning("Release", "Bar", name);
@@ -208,7 +226,9 @@ namespace BH.Adapter.ETABS
             }
             else if (offset != null && offset.Start != null && offset.End != null)
             {
-                if (m_model.FrameObj.SetEndLengthOffset(name, false, bhBar.Offset.Start.X, -1 * (bhBar.Offset.End.X), 1) != 0)
+                double lengthI = reversed ? -1 * bhBar.Offset.End.X : bhBar.Offset.Start.X;
+                double lengthJ = reversed ? bhBar.Offset.Start.X : -1 * bhBar.Offset.End.X;
+                if (m_model.FrameObj.SetEndLengthOffset(name, false, lengthI, lengthJ, 1) != 0)
                 {
                     CreatePropertyWarning("Length offset", "Bar", name);
                     ret++;
