@@ -27,6 +27,7 @@ using BH.Engine.Structure;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Analytical.Elements;
 using BH.oM.Geometry;
+using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
@@ -88,19 +89,33 @@ namespace BH.Adapter.ETABS
 
         private bool SetObject(Node bhNode, string name)
         {
-            if (bhNode.Support != null)
-            {
-                bool[] restraint = new bool[6];
-                double[] spring = new double[6];
+            // Defaults release the node Ux, Uy & Uz fixed, rotations free.
+            // Spring stiffness defaults to zero for all translations and rotations.
+            bool[] restraint = new bool[6] { true, true, true, false, false, false };
+            double[] spring = new double[6];
 
+            if (bhNode.Support != null)
                 bhNode.Support.ToCSI(ref restraint, ref spring);
 
-                if (m_model.PointObj.SetRestraint(name, ref restraint) == 0) { }
+            if (m_model.PointObj.SetRestraint(name, ref restraint) == 0) { }
+            else
+            {
+                CreatePropertyWarning("Node Restraint", "Node", name);
+            }
+
+            // If any stiffness is applied, a spring property is created and assigned; otherwise any existing spring is cleared.
+            bool hasStiffness = spring.Any(x => x != 0);
+            if (hasStiffness)
+            {
+                string propName = bhNode.Support.DescriptionOrName();
+
+                if (m_model.PropPointSpring.SetPointSpringProp(propName, 1, ref spring) == 0) { }
                 else
                 {
-                    CreatePropertyWarning("Node Restraint", "Node", name);
+                    CreatePropertyWarning("Node Spring", "Node", propName);
                 }
-                if (m_model.PointObj.SetSpring(name, ref spring) == 0) { }
+
+                if (m_model.PointObj.SetSpringAssignment(name, propName) == 0) { }
                 else
                 {
                     CreatePropertyWarning("Node Spring", "Node", name);
