@@ -97,6 +97,8 @@ namespace BH.Adapter.ETABS
 
             ids = FilterIds(ids, nameArr);
 
+            List<Tuple<LoadCombination, string, double>> nestedCombos = new List<Tuple<LoadCombination, string, double>>();
+
             foreach (string id in ids)
             {
                 LoadCombination combination = new LoadCombination();
@@ -116,7 +118,9 @@ namespace BH.Adapter.ETABS
 
                         for (int i = 0; i < caseNames.Count(); i++)
                         {
-                            if (bhomCases.TryGetValue(caseNames[i], out currentCase))
+                            if (nameTypes != null && nameTypes[i] == eCNameType.LoadCombo)
+                                nestedCombos.Add(new Tuple<LoadCombination, string, double>(combination, caseNames[i], factors[i]));
+                            else if (bhomCases.TryGetValue(caseNames[i], out currentCase))
                                 combination.LoadCases.Add(new Tuple<double, ICase>(factors[i], currentCase));
                         }
                     }
@@ -129,6 +133,20 @@ namespace BH.Adapter.ETABS
                     SetAdapterId(combination, id);
                     combinations.Add(combination);
                 }
+            }
+
+            // Load combinations inside other load combinations, for example the ULS combinations of an envelope, are added once all are read.
+            Dictionary<string, LoadCombination> byName = combinations
+                .GroupBy(x => x.Name)
+                .ToDictionary(x => x.Key, x => x.First());
+
+            foreach (Tuple<LoadCombination, string, double> nested in nestedCombos)
+            {
+                LoadCombination member;
+                if (byName.TryGetValue(nested.Item2, out member))
+                    nested.Item1.LoadCases.Add(new Tuple<double, ICase>(nested.Item3, member));
+                else
+                    Engine.Base.Compute.RecordWarning($"Load combination {nested.Item1.Name} contains the load combination {nested.Item2}, which was not read. Read all load combinations to keep it.");
             }
 
             return combinations;

@@ -21,11 +21,8 @@
  */
 
 using System.ComponentModel;
-using System.Linq;
-using BH.Engine.Base;
 using BH.oM.Adapters.ETABS;
 using BH.oM.Adapters.ETABS.Fragments;
-using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Structure.Loads;
 
@@ -37,23 +34,18 @@ namespace BH.Engine.Adapters.ETABS
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Sets how ETABS combines the load cases and combinations of a LoadCombination. The factors are kept.")]
-        [Input("loadCombination", "The LoadCombination to set the type of.")]
+        [Description("Sets how ETABS combines the load cases and load combinations of a LoadCombination, by adding a CombinationTypeFragment. The factors are kept.")]
+        [Input("loadCombination", "The LoadCombination to set the ETABS combination type of.")]
         [Input("combinationType", "Linear additive (the ETABS default), envelope, absolute additive, SRSS or range additive.")]
-        [Output("loadCombination", "A copy of the LoadCombination carrying a CombinationTypeFragment, which the ETABS adapter pushes as that combination type.")]
-        public static LoadCombination SetCombinationType(this LoadCombination loadCombination, CombinationType combinationType)
+        public static void SetCombinationType(this LoadCombination loadCombination, CombinationType combinationType)
         {
             if (loadCombination == null)
             {
                 Engine.Base.Compute.RecordError("Cannot set the combination type of a null LoadCombination.");
-                return null;
+                return;
             }
 
-            LoadCombination clone = loadCombination.ShallowClone();
-            clone.Fragments = new FragmentSet(loadCombination.Fragments.ToList());
-            clone.Fragments.AddOrReplace(new CombinationTypeFragment { CombinationType = combinationType });
-
-            return clone;
+            loadCombination.Fragments.AddOrReplace(new CombinationTypeFragment { CombinationType = combinationType });
         }
 
         /***************************************************/

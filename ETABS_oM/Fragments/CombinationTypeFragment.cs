@@ -25,7 +25,7 @@ using BH.oM.Base;
 
 namespace BH.oM.Adapters.ETABS.Fragments
 {
-    [Description("The ETABS type of a LoadCombination, set with SetCombinationType. A LoadCombination without it is pushed as Linear Additive.")]
+    [Description("The ETABS type of a LoadCombination, set with SetCombinationType or EnvelopeLoadCombination. A LoadCombination without it is pushed as Linear Additive.")]
     public class CombinationTypeFragment : IFragment
     {
         [Description("How ETABS combines the results of the cases and combinations in the LoadCombination.")]
