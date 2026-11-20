@@ -26,6 +26,8 @@ using BH.Engine.Adapter;
 using BH.oM.Adapters.ETABS;
 using System;
 using BH.oM.Structure.Loads;
+using BH.oM.Adapters.ETABS.Fragments;
+using BH.Engine.Base;
 
 #if Debug16 || Release16
 using ETABS2016;
@@ -98,7 +100,11 @@ namespace BH.Adapter.ETABS
 
         private bool CreateObject(LoadCombination loadCombination)
         {
-            if (m_model.RespCombo.Add(loadCombination.Name, 0) == 0) //0=case, 1=combo 
+            // The ETABS combination type comes from the CombinationTypeFragment; without one it is linear additive, the ETABS default.
+            CombinationTypeFragment typeFragment = loadCombination.FindFragment<CombinationTypeFragment>();
+            int comboType = (int)(typeFragment == null ? CombinationType.LinearAdditive : typeFragment.CombinationType);
+
+            if (m_model.RespCombo.Add(loadCombination.Name, comboType) == 0)
             {
                 foreach (var factorCase in loadCombination.LoadCases)
                 {
