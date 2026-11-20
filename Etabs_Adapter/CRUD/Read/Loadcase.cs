@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Loads;
+using BH.oM.Adapters.ETABS.Fragments;
 using BH.Engine.Adapters.ETABS;
 #if Debug16 || Release16
 using ETABS2016;
@@ -119,6 +120,11 @@ namespace BH.Adapter.ETABS
                                 combination.LoadCases.Add(new Tuple<double, ICase>(factors[i], currentCase));
                         }
                     }
+
+                    // Linear additive is the default, so only the other types carry a CombinationTypeFragment.
+                    int comboType = 0;
+                    if (m_model.RespCombo.GetTypeCombo(id, ref comboType) == 0 && comboType != (int)CombinationType.LinearAdditive)
+                        combination.Fragments.Add(new CombinationTypeFragment { CombinationType = (CombinationType)comboType });
 
                     SetAdapterId(combination, id);
                     combinations.Add(combination);
